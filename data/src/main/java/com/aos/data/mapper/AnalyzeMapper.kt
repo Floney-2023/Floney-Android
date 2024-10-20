@@ -102,7 +102,12 @@ fun PostAnalyzeCategoryOutComeEntity.toUiAnalyzeModel(): UiAnalyzeCategoryOutCom
                     }
 
                     else -> {
-                        randomColorArr[colorIdx++]
+                        try {
+                            randomColorArr[colorIdx++]
+                        }catch (i: IndexOutOfBoundsException) {
+                            i.printStackTrace()
+                            randomColorArr[0]
+                        }
                     }
                 }
             )
@@ -172,7 +177,12 @@ fun PostAnalyzeCategoryInComeEntity.toUiAnalyzeModel(): UiAnalyzeCategoryInComeM
                     }
 
                     else -> {
-                        randomColorArr[colorIdx++]
+                        try {
+                            randomColorArr[colorIdx++]
+                        }catch (i: IndexOutOfBoundsException) {
+                            i.printStackTrace()
+                            randomColorArr[0]
+                        }
                     }
                 }
             )
