@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.aos.data.util.SharedPreferenceUtil
 import com.aos.floney.R
 import com.aos.floney.base.BaseFragment
 import com.aos.floney.base.setupTouchEffect
@@ -20,10 +21,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class SettleUpStartFragment : BaseFragment<FragmentSettleUpStartBinding, SettleUpStartViewModel>(R.layout.fragment_settle_up_start) {
     private val activityViewModel: SettleUpViewModel by activityViewModels()
+
+    @Inject
+    lateinit var sharedPreferenceUtil: SharedPreferenceUtil
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -38,12 +43,16 @@ class SettleUpStartFragment : BaseFragment<FragmentSettleUpStartBinding, SettleU
     }
     private fun setUpViewModelObserver() {
         repeatOnStarted {
-            // 정산 시작하기 이동
-            viewModel.settleUpStartPage.collect {
-                if(it) {
-                    val action =
-                        SettleUpStartFragmentDirections.actionSettleUpStartFragmentToSettleUpMemberSelectFragment()
-                    findNavController().navigate(action)
+            if(!activityViewModel.subscribeExpired.value!!){
+                viewModel.settleUpStartPage.collect {
+                    if(it) { // 정기 구독 만료 시, 팝업
+                        activityViewModel.subscribeExpired.value = it
+                    }
+                    else { // 정산 시작하기 이동
+                        val action =
+                            SettleUpStartFragmentDirections.actionSettleUpStartFragmentToSettleUpMemberSelectFragment()
+                        findNavController().navigate(action)
+                    }
                 }
             }
         }

@@ -141,6 +141,9 @@ class HistoryViewModel @Inject constructor(
     private var modifyId = 0
     private var modifyItem: DayMoneyModifyItem? = null
 
+    // 구독 만료 내역
+    var subscribeExpired = MutableLiveData<Boolean>(false)
+
     init {
         val array = arrayListOf<UiBookCategory>(
             UiBookCategory(0, true, "없음", false),
@@ -276,24 +279,27 @@ class HistoryViewModel @Inject constructor(
 
     // 내역 수정
     private fun postModifyHistory() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val tempMoney = cost.value!!.replace(",", "")
-            postBooksLinesChangeUseCase(
-                lineId = modifyId,
-                bookKey = prefs.getString("bookKey", ""),
-                money = tempMoney.replace(CurrencyUtil.currency, "")
-                    .toDouble(),
-                flow = flow.value!!,
-                asset = asset.value!!,
-                line = line.value!!,
-                lineDate = date.value!!.replace(".", "-"),
-                description = content.value!!,
-                except = deleteChecked.value!!,
-                nickname = nickname.value!!,
-            ).onSuccess {
-                _postModifyBooksLines.emit(true)
-            }.onFailure {
-                baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@HistoryViewModel)))
+        subscribeExpired.value = prefs.getBoolean("subscribe_expired", false)
+        if(!subscribeExpired.value!!){
+            viewModelScope.launch(Dispatchers.IO) {
+                val tempMoney = cost.value!!.replace(",", "")
+                postBooksLinesChangeUseCase(
+                    lineId = modifyId,
+                    bookKey = prefs.getString("bookKey", ""),
+                    money = tempMoney.replace(CurrencyUtil.currency, "")
+                        .toDouble(),
+                    flow = flow.value!!,
+                    asset = asset.value!!,
+                    line = line.value!!,
+                    lineDate = date.value!!.replace(".", "-"),
+                    description = content.value!!,
+                    except = deleteChecked.value!!,
+                    nickname = nickname.value!!,
+                ).onSuccess {
+                    _postModifyBooksLines.emit(true)
+                }.onFailure {
+                    baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@HistoryViewModel)))
+                }
             }
         }
     }

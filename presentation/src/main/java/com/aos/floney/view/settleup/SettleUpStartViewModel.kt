@@ -55,7 +55,7 @@ class SettleUpStartViewModel @Inject constructor(
     // 정산하기 시작
     fun onClickedSettleUpStart() {
         viewModelScope.launch {
-            _settleUpStartPage.emit(true)
+            _settleUpStartPage.emit(prefs.getBoolean("subscribe_expired", false))
         }
     }
 

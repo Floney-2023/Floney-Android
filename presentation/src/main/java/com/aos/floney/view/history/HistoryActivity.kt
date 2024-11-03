@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.view.View
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
@@ -45,6 +46,7 @@ class HistoryActivity :
         setUpViewModelObserver()
         setUpCalendarBottomSheet()
         setUpFavoriteItem()
+        setSubscribePopup()
     }
 
     private fun setUpFavoriteItem() {
@@ -288,6 +290,15 @@ class HistoryActivity :
                         }
                     }.show(supportFragmentManager, "baseChoiceDialog")
                 }
+            }
+        }
+    }
+
+    private fun setSubscribePopup() {
+        if(true){
+            binding.includePopupSubscribe.ivExit.setOnClickListener {
+                binding.includePopupSubscribe.root.visibility = View.GONE
+                binding.dimBackground.visibility = View.GONE
             }
         }
     }

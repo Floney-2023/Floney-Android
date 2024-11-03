@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.databinding.library.baseAdapters.BR
 import androidx.lifecycle.lifecycleScope
@@ -75,6 +76,7 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(R.layout.a
         setUpBottomNavigation()
         setUpAccessCheck()
         setUpAdMob()
+        setSubscribePopup()
     }
     private fun setUpUi() {
         binding.setVariable(BR.eventHolder, this)
@@ -357,5 +359,13 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(R.layout.a
     }
     private fun setUpAccessCheck(){
         viewModel.setAccessCheck(intent.getBooleanExtra("accessCheck", false))
+    }
+    fun setSubscribePopup() {
+        if(true){
+            binding.includePopupSubscribe.ivExit.setOnClickListener {
+                binding.includePopupSubscribe.root.visibility = View.GONE
+                binding.view2.visibility = View.GONE
+            }
+        }
     }
 }

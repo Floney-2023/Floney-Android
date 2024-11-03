@@ -16,6 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettleUpViewModel @Inject constructor(
+    private val prefs: SharedPreferenceUtil
 ): BaseViewModel() {
 
 
@@ -35,6 +36,8 @@ class SettleUpViewModel @Inject constructor(
     private var _clickedAddHistory = MutableEventFlow<String>()
     val clickedAddHistory: EventFlow<String> get() = _clickedAddHistory
 
+    // 구독 만료 내역
+    var subscribeExpired = MutableLiveData<Boolean>(false)
 
     fun settingBookKey(id: Long, bk: String){
         viewModelScope.launch {
