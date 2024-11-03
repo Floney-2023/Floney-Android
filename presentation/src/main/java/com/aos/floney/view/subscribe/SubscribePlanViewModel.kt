@@ -1,8 +1,10 @@
 package com.aos.floney.view.subscribe
 
+import android.app.Activity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.android.billingclient.api.Purchase
 import com.aos.data.util.SharedPreferenceUtil
 import com.aos.floney.R
 import com.aos.floney.base.BaseViewModel
@@ -15,6 +17,7 @@ import com.aos.usecase.bookadd.BooksEntranceUseCase
 import com.aos.usecase.bookadd.BooksJoinUseCase
 import com.aos.usecase.home.GetBookInfoUseCase
 import com.aos.usecase.mypage.MypageSearchUseCase
+import com.aos.usecase.subscribe.SubscribeAndroidUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -23,8 +26,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SubscribePlanViewModel @Inject constructor(
-    private val prefs: SharedPreferenceUtil
-): BaseViewModel() {
+    private val prefs: SharedPreferenceUtil,
+    private val subscribeAndroidUseCase: SubscribeAndroidUseCase
+): BaseViewModel(), BillingManager.BillingCallback {
 
 
     // 구독 하기
@@ -46,6 +50,29 @@ class SubscribePlanViewModel @Inject constructor(
     // 구독 정보 화면 나가기
     private var _back = MutableEventFlow<Boolean>()
     val back: EventFlow<Boolean> get() = _back
+
+    private lateinit var billingManager: BillingManager
+    private var pendingPurchase: Purchase? = null
+
+    fun initBillingManager(activity: Activity) {
+        billingManager = BillingManager(activity, this) // 콜백으로 ViewModel 전달
+        billingManager.startConnection()
+    }
+
+    override fun onPurchaseTokenReceived(token: String, purchase: Purchase) {
+        pendingPurchase = purchase
+        sendTokenToServer(token)
+    }
+
+    private fun sendTokenToServer(purchaseToken: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            subscribeAndroidUseCase(purchaseToken).onSuccess {
+                pendingPurchase?.let { billingManager.acknowledgePurchase(it) } // acknowledgePurchase 호출
+            }.onFailure {
+                baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@SubscribePlanViewModel)))
+            }
+        }
+    }
 
     // 구독 정보 화면 나가기
     fun onClickedExit(){

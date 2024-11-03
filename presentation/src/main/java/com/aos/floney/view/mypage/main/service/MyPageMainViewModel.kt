@@ -105,7 +105,7 @@ class MyPageMainViewModel @Inject constructor(
     val subscribePage: EventFlow<Boolean> get() = _subscribePage
 
     // 구독 여부
-    var subscribeCheck = MutableLiveData<Boolean>(true)
+    var subscribeCheck = MutableLiveData<Boolean>(false)
 
     init{
         settingAdvertiseTime()

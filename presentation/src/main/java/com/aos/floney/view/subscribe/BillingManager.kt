@@ -2,6 +2,7 @@ package com.aos.floney.view.subscribe
 
 import android.app.Activity
 import android.util.Log
+import androidx.lifecycle.viewModelScope
 import com.android.billingclient.api.AcknowledgePurchaseParams
 import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingClientStateListener
@@ -10,10 +11,26 @@ import com.android.billingclient.api.BillingResult
 import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.QueryProductDetailsParams
+import com.aos.floney.BuildConfig
+import com.aos.floney.base.BaseViewModel
+import com.aos.floney.ext.parseErrorMsg
 import com.aos.floney.view.common.ErrorToastDialog
+import com.aos.usecase.bookadd.BooksJoinUseCase
+import com.aos.usecase.subscribe.SubscribeAndroidUseCase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class BillingManager(private val activity: Activity) {
+class BillingManager(
+    private val activity: Activity,
+    private val billingCallback: BillingCallback
+) {
+
+    interface BillingCallback {
+        fun onPurchaseTokenReceived(token: String, purchase: Purchase)
+    }
+
     private lateinit var billingClient : BillingClient
 
     init {
@@ -41,23 +58,12 @@ class BillingManager(private val activity: Activity) {
             Timber.i("Purchase successful, token: $purchaseToken")
 
             // 토큰을 서버로 전송하여 검증
-            sendTokenToServer(purchaseToken)
-
-            // 구매가 성공했음을 사용자에게 알림
-            if (!purchase.isAcknowledged) {
-                acknowledgePurchase(purchase)
-            }
+            billingCallback.onPurchaseTokenReceived(purchaseToken, purchase)
         }
     }
 
-    // 서버로 토큰 전송
-    private fun sendTokenToServer(purchaseToken: String) {
-        // 서버로 토큰 전송을 위한 네트워크 요청
-        Timber.i("Sending token to server: $purchaseToken")
-    }
-
     // 구매 확인 (Acknowledgement)
-    private fun acknowledgePurchase(purchase: Purchase) {
+    fun acknowledgePurchase(purchase: Purchase) {
         val acknowledgePurchaseParams = AcknowledgePurchaseParams.newBuilder()
             .setPurchaseToken(purchase.purchaseToken)
             .build()
@@ -70,6 +76,7 @@ class BillingManager(private val activity: Activity) {
             }
         }
     }
+
     fun startConnection() {
         billingClient.startConnection(object : BillingClientStateListener {
             override fun onBillingServiceDisconnected() {
@@ -92,7 +99,7 @@ class BillingManager(private val activity: Activity) {
             .setProductList(
                 listOf(
                     QueryProductDetailsParams.Product.newBuilder()
-                        .setProductId("floney_plus")
+                        .setProductId(BuildConfig.GOOGLE_PRODUCT_SUBSCRIBE_ID)
                         .setProductType(BillingClient.ProductType.SUBS)
                         .build()
                 )

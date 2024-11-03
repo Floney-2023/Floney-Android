@@ -49,13 +49,16 @@ class SubscribePlanActivity : BaseActivity<ActivitySubscribePlanBinding, Subscri
     private fun setUpUi() {
         binding.setVariable(BR.eventHolder, this)
     }
+    private fun setUpBillingManager()
+    {
+        viewModel.initBillingManager(this)
+    }
     private fun setUpViewModelObserver() {
         repeatOnStarted {
             // 구독하기
             viewModel.subscribe.collect {
                 if(it) {
-                    billingManager = BillingManager(this@SubscribePlanActivity)
-                    billingManager.startConnection()
+                    viewModel.initBillingManager(this@SubscribePlanActivity)
                 }
             }
         }
