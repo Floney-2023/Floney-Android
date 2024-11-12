@@ -55,6 +55,14 @@ class SubscribeInformViewModel @Inject constructor(
         sendTokenToServer(token)
     }
 
+    override fun onPurchaseSuccess(checking: Boolean) {
+        if (checking){
+            baseEvent(Event.ShowSuccessToast("결제가 완료되었습니다."))
+        }else{
+            baseEvent(Event.ShowToast("결제가 실패되었습니다."))
+        }
+    }
+
     private fun sendTokenToServer(purchaseToken: String) {
         viewModelScope.launch(Dispatchers.IO) {
             subscribeAndroidUseCase(purchaseToken).onSuccess {

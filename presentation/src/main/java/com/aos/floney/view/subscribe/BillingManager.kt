@@ -29,6 +29,7 @@ class BillingManager(
 
     interface BillingCallback {
         fun onPurchaseTokenReceived(token: String, purchase: Purchase)
+        fun onPurchaseSuccess(checking: Boolean)
     }
 
     private lateinit var billingClient : BillingClient
@@ -71,8 +72,10 @@ class BillingManager(
         billingClient.acknowledgePurchase(acknowledgePurchaseParams) { billingResult ->
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                 Timber.i("Purchase acknowledged")
+                billingCallback.onPurchaseSuccess(true)
             } else {
                 Timber.e("Failed to acknowledge purchase: ${billingResult.debugMessage}")
+                billingCallback.onPurchaseSuccess(false)
             }
         }
     }
