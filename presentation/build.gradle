@@ -22,8 +22,8 @@ android {
         applicationId "com.aos.floney"
         minSdk 24
         targetSdk 34
-        versionCode 34
-        versionName "1.1.7"
+        versionCode 36
+        versionName "1.1.9"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
