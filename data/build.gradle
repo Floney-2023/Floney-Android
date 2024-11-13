@@ -19,7 +19,6 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
 
-        buildConfigField "String", "BASE_URL", properties['base.url']
         buildConfigField "String", "KAKAO_NATIVE_KEY", properties['kakao.native.key']
         buildConfigField "String", "GOOGLE_OAUTH_KEY", properties['google.oauth.key']
     }
@@ -28,7 +27,14 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField "String", "BASE_URL", properties['base.server.url']
         }
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField "String", "BASE_URL", properties['base.dev.url']
+        }
+
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
