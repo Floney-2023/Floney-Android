@@ -1,6 +1,6 @@
-package com.example.data.util
+package com.domain.util
 
-import com.example.domain.NetworkState
+import com.aos.util.NetworkState
 import okhttp3.Request
 import okio.Timeout
 import retrofit2.Call

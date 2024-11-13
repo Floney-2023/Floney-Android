@@ -1,6 +1,7 @@
-package com.example.data.util
+package com.aos.data.util
 
-import com.example.domain.NetworkState
+import com.aos.util.NetworkState
+import com.domain.util.CustomCall
 import retrofit2.Call
 import retrofit2.CallAdapter
 import java.lang.reflect.Type

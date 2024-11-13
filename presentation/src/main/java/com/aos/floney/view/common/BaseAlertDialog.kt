@@ -51,7 +51,7 @@ class BaseAlertDialog(
             tvPopupInfo.text = info
             btnLeft.apply {
                 // '초대 코드 복사'가 맞으면 weight를 2로 설정, OK로 변경
-                if (title == "초대 코드 복사") {
+                if (title == "초대 코드 복사" || title.contains("알림")) {
                     btnLeft.text = "OK"
                     middleView.visibility = View.GONE
                     val params = layoutParams as LinearLayout.LayoutParams

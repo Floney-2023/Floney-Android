@@ -2,7 +2,6 @@ package com.aos.floney.view.splash
 
 import android.app.Activity
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.content.pm.PackageManager.*
 import android.net.Uri
 import android.os.Build
@@ -14,6 +13,7 @@ import android.util.Log
 import android.view.WindowInsetsController
 import android.view.WindowManager
 import android.view.animation.AnimationUtils
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import com.aos.floney.R
@@ -24,7 +24,10 @@ import com.aos.floney.view.login.LoginActivity
 import com.aos.floney.view.onboard.OnBoardActivity
 import com.aos.data.util.CurrencyUtil
 import com.aos.floney.BuildConfig
+import com.aos.floney.util.RemoteConfigWrapper
 import com.aos.floney.view.book.entrance.BookEntranceActivity
+import com.aos.floney.view.book.setting.category.BookCategoryActivity
+import com.aos.floney.view.common.BaseAlertDialog
 import com.aos.floney.view.common.WarningPopupDialog
 import com.aos.floney.view.home.HomeActivity
 import com.aos.floney.view.settleup.SettleUpActivity
@@ -32,6 +35,8 @@ import com.aos.floney.view.signup.SignUpCompleteActivity
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import java.security.MessageDigest
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -40,7 +45,10 @@ class SplashActivity :
 
     @Inject
     lateinit var sharedPreferenceUtil: SharedPreferenceUtil
+    @Inject
+    lateinit var remoteConfigWrapper: RemoteConfigWrapper
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -49,34 +57,14 @@ class SplashActivity :
         setStatusBarTransparent()
         CurrencyUtil.currency = sharedPreferenceUtil.getString("symbol", "원")
     }
-    private fun checkForUpdate() {
-        val currentVersion = getCurrentAppVersion() // 현재 앱의 버전 가져오기
-        val latestVersion = "1.1.12" // 서버에서 최신 버전 가져오기(임의)
-        val updateRequired = isUpdateRequired(latestVersion, currentVersion)
 
-        if (updateRequired) {
-            // 강제 업데이트 안내 팝업
-
-            val exitDialogFragment = WarningPopupDialog(
-                "서버 점검으로 인한 이용 일시 중단",
-                "서버 변경 작업으로 인해 14일 22:00 ~ 15일 09:00 기간까지 앱을 사용할 수 없습니다.\n" +
-                        "불편을 드려 죄송합니다.",
-                "확인",
-                "확인",
-                true
-            ) { checked ->
-                if (checked){
-                    finishAffinity()
-                    android.os.Process.killProcess(android.os.Process.myPid())
-                    // redirectToPlayStore() // Google Play 스토어로 리다이렉트
-                }
-            }
-
-            exitDialogFragment.show(supportFragmentManager, "initDialog")
-        } else {
-            // 업데이트가 필요하지 않으면 기존 로직대로
-            navigateToScreen()
-        }
+    private fun checkPauseUpdate() { // 서버 변경으로 인한 임시 중단 팝업
+        BaseAlertDialog(title = "앱 중단 알림", info = "원활한 앱 사용을 위해 \n" +
+                "2024.11.14 22:00 - 2024.11.15 09:00\n" +
+                "앱 점검을 진행합니다. \n" +
+                "위 시간 동안 앱 사용이 불가하니 양해 부탁드립니다.\n", false) {
+            finishAffinity()
+        }.show(supportFragmentManager, "PauseUpdateDialog")
     }
 
     private fun redirectToPlayStore() {
@@ -125,18 +113,21 @@ class SplashActivity :
     private fun getCurrentAppVersion(): String {
         return packageManager.getPackageInfo(packageName, 0).versionName
     }
+
     fun isUpdateRequired(latestVersion: String?, currentVersion: String): Boolean {
         if (latestVersion == null) return false
 
-        val latestVersionParts = latestVersion.split(".")
-        val currentVersionParts = currentVersion.split(".")
+        val latestVersionParts = latestVersion.split(".").map { it.toIntOrNull() ?: 0 }
+        val currentVersionParts = currentVersion.split(".").map { it.toIntOrNull() ?: 0 }
 
+        // 두 버전 중 더 긴 부분 길이만큼 0으로 패딩하여 비교
         val maxLength = maxOf(latestVersionParts.size, currentVersionParts.size)
+        val paddedLatest = latestVersionParts + List(maxLength - latestVersionParts.size) { 0 }
+        val paddedCurrent = currentVersionParts + List(maxLength - currentVersionParts.size) { 0 }
+
         for (i in 0 until maxLength) {
-            val latestPart = latestVersionParts.getOrNull(i)?.toIntOrNull() ?: 0
-            val currentPart = currentVersionParts.getOrNull(i)?.toIntOrNull() ?: 0
-            if (latestPart > currentPart) return true
-            if (latestPart < currentPart) return false
+            if (paddedLatest[i] > paddedCurrent[i]) return true
+            if (paddedLatest[i] < paddedCurrent[i]) return false
         }
         return false
     }
@@ -145,15 +136,52 @@ class SplashActivity :
         super.onNewIntent(intent)
         handleIntent(intent)
     }
-    // logo animation
+
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun setupSplashAnimation() {
         val animation = AnimationUtils.loadAnimation(this, R.anim.splash_animation)
         binding.ivAppLogo.startAnimation(animation)
 
         Handler(Looper.myLooper()!!).postDelayed({
-            checkForUpdate() // 버전 업데이트 확인
+            checkServerStatusAndUpdate()
         }, 2000)
     }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun checkServerStatusAndUpdate() {
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+        val currentDateTime = LocalDateTime.now()
+        val maintenanceStart = LocalDateTime.parse("2024-11-14 22:00", formatter)
+        val maintenanceEnd = LocalDateTime.parse("2024-11-15 09:00", formatter)
+
+        if (currentDateTime.isAfter(maintenanceStart) && currentDateTime.isBefore(maintenanceEnd)) {
+            checkPauseUpdate()
+        }
+        else {
+            checkForMandatoryUpdate()
+        }
+    }
+
+    private fun checkForMandatoryUpdate() { // 강제 업데이트 팝업
+        val minSupportedVersion = remoteConfigWrapper.fetchAndActivateConfig()
+        val currentVersion = getCurrentAppVersion()
+
+        Timber.e("minSupportVersion : ${minSupportedVersion} currentVersion : ${currentVersion}")
+        if (isUpdateRequired(minSupportedVersion, currentVersion)) {
+            showUpdateDialog() // 강제 업데이트 팝업
+        } else {
+            navigateToScreen() // 업데이트가 필요하지 않으면 다음 화면으로 이동
+        }
+    }
+
+    private fun showUpdateDialog() {
+        BaseAlertDialog(title = "업데이트 알림", info = "더 나은 서비스를 위해 플로니가 수정되었어요!\n업데이트 해주시겠어요?", false) {
+            if(it) {
+                redirectToPlayStore()
+            }
+        }.show(supportFragmentManager, "showUpdateDialog")
+    }
+
     private fun handleIntent(intent: Intent) {
         val data: Uri? = intent.data
         if (data != null) {
