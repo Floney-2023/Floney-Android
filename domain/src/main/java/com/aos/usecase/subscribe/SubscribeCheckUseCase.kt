@@ -4,13 +4,13 @@ import com.aos.model.subscribe.GetSubscribeAndroidModel
 import com.aos.repository.SubscribeRepository
 import javax.inject.Inject
 
-class SubscribeAndroidUseCase @Inject constructor(
+class SubscribeCheckUseCase @Inject constructor(
     private val subscribeRepository: SubscribeRepository
 ){
     suspend operator fun invoke(
-        purchaseToken : String
+        device : String
     ): Result<GetSubscribeAndroidModel> {
-        return subscribeRepository.getSubscribeAndroid(purchaseToken)
+        return subscribeRepository.getSubscribeCheck(device)
     }
 
 }

@@ -18,4 +18,8 @@ class SubscribeRemoteDataSourceImpl @Inject constructor(private val subscribeSer
     override suspend fun getSubscribeAndroid(purchaseToken: String): NetworkState<GetSubscribeAndroidEntity> {
         return subscribeService.getSubscribeAndroid(purchaseToken)
     }
+
+    override suspend fun getSubscribeCheck(device: String): NetworkState<GetSubscribeAndroidEntity> {
+        return subscribeService.getSubscribeCheck(device)
+    }
 }

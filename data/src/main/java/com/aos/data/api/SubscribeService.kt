@@ -18,4 +18,10 @@ interface SubscribeService {
     suspend fun getSubscribeAndroid(
         @Query("transactionId") purchaseToken: String
     ): NetworkState<GetSubscribeAndroidEntity>
+
+    @GET("subscribe")
+    @Headers("Auth: true")
+    suspend fun getSubscribeCheck(
+        @Query("device") device: String
+    ): NetworkState<GetSubscribeAndroidEntity>
 }

@@ -22,9 +22,26 @@ import javax.inject.Inject
 class SubscribeRepositoryImpl @Inject constructor(private val subscribeRemoteDataSourceImpl: SubscribeRemoteDataSourceImpl) :
     SubscribeRepository {
 
-    override suspend fun getSubsctibeAndroid(purchaseToken: String): Result<GetSubscribeAndroidModel> {
+    override suspend fun getSubscribeAndroid(purchaseToken: String): Result<GetSubscribeAndroidModel> {
         when (val data = subscribeRemoteDataSourceImpl.getSubscribeAndroid(
             purchaseToken = purchaseToken
+        )) {
+            is NetworkState.Success -> return Result.success(data.body.toGetSubscribeAndroidModel())
+            is NetworkState.Failure -> return Result.failure(
+                RetrofitFailureStateException(data.error, data.code)
+            )
+
+            is NetworkState.NetworkError -> return Result.failure(IllegalStateException("NetworkError"))
+            is NetworkState.UnknownError -> {
+                Timber.e(data.t?.message)
+                return Result.failure(IllegalStateException("unKnownError"))
+            }
+        }
+    }
+
+    override suspend fun getSubscribeCheck(device: String): Result<GetSubscribeAndroidModel> {
+        when (val data = subscribeRemoteDataSourceImpl.getSubscribeCheck(
+            device = device
         )) {
             is NetworkState.Success -> return Result.success(data.body.toGetSubscribeAndroidModel())
             is NetworkState.Failure -> return Result.failure(
