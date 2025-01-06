@@ -22,6 +22,5 @@ interface SubscribeService {
     @GET("subscribe")
     @Headers("Auth: true")
     suspend fun getSubscribeCheck(
-        @Query("device") device: String
     ): NetworkState<GetSubscribeAndroidEntity>
 }

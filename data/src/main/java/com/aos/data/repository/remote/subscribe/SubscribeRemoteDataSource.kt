@@ -13,5 +13,5 @@ import com.aos.util.NetworkState
 interface SubscribeRemoteDataSource {
     suspend fun getSubscribeAndroid(purchaseToken : String): NetworkState<GetSubscribeAndroidEntity>
 
-    suspend fun getSubscribeCheck(device : String): NetworkState<GetSubscribeAndroidEntity>
+    suspend fun getSubscribeCheck(): NetworkState<GetSubscribeAndroidEntity>
 }

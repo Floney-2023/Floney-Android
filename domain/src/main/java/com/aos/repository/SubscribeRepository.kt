@@ -8,5 +8,5 @@ interface SubscribeRepository {
     suspend fun getSubscribeAndroid(purchaseToken : String): Result<GetSubscribeAndroidModel>
 
     // 구독 여부 가져오기
-    suspend fun getSubscribeCheck(device : String): Result<GetSubscribeAndroidModel>
+    suspend fun getSubscribeCheck(): Result<GetSubscribeAndroidModel>
 }

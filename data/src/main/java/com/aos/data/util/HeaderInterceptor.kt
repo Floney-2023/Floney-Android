@@ -10,24 +10,28 @@ class HeaderInterceptor @Inject constructor(
     private val prefs: SharedPreferenceUtil
 ): Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
-        if(chain.request().headers["Auth"] == "false"){
+        val originalRequest = chain.request()
+        val builder = originalRequest.newBuilder()
 
-            val newRequest = chain.request().newBuilder()
-                .removeHeader("Auth")
-                .build()
-            return chain.proceed(newRequest)
+        // Auth 헤더 처리
+        if (originalRequest.headers["Auth"] == "false") {
+            builder.removeHeader("Auth")
+        } else {
+            var token = ""
+            runBlocking {
+                token = "Bearer " + prefs.getString("accessToken", "")
+            }
+            Timber.e("token $token")
+            builder.addHeader("Authorization", token)
         }
 
-        var token = ""
-        runBlocking {
-            token = ("Bearer " + prefs.getString("accessToken", ""))
+        // 구독 API 요청인지 확인하여 ostype 추가
+        val url = originalRequest.url.toString()
+        if (url.contains("/subscribe")) {  // "subscribe" 경로가 포함된 경우만 처리
+            builder.addHeader("device", "android")
         }
-        Timber.e("token $token")
-        val newRequest = chain.request().newBuilder()
-            .addHeader("Authorization", token)
-            .build()
-        val response = chain.proceed(newRequest)
 
-        return response
+        val newRequest = builder.build()
+        return chain.proceed(newRequest)
     }
 }

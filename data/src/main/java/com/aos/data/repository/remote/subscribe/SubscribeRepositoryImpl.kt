@@ -39,10 +39,8 @@ class SubscribeRepositoryImpl @Inject constructor(private val subscribeRemoteDat
         }
     }
 
-    override suspend fun getSubscribeCheck(device: String): Result<GetSubscribeAndroidModel> {
-        when (val data = subscribeRemoteDataSourceImpl.getSubscribeCheck(
-            device = device
-        )) {
+    override suspend fun getSubscribeCheck(): Result<GetSubscribeAndroidModel> {
+        when (val data = subscribeRemoteDataSourceImpl.getSubscribeCheck()) {
             is NetworkState.Success -> return Result.success(data.body.toGetSubscribeAndroidModel())
             is NetworkState.Failure -> return Result.failure(
                 RetrofitFailureStateException(data.error, data.code)

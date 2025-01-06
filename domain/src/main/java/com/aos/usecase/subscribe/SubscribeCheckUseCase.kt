@@ -7,10 +7,8 @@ import javax.inject.Inject
 class SubscribeCheckUseCase @Inject constructor(
     private val subscribeRepository: SubscribeRepository
 ){
-    suspend operator fun invoke(
-        device : String
-    ): Result<GetSubscribeAndroidModel> {
-        return subscribeRepository.getSubscribeCheck(device)
+    suspend operator fun invoke(): Result<GetSubscribeAndroidModel> {
+        return subscribeRepository.getSubscribeCheck()
     }
 
 }
