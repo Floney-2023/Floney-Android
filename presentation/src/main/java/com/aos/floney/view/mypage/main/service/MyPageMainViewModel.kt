@@ -31,6 +31,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import kotlin.math.abs
+import kotlin.properties.Delegates
 
 @HiltViewModel
 class MyPageMainViewModel @Inject constructor(
@@ -98,6 +99,13 @@ class MyPageMainViewModel @Inject constructor(
     // 마이페이지 정보 로드
     private var _loadCheck = MutableEventFlow<Boolean>()
     val loadCheck: EventFlow<Boolean> get() = _loadCheck
+
+    // 구독 페이지
+    private var _subscribePage = MutableEventFlow<Boolean>()
+    val subscribePage: EventFlow<Boolean> get() = _subscribePage
+
+    // 구독 여부
+    var subscribeCheck = MutableLiveData<Boolean>(false)
 
     init{
         settingAdvertiseTime()
@@ -302,6 +310,14 @@ class MyPageMainViewModel @Inject constructor(
     fun onClickSuppose(){
         viewModelScope.launch {
             _supposePage.emit(true)
+        }
+    }
+
+    // 구독 버튼 클릭
+    fun onClickSubscribe(){
+        // 구독 여부 보내야 함(추후)
+        viewModelScope.launch {
+            _subscribePage.emit(subscribeCheck.value!!)
         }
     }
 }

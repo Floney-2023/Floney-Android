@@ -3,6 +3,7 @@ package com.aos.floney.view.analyze
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.aos.data.util.SharedPreferenceUtil
 import com.aos.floney.base.BaseViewModel
 import com.aos.floney.util.EventFlow
 import com.aos.floney.util.MutableEventFlow
@@ -17,7 +18,9 @@ import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
-class AnalyzeViewModel @Inject constructor(): BaseViewModel() {
+class AnalyzeViewModel @Inject constructor(
+    private val prefs: SharedPreferenceUtil
+): BaseViewModel() {
 
     // 지출, 수입, 예산, 자산
     private var _flow = MutableLiveData<String>("지출")
@@ -42,6 +45,9 @@ class AnalyzeViewModel @Inject constructor(): BaseViewModel() {
     // 내역추가
     private var _clickedAddHistory = MutableEventFlow<String>()
     val clickedAddHistory: EventFlow<String> get() = _clickedAddHistory
+
+    // 구독 만료 내역
+    var subscribeExpired = MutableLiveData<Boolean>(false)
 
     init {
         getFormatDateMonth()

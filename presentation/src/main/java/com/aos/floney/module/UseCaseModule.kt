@@ -2,6 +2,7 @@ package com.aos.floney.module
 
 import com.aos.repository.AnalyzeRepository
 import com.aos.repository.BookRepository
+import com.aos.repository.SubscribeRepository
 import com.aos.repository.UserRepository
 import com.aos.usecase.analyze.PostAnalyzeAssetUseCase
 import com.aos.usecase.analyze.PostAnalyzeIPlanUseCase
@@ -25,6 +26,7 @@ import com.aos.usecase.signup.SendEmailUseCase
 import com.aos.usecase.password.SendTempPasswordUseCase
 import com.aos.usecase.signup.SignUpSocialUseCase
 import com.aos.usecase.signup.SignUpUseCase
+import com.aos.usecase.subscribe.SubscribeAndroidUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -101,5 +103,8 @@ object UseCaseModule {
     @Provides
     @Singleton
     fun provideChangeBookImgUseCase(bookRepository: BookRepository) = ChangeBookImgUseCase(bookRepository)
+    @Provides
+    @Singleton
+    fun provideSubscribeAndroidUseCase(subscribeRepository: SubscribeRepository) = SubscribeAndroidUseCase(subscribeRepository)
 
 }

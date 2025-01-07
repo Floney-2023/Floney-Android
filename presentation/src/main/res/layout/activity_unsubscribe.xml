@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:bind="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="vm"
+            type="com.aos.floney.view.subscribe.UnsubscribeViewModel" />
+        <import type="android.view.View" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".view.subscribe.UnsubscribeActivity">
+
+        <ImageView
+            android:id="@+id/iv_icon_exit"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginTop="22dp"
+            android:layout_marginEnd="22dp"
+            android:clickable="true"
+            android:onClick="@{() -> vm.onClickedExit()}"
+            android:padding="5dp"
+            android:src="@drawable/icon_exit"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_unsubscribe_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="32dp"
+            android:fontFamily="@font/floney_pretendard_bold"
+            android:lineSpacingExtra="7sp"
+            android:text="@string/unsubscribe_title"
+            android:textColor="@color/grayscale2"
+            android:textSize="24dp"
+            android:translationY="-3.37sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/iv_icon_exit" />
+
+        <TextView
+            android:id="@+id/tv_unsubscribe_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="16dp"
+            android:lineSpacingExtra="3sp"
+            android:translationY="-1.34sp"
+            android:fontFamily="@font/pretendard_medium"
+            android:text="@string/unsubscribe_inform"
+            android:textColor="@color/grayscale6"
+            android:textSize="13dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_unsubscribe_title" />
+
+        <ImageView
+            android:layout_width="78dp"
+            android:layout_height="58dp"
+            android:layout_marginTop="86dp"
+            android:layout_marginEnd="24dp"
+            android:src="@drawable/item_unsubscribe"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="30dp"
+            android:paddingBottom="10dp"
+            app:layout_constraintBottom_toTopOf="@+id/cl_unsubscribe"
+            app:layout_constraintTop_toBottomOf="@+id/tv_unsubscribe_info">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="24dp"
+                android:adjustViewBounds="true"
+                android:src="@drawable/item_unsubscribe_graph" />
+        </androidx.core.widget.NestedScrollView>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_unsubscribe"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent">
+            <View
+                android:id="@+id/view_unsubsribe_line"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/grayscale10"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_unsubscribe_stay_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="20dp"
+                android:background="@drawable/custom_radius_12_solid_grayscale_2"
+                android:fontFamily="@font/pretendard_bold"
+                android:onClick="@{() -> vm.onClickSubscribeStay()}"
+                android:paddingVertical="16dp"
+                android:text="@string/unsubscribe_stay_btn"
+                android:textColor="@color/white"
+                android:textSize="14dp"
+                app:layout_constraintBottom_toTopOf="@+id/tv_unsubscribe_btn"
+                app:layout_constraintTop_toTopOf="@+id/view_unsubsribe_line"
+                tools:layout_editor_absoluteX="20dp" />
+
+            <TextView
+                android:id="@+id/tv_unsubscribe_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="37dp"
+                android:fontFamily="@font/pretendard_regular"
+                android:text="@string/unsubscribe_btn"
+                android:onClick="@{() -> vm.onClickUnsubscribe()}"
+                android:textColor="@color/grayscale6"
+                android:textSize="12dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/btn_unsubscribe_stay_btn"
+                app:layout_constraintStart_toStartOf="@+id/btn_unsubscribe_stay_btn" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

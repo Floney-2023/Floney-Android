@@ -4,6 +4,7 @@ import com.aos.data.api.AlarmService
 import com.aos.data.api.AnalyzeService
 import com.aos.data.api.BookService
 import com.aos.data.api.NaverShortenUrlService
+import com.aos.data.api.SubscribeService
 import com.aos.data.api.UserService
 import com.aos.data.util.CustomCallAdapterFactory
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -57,5 +58,8 @@ object ServiceModule {
             .build()
         return retrofit.create(NaverShortenUrlService::class.java)
     }
+    @Provides
+    @Singleton
+    fun provideSubscribeService(retrofit: Retrofit): SubscribeService = retrofit.create(SubscribeService::class.java)
 
 }

@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import com.google.android.material.snackbar.Snackbar
@@ -36,7 +37,7 @@ class AnalyzeActivity : BaseActivity<ActivityAnalyzeBinding, AnalyzeViewModel>(R
 
         setUpBottomNavigation()
         setUpViewModelObserver()
-
+        setSubscribePopup()
     }
 
     private fun setUpBottomNavigation() {
@@ -165,5 +166,14 @@ class AnalyzeActivity : BaseActivity<ActivityAnalyzeBinding, AnalyzeViewModel>(R
 
     override fun onFragmentRemoved() {
         viewModel.onClickSetBudget(false)
+    }
+
+    fun setSubscribePopup() {
+        if(true){
+            binding.includePopupSubscribe.ivExit.setOnClickListener {
+                binding.includePopupSubscribe.root.visibility = View.GONE
+                binding.dimBackground.visibility = View.GONE
+            }
+        }
     }
 }

@@ -150,17 +150,51 @@
                             android:src="@drawable/icon_right_arrow" />
                     </LinearLayout>
 
+                    <TextView
+                        android:id="@+id/textView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="24dp"
+                        android:fontFamily="@font/pretendard_medium"
+                        android:text="최대 10명까지 사용 가능한 가계부가 필요하다면"
+                        android:textColor="@color/grayscale6"
+                        android:textSize="12dp"
+                        android:lineSpacingExtra="-2sp"
+                        android:visibility="@{vm.subscribeCheck ? View.GONE : View.VISIBLE}"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/li_user_inform_view" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btn_subscribe"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:paddingVertical="16dp"
+                        android:background="@{vm.subscribeCheck ? @drawable/custom_radius_12_solid_g_white : @drawable/custom_radius_12_solid_grayscale_2}"
+                        android:fontFamily="@font/pretendard_semibold"
+                        android:onClick="@{() -> vm.onClickSubscribe()}"
+                        android:text="@{vm.subscribeCheck ? @string/subscribe_btn_inform : @string/subscribe_btn_text}"
+                        android:textAllCaps="false"
+                        android:textColor="@{vm.subscribeCheck ? @color/grayscale2 : @color/white}"
+                        android:textSize="14dp"
+                        android:lineSpacingExtra="-3sp"
+                        bind:setSubscribeMarginTop="@{vm.subscribeCheck}"
+                        app:layout_constraintEnd_toEndOf="@+id/li_user_inform_view"
+                        app:layout_constraintStart_toStartOf="@+id/li_user_inform_view"
+                        app:layout_constraintTop_toBottomOf="@+id/textView" />
+
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/li_review_suppose_card_view"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="20dp"
-                        android:layout_marginTop="17dp"
+                        android:layout_marginTop="16dp"
                         android:layout_marginEnd="20dp"
                         android:orientation="horizontal"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/li_user_inform_view">
+                        app:layout_constraintTop_toBottomOf="@+id/btn_subscribe">
 
                         <androidx.constraintlayout.widget.ConstraintLayout
                             android:id="@+id/first_square"
@@ -198,14 +232,14 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:orientation="horizontal"
-                                app:layout_constraintGuide_percent="0.17"/>
+                                app:layout_constraintGuide_percent="0.17" />
 
                             <androidx.constraintlayout.widget.Guideline
                                 android:id="@+id/guideline_top"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:orientation="horizontal"
-                                app:layout_constraintGuide_percent="0.27"/>
+                                app:layout_constraintGuide_percent="0.27" />
 
                             <TextView
                                 android:id="@+id/textView12"
@@ -229,7 +263,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:orientation="horizontal"
-                                app:layout_constraintGuide_percent="0.44"/>
+                                app:layout_constraintGuide_percent="0.44" />
 
                             <TextView
                                 android:id="@+id/tv_time"
@@ -241,11 +275,11 @@
                                 android:autoSizeMaxTextSize="30sp"
                                 android:autoSizeMinTextSize="16sp"
                                 android:autoSizeStepGranularity="1sp"
-                                android:textSize="24sp"
                                 android:autoSizeTextType="uniform"
                                 android:fontFamily="@font/pretendard_bold"
                                 android:text="@{vm.advertiseTime}"
                                 android:textColor="@color/grayscale3"
+                                android:textSize="24sp"
                                 app:layout_constraintBottom_toTopOf="@id/guideline_bottom"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toBottomOf="@+id/guideline_middle" />
@@ -255,19 +289,19 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:orientation="horizontal"
-                                app:layout_constraintGuide_percent="0.85"/>
+                                app:layout_constraintGuide_percent="0.85" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="0dp"
-                                android:fontFamily="@font/pretendard_regular"
-                                android:gravity="center"
                                 android:layout_marginTop="0dp"
-                                android:text="광고 보기"
-                                android:textColor="@color/grayscale3"
                                 android:autoSizeMaxTextSize="12sp"
                                 android:autoSizeMinTextSize="8sp"
                                 android:autoSizeStepGranularity="1sp"
+                                android:fontFamily="@font/pretendard_regular"
+                                android:gravity="center"
+                                android:text="광고 보기"
+                                android:textColor="@color/grayscale3"
                                 android:textSize="12sp"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
@@ -323,25 +357,26 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:orientation="horizontal"
-                                app:layout_constraintGuide_percent="0.55"/>
+                                app:layout_constraintGuide_percent="0.55" />
 
                             <androidx.constraintlayout.widget.Guideline
                                 android:id="@+id/guideline_suppose_end"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:orientation="horizontal"
-                                app:layout_constraintGuide_percent="0.85"/>
+                                app:layout_constraintGuide_percent="0.85" />
+
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="0dp"
                                 android:layout_gravity="center"
                                 android:layout_marginTop="0dp"
-                                android:fontFamily="@font/pretendard_regular"
-                                android:text="@string/mypage_main_suppose_write_text"
-                                android:textColor="@color/white"
                                 android:autoSizeMaxTextSize="12sp"
                                 android:autoSizeMinTextSize="8sp"
                                 android:autoSizeStepGranularity="1sp"
+                                android:fontFamily="@font/pretendard_regular"
+                                android:text="@string/mypage_main_suppose_write_text"
+                                android:textColor="@color/white"
                                 android:textSize="12sp"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
@@ -571,7 +606,7 @@
                         android:paddingStart="24dp"
                         android:paddingTop="20dp"
                         android:paddingEnd="16dp"
-                        android:paddingBottom="40dp"
+                        android:paddingBottom="20dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/li_private_role">
@@ -594,6 +629,22 @@
                             android:layout_height="24dp"
                             android:src="@drawable/icon_right_arrow" />
                     </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/textView3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:layout_marginTop="24dp"
+                        android:layout_marginBottom="50dp"
+                        android:fontFamily="@font/pretendard_regular"
+                        android:text="@string/unsubscribe_btn_mypage"
+                        android:visibility="@{vm.subscribeCheck ? View.VISIBLE : View.GONE}"
+                        android:textColor="@color/grayscale6"
+                        android:textSize="12dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/li_usage_right" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.core.widget.NestedScrollView>
         </androidx.constraintlayout.widget.ConstraintLayout>

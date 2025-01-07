@@ -24,6 +24,8 @@ import com.aos.floney.view.mypage.main.service.MyPageServiceTermsFragment
 import com.aos.floney.view.mypage.main.service.MyPageServiceTermsViewModel
 import com.aos.floney.view.mypage.setting.MyPageSettingActivity
 import com.aos.floney.view.settleup.SettleUpActivity
+import com.aos.floney.view.subscribe.SubscribeInformActivity
+import com.aos.floney.view.subscribe.SubscribePlanActivity
 import com.aos.model.user.MyBooks
 import com.aos.model.user.UiMypageSearchModel
 import com.aos.model.user.UserModel.userNickname
@@ -104,6 +106,32 @@ class MyPageActivity : BaseActivity<ActivityMyPageBinding, MyPageViewModel>(R.la
             }
         }
         bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
+    }
+
+    fun startSubscribeInformActivity() {
+        startActivity(Intent(this, SubscribeInformActivity::class.java))
+        if (Build.VERSION.SDK_INT >= 34) {
+            overrideActivityTransition(
+                Activity.OVERRIDE_TRANSITION_OPEN,
+                R.anim.anim_slide_in_from_right_fade_in,
+                android.R.anim.fade_out
+            )
+        } else {
+            overridePendingTransition(R.anim.anim_slide_in_from_right_fade_in, android.R.anim.fade_out)
+        }
+    }
+
+    fun startSubscribePlanActivity() {
+        startActivity(Intent(this, SubscribePlanActivity::class.java))
+        if (Build.VERSION.SDK_INT >= 34) {
+            overrideActivityTransition(
+                Activity.OVERRIDE_TRANSITION_OPEN,
+                R.anim.anim_slide_in_from_right_fade_in,
+                android.R.anim.fade_out
+            )
+        } else {
+            overridePendingTransition(R.anim.anim_slide_in_from_right_fade_in, android.R.anim.fade_out)
+        }
     }
     private fun setUpBottomNavigation() {
         // 가운데 메뉴(제보하기)에 대한 터치 이벤트를 막기 위한 로직

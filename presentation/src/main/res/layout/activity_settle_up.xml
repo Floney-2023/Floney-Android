@@ -18,11 +18,12 @@
         tools:context=".view.settleup.SettleUpActivity">
 
         <FrameLayout
+            android:id="@+id/frameLayout"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@+id/ll_bottom_navigation"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/ll_bottom_navigation">
+            app:layout_constraintTop_toTopOf="parent">
 
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/nav_host_fragment_container"
@@ -31,9 +32,27 @@
                 android:layout_height="match_parent"
                 app:defaultNavHost="true"
                 app:navGraph="@navigation/settle_up_nav" />
-
+            <View
+                android:id="@+id/dim_background"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/black"
+                android:visibility="@{ vm.subscribeExpired ? View.VISIBLE : View.GONE}"
+                android:alpha="0.7" />
         </FrameLayout>
 
+        <include
+            android:id="@+id/include_popup_subscribe"
+            layout="@layout/item_popup_subscribe_use"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="16dp"
+            android:visibility="@{ vm.subscribeExpired ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="@+id/frameLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
         <LinearLayout
             android:id="@+id/ll_bottom_navigation"
             android:layout_width="wrap_content"

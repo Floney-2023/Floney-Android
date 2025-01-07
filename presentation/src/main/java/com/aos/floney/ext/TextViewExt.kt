@@ -231,3 +231,17 @@ fun TextView.setProfileMargin(status: Boolean) {
     layoutParams.marginStart = (marginStartValue * context.resources.displayMetrics.density).toInt()
     this.layoutParams = layoutParams
 }
+
+@BindingAdapter("bind:setSubscribeMarginTop")
+fun TextView.setSubscribeMarginTop(status: Boolean) {
+
+    val marginTopValue = if (status) {
+        16
+    } else {
+        10
+    }
+
+    val layoutParams = this.layoutParams as ViewGroup.MarginLayoutParams
+    layoutParams.topMargin = (marginTopValue * context.resources.displayMetrics.density).toInt()
+    this.layoutParams = layoutParams
+}

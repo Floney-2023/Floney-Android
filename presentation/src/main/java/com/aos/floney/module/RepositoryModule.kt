@@ -6,11 +6,14 @@ import com.aos.data.repository.remote.analyze.AnalyzeRemoteDataSourceImpl
 import com.aos.data.repository.remote.analyze.AnalyzeRepositoryImpl
 import com.aos.data.repository.remote.book.BookRemoteDataSourceImpl
 import com.aos.data.repository.remote.book.BookRepositoryImpl
+import com.aos.data.repository.remote.subscribe.SubscribeRemoteDataSourceImpl
+import com.aos.data.repository.remote.subscribe.SubscribeRepositoryImpl
 import com.aos.data.repository.remote.user.UserRemoteDataSourceImpl
 import com.aos.data.repository.remote.user.UserRepositoryImpl
 import com.aos.repository.AlarmRepository
 import com.aos.repository.AnalyzeRepository
 import com.aos.repository.BookRepository
+import com.aos.repository.SubscribeRepository
 import com.aos.repository.UserRepository
 import dagger.Module
 import dagger.Provides
@@ -59,6 +62,16 @@ object RepositoryModule {
     ) : AlarmRepository {
         return AlarmRepositoryImpl(
             alarmRemoteDataSourceImpl
+        )
+    }
+
+    @Singleton
+    @Provides
+    fun provideSubscribeRepository(
+        subscribeRemoteDataSourceImpl: SubscribeRemoteDataSourceImpl
+    ) : SubscribeRepository {
+        return SubscribeRepositoryImpl(
+            subscribeRemoteDataSourceImpl
         )
     }
 }

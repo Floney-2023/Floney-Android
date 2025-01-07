@@ -53,6 +53,9 @@ class WarningPopupDialog(
                 btnLeft.visibility = View.GONE
                 viewPadding.visibility = View.GONE
                 ivPopupImage.setImageResource(R.drawable.item_black_exit_popup)
+            } else if (leftButton.isBlank()){
+                btnLeft.visibility = View.GONE
+                viewPadding.visibility = View.GONE
             }
         }
     }

@@ -31,6 +31,8 @@
     <color name="grayscale10">#F1F1F1</color>
     <color name="grayscale11">#F4F4F4</color>
     <color name="grayscale12">#FAFAFA</color>
+    <color name="grayscale13">#878787</color>
+    <color name="grayscale14">#464646</color>
 
     <!--blue color-->
     <color name="blue1">#0060E5</color>
