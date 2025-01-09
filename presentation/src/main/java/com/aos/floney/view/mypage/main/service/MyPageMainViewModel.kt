@@ -26,6 +26,7 @@ import com.aos.model.book.getCurrencySymbolByCode
 import com.aos.model.user.MyBooks
 import com.aos.usecase.booksetting.BooksCurrencySearchUseCase
 import com.aos.usecase.mypage.RecentBookkeySaveUseCase
+import com.aos.usecase.subscribe.SubscribeCheckUseCase
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
@@ -38,7 +39,8 @@ class MyPageMainViewModel @Inject constructor(
     private val prefs: SharedPreferenceUtil,
     private val mypageSearchUseCase : MypageSearchUseCase,
     private val booksCurrencySearchUseCase : BooksCurrencySearchUseCase,
-    private val recentBookKeySaveUseCase : RecentBookkeySaveUseCase
+    private val recentBookKeySaveUseCase : RecentBookkeySaveUseCase,
+    private val subscribeCheckUseCase: SubscribeCheckUseCase
 ): BaseViewModel() {
 
     // 광고 시간
@@ -136,6 +138,18 @@ class MyPageMainViewModel @Inject constructor(
         prefs.setString("advertiseTime", getCurrentDateTimeString())
         settingAdvertiseTime()
     }
+
+    // 구독 여부 가져오기
+    fun getSubscribeStatus(){
+        viewModelScope.launch(Dispatchers.IO) {
+            subscribeCheckUseCase().onSuccess {
+                subscribeCheck.postValue(it.isValid)
+            }.onFailure {
+                baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
+            }
+        }
+    }
+
     // 마이페이지 정보 읽어오기
     fun searchMypageItems()
     {

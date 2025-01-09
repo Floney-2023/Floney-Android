@@ -62,6 +62,7 @@ class MyPageMainFragment : BaseFragment<FragmentMyPageMainBinding, MyPageMainVie
         super.onResume()
 
         viewModel.searchMypageItems()
+        viewModel.getSubscribeStatus()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
