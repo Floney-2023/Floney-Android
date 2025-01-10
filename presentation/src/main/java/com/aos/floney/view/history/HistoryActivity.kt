@@ -9,7 +9,10 @@ import android.view.View
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.databinding.library.baseAdapters.BR
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
 import com.aos.floney.R
 import com.aos.floney.base.BaseActivity
 import com.aos.floney.databinding.ActivityHistoryBinding
@@ -19,6 +22,7 @@ import com.aos.floney.view.book.setting.category.BookCategoryActivity
 import com.aos.floney.view.book.setting.favorite.BookFavoriteActivity
 import com.aos.floney.view.common.BaseAlertDialog
 import com.aos.floney.view.common.BaseChoiceAlertDialog
+import com.aos.floney.view.history.memo.InsertMemoActivity
 import com.aos.floney.view.home.HomeActivity
 import com.aos.model.book.UiBookCategory
 import com.aos.model.home.DayMoneyFavoriteItem
@@ -38,6 +42,16 @@ class HistoryActivity :
     private lateinit var calendarBottomSheetDialog: CalendarBottomSheetDialog
     private lateinit var categoryBottomSheetDialog: CategoryBottomSheetDialog
     private lateinit var launcher: ActivityResultLauncher<Intent>
+    private lateinit var navController: NavController
+
+    private val getResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                // SecondActivity에서 전달한 데이터를 받음
+                val receivedValue = result.data?.getStringExtra("memo") ?: ""
+                viewModel.setMemoValue(receivedValue)
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -110,6 +124,12 @@ class HistoryActivity :
     }
 
     private fun setUpViewModelObserver() {
+        repeatOnStarted {
+            viewModel.onClickMemo.collect {
+                val intent = Intent(this@HistoryActivity, InsertMemoActivity::class.java)
+                getResult.launch(intent)
+            }
+        }
         repeatOnStarted {
             viewModel.deleteBookLines.collect {
                 startActivity(Intent(this@HistoryActivity, HomeActivity::class.java))
@@ -237,7 +257,6 @@ class HistoryActivity :
                 }
             }
         }
-
         repeatOnStarted {
             viewModel.postModifyBooksLines.collect {
                 if (it) {
@@ -295,12 +314,16 @@ class HistoryActivity :
     }
 
     private fun setSubscribePopup() {
-        if(true){
+        if (true) {
             binding.includePopupSubscribe.ivExit.setOnClickListener {
                 binding.includePopupSubscribe.root.visibility = View.GONE
                 binding.dimBackground.visibility = View.GONE
             }
         }
+    }
+
+    fun onClickedFragmentBack() {
+        navController.navigateUp()
     }
 
     // 캘린더 일자 배경 커스텀 클래스
@@ -310,6 +333,7 @@ class HistoryActivity :
             // 휴무일 || 이전 날짜
             return true
         }
+
         override fun decorate(view: DayViewFacade) {
             view.let {
                 if (drawable != null) {

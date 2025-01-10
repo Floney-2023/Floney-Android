@@ -38,6 +38,7 @@ android {
             buildConfigField "String", "BASE_URL", properties['base.server.url']
             buildConfigField "String", "GOOGLE_APP_BANNER_KEY", "${properties['google_app_banner_release_key']}"
             buildConfigField "String", "GOOGLE_APP_REWARD_KEY", "${properties['google_app_reward_release_key']}"
+            signingConfig signingConfigs.debug
         }
         debug {
             buildConfigField "String", "BASE_URL", properties['base.dev.url']

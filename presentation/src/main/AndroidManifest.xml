@@ -103,6 +103,9 @@
             android:name=".view.subscribe.UnsubscribeActivity"
             android:exported="false" />
         <activity
+            android:name=".view.history.memo.InsertMemoActivity"
+            android:exported="false" />
+        <activity
             android:name=".view.book.entrance.BookEntranceActivity"
             android:exported="true">
             <intent-filter android:autoVerify="true">

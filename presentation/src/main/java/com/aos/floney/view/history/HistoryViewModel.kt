@@ -79,6 +79,10 @@ class HistoryViewModel @Inject constructor(
     private var _onClickDelete = MutableEventFlow<OnClickedDelete>()
     val onClickDelete: EventFlow<OnClickedDelete> get() = _onClickDelete
 
+    // 메모 클릭
+    private var _onClickMemo = MutableEventFlow<Boolean>()
+    val onClickMemo: EventFlow<Boolean> get() = _onClickMemo
+
     // 즐겨찾기 클릭
     private var _onClickFavorite = MutableEventFlow<Boolean>()
     val onClickFavorite: EventFlow<Boolean> get() = _onClickFavorite
@@ -441,6 +445,13 @@ class HistoryViewModel @Inject constructor(
         if (mode.value == "add") {
             line.postValue("분류를 선택하세요")
             flow.postValue(type)
+        }
+    }
+
+    // 메모 클릭
+    fun onClickMemo() {
+        viewModelScope.launch {
+            _onClickMemo.emit(true)
         }
     }
 
