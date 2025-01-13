@@ -37,11 +37,11 @@ import kotlin.properties.Delegates
 @HiltViewModel
 class MyPageMainViewModel @Inject constructor(
     private val prefs: SharedPreferenceUtil,
-    private val mypageSearchUseCase : MypageSearchUseCase,
-    private val booksCurrencySearchUseCase : BooksCurrencySearchUseCase,
-    private val recentBookKeySaveUseCase : RecentBookkeySaveUseCase,
+    private val mypageSearchUseCase: MypageSearchUseCase,
+    private val booksCurrencySearchUseCase: BooksCurrencySearchUseCase,
+    private val recentBookKeySaveUseCase: RecentBookkeySaveUseCase,
     private val subscribeCheckUseCase: SubscribeCheckUseCase
-): BaseViewModel() {
+) : BaseViewModel() {
 
     // 광고 시간
     private var _advertiseTime = MutableLiveData<String>()
@@ -78,6 +78,7 @@ class MyPageMainViewModel @Inject constructor(
     // 개인 정보 페이지
     private var _privatePage = MutableEventFlow<Boolean>()
     val privatePage: EventFlow<Boolean> get() = _privatePage
+
     // 이용 약관 페이지
     private var _usageRightPage = MutableEventFlow<Boolean>()
     val usageRightPage: EventFlow<Boolean> get() = _usageRightPage
@@ -109,14 +110,15 @@ class MyPageMainViewModel @Inject constructor(
     // 구독 여부
     var subscribeCheck = MutableLiveData<Boolean>(false)
 
-    init{
+    init {
         settingAdvertiseTime()
         searchMypageItems()
     }
+
     // 광고 남은 시간 설정
-    fun settingAdvertiseTime(){
+    fun settingAdvertiseTime() {
         val adverseTiseTime = prefs.getString("advertiseTime", "")
-        if (adverseTiseTime.isNotEmpty()){
+        if (adverseTiseTime.isNotEmpty()) {
             val remainingMinutes = getAdvertiseCheck(adverseTiseTime)
 
             if (remainingMinutes <= 0) {
@@ -128,19 +130,19 @@ class MyPageMainViewModel @Inject constructor(
                 _advertiseTime.postValue(String.format("%02d:%02d", hours, minutes))
             }
 
-        }
-        else {
+        } else {
             _advertiseTime.postValue("6:00")
         }
     }
+
     // 광고 시청 시간 설정
-    fun updateAdvertiseTime(){
+    fun updateAdvertiseTime() {
         prefs.setString("advertiseTime", getCurrentDateTimeString())
         settingAdvertiseTime()
     }
 
     // 구독 여부 가져오기
-    fun getSubscribeStatus(){
+    fun getSubscribeStatus() {
         viewModelScope.launch(Dispatchers.IO) {
             subscribeCheckUseCase().onSuccess {
                 subscribeCheck.postValue(it.isValid)
@@ -151,12 +153,12 @@ class MyPageMainViewModel @Inject constructor(
     }
 
     // 마이페이지 정보 읽어오기
-    fun searchMypageItems()
-    {
+    fun searchMypageItems() {
         viewModelScope.launch(Dispatchers.IO) {
             mypageSearchUseCase().onSuccess {
 
-                var sortedBooks= it.myBooks.sortedByDescending { it.bookKey == prefs.getString("bookKey","") }
+                var sortedBooks =
+                    it.myBooks.sortedByDescending { it.bookKey == prefs.getString("bookKey", "") }
 
                 val updatedResult = it.copy(myBooks = sortedBooks.map { myBook ->
                     if (myBook.bookKey == prefs.getString("bookKey", "")) {
@@ -177,11 +179,12 @@ class MyPageMainViewModel @Inject constructor(
             }
         }
     }
+
     // 화폐 설정 조회
-    fun searchCurrency(){
+    fun searchCurrency() {
         viewModelScope.launch {
             booksCurrencySearchUseCase(prefs.getString("bookKey", "")).onSuccess {
-                if(it.myBookCurrency != "") {
+                if (it.myBookCurrency != "") {
                     baseEvent(Event.HideLoading)
                     // 화폐 단위 저장
                     prefs.setString("symbol", getCurrencySymbolByCode(it.myBookCurrency))
@@ -197,75 +200,72 @@ class MyPageMainViewModel @Inject constructor(
             }
         }
     }
+
     // 알람 페이지 이동
-    fun onClickAlarmPage()
-    {
+    fun onClickAlarmPage() {
         viewModelScope.launch {
             _alarmPage.emit(true)
         }
     }
 
     // 설정 페이지 이동
-    fun onClickSettingPage()
-    {
+    fun onClickSettingPage() {
         viewModelScope.launch {
             _settingPage.emit(true)
         }
     }
 
     // 회원 정보 페이지 이동
-    fun onClickInformPage()
-    {
+    fun onClickInformPage() {
         viewModelScope.launch {
             _informPage.emit(true)
         }
     }
 
     // 메일 문의 하기 페이지 이동
-    fun onClickAnswerPage()
-    {
+    fun onClickAnswerPage() {
         viewModelScope.launch {
             _mailPage.emit(true)
         }
     }
 
     // 공지 사항 페이지 이동
-    fun onClickNoticePage()
-    {
+    fun onClickNoticePage() {
         viewModelScope.launch {
             _noticePage.emit(true)
         }
     }
 
     // 리뷰 작성하기 페이지 이동
-    fun onClickReviewPage()
-    {
+    fun onClickReviewPage() {
         viewModelScope.launch {
             _reviewPage.emit(true)
         }
     }
 
     // 개인 정보 처리방침 페이지 이동
-    fun onClickPrivateRolePage()
-    {
+    fun onClickPrivateRolePage() {
         viewModelScope.launch {
             _privatePage.emit(true)
         }
     }
 
     // 이용 약관 페이지 이동
-    fun onClickUsageRightPage()
-    {
+    fun onClickUsageRightPage() {
         viewModelScope.launch {
             _usageRightPage.emit(true)
         }
     }
 
     // 최근 저장 가계부 저장 (가계부 전환)
-    fun settingBookKey(bookKey: String){
+    fun settingBookKey(bookKey: String) {
         viewModelScope.launch(Dispatchers.Main) {
             withContext(Dispatchers.IO) {
-                if (mypageInfo.value!!.myBooks.size != 1 && bookKey != prefs.getString("bookKey","")) {// 가계부가 2개 이상일 때만 로딩 싸이클
+                if (mypageInfo.value!!.myBooks.size != 1 && bookKey != prefs.getString(
+                        "bookKey",
+                        ""
+                    )
+                ) {// 가계부가 2개 이상일 때만 로딩 싸이클
                     recentBookKeySaveUseCase(bookKey).onSuccess {
                         prefs.setString("bookKey", bookKey)
 
@@ -300,16 +300,14 @@ class MyPageMainViewModel @Inject constructor(
     }
 
     // 가계부 추가
-    fun onClickBookAdd()
-    {
+    fun onClickBookAdd() {
         viewModelScope.launch {
             _bookAddBottomSheet.emit(true)
         }
     }
 
     // 광고 시청
-    fun onClickAdMob()
-    {
+    fun onClickAdMob() {
         viewModelScope.launch {
             _adMobPage.emit(true)
         }
@@ -321,15 +319,14 @@ class MyPageMainViewModel @Inject constructor(
     }
 
     // 카페 제안하기
-    fun onClickSuppose(){
+    fun onClickSuppose() {
         viewModelScope.launch {
             _supposePage.emit(true)
         }
     }
 
-    // 구독 버튼 클릭
-    fun onClickSubscribe(){
-        // 구독 여부 보내야 함(추후)
+    // 구독 버튼 클릭 (구독하기 or 구독 정보 보기)
+    fun onClickSubscribe() {
         viewModelScope.launch {
             _subscribePage.emit(subscribeCheck.value!!)
         }
