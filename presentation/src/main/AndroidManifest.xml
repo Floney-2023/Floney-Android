@@ -106,6 +106,9 @@
             android:name=".view.history.memo.InsertMemoActivity"
             android:exported="false" />
         <activity
+            android:name=".view.history.picture.InsertPictureActivity"
+            android:exported="false" />
+        <activity
             android:name=".view.book.entrance.BookEntranceActivity"
             android:exported="true">
             <intent-filter android:autoVerify="true">
@@ -158,6 +161,7 @@
         <meta-data
             android:name="af_dev_key"
             android:value="${appsflyer_dev_key}" />
+        <service android:name="com.amazonaws.mobileconnectors.s3.transferutility.TransferService" android:enabled="true"/>
     </application>
 
 </manifest>

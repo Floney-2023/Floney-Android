@@ -83,6 +83,10 @@ class HistoryViewModel @Inject constructor(
     private var _onClickMemo = MutableEventFlow<Boolean>()
     val onClickMemo: EventFlow<Boolean> get() = _onClickMemo
 
+    // 사진 클릭
+    private var _onClickPicture = MutableEventFlow<Boolean>()
+    val onClickPicture: EventFlow<Boolean> get() = _onClickPicture
+
     // 즐겨찾기 클릭
     private var _onClickFavorite = MutableEventFlow<Boolean>()
     val onClickFavorite: EventFlow<Boolean> get() = _onClickFavorite
@@ -452,6 +456,13 @@ class HistoryViewModel @Inject constructor(
     fun onClickMemo() {
         viewModelScope.launch {
             _onClickMemo.emit(true)
+        }
+    }
+
+    // 사진 클릭
+    fun onClickPicture() {
+        viewModelScope.launch {
+            _onClickPicture.emit(true)
         }
     }
 

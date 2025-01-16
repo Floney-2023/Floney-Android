@@ -23,6 +23,7 @@ import com.aos.floney.view.book.setting.favorite.BookFavoriteActivity
 import com.aos.floney.view.common.BaseAlertDialog
 import com.aos.floney.view.common.BaseChoiceAlertDialog
 import com.aos.floney.view.history.memo.InsertMemoActivity
+import com.aos.floney.view.history.picture.InsertPictureActivity
 import com.aos.floney.view.home.HomeActivity
 import com.aos.model.book.UiBookCategory
 import com.aos.model.home.DayMoneyFavoriteItem
@@ -127,6 +128,12 @@ class HistoryActivity :
         repeatOnStarted {
             viewModel.onClickMemo.collect {
                 val intent = Intent(this@HistoryActivity, InsertMemoActivity::class.java)
+                getResult.launch(intent)
+            }
+        }
+        repeatOnStarted {
+            viewModel.onClickPicture.collect {
+                val intent = Intent(this@HistoryActivity, InsertPictureActivity::class.java)
                 getResult.launch(intent)
             }
         }

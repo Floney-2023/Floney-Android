@@ -82,6 +82,7 @@ class BookSettingProfileChangeFragment :
             }
         })
     }
+
     private fun setUpViewModelObserver() {
         repeatOnStarted {
             viewModel.back.collect() {

@@ -199,7 +199,6 @@ class BookSettingProfileChangeViewModel @Inject constructor(
 
     // 변경하기 버튼 클릭
     fun onClickProfileChange() {
-        Timber.e("asdassdad")
         viewModelScope.launch {
             _onClickChange.emit(true)
         }

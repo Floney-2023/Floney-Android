@@ -6,10 +6,10 @@ import android.os.Bundle
 import androidx.databinding.library.baseAdapters.BR
 import com.aos.floney.R
 import com.aos.floney.base.BaseActivity
-import com.aos.floney.databinding.FragmentInsertMemoBinding
+import com.aos.floney.databinding.ActivityInsertMemoBinding
 import com.aos.floney.ext.repeatOnStarted
 
-class InsertMemoActivity : BaseActivity<FragmentInsertMemoBinding, InsertMemoViewModel>(R.layout.activity_insert_memo) {
+class InsertMemoActivity : BaseActivity<ActivityInsertMemoBinding, InsertMemoViewModel>(R.layout.activity_insert_memo) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
