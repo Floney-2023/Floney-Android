@@ -8,7 +8,6 @@ import android.os.Bundle
 import androidx.activity.result.ActivityResultLauncher
 import androidx.annotation.RequiresApi
 import androidx.credentials.CustomCredential
-import androidx.credentials.GetCredentialResponse
 import androidx.lifecycle.lifecycleScope
 import com.aos.data.util.SharedPreferenceUtil
 import com.aos.floney.BuildConfig
@@ -314,7 +313,7 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginViewModel>(R.layou
         }
     }
 
-    private fun handleSignIn(result: GetCredentialResponse) {
+    private fun handleSignIn(result: androidx.credentials.GetCredentialResponse) {
         val auth = Firebase.auth
 
         when (val credential = result.credential) {

@@ -168,7 +168,8 @@ class SplashActivity :
 
         Timber.e("minSupportVersion : ${minSupportedVersion} currentVersion : ${currentVersion}")
         if (isUpdateRequired(minSupportedVersion, currentVersion)) {
-            showUpdateDialog() // 강제 업데이트 팝업
+//            showUpdateDialog() // 강제 업데이트 팝업
+            navigateToScreen()
         } else {
             navigateToScreen() // 업데이트가 필요하지 않으면 다음 화면으로 이동
         }

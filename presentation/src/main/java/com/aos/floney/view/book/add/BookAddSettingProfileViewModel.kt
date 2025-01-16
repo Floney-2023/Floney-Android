@@ -90,6 +90,8 @@ class BookAddSettingProfileViewModel @Inject constructor(
             // 가계부 이름, 이미지 전송 요청
             viewModelScope.launch(Dispatchers.IO) {
                 baseEvent(Event.ShowLoading)
+                Timber.e("bookName.value!! ${bookName.value!!}")
+                Timber.e("profileImg.value!! ${bookUrl.value!!}")
                 booksCreateUseCase(bookName.value!!,"").onSuccess {
                     // 전송 성공
                     prefs.setString("bookKey", it.bookKey)

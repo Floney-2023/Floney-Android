@@ -34,7 +34,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             buildConfigField "String", "BASE_URL", properties['base.dev.url']
         }
-
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17

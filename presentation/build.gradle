@@ -27,6 +27,7 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField "String", "KAKAO_NATIVE_APP_KEY", properties['kakao_native_app_key']
+        buildConfigField "String", "GOOGLE_PRODUCT_SUBSCRIBE_ID", properties['google_product_subscribe_id']
         buildConfigField "String", "MINIMUM_VERSION_KEY", properties['mininum.version.key']
     }
 
@@ -37,6 +38,7 @@ android {
             buildConfigField "String", "BASE_URL", properties['base.server.url']
             buildConfigField "String", "GOOGLE_APP_BANNER_KEY", "${properties['google_app_banner_release_key']}"
             buildConfigField "String", "GOOGLE_APP_REWARD_KEY", "${properties['google_app_reward_release_key']}"
+            signingConfig signingConfigs.debug
         }
         debug {
             buildConfigField "String", "BASE_URL", properties['base.dev.url']
@@ -108,6 +110,9 @@ dependencies {
 
     implementation 'com.github.prolificinteractive:material-calendarview:2.0.1'
     implementation 'com.jakewharton.threetenabp:threetenabp:1.1.1'
+
+    // google billing
+    implementation 'com.android.billingclient:billing:7.1.1'
 
     // flexboxLayout
     implementation 'com.google.android.flexbox:flexbox:3.0.0'

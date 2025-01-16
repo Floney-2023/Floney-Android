@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
     <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" />
+    <uses-permission android:name="com.android.vending.BILLING" />
 
     <application
         android:name=".di.AppApplication"
@@ -91,6 +92,18 @@
             android:exported="false" />
         <activity
             android:name=".view.book.setting.favorite.BookFavoriteActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.subscribe.SubscribeInformActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.subscribe.SubscribePlanActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.subscribe.UnsubscribeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.history.memo.InsertMemoActivity"
             android:exported="false" />
         <activity
             android:name=".view.book.entrance.BookEntranceActivity"

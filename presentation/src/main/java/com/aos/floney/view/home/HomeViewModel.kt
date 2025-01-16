@@ -94,6 +94,8 @@ class HomeViewModel @Inject constructor(
     private var _accessCheck = MutableEventFlow<Boolean>()
     val accessCheck: EventFlow<Boolean> get() = _accessCheck
 
+    // 구독 만료 내역
+    var subscribeExpired = MutableLiveData<Boolean>(false)
 
     init {
         getFormatDateMonth()

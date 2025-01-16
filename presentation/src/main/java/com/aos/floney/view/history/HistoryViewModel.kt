@@ -79,6 +79,10 @@ class HistoryViewModel @Inject constructor(
     private var _onClickDelete = MutableEventFlow<OnClickedDelete>()
     val onClickDelete: EventFlow<OnClickedDelete> get() = _onClickDelete
 
+    // 메모 클릭
+    private var _onClickMemo = MutableEventFlow<Boolean>()
+    val onClickMemo: EventFlow<Boolean> get() = _onClickMemo
+
     // 즐겨찾기 클릭
     private var _onClickFavorite = MutableEventFlow<Boolean>()
     val onClickFavorite: EventFlow<Boolean> get() = _onClickFavorite
@@ -141,6 +145,11 @@ class HistoryViewModel @Inject constructor(
     private var modifyId = 0
     private var modifyItem: DayMoneyModifyItem? = null
 
+    // 구독 만료 내역
+    var subscribeExpired = MutableLiveData<Boolean>(false)
+
+    var memo = MutableLiveData<String>()
+
     init {
         val array = arrayListOf<UiBookCategory>(
             UiBookCategory(0, true, "없음", false),
@@ -151,6 +160,11 @@ class HistoryViewModel @Inject constructor(
             UiBookCategory(5, false, "주말", false)
         )
         _repeatItem.postValue(array)
+    }
+
+    fun setMemoValue(memo: String) {
+        Timber.e("[Debug] memo: $memo")
+        this.memo.value = memo
     }
 
     // 내역 추가 시에는 날짜만 세팅함
@@ -276,24 +290,27 @@ class HistoryViewModel @Inject constructor(
 
     // 내역 수정
     private fun postModifyHistory() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val tempMoney = cost.value!!.replace(",", "")
-            postBooksLinesChangeUseCase(
-                lineId = modifyId,
-                bookKey = prefs.getString("bookKey", ""),
-                money = tempMoney.replace(CurrencyUtil.currency, "")
-                    .toDouble(),
-                flow = flow.value!!,
-                asset = asset.value!!,
-                line = line.value!!,
-                lineDate = date.value!!.replace(".", "-"),
-                description = content.value!!,
-                except = deleteChecked.value!!,
-                nickname = nickname.value!!,
-            ).onSuccess {
-                _postModifyBooksLines.emit(true)
-            }.onFailure {
-                baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@HistoryViewModel)))
+        subscribeExpired.value = prefs.getBoolean("subscribe_expired", false)
+        if(!subscribeExpired.value!!){
+            viewModelScope.launch(Dispatchers.IO) {
+                val tempMoney = cost.value!!.replace(",", "")
+                postBooksLinesChangeUseCase(
+                    lineId = modifyId,
+                    bookKey = prefs.getString("bookKey", ""),
+                    money = tempMoney.replace(CurrencyUtil.currency, "")
+                        .toDouble(),
+                    flow = flow.value!!,
+                    asset = asset.value!!,
+                    line = line.value!!,
+                    lineDate = date.value!!.replace(".", "-"),
+                    description = content.value!!,
+                    except = deleteChecked.value!!,
+                    nickname = nickname.value!!,
+                ).onSuccess {
+                    _postModifyBooksLines.emit(true)
+                }.onFailure {
+                    baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@HistoryViewModel)))
+                }
             }
         }
     }
@@ -428,6 +445,13 @@ class HistoryViewModel @Inject constructor(
         if (mode.value == "add") {
             line.postValue("분류를 선택하세요")
             flow.postValue(type)
+        }
+    }
+
+    // 메모 클릭
+    fun onClickMemo() {
+        viewModelScope.launch {
+            _onClickMemo.emit(true)
         }
     }
 

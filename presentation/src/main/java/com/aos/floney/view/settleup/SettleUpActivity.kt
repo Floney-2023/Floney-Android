@@ -5,6 +5,8 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.aos.data.util.CurrencyUtil
@@ -13,6 +15,7 @@ import com.aos.floney.BuildConfig.appsflyer_dev_key
 import com.aos.floney.R
 import com.aos.floney.base.BaseActivity
 import com.aos.floney.databinding.ActivitySettleUpBinding
+import com.aos.floney.databinding.ItemPopupSubscribeUseBinding
 import com.aos.floney.ext.repeatOnStarted
 import com.aos.floney.view.analyze.AnalyzeActivity
 import com.aos.floney.view.history.HistoryActivity
@@ -43,6 +46,7 @@ class SettleUpActivity : BaseActivity<ActivitySettleUpBinding, SettleUpViewModel
         setUpBottomNavigation()
         setupJetpackNavigation()
         setUpViewModelObserver()
+        setSubscribePopup()
     }
 
     private fun setUpViewModelObserver() {
@@ -230,5 +234,12 @@ class SettleUpActivity : BaseActivity<ActivitySettleUpBinding, SettleUpViewModel
             Log.d("DeepLink", "SettleUp not found")
         }
     }
-
+    private fun setSubscribePopup() {
+        if(true){
+            binding.includePopupSubscribe.ivExit.setOnClickListener {
+                binding.includePopupSubscribe.root.visibility = View.GONE
+                binding.dimBackground.visibility = View.GONE
+            }
+        }
+    }
 }

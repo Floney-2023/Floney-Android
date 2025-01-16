@@ -34,28 +34,44 @@ class MyPageInformWithdrawReasonCheckFragment :
                     val reasonType = it
                     val reason = viewModel.directInputText.value ?: ""
 
-                    if (CommonUtil.provider == "EMAIL"){ // 이메일 유저 탈퇴 시, 비밀번호 입력
-                        val withdrawPopupAction =
-                            MyPageInformWithdrawReasonCheckFragmentDirections.actionMyPageInformWithdrawReasonCheckFragmentToMyPageInformWithdrawInputPasswordFragment(
-                                reasonType,
-                                reason
-                            )
-                        findNavController().navigate(withdrawPopupAction)
-                    } else { // 간편 로그인 유저일 경우, 비밀번호 입력 없이 바로 탈퇴 팝업
-                        val exitDialogFragment = WarningPopupDialog(
-                            getString(R.string.mypage_main_inform_exit_popup_title),
-                            getString(R.string.mypage_main_inform_exit_popup_info),
-                            getString(R.string.mypage_main_inform_exit_popup_btn_exit),
-                            getString(R.string.mypage_main_inform_exit_popup_btn_cancel),
+                    if (true)
+                    {
+                        val subScribeDialogFragment = WarningPopupDialog(
+                            getString(R.string.unsubscribe_exit_popup_title),
+                            getString(R.string.unsubscribe_exit_popup_info),
+                            "",
+                            getString(R.string.already_pick_button),
                             false
                         ) { checked ->
                             if (checked) {
-                                viewModel.requestWithdraw(reasonType, reason)
+                                
                             }
                         }
-                        exitDialogFragment.show(parentFragmentManager, "WithdrawDialog")
+                        subScribeDialogFragment.show(parentFragmentManager, "WithdrawDialog")
                     }
-
+                    else {
+                        if (CommonUtil.provider == "EMAIL"){ // 이메일 유저 탈퇴 시, 비밀번호 입력
+                            val withdrawPopupAction =
+                                MyPageInformWithdrawReasonCheckFragmentDirections.actionMyPageInformWithdrawReasonCheckFragmentToMyPageInformWithdrawInputPasswordFragment(
+                                    reasonType,
+                                    reason
+                                )
+                            findNavController().navigate(withdrawPopupAction)
+                        } else { // 간편 로그인 유저일 경우, 비밀번호 입력 없이 바로 탈퇴 팝업
+                            val exitDialogFragment = WarningPopupDialog(
+                                getString(R.string.mypage_main_inform_exit_popup_title),
+                                getString(R.string.mypage_main_inform_exit_popup_info),
+                                getString(R.string.mypage_main_inform_exit_popup_btn_exit),
+                                getString(R.string.mypage_main_inform_exit_popup_btn_cancel),
+                                false
+                            ) { checked ->
+                                if (checked) {
+                                    viewModel.requestWithdraw(reasonType, reason)
+                                }
+                            }
+                            exitDialogFragment.show(parentFragmentManager, "WithdrawDialog")
+                        }
+                    }
                 }
             }
         }

@@ -190,6 +190,18 @@ class MyPageMainFragment : BaseFragment<FragmentMyPageMainBinding, MyPageMainVie
                 }
             }
         }
+        repeatOnStarted {
+            viewModel.subscribePage.collect {
+                if(it) {
+                    val activity = requireActivity() as MyPageActivity
+                    activity.startSubscribeInformActivity()
+                } else{
+
+                    val activity = requireActivity() as MyPageActivity
+                    activity.startSubscribePlanActivity()
+                }
+            }
+        }
     }
     private fun settingAdvertiseTime(){
         viewModel.updateAdvertiseTime()
