@@ -62,6 +62,7 @@ class MyPageMainFragment : BaseFragment<FragmentMyPageMainBinding, MyPageMainVie
         super.onResume()
 
         viewModel.searchMypageItems()
+        viewModel.getSubscribeStatus()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -192,11 +193,10 @@ class MyPageMainFragment : BaseFragment<FragmentMyPageMainBinding, MyPageMainVie
         }
         repeatOnStarted {
             viewModel.subscribePage.collect {
-                if(it) {
+                if(it) { // 구독 중인 경우, 구독 정보 보기로 이동
                     val activity = requireActivity() as MyPageActivity
                     activity.startSubscribeInformActivity()
-                } else{
-
+                } else{ // 구독 중이 아닐 경우, 구독하기 화면으로 이동
                     val activity = requireActivity() as MyPageActivity
                     activity.startSubscribePlanActivity()
                 }
