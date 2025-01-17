@@ -45,8 +45,12 @@ class SubscribeInformActivity : BaseActivity<ActivitySubscribeInformBinding, Sub
         setUpUi()
         setUpViewModelObserver()
     }
-
+    override fun onResume() {
+        super.onResume()
+        viewModel.getSubscribeData()
+    }
     private fun setUpUi() {
+        binding.setVariable(BR.vm, viewModel)
         binding.setVariable(BR.eventHolder, this)
     }
     private fun setUpViewModelObserver() {

@@ -1,6 +1,7 @@
 package com.aos.repository
 
 import com.aos.model.subscribe.GetPresignedUrlModel
+import com.aos.model.subscribe.UiSubscribeAndroidInfoModel
 import com.aos.model.subscribe.GetSubscribeAndroidModel
 
 interface SubscribeRepository {
@@ -10,6 +11,9 @@ interface SubscribeRepository {
 
     // 구독 여부 가져오기
     suspend fun getSubscribeCheck(): Result<GetSubscribeAndroidModel>
+
+    // 구독 여부 가져오기
+    suspend fun getSubscribeAndroidInfo(): Result<UiSubscribeAndroidInfoModel>
 
     // PresignedUrl 가져오기
     suspend fun getPresignedUrl(bookKey: String): Result<GetPresignedUrlModel>

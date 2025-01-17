@@ -11,6 +11,7 @@ import com.aos.data.entity.response.analyze.PostAnalyzeCategoryInComeEntity
 import com.aos.data.entity.response.analyze.PostAnalyzeCategoryOutComeEntity
 import com.aos.data.entity.response.subscribe.GetPresignedUrlEntity
 import com.aos.data.entity.response.subscribe.GetSubscribeAndroidEntity
+import com.aos.data.entity.response.subscribe.GetSubscribeAndroidInfoEntity
 import com.aos.util.NetworkState
 import javax.inject.Inject
 
@@ -23,6 +24,11 @@ class SubscribeRemoteDataSourceImpl @Inject constructor(private val subscribeSer
     override suspend fun getSubscribeCheck(): NetworkState<GetSubscribeAndroidEntity> {
         return subscribeService.getSubscribeCheck()
     }
+
+    override suspend fun getSubscribeAndroidInfo(): NetworkState<GetSubscribeAndroidInfoEntity> {
+        return subscribeService.getSubscribeAndroidInfo()
+    }
+
 
     override suspend fun getPresignedUrl(bookKey: String): NetworkState<GetPresignedUrlEntity> {
         return subscribeService.getPresignedUrl(bookKey)

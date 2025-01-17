@@ -6,6 +6,7 @@ import com.aos.data.entity.response.alarm.GetAlarmEntity
 import com.aos.data.entity.response.book.GetBookRepeatEntity
 import com.aos.data.entity.response.subscribe.GetPresignedUrlEntity
 import com.aos.data.entity.response.subscribe.GetSubscribeAndroidEntity
+import com.aos.data.entity.response.subscribe.GetSubscribeAndroidInfoEntity
 import com.aos.util.NetworkState
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -30,4 +31,10 @@ interface SubscribeService {
     suspend fun getPresignedUrl(
         @Query("bookKey") bookKey: String
     ): NetworkState<GetPresignedUrlEntity>
+
+
+    @GET("subscribe/android/info")
+    @Headers("Auth: true")
+    suspend fun getSubscribeAndroidInfo(
+    ): NetworkState<GetSubscribeAndroidInfoEntity>
 }
