@@ -117,8 +117,8 @@ class MyPageAlarmActivity : BaseActivity<ActivityMyPageAlarmBinding, MyPageAlarm
                 layoutParams.width = 0
                 (layoutParams as LinearLayout.LayoutParams).weight = 1f
             } else if (tabCount >= 3) {
-                // 3개 이상일 때는 각 탭당 100dp로 고정
-                layoutParams.width = dpToPx(100)  // 100dp로 고정
+                // 3개 이상일 때는 각 탭당 129dp로 고정
+                layoutParams.width = dpToPx(129)  // 129dp로 고정
             }
             tab.layoutParams = layoutParams
         }
