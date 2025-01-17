@@ -12,6 +12,7 @@ import com.aos.model.analyze.UiAnalyzeAssetModel
 import com.aos.model.analyze.UiAnalyzePlanModel
 import com.bumptech.glide.Glide
 import timber.log.Timber
+import java.io.File
 
 @BindingAdapter("setImageToUrl")
 fun ImageView.setImageToUrl(url: String?) {
@@ -122,7 +123,6 @@ fun ImageView.setAlarmImage(url: String?) {
 
 @BindingAdapter("setAnalyzeImage")
 fun ImageView.setAnalyzeImage(item: UiAnalyzePlanModel?) {
-
     if(item != null) {
         if(item.initBudget.substring(0, item.initBudget.length - 1) == "0") {
             Glide.with(this)
@@ -186,4 +186,13 @@ fun ImageView.setAnalyzeAssetImage(item: UiAnalyzeAssetModel?) {
 @BindingAdapter("bind:setImageColor")
 fun ImageView.setImageColor(color: Int) {
     this.setBackgroundColor(color)
+}
+
+@BindingAdapter(value = ["bind:setPictureImage", "imageIndex"], requireAll = true)
+fun ImageView.setPictureImage(files: List<File>, num: Int) {
+    Glide.with(this)
+        .load(files[num])
+        .fitCenter()
+        .centerCrop()
+        .into(this)
 }

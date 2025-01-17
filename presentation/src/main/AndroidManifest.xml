@@ -109,6 +109,9 @@
             android:name=".view.history.picture.InsertPictureActivity"
             android:exported="false" />
         <activity
+            android:name=".view.history.picture.InsertPictureDetailActivity"
+            android:exported="false" />
+        <activity
             android:name=".view.book.entrance.BookEntranceActivity"
             android:exported="true">
             <intent-filter android:autoVerify="true">

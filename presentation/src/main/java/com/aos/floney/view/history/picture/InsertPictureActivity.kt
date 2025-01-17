@@ -6,6 +6,8 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.widget.ImageView
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -15,38 +17,42 @@ import androidx.lifecycle.lifecycleScope
 import com.aos.floney.R
 import com.aos.floney.base.BaseActivity
 import com.aos.floney.base.BaseViewModel
-import com.aos.floney.databinding.ActivityInsertMemoBinding
 import com.aos.floney.databinding.ActivityInsertPictureBinding
 import com.aos.floney.ext.repeatOnStarted
 import com.aos.floney.view.common.ChoicePictureDialog
+import com.aos.floney.view.common.EditNotSaveDialog
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.io.File
 
 @AndroidEntryPoint
-class InsertPictureActivity: BaseActivity<ActivityInsertPictureBinding, InsertPictureViewModel>(R.layout.activity_insert_picture) {
+class InsertPictureActivity :
+    BaseActivity<ActivityInsertPictureBinding, InsertPictureViewModel>(R.layout.activity_insert_picture) {
 
     // 사진 찍기 결과
     private val takePhoto = registerForActivityResult(ActivityResultContracts.TakePicture()) {
-        if(it) {
+        if (it) {
             viewModel.addPictureNum()
             viewModel.createBitmapFile(viewModel.getTakeCaptureUri())
 
             val pictureNum = viewModel.getPictureNum()
-            val imageView = when(pictureNum) {
-                    1 -> binding.ivPicture2
-                    2 -> binding.ivPicture3
-                    3 -> binding.ivPicture4
-                    4 -> {
-                        binding.ivAddPicture.isVisible = false
-                        binding.ivPicture1
-                    }
-                    else -> binding.ivPicture1
+            val imageView = when (pictureNum) {
+                1 -> binding.ivPicture2
+                2 -> binding.ivPicture3
+                3 -> binding.ivPicture4
+                4 -> {
+                    binding.ivAddPicture.isVisible = false
+                    binding.ivPicture1
                 }
 
+                else -> binding.ivPicture1
+            }
+
             Glide.with(this)
-                .load(viewModel.getImageBitmap(pictureNum))
+                .load(viewModel.getImageFile(pictureNum))
                 .fitCenter()
                 .centerCrop()
                 .into(imageView)
@@ -63,7 +69,7 @@ class InsertPictureActivity: BaseActivity<ActivityInsertPictureBinding, InsertPi
 
                 val pictureNum = viewModel.getPictureNum()
 
-                val imageView = when(pictureNum) {
+                val imageView = when (pictureNum) {
                     1 -> binding.ivPicture2
                     2 -> binding.ivPicture3
                     3 -> binding.ivPicture4
@@ -71,23 +77,36 @@ class InsertPictureActivity: BaseActivity<ActivityInsertPictureBinding, InsertPi
                         binding.ivAddPicture.isVisible = false
                         binding.ivPicture1
                     }
+
                     else -> binding.ivPicture1
                 }
 
                 Glide.with(this@InsertPictureActivity)
-                    .load(viewModel.getImageBitmap(pictureNum))
+                    .load(viewModel.getImageFile(pictureNum))
                     .fitCenter()
                     .centerCrop()
                     .into(imageView)
             }
         }
     }
-    
+
+    private val getResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val url = result.data?.getStringExtra("deleteFilePath") ?: ""
+                Timber.e("url $url")
+
+                // 삭제 요청 받음
+                viewModel.deletePictureFile(url)
+            }
+        }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setUpUi()
         setupViewModelObserver()
+        setUpBackPressHandler()
     }
 
     private fun setUpUi() {
@@ -95,6 +114,15 @@ class InsertPictureActivity: BaseActivity<ActivityInsertPictureBinding, InsertPi
     }
 
     private fun setupViewModelObserver() {
+        repeatOnStarted {
+            // 사진 추가 버튼 클릭
+            viewModel.onClickedBack.collect {
+                // 다이얼로그 표시
+                EditNotSaveDialog(this@InsertPictureActivity) {
+                    finish()
+                }.show()
+            }
+        }
         repeatOnStarted {
             // 사진 추가 버튼 클릭
             viewModel.onClickedAddPicture.collect {
@@ -109,23 +137,90 @@ class InsertPictureActivity: BaseActivity<ActivityInsertPictureBinding, InsertPi
                 }).show()
             }
         }
+        repeatOnStarted {
+            // 이미지 업로드 성공
+            viewModel.onSuccessImageUpload.collect { url ->
+                val intent = Intent()
+                intent.putStringArrayListExtra("url", ArrayList(viewModel.getPictureList()))
+                setResult(Activity.RESULT_OK, intent)
+                finish()
+            }
+        }
+        repeatOnStarted {
+            // 사진 상세 버튼 클릭
+            viewModel.onClickPictureDetail.collect { url ->
+                val intent =
+                    Intent(this@InsertPictureActivity, InsertPictureDetailActivity::class.java)
+                intent.putExtra("url", url)
+                getResult.launch(intent)
+            }
+        }
+        repeatOnStarted {
+            // 사진 삭제 후 정렬
+            viewModel.sortPictures.collect { files ->
+                viewModel.setPictureNum(files.size)
+                when (files.size) {
+                    0 -> {
+                        binding.ivAddPicture.isVisible = true
+                        resetPictureImage(binding.ivPicture1)
+                        resetPictureImage(binding.ivPicture2)
+                        resetPictureImage(binding.ivPicture3)
+                        resetPictureImage(binding.ivPicture4)
+                    }
+
+                    1 -> {
+                        setPictureImage(binding.ivPicture2, files[0])
+                        resetPictureImage(binding.ivPicture3)
+                        resetPictureImage(binding.ivPicture4)
+                    }
+
+                    2 -> {
+                        setPictureImage(binding.ivPicture2, files[0])
+                        setPictureImage(binding.ivPicture3, files[1])
+                        resetPictureImage(binding.ivPicture4)
+                    }
+
+                    3 -> {
+                        binding.ivAddPicture.isVisible = true
+                        resetPictureImage(binding.ivPicture1)
+                        setPictureImage(binding.ivPicture2, files[0])
+                        setPictureImage(binding.ivPicture3, files[1])
+                        setPictureImage(binding.ivPicture4, files[2])
+                    }
+                }
+            }
+        }
     }
 
-//    private fun setUpBackPressHandler() {
-//        this.onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-//            override fun handleOnBackPressed() {
-//                if (viewModel.getImageBitmap() != null) {
-//                    BaseAlertDialog(title = "잠깐", info = "수정한 내용이 저장되지 않았습니다.\n그대로 나가시겠습니까?", false) {
-//                        if(it) {
-//                            finish()
-//                        }
-//                    }.show(this@InsertPictureActivity, "baseAlertDialog")
-//                } else {
-//                    findNavController().popBackStack()
-//                }
-//            }
-//        })
-//    }
+    private fun resetPictureImage(imageView: ImageView) {
+        Glide.with(imageView.context).clear(imageView)
+        imageView.setBackgroundResource(R.drawable.input_picture_blank)
+    }
+
+    private fun setPictureImage(imageView: ImageView, file: File) {
+        Glide.with(this)
+            .load(file)
+            .fitCenter()
+            .centerCrop()
+            .diskCacheStrategy(DiskCacheStrategy.NONE)
+            .skipMemoryCache(true)
+            .into(imageView)
+    }
+
+    private fun setUpBackPressHandler() {
+        this.onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (viewModel.getImageFileList().isNotEmpty()) {
+                    // 다이얼로그 표시
+                    EditNotSaveDialog(this@InsertPictureActivity) {
+                        finish()
+                    }.show()
+                } else {
+                    finish()
+                }
+            }
+        })
+    }
 
     private fun selectGallery() {
         if (checkGalleryPermission()) {
@@ -177,7 +272,7 @@ class InsertPictureActivity: BaseActivity<ActivityInsertPictureBinding, InsertPi
             }
         }
     }
-    
+
     override fun onDestroy() {
         super.onDestroy()
     }

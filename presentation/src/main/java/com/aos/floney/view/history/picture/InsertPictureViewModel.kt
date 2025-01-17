@@ -2,38 +2,39 @@ package com.aos.floney.view.history.picture
 
 import android.content.ContentValues
 import android.content.Context
-import android.content.pm.ApplicationInfo
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.provider.MediaStore
 import androidx.lifecycle.viewModelScope
-import com.amazonaws.auth.BasicAWSCredentials
-import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility
-import com.amazonaws.regions.Region
-import com.amazonaws.regions.Regions
-import com.amazonaws.services.s3.AmazonS3Client
-import com.aos.data.mapper.transferOrder
+import com.aos.data.util.SharedPreferenceUtil
 import com.aos.floney.base.BaseViewModel
+import com.aos.floney.ext.parseErrorMsg
 import com.aos.floney.util.EventFlow
 import com.aos.floney.util.MutableEventFlow
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.ktx.storage
+import com.aos.usecase.subscribe.SubscribePresignedUrlUseCase
 import com.letspl.oceankeeper.util.ImgFileMaker
 import com.letspl.oceankeeper.util.RotateTransform
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.io.ByteArrayOutputStream
+import kotlinx.coroutines.withContext
+import timber.log.Timber
+import java.io.File
+import java.io.FileOutputStream
+import java.net.HttpURLConnection
+import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
 class InsertPictureViewModel @Inject constructor(
-         @ApplicationContext private val context: Context,
-    ): BaseViewModel() {
+    @ApplicationContext private val context: Context,
+    private val prefs: SharedPreferenceUtil,
+    private val subscribePresignedUrlUseCase: SubscribePresignedUrlUseCase
+) : BaseViewModel() {
 
     private var _onClickedSaveWriting = MutableEventFlow<Boolean>()
     val onClickedSaveWriting: EventFlow<Boolean> get() = _onClickedSaveWriting
@@ -44,31 +45,52 @@ class InsertPictureViewModel @Inject constructor(
     private var _onClickedAddPicture = MutableEventFlow<Boolean>()
     val onClickedAddPicture: EventFlow<Boolean> get() = _onClickedAddPicture
 
+    private var _onSuccessImageUpload = MutableEventFlow<List<String>>()
+    val onSuccessImageUpload: EventFlow<List<String>> get() = _onSuccessImageUpload
+
+    private var _onClickPictureDetail = MutableEventFlow<String>()
+    val onClickPictureDetail: EventFlow<String> get() = _onClickPictureDetail
+
+    private var _sortPictures = MutableEventFlow<List<File>>()
+    val sortPictures: EventFlow<List<File>> get() = _sortPictures
+
     // 사진 촬영 uri
     private var takeCaptureUri: Uri? = null
-    private var imageBitmapList: MutableList<Bitmap> = mutableListOf()
-    // 파이어베이스 받은 url 리스트
+    private var imageFileList: MutableList<File> = mutableListOf()
+
+    // S3 받은 url 리스트
     private val pictureUrlList = mutableListOf<String>()
+
+    // 이미지 업로드 정상 여부
+    private var isSuccessImageUpload: Boolean = true
+
     // 몇번째 이미지 인지
     private var pictureNum = 0
-    private val ai: ApplicationInfo = context.packageManager
-        .getApplicationInfo(context.packageName, PackageManager.GET_META_DATA)
-    private val ak: String = ai.metaData["accessKey"].toString()
-    private val sak: String = ai.metaData["secretAccessKey"].toString()
-    private val wsCredentials: BasicAWSCredentials = BasicAWSCredentials(ak, sak)
-    private val s3Client: AmazonS3Client =
-        AmazonS3Client(wsCredentials, Region.getRegion(Regions.AP_NORTHEAST_2))
-    private val transferUtility: TransferUtility = TransferUtility.builder()
-        .s3Client(s3Client)
-        .context(context)
-        .build()
-
 
     // 작성 저장하기 버튼 클릭
     fun onClickedSaveWriting() {
         baseEvent(Event.ShowLoading)
-        imageBitmapList.forEach {
-            uploadImageFile(it)
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                imageFileList.forEach {
+                    getPresignedUrl(it)
+                }
+            }
+
+            baseEvent(Event.HideLoading)
+            Timber.e("pictureUrlList $pictureUrlList")
+            if (isSuccessImageUpload) {
+                _onSuccessImageUpload.emit(pictureUrlList)
+            }
+        }
+    }
+
+    // 사진 상세보기 클릭
+    fun onClickedPictureDetail(num: Int) {
+        viewModelScope.launch {
+            getImageFile(num)?.let {
+                _onClickPictureDetail.emit(it.absolutePath)
+            }
         }
     }
 
@@ -126,34 +148,77 @@ class InsertPictureViewModel @Inject constructor(
         }
     }
 
-    // 파이어베이스 이미지 파일 업로드
-    fun uploadImageFile(bitmap: Bitmap?) {
-//        transferUtility.upload()
+    private suspend fun getPresignedUrl(file: File) {
+        subscribePresignedUrlUseCase(prefs.getString("bookKey", "")).onSuccess {
+            Timber.e("it $it")
+            val url = it.url
+            uploadFileToPresignedUrl(url, file, it.viewUrl)
+        }.onFailure {
+            baseEvent(Event.HideLoading)
+            baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@InsertPictureViewModel)))
+            isSuccessImageUpload = false
+        }
+    }
 
+    private suspend fun uploadFileToPresignedUrl(
+        presignedUrl: String,
+        file: File,
+        viewUrl: String
+    ) {
+        try {
+            withContext(Dispatchers.IO) {
+                val url = URL(presignedUrl)
+                val connection = url.openConnection() as HttpURLConnection
+                connection.requestMethod = "PUT"
+                connection.doOutput = true
+                connection.setRequestProperty("Content-Type", "image/jpeg") // 파일 형식에 맞게 변경
 
-//            val storage = Firebase.storage
-//            val storageRef = storage.reference
-//            val imageRef = storageRef.child("dev/users/${getUserEmail()}/profile.jpg")
-//            val baos = ByteArrayOutputStream()
-//            bitmap!!.compress(Bitmap.CompressFormat.JPEG, 100, baos)
-//            val data = baos.toByteArray()
-//
-//            val uploadTask = imageRef.putBytes(data)
-//            uploadTask.addOnFailureListener {
-//                baseEvent(Event.HideLoading)
-//                baseEvent(Event.ShowToast("프로필 변경이 실패하였습니다."))
-//            }.addOnSuccessListener {
-//                // 다운로드 링크 가져오기
-//                it.storage.downloadUrl.addOnSuccessListener {uri ->
-//                    // 성공
-//                    // 사진 url finish 하면서 전달
-//                    pictureUrlList.add(uri.toString())
-//                }.addOnFailureListener {
-//                    // 실패
-//                    baseEvent(Event.HideLoading)
-//                    baseEvent(Event.ShowToast("프로필 변경이 실패하였습니다."))
-//                }
-//        }
+                file.inputStream().use { input ->
+                    connection.outputStream.use { output ->
+                        input.copyTo(output)
+                    }
+                }
+
+                if (connection.responseCode == 200) {
+                    println("File uploaded successfully!")
+                    pictureUrlList.add(viewUrl)
+                } else {
+                    println("Upload failed with response code: ${connection.responseCode}")
+                    baseEvent(Event.ShowToast(connection.responseMessage.parseErrorMsg(this@InsertPictureViewModel)))
+                    isSuccessImageUpload = false
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            isSuccessImageUpload = false
+        }
+    }
+
+    private fun saveBitmapToTempFile(context: Context, bitmap: Bitmap): File? {
+        return try {
+            val tempFile = File.createTempFile("temp_image", ".jpg", context.cacheDir)
+            FileOutputStream(tempFile).use { outputStream ->
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+                outputStream.flush()
+            }
+            tempFile
+        } catch (e: Exception) {
+            e.printStackTrace()
+            isSuccessImageUpload = false
+            null
+        }
+    }
+
+    fun deletePictureFile(path: String) {
+        viewModelScope.launch {
+            withContext(Dispatchers.Default) {
+                val removeItem = imageFileList.filter { it.absolutePath == path }
+
+                imageFileList.removeAll(removeItem)
+            }
+
+            _sortPictures.emit(imageFileList)
+        }
     }
 
     // 임시 촬영 uri 저장
@@ -167,11 +232,15 @@ class InsertPictureViewModel @Inject constructor(
     }
 
     // 임시 촬영 파일 저장
-    fun setImageBitmap(bitmap: Bitmap?) {
-        bitmap?.let { imageBitmapList.add(cropBitmapToSquare(it)) }
+    private fun setImageBitmap(bitmap: Bitmap?) {
+        bitmap?.let {
+            saveBitmapToTempFile(context, cropBitmapToSquare(it))?.let { file ->
+                imageFileList.add(file)
+            }
+        }
     }
 
-    fun cropBitmapToSquare(bitmap: Bitmap): Bitmap {
+    private fun cropBitmapToSquare(bitmap: Bitmap): Bitmap {
         val size = Math.min(bitmap.width, bitmap.height)
         val x = (bitmap.width - size) / 2
         val y = (bitmap.height - size) / 2
@@ -182,9 +251,22 @@ class InsertPictureViewModel @Inject constructor(
         return pictureNum
     }
 
-    // 임시 촬영 파일 불러오기
-    fun getImageBitmap(num: Int): Bitmap {
-        return imageBitmapList[num - 1]
+    fun getPictureList(): List<String> {
+        return pictureUrlList
+    }
+
+    fun setPictureNum(num: Int) {
+        pictureNum = num
+    }
+
+    // 파일 불러오기
+    fun getImageFile(num: Int): File? {
+        return if (imageFileList.size >= num) imageFileList[num - 1] else null
+    }
+
+    // 파일 리스트 불러오기
+    fun getImageFileList(): List<File> {
+        return imageFileList
     }
 
 }

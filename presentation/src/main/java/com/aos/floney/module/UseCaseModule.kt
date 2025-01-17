@@ -27,6 +27,7 @@ import com.aos.usecase.password.SendTempPasswordUseCase
 import com.aos.usecase.signup.SignUpSocialUseCase
 import com.aos.usecase.signup.SignUpUseCase
 import com.aos.usecase.subscribe.SubscribeAndroidUseCase
+import com.aos.usecase.subscribe.SubscribePresignedUrlUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -106,5 +107,8 @@ object UseCaseModule {
     @Provides
     @Singleton
     fun provideSubscribeAndroidUseCase(subscribeRepository: SubscribeRepository) = SubscribeAndroidUseCase(subscribeRepository)
+    @Provides
+    @Singleton
+    fun provideSubscribePresignedUseCase(subscribeRepository: SubscribeRepository) = SubscribePresignedUrlUseCase(subscribeRepository)
 
 }

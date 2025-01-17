@@ -38,26 +38,27 @@
             app:layout_constraintTop_toTopOf="@id/iv_back" />
 
         <ImageView
+            android:id="@+id/iv_picture_1"
             android:layout_width="154dp"
             android:layout_height="154dp"
             android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
+            android:onClick="@{() -> vm.onClickedPictureDetail(4)}"
             android:src="@drawable/input_picture_blank"
-            android:id="@+id/iv_picture_1"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/iv_picture_2"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/iv_back" />
 
         <ImageView
+            android:id="@+id/iv_add_picture"
             android:layout_width="154dp"
             android:layout_height="154dp"
             android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
-            android:src="@drawable/input_picture"
             android:onClick="@{() -> vm.onClickedAddPicture()}"
-            android:id="@+id/iv_add_picture"
-            app:layout_constraintStart_toStartOf="parent"
+            android:src="@drawable/input_picture"
             app:layout_constraintEnd_toStartOf="@id/iv_picture_2"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/iv_back" />
 
         <ImageView
@@ -65,21 +66,23 @@
             android:layout_width="154dp"
             android:layout_height="154dp"
             android:layout_marginEnd="20dp"
+            android:onClick="@{() -> vm.onClickedPictureDetail(1)}"
             android:src="@drawable/input_picture_blank"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/iv_picture_1"
-            app:layout_constraintTop_toTopOf="@id/iv_picture_1"
-            app:layout_constraintTop_toBottomOf="@id/iv_back" />
+            app:layout_constraintTop_toBottomOf="@id/iv_back"
+            app:layout_constraintTop_toTopOf="@id/iv_picture_1" />
 
         <ImageView
+            android:id="@+id/iv_picture_3"
             android:layout_width="154dp"
             android:layout_height="154dp"
             android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
+            android:onClick="@{() -> vm.onClickedPictureDetail(2)}"
             android:src="@drawable/input_picture_blank"
-            android:id="@+id/iv_picture_3"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/iv_picture_4"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/iv_picture_1" />
 
         <ImageView
@@ -87,11 +90,12 @@
             android:layout_width="154dp"
             android:layout_height="154dp"
             android:layout_marginEnd="20dp"
+            android:onClick="@{() -> vm.onClickedPictureDetail(3)}"
             android:src="@drawable/input_picture_blank"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/iv_picture_3"
-            app:layout_constraintTop_toTopOf="@id/iv_picture_3"
-            app:layout_constraintTop_toBottomOf="@id/iv_back" />
+            app:layout_constraintTop_toBottomOf="@id/iv_back"
+            app:layout_constraintTop_toTopOf="@id/iv_picture_3" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:layout_width="match_parent"

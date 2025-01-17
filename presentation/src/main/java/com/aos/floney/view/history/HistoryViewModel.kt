@@ -152,7 +152,8 @@ class HistoryViewModel @Inject constructor(
     // 구독 만료 내역
     var subscribeExpired = MutableLiveData<Boolean>(false)
 
-    var memo = MutableLiveData<String>()
+    private var memo = ""
+    private var urlList = listOf<String>()
 
     init {
         val array = arrayListOf<UiBookCategory>(
@@ -166,9 +167,12 @@ class HistoryViewModel @Inject constructor(
         _repeatItem.postValue(array)
     }
 
-    fun setMemoValue(memo: String) {
-        Timber.e("[Debug] memo: $memo")
-        this.memo.value = memo
+    fun setMemo(memo: String) {
+        this.memo = memo
+    }
+
+    fun setUrlList(urlList: List<String>) {
+        this.urlList = urlList
     }
 
     // 내역 추가 시에는 날짜만 세팅함

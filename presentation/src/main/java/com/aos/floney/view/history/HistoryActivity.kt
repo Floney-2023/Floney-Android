@@ -50,7 +50,16 @@ class HistoryActivity :
             if (result.resultCode == Activity.RESULT_OK) {
                 // SecondActivity에서 전달한 데이터를 받음
                 val receivedValue = result.data?.getStringExtra("memo") ?: ""
-                viewModel.setMemoValue(receivedValue)
+                viewModel.setMemo(receivedValue)
+            }
+        }
+
+    private val imageResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                // SecondActivity에서 전달한 데이터를 받음
+                val urlList = result.data?.getStringArrayListExtra("url") ?: listOf()
+                viewModel.setUrlList(urlList.toList())
             }
         }
 
@@ -134,7 +143,7 @@ class HistoryActivity :
         repeatOnStarted {
             viewModel.onClickPicture.collect {
                 val intent = Intent(this@HistoryActivity, InsertPictureActivity::class.java)
-                getResult.launch(intent)
+                imageResult.launch(intent)
             }
         }
         repeatOnStarted {
