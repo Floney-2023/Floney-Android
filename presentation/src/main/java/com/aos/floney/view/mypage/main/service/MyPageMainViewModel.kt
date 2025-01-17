@@ -110,6 +110,9 @@ class MyPageMainViewModel @Inject constructor(
     // 구독 여부
     var subscribeCheck = MutableLiveData<Boolean>(false)
 
+    // 가계부 추가 가능 여부
+    var walletAddCheck = MutableLiveData<Boolean>(false)
+
     init {
         settingAdvertiseTime()
         searchMypageItems()
@@ -145,6 +148,10 @@ class MyPageMainViewModel @Inject constructor(
     fun getSubscribeStatus() {
         viewModelScope.launch(Dispatchers.IO) {
             subscribeCheckUseCase().onSuccess {
+                walletAddCheck.postValue(when {
+                    it.isValid -> mypageInfo.value!!.myBooks.size < 4
+                    else -> mypageInfo.value!!.myBooks.size < 2
+                })
                 subscribeCheck.postValue(it.isValid)
             }.onFailure {
                 baseEvent(Event.ShowToast(it.message.parseErrorMsg()))

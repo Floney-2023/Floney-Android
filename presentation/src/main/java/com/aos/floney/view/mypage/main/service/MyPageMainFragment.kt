@@ -62,7 +62,6 @@ class MyPageMainFragment : BaseFragment<FragmentMyPageMainBinding, MyPageMainVie
         super.onResume()
 
         viewModel.searchMypageItems()
-        viewModel.getSubscribeStatus()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -188,6 +187,7 @@ class MyPageMainFragment : BaseFragment<FragmentMyPageMainBinding, MyPageMainVie
             viewModel.loadCheck.collect {
                 if(it) {
                     loadProfileImage()
+                    viewModel.getSubscribeStatus()
                 }
             }
         }
