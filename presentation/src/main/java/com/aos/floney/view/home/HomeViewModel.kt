@@ -23,7 +23,9 @@ import com.aos.model.user.UserModel.userNickname
 import com.aos.usecase.booksetting.BooksCurrencySearchUseCase
 import com.aos.usecase.home.GetBookInfoUseCase
 import com.aos.usecase.home.GetMoneyHistoryDaysUseCase
+import com.aos.usecase.subscribe.SubscribeBenefitUseCase
 import com.aos.usecase.subscribe.SubscribeCheckUseCase
+import com.aos.usecase.subscribe.SubscribeUserBenefitUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,7 +43,9 @@ class HomeViewModel @Inject constructor(
     private val getMoneyHistoryDaysUseCase: GetMoneyHistoryDaysUseCase,
     private val booksCurrencySearchUseCase : BooksCurrencySearchUseCase,
     private val getBookInfoUseCase: GetBookInfoUseCase,
-    private val subscribeCheckUseCase: SubscribeCheckUseCase
+    private val subscribeCheckUseCase: SubscribeCheckUseCase,
+    private val subscribeBenefitUseCase: SubscribeBenefitUseCase,
+    private val SubscribeUserBenefitUseCase: SubscribeUserBenefitUseCase
 ) : BaseViewModel() {
 
     // 날짜 데이터
@@ -98,10 +102,10 @@ class HomeViewModel @Inject constructor(
     private var _accessCheck = MutableEventFlow<Boolean>()
     val accessCheck: EventFlow<Boolean> get() = _accessCheck
 
-    // 구독 여부
+    // 유저 구독 여부
     var subscribeCheck = MutableLiveData<Boolean>(false)
 
-    // 구독 혜택을 받고 있는 지 여부
+    // 구독 만료 여부 (구독 안 한 경우만 확인, 구독 적용 팝업을 보여주기 위해서)
     var subscribeExpired = MutableLiveData<Boolean>(false)
 
     init {
@@ -456,11 +460,46 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             subscribeCheckUseCase().onSuccess {
                 subscribeCheck.postValue(it.isValid)
+
+                // 구독 안한 상태일 경우, 혜택(가계부, 개인)이 적용되어있는 지 확인
+                if(!it.isValid)
+                    getSubscribeBenefitChecking()
             }.onFailure {
                 baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
             }
         }
     }
     // 구독 혜택 받고 있는 지 여부 가져오기
+    fun getSubscribeBenefitChecking(){
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val bookKey = prefs.getString("bookKey", "")
 
+                // 가계부 혜택 확인
+                val benefitResult = subscribeBenefitUseCase(bookKey)
+                benefitResult.onFailure {
+                    baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
+                    return@launch // 실패 시 작업 종료
+                }
+
+                // 유저 혜택 확인
+                val userBenefitResult = SubscribeUserBenefitUseCase()
+                userBenefitResult.onFailure {
+                    baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
+                    return@launch // 실패 시 작업 종료
+                }
+
+                // 두 작업이 모두 성공한 경우 처리
+                benefitResult.onSuccess { bookBenefit ->
+                    userBenefitResult.onSuccess { userBenefit ->
+                        Timber.i("book : ${bookBenefit} user : ${userBenefit}")
+                        subscribeExpired.postValue(bookBenefit.maxFavorite || bookBenefit.overBookUser || userBenefit.maxBook)
+                    }
+                }
+            } catch (e: Exception) {
+                // 코루틴 실행 중 발생한 예외 처리
+                baseEvent(Event.ShowToast(e.message.parseErrorMsg()))
+            }
+        }
+    }
 }
