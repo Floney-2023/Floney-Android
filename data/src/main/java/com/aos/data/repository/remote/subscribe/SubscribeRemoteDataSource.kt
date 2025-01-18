@@ -10,6 +10,7 @@ import com.aos.data.entity.response.analyze.PostAnalyzeCategoryOutComeEntity
 import com.aos.data.entity.response.subscribe.GetPresignedUrlEntity
 import com.aos.data.entity.response.subscribe.GetSubscribeAndroidEntity
 import com.aos.data.entity.response.subscribe.GetSubscribeAndroidInfoEntity
+import com.aos.data.entity.response.subscribe.GetSubscribeBenefitEntity
 import com.aos.util.NetworkState
 
 interface SubscribeRemoteDataSource {
@@ -20,4 +21,6 @@ interface SubscribeRemoteDataSource {
     suspend fun getSubscribeAndroidInfo(): NetworkState<GetSubscribeAndroidInfoEntity>
 
     suspend fun getPresignedUrl(bookKey: String): NetworkState<GetPresignedUrlEntity>
+
+    suspend fun getSubscribeBenefit(bookKey: String): NetworkState<GetSubscribeBenefitEntity>
 }

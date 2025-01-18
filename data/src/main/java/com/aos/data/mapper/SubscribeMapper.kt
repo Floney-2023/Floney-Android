@@ -3,10 +3,12 @@ package com.aos.data.mapper
 import com.aos.data.entity.response.subscribe.GetPresignedUrlEntity
 import com.aos.data.entity.response.subscribe.GetSubscribeAndroidEntity
 import com.aos.data.entity.response.subscribe.GetSubscribeAndroidInfoEntity
+import com.aos.data.entity.response.subscribe.GetSubscribeBenefitEntity
 import com.aos.model.book.CurrencyInform
 import com.aos.model.subscribe.GetPresignedUrlModel
 import com.aos.model.subscribe.UiSubscribeAndroidInfoModel
 import com.aos.model.subscribe.GetSubscribeAndroidModel
+import com.aos.model.subscribe.GetSubscribeBenefitModel
 import java.text.NumberFormat
 import kotlin.math.absoluteValue
 import kotlin.math.roundToLong
@@ -39,6 +41,11 @@ fun GetSubscribeAndroidInfoEntity.toGetSubscribeAndroidInfoModel(): UiSubscribeA
 
 fun GetPresignedUrlEntity.toGetPresignedUrlModel(): GetPresignedUrlModel {
     return GetPresignedUrlModel(this.fileName, this.url, this.viewUrl)
+}
+
+
+fun GetSubscribeBenefitEntity.toGetSubscribeBenefitModel(): GetSubscribeBenefitModel {
+    return GetSubscribeBenefitModel(this.maxFavorite, this.overBookUser)
 }
 
 fun getCurrencySymbolByCode(code: String): String {
