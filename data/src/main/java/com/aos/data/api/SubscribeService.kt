@@ -8,6 +8,7 @@ import com.aos.data.entity.response.subscribe.GetPresignedUrlEntity
 import com.aos.data.entity.response.subscribe.GetSubscribeAndroidEntity
 import com.aos.data.entity.response.subscribe.GetSubscribeAndroidInfoEntity
 import com.aos.data.entity.response.subscribe.GetSubscribeBenefitEntity
+import com.aos.data.entity.response.subscribe.GetSubscribeUserBenefitEntity
 import com.aos.util.NetworkState
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -43,4 +44,10 @@ interface SubscribeService {
     suspend fun getSubscribeBenefit(
         @Query("bookKey") bookKey: String
     ): NetworkState<GetSubscribeBenefitEntity>
+
+
+    @GET("subscribe/user/benefit")
+    @Headers("Auth: true")
+    suspend fun getSubscribeUserBenefit(
+    ): NetworkState<GetSubscribeUserBenefitEntity>
 }

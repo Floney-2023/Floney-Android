@@ -13,6 +13,7 @@ import com.aos.data.entity.response.subscribe.GetPresignedUrlEntity
 import com.aos.data.entity.response.subscribe.GetSubscribeAndroidEntity
 import com.aos.data.entity.response.subscribe.GetSubscribeAndroidInfoEntity
 import com.aos.data.entity.response.subscribe.GetSubscribeBenefitEntity
+import com.aos.data.entity.response.subscribe.GetSubscribeUserBenefitEntity
 import com.aos.util.NetworkState
 import javax.inject.Inject
 
@@ -37,5 +38,9 @@ class SubscribeRemoteDataSourceImpl @Inject constructor(private val subscribeSer
 
     override suspend fun getSubscribeBenefit(bookKey: String): NetworkState<GetSubscribeBenefitEntity> {
         return subscribeService.getSubscribeBenefit(bookKey)
+    }
+
+    override suspend fun getSubscribeUserBenefit(): NetworkState<GetSubscribeUserBenefitEntity> {
+        return subscribeService.getSubscribeUserBenefit()
     }
 }

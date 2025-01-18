@@ -4,6 +4,7 @@ import com.aos.model.subscribe.GetPresignedUrlModel
 import com.aos.model.subscribe.UiSubscribeAndroidInfoModel
 import com.aos.model.subscribe.GetSubscribeAndroidModel
 import com.aos.model.subscribe.GetSubscribeBenefitModel
+import com.aos.model.subscribe.GetSubscribeUserBenefitModel
 
 interface SubscribeRepository {
 
@@ -21,4 +22,7 @@ interface SubscribeRepository {
 
     // 가계부가 구독 혜택을 받고 있는 지 확인
     suspend fun getSubscribeBenefit(bookKey: String): Result<GetSubscribeBenefitModel>
+
+    // 유저가 구독 혜택을 받고 있는 지 확인
+    suspend fun getSubscribeUserBenefit(): Result<GetSubscribeUserBenefitModel>
 }
