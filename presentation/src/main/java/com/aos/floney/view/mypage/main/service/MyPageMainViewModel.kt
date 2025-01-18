@@ -313,10 +313,13 @@ class MyPageMainViewModel @Inject constructor(
         }
     }
 
-    // 광고 시청
-    fun onClickAdMob() {
+    // 광고 제거 혹은 플레이스토어 리뷰
+    fun onClickAdMobOrReview() {
         viewModelScope.launch {
-            _adMobPage.emit(true)
+            if(subscribeCheck.value!!)
+                _reviewPage.emit(true)
+            else
+                _adMobPage.emit(true)
         }
     }
 

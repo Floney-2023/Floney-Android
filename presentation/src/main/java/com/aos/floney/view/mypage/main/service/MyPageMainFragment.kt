@@ -187,7 +187,7 @@ class MyPageMainFragment : BaseFragment<FragmentMyPageMainBinding, MyPageMainVie
             viewModel.loadCheck.collect {
                 if(it) {
                     loadProfileImage()
-                    viewModel.getSubscribeStatus()
+                    viewModel. getSubscribeStatus()
                 }
             }
         }
