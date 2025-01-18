@@ -23,9 +23,12 @@ import com.aos.model.user.UserModel.userNickname
 import com.aos.usecase.booksetting.BooksCurrencySearchUseCase
 import com.aos.usecase.home.GetBookInfoUseCase
 import com.aos.usecase.home.GetMoneyHistoryDaysUseCase
+import com.aos.usecase.subscribe.SubscribeCheckUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -38,6 +41,7 @@ class HomeViewModel @Inject constructor(
     private val getMoneyHistoryDaysUseCase: GetMoneyHistoryDaysUseCase,
     private val booksCurrencySearchUseCase : BooksCurrencySearchUseCase,
     private val getBookInfoUseCase: GetBookInfoUseCase,
+    private val subscribeCheckUseCase: SubscribeCheckUseCase
 ) : BaseViewModel() {
 
     // 날짜 데이터
@@ -94,7 +98,10 @@ class HomeViewModel @Inject constructor(
     private var _accessCheck = MutableEventFlow<Boolean>()
     val accessCheck: EventFlow<Boolean> get() = _accessCheck
 
-    // 구독 만료 내역
+    // 구독 여부
+    var subscribeCheck = MutableLiveData<Boolean>(false)
+
+    // 구독 혜택을 받고 있는 지 여부
     var subscribeExpired = MutableLiveData<Boolean>(false)
 
     init {
@@ -412,7 +419,9 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             val advertiseTime = prefs.getString("advertiseTime", "")
             val advertiseTenMinutes = prefs.getString("advertiseBookSettingTenMinutes", "")
-            val showSettingPage = advertiseTime.isNotEmpty() || getAdvertiseTenMinutesCheck(advertiseTenMinutes) > 0
+
+            // true면 광고 없이 이동, false면 광고 후 이동
+            val showSettingPage = advertiseTime.isNotEmpty() || getAdvertiseTenMinutesCheck(advertiseTenMinutes) > 0 || subscribeCheck.value!!
 
             if (getAdvertiseTenMinutesCheck(advertiseTenMinutes) <= 0) {
                 prefs.setString("advertiseBookSettingTenMinutes", "")
@@ -442,4 +451,16 @@ class HomeViewModel @Inject constructor(
                 _accessCheck.emit(true)
         }
     }
+    // 구독 여부 가져오기
+    fun getSubscribeChecking(){
+        viewModelScope.launch(Dispatchers.IO) {
+            subscribeCheckUseCase().onSuccess {
+                subscribeCheck.postValue(it.isValid)
+            }.onFailure {
+                baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
+            }
+        }
+    }
+    // 구독 혜택 받고 있는 지 여부 가져오기
+
 }

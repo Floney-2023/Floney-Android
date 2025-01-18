@@ -56,6 +56,7 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(R.layout.a
         val prefs = SharedPreferenceUtil(this)
         lifecycleScope.launch {
             viewModel.getBookInfo(prefs.getString("bookKey", ""))
+            viewModel.getSubscribeChecking()
         }
     }
 
