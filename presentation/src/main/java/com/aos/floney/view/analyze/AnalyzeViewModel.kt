@@ -5,12 +5,18 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.aos.data.util.SharedPreferenceUtil
 import com.aos.floney.base.BaseViewModel
+import com.aos.floney.ext.parseErrorMsg
 import com.aos.floney.util.EventFlow
 import com.aos.floney.util.MutableEventFlow
+import com.aos.usecase.subscribe.SubscribeBenefitUseCase
+import com.aos.usecase.subscribe.SubscribeCheckUseCase
+import com.aos.usecase.subscribe.SubscribeUserBenefitUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -19,7 +25,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AnalyzeViewModel @Inject constructor(
-    private val prefs: SharedPreferenceUtil
+    private val prefs: SharedPreferenceUtil,
+    private val subscribeBenefitUseCase: SubscribeBenefitUseCase,
+    private val SubscribeUserBenefitUseCase: SubscribeUserBenefitUseCase,
+    private val subscribeCheckUseCase: SubscribeCheckUseCase
 ): BaseViewModel() {
 
     // 지출, 수입, 예산, 자산
@@ -51,6 +60,7 @@ class AnalyzeViewModel @Inject constructor(
 
     init {
         getFormatDateMonth()
+        getSubscribeChecking()
     }
 
     // 지출, 수입, 이체 클릭
@@ -125,5 +135,53 @@ class AnalyzeViewModel @Inject constructor(
 
         // 월 업데이트
         getFormatDateMonth()
+    }
+
+
+    // 구독 여부 가져오기
+    fun getSubscribeChecking(){
+        viewModelScope.launch(Dispatchers.IO) {
+            subscribeCheckUseCase().onSuccess {
+                // 구독 안한 상태일 경우, 혜택(가계부, 개인)이 적용되어있는 지 확인
+                if(!it.isValid)
+                    getSubscribeBenefitChecking()
+            }.onFailure {
+                baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
+            }
+        }
+    }
+
+    // 구독 혜택 받고 있는 지 여부 가져오기
+    fun getSubscribeBenefitChecking(){
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val bookKey = prefs.getString("bookKey", "")
+
+                // 가계부 혜택 확인
+                val benefitResult = subscribeBenefitUseCase(bookKey)
+                benefitResult.onFailure {
+                    baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
+                    return@launch // 실패 시 작업 종료
+                }
+
+                // 유저 혜택 확인
+                val userBenefitResult = SubscribeUserBenefitUseCase()
+                userBenefitResult.onFailure {
+                    baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
+                    return@launch // 실패 시 작업 종료
+                }
+
+                // 두 작업이 모두 성공한 경우 처리
+                benefitResult.onSuccess { bookBenefit ->
+                    userBenefitResult.onSuccess { userBenefit ->
+                        Timber.i("book : ${bookBenefit} user : ${userBenefit}")
+                        subscribeExpired.postValue(bookBenefit.maxFavorite || bookBenefit.overBookUser || userBenefit.maxBook)
+                    }
+                }
+            } catch (e: Exception) {
+                // 코루틴 실행 중 발생한 예외 처리
+                baseEvent(Event.ShowToast(e.message.parseErrorMsg()))
+            }
+        }
     }
 }

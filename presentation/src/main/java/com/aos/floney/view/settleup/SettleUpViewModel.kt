@@ -5,10 +5,16 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.aos.data.util.SharedPreferenceUtil
 import com.aos.floney.base.BaseViewModel
+import com.aos.floney.ext.parseErrorMsg
 import com.aos.floney.util.EventFlow
 import com.aos.floney.util.MutableEventFlow
+import com.aos.usecase.subscribe.SubscribeBenefitUseCase
+import com.aos.usecase.subscribe.SubscribeCheckUseCase
+import com.aos.usecase.subscribe.SubscribeUserBenefitUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -16,7 +22,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettleUpViewModel @Inject constructor(
-    private val prefs: SharedPreferenceUtil
+    private val prefs: SharedPreferenceUtil,
+    private val subscribeBenefitUseCase: SubscribeBenefitUseCase,
+    private val SubscribeUserBenefitUseCase: SubscribeUserBenefitUseCase,
+    private val subscribeCheckUseCase: SubscribeCheckUseCase
 ): BaseViewModel() {
 
 
@@ -38,6 +47,10 @@ class SettleUpViewModel @Inject constructor(
 
     // 구독 만료 내역
     var subscribeExpired = MutableLiveData<Boolean>(false)
+
+    init {
+        getSubscribeChecking()
+    }
 
     fun settingBookKey(id: Long, bk: String){
         viewModelScope.launch {
@@ -64,6 +77,51 @@ class SettleUpViewModel @Inject constructor(
     private fun setTodayDate(): String {
         val date = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
         return date
+    }
+
+    // 구독 여부 가져오기
+    fun getSubscribeChecking(){
+        viewModelScope.launch(Dispatchers.IO) {
+            subscribeCheckUseCase().onSuccess {
+                // 구독 안한 상태일 경우, 혜택(가계부, 개인)이 적용되어있는 지 확인
+                if(!it.isValid)
+                    getSubscribeBenefitChecking()
+            }.onFailure {
+                baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
+            }
+        }
+    }
+
+    // 구독 혜택 받고 있는 지 여부 가져오기
+    fun getSubscribeBenefitChecking(){
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val bookKey = prefs.getString("bookKey", "")
+
+                // 가계부 혜택 확인
+                val benefitResult = subscribeBenefitUseCase(bookKey)
+                benefitResult.onFailure {
+                    baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
+                    return@launch // 실패 시 작업 종료
+                }
+
+                // 유저 혜택 확인
+                val userBenefitResult = SubscribeUserBenefitUseCase()
+                userBenefitResult.onFailure {
+                    baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
+                    return@launch // 실패 시 작업 종료
+                }
+
+                benefitResult.onSuccess { bookBenefit ->
+                    userBenefitResult.onSuccess { userBenefit ->
+                        Timber.i("book : ${bookBenefit} user : ${userBenefit}")
+                        subscribeExpired.postValue(bookBenefit.maxFavorite || bookBenefit.overBookUser || userBenefit.maxBook)
+                    }
+                }
+            } catch (e: Exception) {
+                baseEvent(Event.ShowToast(e.message.parseErrorMsg()))
+            }
+        }
     }
 
 }
