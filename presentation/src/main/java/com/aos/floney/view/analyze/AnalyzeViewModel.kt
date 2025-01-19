@@ -56,8 +56,11 @@ class AnalyzeViewModel @Inject constructor(
     private var _clickedAddHistory = MutableEventFlow<String>()
     val clickedAddHistory: EventFlow<String> get() = _clickedAddHistory
 
-    // 구독 만료 내역
+    // 구독 만료 여부
     var subscribeExpired = MutableLiveData<Boolean>(false)
+
+    // 구독 유도 팝업 표시 여부
+    var subscribePopupShow = MutableLiveData<Boolean>(false)
 
     init {
         getFormatDateMonth()
@@ -144,7 +147,7 @@ class AnalyzeViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             subscribeCheckUseCase().onSuccess {
                 // 구독 안한 상태일 경우, 혜택(가계부, 개인)이 적용되어있는 지 확인
-                if(!it.isValid)
+                if(it.isValid)
                     getSubscribeBenefitChecking()
             }.onFailure {
                 baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
@@ -179,10 +182,14 @@ class AnalyzeViewModel @Inject constructor(
 
                         val subscribeCheckTenMinutes = prefs.getString("subscribeCheckTenMinutes", "")
 
-                        if(getAdvertiseTenMinutesCheck(subscribeCheckTenMinutes).toInt() == 0)
-                            subscribeExpired.postValue(bookBenefit.maxFavorite || bookBenefit.overBookUser || userBenefit.maxBook)
-                        else if (getAdvertiseTenMinutesCheck(subscribeCheckTenMinutes) < 0)
+                        if (getAdvertiseTenMinutesCheck(subscribeCheckTenMinutes) < 0) // 10분 지났을 경우 리셋
                             prefs.setString("subscribeCheckTenMinutes", "")
+
+                        // 구독 만료 여부 업데이트
+                        subscribeExpired.postValue(bookBenefit.maxFavorite || bookBenefit.overBookUser || userBenefit.maxBook)
+
+                        // 구독 팝업 표시 여부 업데이트 (구독 만료 O && 타이머 시간이 유효하지 않을 경우)
+                        subscribePopupShow.postValue(getAdvertiseTenMinutesCheck(subscribeCheckTenMinutes) <= 0 && subscribeExpired.value == true)
                     }
                 }
             } catch (e: Exception) {

@@ -108,6 +108,9 @@ class HomeViewModel @Inject constructor(
     // 구독 만료 여부 (구독 안 한 경우만 확인, 구독 적용 팝업을 보여주기 위해서)
     var subscribeExpired = MutableLiveData<Boolean>(false)
 
+    // 구독 팝업 표시 여부 (구독 만료 여부 & 10분 타이머 체크)
+    var subscribePopupShow = MutableLiveData<Boolean>(false)
+
     init {
         getFormatDateMonth()
         setAdvertisement()
@@ -462,7 +465,7 @@ class HomeViewModel @Inject constructor(
                 subscribeCheck.postValue(it.isValid)
 
                 // 구독 안한 상태일 경우, 혜택(가계부, 개인)이 적용되어있는 지 확인
-                if(!it.isValid)
+                if(it.isValid)
                     getSubscribeBenefitChecking()
             }.onFailure {
                 baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
@@ -492,14 +495,22 @@ class HomeViewModel @Inject constructor(
                 // 두 작업이 모두 성공한 경우 처리
                 benefitResult.onSuccess { bookBenefit ->
                     userBenefitResult.onSuccess { userBenefit ->
-                        Timber.i("book : ${bookBenefit} user : ${userBenefit}")
+                        // 10분 타이머 남은 시간
+                        val remainTime = prefs.getString("subscribeCheckTenMinutes", "")
 
-                        val subscribeCheckTenMinutes = prefs.getString("subscribeCheckTenMinutes", "")
+                        // 구독 만료 여부
+                        val expiredCheck = bookBenefit.maxFavorite || bookBenefit.overBookUser || userBenefit.maxBook
+                        Timber.i("book : ${bookBenefit} user : ${userBenefit} remainTime : ${remainTime}")
 
-                        if(getAdvertiseTenMinutesCheck(subscribeCheckTenMinutes).toInt() == 0)
-                            subscribeExpired.postValue(bookBenefit.maxFavorite || bookBenefit.overBookUser || userBenefit.maxBook)
-                        else if (getAdvertiseTenMinutesCheck(subscribeCheckTenMinutes) < 0)
+                        // 10분 지났을 경우 리셋
+                        if (getAdvertiseTenMinutesCheck(remainTime) < 0)
                             prefs.setString("subscribeCheckTenMinutes", "")
+
+                        // 구독 만료 여부 업데이트
+                        subscribeExpired.postValue(expiredCheck)
+
+                        // 구독 팝업 표시 여부 업데이트 (구독 만료 O && 타이머 시간이 유효하지 않을 경우)
+                        subscribePopupShow.postValue(getAdvertiseTenMinutesCheck(remainTime) <= 0 && expiredCheck)
                     }
                 }
             } catch (e: Exception) {

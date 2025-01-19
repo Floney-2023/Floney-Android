@@ -189,7 +189,7 @@
             android:layout_height="0dp"
             android:background="#b3000000"
             android:onClick="@{() -> vm.onClickCloseShowDetail()}"
-            android:visibility="@{vm.onClickedShowDetail != null || vm.subscribeExpired ? View.VISIBLE : View.GONE}"
+            android:visibility="@{vm.onClickedShowDetail != null || vm.subscribePopupShow ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="@id/cl_show_detail"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -201,7 +201,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="16dp"
-            android:visibility="@{ vm.subscribeExpired ? View.VISIBLE : View.GONE}"
+            android:visibility="@{ vm.subscribePopupShow ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toTopOf="@+id/ll_bottom_navigation"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
@@ -212,7 +212,7 @@
             android:layout_height="384dp"
             android:background="@drawable/custom_radius_top_left_right_12_solid_white"
             android:backgroundTint="@null"
-            android:visibility="@{vm.onClickedShowDetail != null ? View.VISIBLE : View.GONE}"
+            android:visibility="@{vm.onClickedShowDetail != null  &amp;&amp; vm.subscribePopupShow == false ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toTopOf="@+id/ll_bottom_navigation"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
