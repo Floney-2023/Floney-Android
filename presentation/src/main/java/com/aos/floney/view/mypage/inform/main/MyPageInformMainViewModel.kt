@@ -132,6 +132,7 @@ class MyPageInformMainViewModel @Inject constructor(
                     prefs.setString("accessToken", "")
                     prefs.setString("refreshToken", "")
                     prefs.setString("bookKey","")
+                    prefs.getString("subscribeCheckTenMinutes", "")
 
                     _logOutPage.emit(true)
                 }.onFailure {
