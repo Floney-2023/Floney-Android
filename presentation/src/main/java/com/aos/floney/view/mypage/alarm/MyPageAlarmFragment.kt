@@ -8,6 +8,7 @@ import com.aos.floney.base.BaseFragment
 import com.aos.floney.databinding.FragmentMyPageAlarmBinding
 import com.aos.model.alarm.UiAlarmGetModel
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 
 
 @AndroidEntryPoint
@@ -24,15 +25,17 @@ class MyPageAlarmFragment : BaseFragment<FragmentMyPageAlarmBinding, MyPageAlarm
             return fragment
         }
     }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setUpAlarmData() // 데이터 로드
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setUpUi()
     }
 
-    override fun onResume() {
-        super.onResume()
-        setUpAlarmData()
-    }
     private fun setUpUi() {
         binding.setVariable(BR.vm, viewModel)
         binding.setVariable(BR.eventHolder, this@MyPageAlarmFragment)

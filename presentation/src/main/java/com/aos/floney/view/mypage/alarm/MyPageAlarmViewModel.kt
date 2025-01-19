@@ -69,13 +69,11 @@ class MyPageAlarmViewModel @Inject constructor(
     // 알람 내역 불러오기
     fun getAlarmInform(bookKey: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            _bookList.value?.let { books ->
-                alarmInformGetUseCase(bookKey).onSuccess { alarmList ->
-                    _alarmList.postValue(alarmList)
-                    setAlarmUpdate(bookKey)
-                }.onFailure {
-                    baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
-                }
+            alarmInformGetUseCase(bookKey).onSuccess { alarmList ->
+                _alarmList.postValue(alarmList)
+                setAlarmUpdate(bookKey)
+            }.onFailure {
+                baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
             }
         }
     }
