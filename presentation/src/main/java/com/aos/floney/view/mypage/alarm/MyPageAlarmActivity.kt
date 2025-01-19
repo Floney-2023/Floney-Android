@@ -86,24 +86,6 @@ class MyPageAlarmActivity : BaseActivity<ActivityMyPageAlarmBinding, MyPageAlarm
                 adjustTabLayoutWidth(booksData.size) // 100dp씩 너비 설정
             }
         }
-
-        with(binding.tabLayout){
-            this@with.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-                override fun onTabSelected(tab: TabLayout.Tab) {
-                    this@with.setSelectedTabIndicatorColor(ContextCompat.getColor(this@MyPageAlarmActivity, R.color.primary1))
-                    // 선택된 탭의 인디케이터 색상
-                }
-
-                override fun onTabUnselected(tab: TabLayout.Tab) {
-                    this@with.setSelectedTabIndicatorColor(ContextCompat.getColor(this@MyPageAlarmActivity, R.color.background2))
-                    // 선택되지 않은 탭의 인디케이터 색상
-                }
-
-                override fun onTabReselected(tab: TabLayout.Tab) {
-                    // 필요 시 처리
-                }
-            })
-        }
     }
     // 탭의 너비를 동적으로 설정하는 함수
     private fun adjustTabLayoutWidth(tabCount: Int) {

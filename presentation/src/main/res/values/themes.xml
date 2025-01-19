@@ -475,4 +475,7 @@
         <item name="fontFamily">@font/pretendard_semibold</item>
     </style>
 
+    <style name="CustomTabLayout" parent="Widget.Design.TabLayout">
+        <item name="tabIndicatorColor">@color/background2</item> <!-- 기본 인디케이터 색상 -->
+    </style>
 </resources>
