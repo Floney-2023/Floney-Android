@@ -468,7 +468,7 @@ class HomeViewModel @Inject constructor(
                 subscribeCheck.postValue(it.isValid)
 
                 // 구독 안한 상태일 경우, 혜택(가계부, 개인)이 적용되어있는 지 확인
-                if(it.isValid)
+                if(!it.isValid)
                     getSubscribeBenefitChecking()
             }.onFailure {
                 baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
