@@ -24,7 +24,8 @@ import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class SettleUpStartFragment : BaseFragment<FragmentSettleUpStartBinding, SettleUpStartViewModel>(R.layout.fragment_settle_up_start) {
+class SettleUpStartFragment :
+    BaseFragment<FragmentSettleUpStartBinding, SettleUpStartViewModel>(R.layout.fragment_settle_up_start) {
     private val activityViewModel: SettleUpViewModel by activityViewModels()
 
     @Inject
@@ -37,22 +38,22 @@ class SettleUpStartFragment : BaseFragment<FragmentSettleUpStartBinding, SettleU
         setUpViewModelObserver()
     }
 
-    private fun setUpUi()
-    {
+    private fun setUpUi() {
         activityViewModel.bottomSee(true)
     }
+
     private fun setUpViewModelObserver() {
+
         repeatOnStarted {
-            if(!activityViewModel.subscribeExpired.value!!){
-                viewModel.settleUpStartPage.collect {
-                    if(it) { // 정기 구독 만료 시, 팝업
-                        activityViewModel.subscribeExpired.value = it
-                    }
-                    else { // 정산 시작하기 이동
-                        val action =
-                            SettleUpStartFragmentDirections.actionSettleUpStartFragmentToSettleUpMemberSelectFragment()
-                        findNavController().navigate(action)
-                    }
+            viewModel.settleUpStartPage.collect {
+                // 구독 만료 시, 적용 팝업 표시
+                if (activityViewModel.subscribeExpired.value!!) {
+                    activityViewModel.subscribePopupShow.value = true
+                    activityViewModel.subscribePopupEnter.value = false
+                } else { // 정산 시작하기 이동
+                    val action =
+                        SettleUpStartFragmentDirections.actionSettleUpStartFragmentToSettleUpMemberSelectFragment()
+                    findNavController().navigate(action)
                 }
             }
         }
@@ -60,9 +61,12 @@ class SettleUpStartFragment : BaseFragment<FragmentSettleUpStartBinding, SettleU
         repeatOnStarted {
             // 정산 내역 보기 이동
             viewModel.settleUpSeePage.collect {
-                if(it) {
+                if (it) {
                     val action =
-                        SettleUpStartFragmentDirections.actionSettleUpStartFragmentToSettleUpSeeFragment(-1,"")
+                        SettleUpStartFragmentDirections.actionSettleUpStartFragmentToSettleUpSeeFragment(
+                            -1,
+                            ""
+                        )
                     findNavController().navigate(action)
                 }
             }
@@ -70,9 +74,12 @@ class SettleUpStartFragment : BaseFragment<FragmentSettleUpStartBinding, SettleU
 
         repeatOnStarted {
             activityViewModel.sharePage.collect {
-                if(it) {
+                if (it) {
                     val action =
-                        SettleUpStartFragmentDirections.actionSettleUpStartFragmentToSettleUpSeeFragment(activityViewModel.id.value!!,activityViewModel.bookKey.value!!)
+                        SettleUpStartFragmentDirections.actionSettleUpStartFragmentToSettleUpSeeFragment(
+                            activityViewModel.id.value!!,
+                            activityViewModel.bookKey.value!!
+                        )
                     findNavController().navigate(action)
                 }
             }

@@ -237,11 +237,14 @@ class SettleUpActivity : BaseActivity<ActivitySettleUpBinding, SettleUpViewModel
     }
     private fun setSubscribePopup() {
         binding.includePopupSubscribe.ivExit.setOnClickListener {
-            // X 클릭한 시점 시간 기록
-            sharedPreferenceUtil.setString("subscribeCheckTenMinutes", getCurrentDateTimeString())
+            // 진입 시 표시되는 팝업일 경우에만 시간 체크
+            if (viewModel.subscribePopupEnter.value == true)
+                sharedPreferenceUtil.setString(
+                    "subscribeCheckTenMinutes",
+                    getCurrentDateTimeString()
+                )
 
-            binding.includePopupSubscribe.root.visibility = View.GONE
-            binding.dimBackground.visibility = View.GONE
+            viewModel.subscribePopupShow.postValue(false)
         }
     }
 }

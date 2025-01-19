@@ -53,6 +53,9 @@ class SettleUpViewModel @Inject constructor(
     // 구독 유도 팝업 표시 여부
     var subscribePopupShow = MutableLiveData<Boolean>(false)
 
+    // 진입 시 표시되는 팝업인 지
+    var subscribePopupEnter = MutableLiveData<Boolean>(true)
+
     init {
         getSubscribeChecking()
     }
