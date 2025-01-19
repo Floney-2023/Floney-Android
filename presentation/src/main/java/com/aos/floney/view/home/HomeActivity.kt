@@ -36,6 +36,7 @@ import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 import dagger.hilt.android.AndroidEntryPoint
 import com.aos.floney.base.BaseViewModel
+import com.aos.floney.util.getCurrentDateTimeString
 import com.aos.floney.view.common.SuccessToastDialog
 import com.aos.floney.view.common.WarningPopupDialog
 import com.aos.floney.view.login.LoginActivity
@@ -43,10 +44,14 @@ import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(R.layout.activity_home),
     UiBookDayModel.OnItemClickListener {
+
+    @Inject
+    lateinit var sharedPreferenceUtil: SharedPreferenceUtil
     private val fragmentManager = supportFragmentManager
     private var mRewardAd: RewardedAd? = null
 
@@ -284,7 +289,7 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(R.layout.a
 
         val adRequest = AdRequest.Builder().build()
         adView.loadAd(adRequest)
-        
+
         binding.adBanner.addView(adView)
     }
 
@@ -362,11 +367,10 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(R.layout.a
         viewModel.setAccessCheck(intent.getBooleanExtra("accessCheck", false))
     }
     fun setSubscribePopup() {
-        if(true){
-            binding.includePopupSubscribe.ivExit.setOnClickListener {
-                binding.includePopupSubscribe.root.visibility = View.GONE
-                binding.view2.visibility = View.GONE
-            }
+        binding.includePopupSubscribe.ivExit.setOnClickListener {
+            sharedPreferenceUtil.setString("subscribeCheckTenMinutes", getCurrentDateTimeString())
+            binding.includePopupSubscribe.root.visibility = View.GONE
+            binding.view2.visibility = View.GONE
         }
     }
 }

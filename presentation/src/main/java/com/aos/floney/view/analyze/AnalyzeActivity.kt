@@ -15,10 +15,12 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
+import com.aos.data.util.SharedPreferenceUtil
 import com.aos.floney.R
 import com.aos.floney.base.BaseActivity
 import com.aos.floney.databinding.ActivityAnalyzeBinding
 import com.aos.floney.ext.repeatOnStarted
+import com.aos.floney.util.getCurrentDateTimeString
 import com.aos.floney.view.book.setting.budget.BookSettingBudgetFragment
 import com.aos.floney.view.history.HistoryActivity
 import com.aos.floney.view.home.HomeActivity
@@ -28,9 +30,13 @@ import com.aos.floney.view.settleup.SettleUpActivity
 import com.aos.model.user.UserModel.userNickname
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class AnalyzeActivity : BaseActivity<ActivityAnalyzeBinding, AnalyzeViewModel>(R.layout.activity_analyze), BookSettingBudgetFragment.OnFragmentInteractionListener{
+
+    @Inject
+    lateinit var sharedPreferenceUtil: SharedPreferenceUtil
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -169,11 +175,10 @@ class AnalyzeActivity : BaseActivity<ActivityAnalyzeBinding, AnalyzeViewModel>(R
     }
 
     fun setSubscribePopup() {
-        if(true){
-            binding.includePopupSubscribe.ivExit.setOnClickListener {
-                binding.includePopupSubscribe.root.visibility = View.GONE
-                binding.dimBackground.visibility = View.GONE
-            }
+        binding.includePopupSubscribe.ivExit.setOnClickListener {
+            sharedPreferenceUtil.setString("subscribeCheckTenMinutes", getCurrentDateTimeString())
+            binding.includePopupSubscribe.root.visibility = View.GONE
+            binding.dimBackground.visibility = View.GONE
         }
     }
 }

@@ -8,6 +8,8 @@ import com.aos.floney.base.BaseViewModel
 import com.aos.floney.ext.parseErrorMsg
 import com.aos.floney.util.EventFlow
 import com.aos.floney.util.MutableEventFlow
+import com.aos.floney.util.getAdvertiseTenMinutesCheck
+import com.aos.floney.util.getCurrentDateTimeString
 import com.aos.usecase.subscribe.SubscribeBenefitUseCase
 import com.aos.usecase.subscribe.SubscribeCheckUseCase
 import com.aos.usecase.subscribe.SubscribeUserBenefitUseCase
@@ -115,7 +117,12 @@ class SettleUpViewModel @Inject constructor(
                 benefitResult.onSuccess { bookBenefit ->
                     userBenefitResult.onSuccess { userBenefit ->
                         Timber.i("book : ${bookBenefit} user : ${userBenefit}")
-                        subscribeExpired.postValue(bookBenefit.maxFavorite || bookBenefit.overBookUser || userBenefit.maxBook)
+                        val subscribeCheckTenMinutes = prefs.getString("subscribeCheckTenMinutes", "")
+
+                        if(getAdvertiseTenMinutesCheck(subscribeCheckTenMinutes).toInt() == 0)
+                            subscribeExpired.postValue(bookBenefit.maxFavorite || bookBenefit.overBookUser || !userBenefit.maxBook)
+                        else if (getAdvertiseTenMinutesCheck(subscribeCheckTenMinutes) < 0)
+                            prefs.setString("subscribeCheckTenMinutes", "")
                     }
                 }
             } catch (e: Exception) {

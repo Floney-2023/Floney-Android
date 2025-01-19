@@ -493,7 +493,13 @@ class HomeViewModel @Inject constructor(
                 benefitResult.onSuccess { bookBenefit ->
                     userBenefitResult.onSuccess { userBenefit ->
                         Timber.i("book : ${bookBenefit} user : ${userBenefit}")
-                        subscribeExpired.postValue(bookBenefit.maxFavorite || bookBenefit.overBookUser || userBenefit.maxBook)
+
+                        val subscribeCheckTenMinutes = prefs.getString("subscribeCheckTenMinutes", "")
+
+                        if(getAdvertiseTenMinutesCheck(subscribeCheckTenMinutes).toInt() == 0)
+                            subscribeExpired.postValue(bookBenefit.maxFavorite || bookBenefit.overBookUser || userBenefit.maxBook)
+                        else if (getAdvertiseTenMinutesCheck(subscribeCheckTenMinutes) < 0)
+                            prefs.setString("subscribeCheckTenMinutes", "")
                     }
                 }
             } catch (e: Exception) {

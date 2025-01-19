@@ -55,7 +55,7 @@ class SplashActivity :
         getAppKeyHash()
         setupSplashAnimation()
         setStatusBarTransparent()
-        CurrencyUtil.currency = sharedPreferenceUtil.getString("symbol", "원")
+        setPreferenceUtil()
     }
 
     private fun checkPauseUpdate() { // 서버 변경으로 인한 임시 중단 팝업
@@ -301,5 +301,9 @@ class SplashActivity :
         if (Build.VERSION.SDK_INT >= 30) {    // API 30 에 적용
             WindowCompat.setDecorFitsSystemWindows(window, false)
         }
+    }
+    private fun setPreferenceUtil(){
+        CurrencyUtil.currency = sharedPreferenceUtil.getString("symbol", "원")
+        sharedPreferenceUtil.setString("subscribeCheckTenMinutes", "")
     }
 }

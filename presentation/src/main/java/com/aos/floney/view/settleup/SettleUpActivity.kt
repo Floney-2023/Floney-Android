@@ -17,6 +17,7 @@ import com.aos.floney.base.BaseActivity
 import com.aos.floney.databinding.ActivitySettleUpBinding
 import com.aos.floney.databinding.ItemPopupSubscribeUseBinding
 import com.aos.floney.ext.repeatOnStarted
+import com.aos.floney.util.getCurrentDateTimeString
 import com.aos.floney.view.analyze.AnalyzeActivity
 import com.aos.floney.view.history.HistoryActivity
 import com.aos.floney.view.home.HomeActivity
@@ -235,11 +236,12 @@ class SettleUpActivity : BaseActivity<ActivitySettleUpBinding, SettleUpViewModel
         }
     }
     private fun setSubscribePopup() {
-        if(true){
-            binding.includePopupSubscribe.ivExit.setOnClickListener {
-                binding.includePopupSubscribe.root.visibility = View.GONE
-                binding.dimBackground.visibility = View.GONE
-            }
+        binding.includePopupSubscribe.ivExit.setOnClickListener {
+            // X 클릭한 시점 시간 기록
+            sharedPreferenceUtil.setString("subscribeCheckTenMinutes", getCurrentDateTimeString())
+
+            binding.includePopupSubscribe.root.visibility = View.GONE
+            binding.dimBackground.visibility = View.GONE
         }
     }
 }
