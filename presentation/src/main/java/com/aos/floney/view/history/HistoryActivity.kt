@@ -330,11 +330,8 @@ class HistoryActivity :
     }
 
     private fun setSubscribePopup() {
-        if (true) {
-            binding.includePopupSubscribe.ivExit.setOnClickListener {
-                binding.includePopupSubscribe.root.visibility = View.GONE
-                binding.dimBackground.visibility = View.GONE
-            }
+        binding.includePopupSubscribe.ivExit.setOnClickListener {
+            viewModel.subscribeExpired.postValue(false)
         }
     }
 
