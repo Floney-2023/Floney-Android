@@ -111,6 +111,9 @@ class HomeViewModel @Inject constructor(
     // 구독 팝업 표시 여부 (구독 만료 여부 & 10분 타이머 체크)
     var subscribePopupShow = MutableLiveData<Boolean>(false)
 
+    // 진입 시 표시되는 팝업인 지
+    var subscribePopupEnter = MutableLiveData<Boolean>(true)
+
     init {
         getFormatDateMonth()
         setAdvertisement()

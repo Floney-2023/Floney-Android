@@ -69,11 +69,12 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(R.layout.a
         super.onStart()
 
         Timber.e("intent.getStringExtra(\"isSave\") ${intent.getStringExtra("isSave")}")
-        if(intent.getStringExtra("isSave") != null) {
+        if (intent.getStringExtra("isSave") != null) {
             viewModel.baseEvent(BaseViewModel.Event.ShowSuccessToast("저장이 완료되었습니다."))
             intent.removeExtra("isSave")
         }
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -84,12 +85,18 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(R.layout.a
         setUpAdMob()
         setSubscribePopup()
     }
+
     private fun setUpUi() {
         binding.setVariable(BR.eventHolder, this)
         setStatusBarColor(ContextCompat.getColor(this, R.color.background3))
 
         if (isDarkMode()) {
-            binding.root.setBackgroundColor(ContextCompat.getColor(this, R.color.background3))  // 다크 모드 대응
+            binding.root.setBackgroundColor(
+                ContextCompat.getColor(
+                    this,
+                    R.color.background3
+                )
+            )  // 다크 모드 대응
         }
     }
 
@@ -111,19 +118,29 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(R.layout.a
         }
 
         repeatOnStarted {
-            // 내역추가
             viewModel.clickedAddHistory.collect {
-                startActivity(
-                    Intent(
-                        this@HomeActivity,
-                        HistoryActivity::class.java
-                    ).putExtra("date", viewModel.getClickDate())
-                        .putExtra("nickname", viewModel.getMyNickname())
-                )
-                if (Build.VERSION.SDK_INT >= 34) {
-                    overrideActivityTransition(Activity.OVERRIDE_TRANSITION_OPEN, R.anim.slide_in, R.anim.slide_out_down)
-                } else {
-                    overridePendingTransition(R.anim.slide_in, R.anim.slide_out_down)
+                if (viewModel.subscribeExpired.value!!) // 구독 만료일 경우, 구독 유도 팝업 표시
+                {
+                    viewModel.subscribePopupShow.postValue(true) // 팝업 표시
+                    viewModel.subscribePopupEnter.value = false // 진입 시 표시되는 팝업이 아님
+                    viewModel.onClickCloseShowDetail() // bottomSheet 올라왔을 경우 닫기
+                }else { // 만료안된 경우, 내역 추가 화면 이동
+                    startActivity(
+                        Intent(
+                            this@HomeActivity,
+                            HistoryActivity::class.java
+                        ).putExtra("date", viewModel.getClickDate())
+                            .putExtra("nickname", viewModel.getMyNickname())
+                    )
+                    if (Build.VERSION.SDK_INT >= 34) {
+                        overrideActivityTransition(
+                            Activity.OVERRIDE_TRANSITION_OPEN,
+                            R.anim.slide_in,
+                            R.anim.slide_out_down
+                        )
+                    } else {
+                        overridePendingTransition(R.anim.slide_in, R.anim.slide_out_down)
+                    }
                 }
             }
         }
@@ -132,7 +149,7 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(R.layout.a
                 if (it) {
                     if (mRewardAd != null) {
                         showAdMob()
-                    }else{
+                    } else {
                         resetUpAdMob()
                     }
                 } else {
@@ -152,7 +169,7 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(R.layout.a
         }
         repeatOnStarted {
             viewModel.accessCheck.collect {
-                if(it) {
+                if (it) {
                     val exitDialogFragment = WarningPopupDialog(
                         getString(R.string.home_dialog_title),
                         getString(R.string.home_dialog_info),
@@ -163,9 +180,16 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(R.layout.a
                         val intent = Intent(this@HomeActivity, LoginActivity::class.java)
                         startActivity(intent)
                         if (Build.VERSION.SDK_INT >= 34) {
-                            overrideActivityTransition(Activity.OVERRIDE_TRANSITION_OPEN, android.R.anim.fade_in, android.R.anim.fade_out)
+                            overrideActivityTransition(
+                                Activity.OVERRIDE_TRANSITION_OPEN,
+                                android.R.anim.fade_in,
+                                android.R.anim.fade_out
+                            )
                         } else {
-                            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+                            overridePendingTransition(
+                                android.R.anim.fade_in,
+                                android.R.anim.fade_out
+                            )
                         }
                         finishAffinity()
                     }
@@ -175,15 +199,20 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(R.layout.a
             }
         }
     }
-    fun goToBookSettingActivity()
-    {
+
+    fun goToBookSettingActivity() {
         startActivity(Intent(this@HomeActivity, BookSettingActivity::class.java))
         if (Build.VERSION.SDK_INT >= 34) {
-            overrideActivityTransition(Activity.OVERRIDE_TRANSITION_OPEN, android.R.anim.fade_in, android.R.anim.fade_out)
+            overrideActivityTransition(
+                Activity.OVERRIDE_TRANSITION_OPEN,
+                android.R.anim.fade_in,
+                android.R.anim.fade_out
+            )
         } else {
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         }
     }
+
     // 캘린더 아이템이 표시됨
     fun onClickCalendarItem(item: MonthMoney) {
         viewModel.onClickShowDetail(item)
@@ -211,7 +240,11 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(R.layout.a
             )
         )
         if (Build.VERSION.SDK_INT >= 34) {
-            overrideActivityTransition(Activity.OVERRIDE_TRANSITION_OPEN, R.anim.slide_in, R.anim.slide_out_down)
+            overrideActivityTransition(
+                Activity.OVERRIDE_TRANSITION_OPEN,
+                R.anim.slide_in,
+                R.anim.slide_out_down
+            )
         } else {
             overridePendingTransition(R.anim.slide_in, R.anim.slide_out_down)
         }
@@ -233,27 +266,41 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(R.layout.a
                 R.id.analysisFragment -> {
                     startActivity(Intent(this, AnalyzeActivity::class.java))
                     if (Build.VERSION.SDK_INT >= 34) {
-                        overrideActivityTransition(Activity.OVERRIDE_TRANSITION_OPEN, android.R.anim.fade_in, android.R.anim.fade_out)
+                        overrideActivityTransition(
+                            Activity.OVERRIDE_TRANSITION_OPEN,
+                            android.R.anim.fade_in,
+                            android.R.anim.fade_out
+                        )
                     } else {
                         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
                     }
                     finish()
                     false
                 }
+
                 R.id.settleUpFragment -> {
                     startActivity(Intent(this, SettleUpActivity::class.java))
                     if (Build.VERSION.SDK_INT >= 34) {
-                        overrideActivityTransition(Activity.OVERRIDE_TRANSITION_OPEN, android.R.anim.fade_in, android.R.anim.fade_out)
+                        overrideActivityTransition(
+                            Activity.OVERRIDE_TRANSITION_OPEN,
+                            android.R.anim.fade_in,
+                            android.R.anim.fade_out
+                        )
                     } else {
                         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
                     }
                     finish()
                     false
                 }
+
                 R.id.mypageFragment -> {
                     startActivity(Intent(this, MyPageActivity::class.java))
                     if (Build.VERSION.SDK_INT >= 34) {
-                        overrideActivityTransition(Activity.OVERRIDE_TRANSITION_OPEN, android.R.anim.fade_in, android.R.anim.fade_out)
+                        overrideActivityTransition(
+                            Activity.OVERRIDE_TRANSITION_OPEN,
+                            android.R.anim.fade_in,
+                            android.R.anim.fade_out
+                        )
                     } else {
                         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
                     }
@@ -274,6 +321,7 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(R.layout.a
             }
         }
     }
+
     private fun setUpAdMob() {
         showLoadingDialog()
         MobileAds.initialize(this) { initializationStatus ->
@@ -314,6 +362,7 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(R.layout.a
             }
         )
     }
+
     private fun resetUpAdMob() {
         showLoadingDialog()
         MobileAds.initialize(this)
@@ -321,32 +370,37 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(R.layout.a
         val adRequest = AdRequest.Builder().build()
         //binding.adBanner.loadAd(adRequest)
 
-        RewardedAd.load(this, BuildConfig.GOOGLE_APP_REWARD_KEY, adRequest, object : RewardedAdLoadCallback() {
-            override fun onAdFailedToLoad(adError: LoadAdError) {
-                mRewardAd = null
-                // 광고 로드 실패하더라도 페이지 이동
-                Timber.e("광고가 아직 로드되지 않음 reset")
-                dismissLoadingDialog()
-                goToBookSettingActivity()
-            }
+        RewardedAd.load(
+            this,
+            BuildConfig.GOOGLE_APP_REWARD_KEY,
+            adRequest,
+            object : RewardedAdLoadCallback() {
+                override fun onAdFailedToLoad(adError: LoadAdError) {
+                    mRewardAd = null
+                    // 광고 로드 실패하더라도 페이지 이동
+                    Timber.e("광고가 아직 로드되지 않음 reset")
+                    dismissLoadingDialog()
+                    goToBookSettingActivity()
+                }
 
-            override fun onAdLoaded(ad: RewardedAd) {
-                dismissLoadingDialog()
-                mRewardAd = ad
-                showAdMob()
-                // 광고 로드 성공 시 로그 출력
-                Timber.e("광고가 로드됨")
-            }
-        })
+                override fun onAdLoaded(ad: RewardedAd) {
+                    dismissLoadingDialog()
+                    mRewardAd = ad
+                    showAdMob()
+                    // 광고 로드 성공 시 로그 출력
+                    Timber.e("광고가 로드됨")
+                }
+            })
     }
-    fun showAdMob(){
+
+    fun showAdMob() {
         mRewardAd?.show(this@HomeActivity, OnUserEarnedRewardListener {
             fun onUserEarnedReward(rewardItem: RewardItem) {
                 val rewardAmount = rewardItem.amount
                 val rewardType = rewardItem.type
             }
         })
-        mRewardAd?.fullScreenContentCallback = object: FullScreenContentCallback() {
+        mRewardAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
             override fun onAdDismissedFullScreenContent() {
                 dismissLoadingDialog()
 
@@ -355,6 +409,7 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(R.layout.a
                 mRewardAd = null
                 Timber.e("광고가 로드됨")
             }
+
             override fun onAdFailedToShowFullScreenContent(p0: AdError) {
                 dismissLoadingDialog()
                 mRewardAd = null
@@ -363,14 +418,21 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(R.layout.a
             }
         }
     }
-    private fun setUpAccessCheck(){
+
+    private fun setUpAccessCheck() {
         viewModel.setAccessCheck(intent.getBooleanExtra("accessCheck", false))
     }
+
     fun setSubscribePopup() {
         binding.includePopupSubscribe.ivExit.setOnClickListener {
-            sharedPreferenceUtil.setString("subscribeCheckTenMinutes", getCurrentDateTimeString())
-            binding.includePopupSubscribe.root.visibility = View.GONE
-            binding.view2.visibility = View.GONE
+            // 진입 시 표시되는 팝업일 경우에만 시간 체크
+            if (viewModel.subscribePopupEnter.value == true)
+                sharedPreferenceUtil.setString(
+                    "subscribeCheckTenMinutes",
+                    getCurrentDateTimeString()
+                )
+
+            viewModel.subscribePopupShow.postValue(false)
         }
     }
 }
