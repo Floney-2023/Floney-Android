@@ -12,6 +12,7 @@ import com.aos.floney.ext.formatNumber
 import com.aos.floney.ext.parseErrorMsg
 import com.aos.floney.util.EventFlow
 import com.aos.floney.util.MutableEventFlow
+import com.aos.floney.util.getAdvertiseTenMinutesCheck
 import com.aos.model.book.UiBookCategory
 import com.aos.model.home.DayMoneyFavoriteItem
 import com.aos.model.home.DayMoneyModifyItem
@@ -22,6 +23,8 @@ import com.aos.usecase.history.GetBookFavoriteUseCase
 import com.aos.usecase.history.PostBooksFavoritesUseCase
 import com.aos.usecase.history.PostBooksLinesChangeUseCase
 import com.aos.usecase.history.PostBooksLinesUseCase
+import com.aos.usecase.subscribe.SubscribeBenefitUseCase
+import com.aos.usecase.subscribe.SubscribeUserBenefitUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -40,7 +43,9 @@ class HistoryViewModel @Inject constructor(
     private val deleteBookLineUseCase: DeleteBookLineUseCase,
     private val deleteBooksLinesAllUseCase: DeleteBooksLinesAllUseCase,
     private val postBooksFavoritesUseCase : PostBooksFavoritesUseCase,
-    private val getBookFavoriteUseCase: GetBookFavoriteUseCase
+    private val getBookFavoriteUseCase: GetBookFavoriteUseCase,
+    private val subscribeBenefitUseCase: SubscribeBenefitUseCase,
+    private val SubscribeUserBenefitUseCase: SubscribeUserBenefitUseCase
 ) : BaseViewModel() {
 
     val onCheckedChangeListener: (Boolean) -> Unit = { isChecked ->
@@ -298,29 +303,7 @@ class HistoryViewModel @Inject constructor(
 
     // 내역 수정
     private fun postModifyHistory() {
-        subscribeExpired.value = prefs.getBoolean("subscribe_expired", false)
-        if(!subscribeExpired.value!!){
-            viewModelScope.launch(Dispatchers.IO) {
-                val tempMoney = cost.value!!.replace(",", "")
-                postBooksLinesChangeUseCase(
-                    lineId = modifyId,
-                    bookKey = prefs.getString("bookKey", ""),
-                    money = tempMoney.replace(CurrencyUtil.currency, "")
-                        .toDouble(),
-                    flow = flow.value!!,
-                    asset = asset.value!!,
-                    line = line.value!!,
-                    lineDate = date.value!!.replace(".", "-"),
-                    description = content.value!!,
-                    except = deleteChecked.value!!,
-                    nickname = nickname.value!!,
-                ).onSuccess {
-                    _postModifyBooksLines.emit(true)
-                }.onFailure {
-                    baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@HistoryViewModel)))
-                }
-            }
-        }
+        getSubscribeBenefitChecking() // 구독 혜택 적용 확인
     }
 
     // 내역 삭제
@@ -688,4 +671,70 @@ class HistoryViewModel @Inject constructor(
         }
     }
 
+    // 구독 혜택 받고 있는 지 여부 가져오기
+    fun getSubscribeBenefitChecking() {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val bookKey = prefs.getString("bookKey", "")
+
+                // 가계부 혜택 확인
+                val benefitResult = subscribeBenefitUseCase(bookKey)
+                benefitResult.onFailure {
+                    baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
+                    return@launch // 실패 시 작업 종료
+                }
+
+                // 유저 혜택 확인
+                val userBenefitResult = SubscribeUserBenefitUseCase()
+                userBenefitResult.onFailure {
+                    baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
+                    return@launch // 실패 시 작업 종료
+                }
+
+                // 두 작업이 모두 성공한 경우 처리
+                benefitResult.onSuccess { bookBenefit ->
+                    userBenefitResult.onSuccess { userBenefit ->
+                        // 10분 타이머 남은 시간
+                        val remainTime = prefs.getString("subscribeCheckTenMinutes", "")
+
+                        // 구독 만료 여부
+                        val expiredCheck =
+                            bookBenefit.maxFavorite || bookBenefit.overBookUser || userBenefit.maxBook
+                        Timber.i("book : ${bookBenefit} user : ${userBenefit} remainTime : ${remainTime}")
+
+                        // 구독 만료 여부 업데이트
+                        subscribeExpired.postValue(expiredCheck)
+
+                        if(!expiredCheck) // 만료되지 않았다면 수정
+                            goModifyHistory()
+                    }
+                }
+            } catch (e: Exception) {
+                // 코루틴 실행 중 발생한 예외 처리
+                baseEvent(Event.ShowToast(e.message.parseErrorMsg()))
+            }
+        }
+    }
+    fun goModifyHistory(){
+        viewModelScope.launch(Dispatchers.IO) {
+            val tempMoney = cost.value!!.replace(",", "")
+            postBooksLinesChangeUseCase(
+                lineId = modifyId,
+                bookKey = prefs.getString("bookKey", ""),
+                money = tempMoney.replace(CurrencyUtil.currency, "")
+                    .toDouble(),
+                flow = flow.value!!,
+                asset = asset.value!!,
+                line = line.value!!,
+                lineDate = date.value!!.replace(".", "-"),
+                description = content.value!!,
+                except = deleteChecked.value!!,
+                nickname = nickname.value!!,
+            ).onSuccess {
+                _postModifyBooksLines.emit(true)
+            }.onFailure {
+                baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@HistoryViewModel)))
+            }
+        }
+    }
 }
