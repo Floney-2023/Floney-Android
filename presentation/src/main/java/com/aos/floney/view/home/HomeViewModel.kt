@@ -470,6 +470,11 @@ class HomeViewModel @Inject constructor(
                 // 구독 안한 상태일 경우, 혜택(가계부, 개인)이 적용되어있는 지 확인
                 if(!it.isValid)
                     getSubscribeBenefitChecking()
+                else // 구독을 한 상태라면 광고 off 상태로 변경
+                {
+                    prefs.setString("advertiseTime", "")
+                    _showAdvertisement.postValue(false)
+                }
             }.onFailure {
                 baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
             }
