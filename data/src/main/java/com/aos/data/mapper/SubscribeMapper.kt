@@ -85,7 +85,7 @@ fun calculateRemainingDays(
     }
 
     return targetTime?.let {
-        val diff = (it - currentTime) / (1000 * 60 * 60 * 24)
+        val diff =  (currentTime - it) / (1000 * 60 * 60 * 24)
         if (autoRenewing) "D+${diff + 1}" else "D-${-diff - 1}"
     }
 }
