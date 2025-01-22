@@ -258,6 +258,7 @@ class HistoryActivity :
 
         repeatOnStarted {
             viewModel.onClickCloseBtn.collect {
+                Timber.e("onClickCloseBtn $it")
                 if (it) {
                     // 수정 내역 있음
                     BaseAlertDialog(

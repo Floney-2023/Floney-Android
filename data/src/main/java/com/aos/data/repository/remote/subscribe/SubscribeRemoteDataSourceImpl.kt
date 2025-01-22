@@ -27,4 +27,8 @@ class SubscribeRemoteDataSourceImpl @Inject constructor(private val subscribeSer
     override suspend fun getPresignedUrl(bookKey: String): NetworkState<GetPresignedUrlEntity> {
         return subscribeService.getPresignedUrl(bookKey)
     }
+
+    override suspend fun getSubscribeBook(bookKey: String): NetworkState<GetSubscribeAndroidEntity> {
+        return subscribeService.getSubscribeBook(bookKey)
+    }
 }

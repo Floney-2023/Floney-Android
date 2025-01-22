@@ -30,4 +30,10 @@ interface SubscribeService {
     suspend fun getPresignedUrl(
         @Query("bookKey") bookKey: String
     ): NetworkState<GetPresignedUrlEntity>
+
+    @GET("subscribe/book")
+    @Headers("Auth: true")
+    suspend fun getSubscribeBook(
+        @Query("bookKey") bookKey: String
+    ): NetworkState<GetSubscribeAndroidEntity>
 }

@@ -188,7 +188,9 @@ class BookRepositoryImpl @Inject constructor(private val bookDataSource: BookRem
         description: String,
         except: Boolean,
         nickname: String,
-        repeatDuration: String
+        repeatDuration: String,
+        memo: String,
+        imageUrl: List<String>,
     ): Result<PostBooksLinesModel> {
         when (val data = bookDataSource.postBooksLines(
             PostBooksLinesBody(
@@ -201,7 +203,9 @@ class BookRepositoryImpl @Inject constructor(private val bookDataSource: BookRem
                 description,
                 except,
                 nickname,
-                repeatDuration
+                repeatDuration,
+                memo,
+                imageUrl
             )
         )) {
             is NetworkState.Success -> return Result.success(data.body.toPostBooksLinesModel())

@@ -71,6 +71,7 @@ import com.aos.model.book.UiBookEntranceModel
 import com.aos.model.book.UiBookFavoriteModel
 import com.aos.model.book.UiBookRepeatModel
 import com.aos.model.home.CarryOverInfo
+import com.aos.model.home.ImageUrls
 import com.aos.model.settlement.NaverShortenUrlModel
 
 // 유저 가계부 유효 확인
@@ -238,6 +239,13 @@ fun GetBookDaysEntity.toUiBookMonthModel(): UiBookDayModel {
             writerNickName = it.writerNickname,
             writerProfileImg = it.writerProfileImg,
             repeatDuration = getConvertReceiveRepeatValue(it.repeatDuration),
+            memo = it.memo,
+            imageUrls = it.imageUrls.map { image ->
+                ImageUrls(
+                    image.id,
+                    image.url
+                )
+            },
             seeProfileStatus = false
         )
     }

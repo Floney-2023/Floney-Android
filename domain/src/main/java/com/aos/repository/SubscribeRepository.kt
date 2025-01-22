@@ -11,6 +11,9 @@ interface SubscribeRepository {
     // 구독 여부 가져오기
     suspend fun getSubscribeCheck(): Result<GetSubscribeAndroidModel>
 
+    // 구독 여부 가져오기
+    suspend fun getSubscribeBook(bookKey: String): Result<GetSubscribeAndroidModel>
+
     // PresignedUrl 가져오기
     suspend fun getPresignedUrl(bookKey: String): Result<GetPresignedUrlModel>
 }

@@ -26,6 +26,7 @@ import com.aos.usecase.home.GetMoneyHistoryDaysUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -204,6 +205,8 @@ class HomeViewModel @Inject constructor(
                 writerNickName = "",
                 writerProfileImg = "user_default",
                 repeatDuration = "없음",
+                memo = "",
+                imageUrls = listOf(),
                 seeProfileStatus = seeProfileStatus
             )
         } else {

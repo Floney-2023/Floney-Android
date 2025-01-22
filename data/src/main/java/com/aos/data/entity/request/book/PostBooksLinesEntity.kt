@@ -12,5 +12,7 @@ data class PostBooksLinesEntity(
     val description: String,
     val except: String,
     val nickname: String,
-    val repeatDuration: String
+    val repeatDuration: String,
+    val memo: String,
+    val imageUrls: List<String>
 )

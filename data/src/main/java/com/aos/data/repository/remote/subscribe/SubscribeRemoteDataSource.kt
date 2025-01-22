@@ -17,4 +17,5 @@ interface SubscribeRemoteDataSource {
     suspend fun getSubscribeCheck(): NetworkState<GetSubscribeAndroidEntity>
 
     suspend fun getPresignedUrl(bookKey: String): NetworkState<GetPresignedUrlEntity>
+    suspend fun getSubscribeBook(bookKey: String): NetworkState<GetSubscribeAndroidEntity>
 }
