@@ -99,6 +99,10 @@ class MyPageMainViewModel @Inject constructor(
     private var _reviewPage = MutableEventFlow<Boolean>()
     val reviewPage: EventFlow<Boolean> get() = _reviewPage
 
+    // 구독 해지하기 페이지
+    private var _unsubscribePage = MutableEventFlow<Boolean>()
+    val unsubscribePage : EventFlow<Boolean> get() = _unsubscribePage
+
     // 마이페이지 정보 로드
     private var _loadCheck = MutableEventFlow<Boolean>()
     val loadCheck: EventFlow<Boolean> get() = _loadCheck
@@ -264,6 +268,12 @@ class MyPageMainViewModel @Inject constructor(
         }
     }
 
+    // 구독 해지하기 페이지 이동
+    fun onClickUnsubscribePage() {
+        viewModelScope.launch {
+            _unsubscribePage.emit(true)
+        }
+    }
     // 최근 저장 가계부 저장 (가계부 전환)
     fun settingBookKey(bookKey: String) {
         viewModelScope.launch(Dispatchers.Main) {

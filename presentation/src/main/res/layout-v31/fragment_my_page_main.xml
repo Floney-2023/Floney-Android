@@ -647,7 +647,7 @@
                     </LinearLayout>
 
                     <TextView
-                        android:id="@+id/textView3"
+                        android:id="@+id/tv_unsubscribe_btn"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="24dp"
@@ -658,6 +658,7 @@
                         android:visibility="@{vm.subscribeCheck ? View.VISIBLE : View.GONE}"
                         android:textColor="@color/grayscale6"
                         android:textSize="12dp"
+                        android:onClick="@{() -> vm.onClickUnsubscribePage()}"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/li_usage_right" />

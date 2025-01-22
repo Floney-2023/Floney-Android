@@ -19,6 +19,7 @@ import com.aos.floney.databinding.ActivityMyPageBinding
 import com.aos.floney.databinding.FragmentMyPageMainBinding
 import com.aos.floney.ext.repeatOnStarted
 import com.aos.floney.view.analyze.AnalyzeActivity
+import com.aos.floney.view.common.BaseAlertDialog
 import com.aos.floney.view.common.ErrorToastDialog
 import com.aos.floney.view.home.HomeActivity
 import com.aos.floney.view.home.HomeMonthTypeFragment
@@ -166,6 +167,33 @@ class MyPageMainFragment : BaseFragment<FragmentMyPageMainBinding, MyPageMainVie
             viewModel.adMobPage.collect {
                 if (it){
                     setUpAdMob()
+                }
+            }
+        }
+        repeatOnStarted {
+            viewModel.unsubscribePage.collect{
+                if (it){
+                    // 구독 해지 여부 확인 팝업
+                    BaseAlertDialog(title = getString(R.string.unsubscribe_notice_pop_title), info = getString(R.string.unsubscribe_notice_pop_info), true) {
+                        if(it) {
+
+                            val packageName = requireActivity().packageName // 현재 앱의 패키지 이름
+                            val uri = Uri.parse("https://play.google.com/store/account/subscriptions?package=$packageName")
+
+                            val intent = Intent(Intent.ACTION_VIEW, uri).apply {
+                                setPackage("com.android.vending") // Play Store 앱으로만 열리도록 설정
+                            }
+
+                            // Play Store 앱이 설치되어 있는지 확인
+                            if (intent.resolveActivity(requireActivity().packageManager) != null) {
+                                requireActivity().startActivity(intent)
+                            } else {
+                                // Play Store 앱이 없는 경우 처리
+                                Timber.e("Playstore 필요")
+                            }
+
+                        }
+                    }.show(parentFragmentManager, "baseAlertDialog")
                 }
             }
         }
