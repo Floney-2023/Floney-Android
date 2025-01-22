@@ -34,7 +34,7 @@ class MyPageInformWithdrawReasonCheckFragment :
                     val reasonType = it
                     val reason = viewModel.directInputText.value ?: ""
 
-                    if (true)
+                    if (viewModel.subscribeCheck.value!!) // 구독 결제가 유효한 경우
                     {
                         val subScribeDialogFragment = WarningPopupDialog(
                             getString(R.string.unsubscribe_exit_popup_title),

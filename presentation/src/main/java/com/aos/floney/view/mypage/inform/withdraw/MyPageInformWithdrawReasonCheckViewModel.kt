@@ -6,8 +6,10 @@ import androidx.lifecycle.viewModelScope
 import com.aos.data.util.SharedPreferenceUtil
 import com.aos.floney.R
 import com.aos.floney.base.BaseViewModel
+import com.aos.floney.ext.parseErrorMsg
 import com.aos.floney.util.EventFlow
 import com.aos.floney.util.MutableEventFlow
+import com.aos.usecase.subscribe.SubscribeCheckUseCase
 import com.aos.usecase.withdraw.WithdrawUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -19,6 +21,7 @@ import javax.inject.Inject
 class MyPageInformWithdrawReasonCheckViewModel @Inject constructor(
     private val prefs: SharedPreferenceUtil,
     private val withdrawUseCase: WithdrawUseCase,
+    private val subscribeCheckUseCase: SubscribeCheckUseCase
 ) : BaseViewModel() {
 
     // 뒤로가기
@@ -59,7 +62,13 @@ class MyPageInformWithdrawReasonCheckViewModel @Inject constructor(
     private var _withdrawPage = MutableEventFlow<Boolean>()
     val withdrawPage: EventFlow<Boolean> get() = _withdrawPage
 
+    // 구독 결제 여부
+    var subscribeCheck = MutableLiveData<Boolean>(false)
+
     init {
+        // 구독 여부를 가져옵니다.
+        getSubscribeChecking()
+
         // 각 체크박스의 상태를 변경할 때 다른 체크박스의 상태를 변경합니다.
         _howToUseTerms.observeForever {
             if (it) {
@@ -215,6 +224,17 @@ class MyPageInformWithdrawReasonCheckViewModel @Inject constructor(
             }.onFailure {
                 baseEvent(Event.HideLoading)
                 baseEvent(Event.ShowToast("알 수 없는 오류입니다. 다시 시도해 주세요."))
+            }
+        }
+    }
+
+    // 구독 여부 가져오기
+    fun getSubscribeChecking(){
+        viewModelScope.launch(Dispatchers.IO) {
+            subscribeCheckUseCase().onSuccess {
+                subscribeCheck.postValue(it.isValid)
+            }.onFailure {
+                baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
             }
         }
     }
