@@ -21,6 +21,7 @@ import com.aos.floney.ext.repeatOnStarted
 import com.aos.floney.view.analyze.AnalyzeActivity
 import com.aos.floney.view.common.BaseAlertDialog
 import com.aos.floney.view.common.ErrorToastDialog
+import com.aos.floney.view.common.WarningPopupDialog
 import com.aos.floney.view.home.HomeActivity
 import com.aos.floney.view.home.HomeMonthTypeFragment
 import com.aos.floney.view.mypage.MyPageActivity
@@ -227,6 +228,20 @@ class MyPageMainFragment : BaseFragment<FragmentMyPageMainBinding, MyPageMainVie
                 } else{ // 구독 중이 아닐 경우, 구독하기 화면으로 이동
                     val activity = requireActivity() as MyPageActivity
                     activity.startSubscribePlanActivity()
+                }
+            }
+        }
+        repeatOnStarted {
+            viewModel.unsubscribePopup.collect {
+                if(it) {
+                    // 구독 해지 완료 팝업
+                    val exitDialogFragment = WarningPopupDialog(
+                        getString(R.string.unsubscribe_popup_title),
+                        getString(R.string.unsubscribe_popup_info),
+                        getString(R.string.already_pick_button),getString(R.string.already_pick_button),
+                        true
+                    ){}
+                    exitDialogFragment.show(parentFragmentManager, "initDialog")
                 }
             }
         }

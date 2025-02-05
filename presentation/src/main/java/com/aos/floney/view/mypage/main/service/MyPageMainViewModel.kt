@@ -112,7 +112,12 @@ class MyPageMainViewModel @Inject constructor(
     val subscribePage: EventFlow<Boolean> get() = _subscribePage
 
     // 구독 여부
-    var subscribeCheck = MutableLiveData<Boolean>(false)
+    private var _subscribeCheck = MutableLiveData<Boolean>(false)
+    val subscribeCheck: LiveData<Boolean> get() = _subscribeCheck
+
+    // 구독 해지 팝업 로드
+    private var _unsubscribePopup = MutableEventFlow<Boolean>()
+    val unsubscribePopup: EventFlow<Boolean> get() = _unsubscribePopup
 
     // 가계부 추가 가능 여부
     var walletAddCheck = MutableLiveData<Boolean>(false)
@@ -156,7 +161,13 @@ class MyPageMainViewModel @Inject constructor(
                     it.isValid -> mypageInfo.value!!.myBooks.size < 4
                     else -> mypageInfo.value!!.myBooks.size < 2
                 })
-                subscribeCheck.postValue(it.isValid)
+
+                Timber.e("기존 구독 상태 : ${_subscribeCheck.value} 현재 구독 상태 : ${it.isValid}")
+                // 구독 상태였다가, 새로 읽어온 값이 false라면(=구독 취소된 상태) 구독 취소 팝업
+                if(subscribeCheck.value == true && !it.isValid)
+                    _unsubscribePopup.emit(true)
+
+                _subscribeCheck.postValue(it.isValid)
             }.onFailure {
                 baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
             }
