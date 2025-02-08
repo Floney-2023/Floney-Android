@@ -13,5 +13,7 @@ data class PostBooksLinesBody (
     val description: String,
     val except: Boolean,
     val nickname: String,
-    val repeatDuration: String
+    val repeatDuration: String,
+    val memo: String,
+    val imageUrl: List<String>
 )

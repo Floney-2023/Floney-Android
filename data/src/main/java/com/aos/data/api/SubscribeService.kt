@@ -50,4 +50,10 @@ interface SubscribeService {
     @Headers("Auth: true")
     suspend fun getSubscribeUserBenefit(
     ): NetworkState<GetSubscribeUserBenefitEntity>
+
+    @GET("subscribe/book")
+    @Headers("Auth: true")
+    suspend fun getSubscribeBook(
+        @Query("bookKey") bookKey: String
+    ): NetworkState<GetSubscribeAndroidEntity>
 }

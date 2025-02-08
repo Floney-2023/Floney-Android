@@ -235,7 +235,9 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(R.layout.a
                     assetSubCategory = item.assetSubCategory,
                     exceptStatus = item.exceptStatus,
                     writerNickName = item.writerNickName,
-                    repeatDuration = item.repeatDuration
+                    repeatDuration = item.repeatDuration,
+                    memo = item.memo,
+                    imageUrls = item.imageUrls
                 )
             )
         )

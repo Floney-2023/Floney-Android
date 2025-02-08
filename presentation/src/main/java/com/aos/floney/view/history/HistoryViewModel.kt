@@ -25,6 +25,7 @@ import com.aos.usecase.history.PostBooksLinesChangeUseCase
 import com.aos.usecase.history.PostBooksLinesUseCase
 import com.aos.usecase.subscribe.SubscribeBenefitUseCase
 import com.aos.usecase.subscribe.SubscribeUserBenefitUseCase
+import com.aos.usecase.subscribe.SubscribeBookUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -37,6 +38,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HistoryViewModel @Inject constructor(
     private val prefs: SharedPreferenceUtil,
+    private val subscribeBookUseCase: SubscribeBookUseCase,
     private val getBookCategoryUseCase: GetBookCategoryUseCase,
     private val postBooksLinesUseCase: PostBooksLinesUseCase,
     private val postBooksLinesChangeUseCase: PostBooksLinesChangeUseCase,
@@ -100,6 +102,8 @@ class HistoryViewModel @Inject constructor(
     private var _postBooksFavorites = MutableEventFlow<Boolean>()
     val postBooksFavorites: EventFlow<Boolean> get() = _postBooksFavorites
 
+    private var _getIsSubscribe = MutableLiveData<Boolean>(false)
+    val getIsSubscribe: LiveData<Boolean> get() = _getIsSubscribe
 
     // 날짜
     private var tempDate = ""
@@ -161,6 +165,10 @@ class HistoryViewModel @Inject constructor(
     private var urlList = listOf<String>()
 
     init {
+        // 구독 여부 조회
+        getSubscribeBook()
+
+        // 데이터 세팅
         val array = arrayListOf<UiBookCategory>(
             UiBookCategory(0, true, "없음", false),
             UiBookCategory(1, false, "매일", false),
@@ -197,6 +205,13 @@ class HistoryViewModel @Inject constructor(
         content.value = item.description
         _nickname.value = item.writerNickName
         deleteChecked.value = item.exceptStatus
+        memo = item.memo
+        urlList = item.imageUrls.map {
+            it.url
+        }
+
+        Timber.e("memo $memo")
+        Timber.e("url $urlList")
 
         _repeatClickItem.value = UiBookCategory(
             idx = 1,
@@ -224,6 +239,18 @@ class HistoryViewModel @Inject constructor(
     fun setFavoriteMode(){
         mode.value = "favorite"
     }
+
+    private fun getSubscribeBook() {
+        viewModelScope.launch {
+            subscribeBookUseCase(prefs.getString("bookKey", "")).onSuccess {
+                _getIsSubscribe.postValue(it.isValid)
+            }.onFailure {
+                Timber.e("message ${it.message}")
+                baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@HistoryViewModel)))
+            }
+        }
+    }
+
     // 자산/분류 카테고리 항목 가져오기
     private fun getBookCategory() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -292,7 +319,9 @@ class HistoryViewModel @Inject constructor(
                 },
                 except = deleteChecked.value!!,
                 nickname = nickname.value!!,
-                repeatDuration = getConvertSendRepeatValue()
+                repeatDuration = getConvertSendRepeatValue(),
+                memo = memo,
+                imageUrl = urlList
             ).onSuccess {
                 _postBooksLines.emit(true)
             }.onFailure {
@@ -377,7 +406,7 @@ class HistoryViewModel @Inject constructor(
 
     // 추가한 내용이 있는지 체크
     private fun isExistAdd(): Boolean {
-        return date.value != "날짜를 선택하세요" || cost.value != "" || asset.value != "자산을 선택하세요" || line.value != "분류를 선택하세요" || content.value != ""
+        return cost.value != "" || asset.value != "자산을 선택하세요" || line.value != "분류를 선택하세요" || content.value != ""
     }
 
     // 닫기 버튼 클릭

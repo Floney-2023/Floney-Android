@@ -62,7 +62,9 @@ interface BookRepository {
         description: String,
         except: Boolean,
         nickname: String,
-        repeatDuration: String
+        repeatDuration: String,
+        memo: String,
+        imageUrl: List<String>
     ): Result<PostBooksLinesModel>
 
     // 가계부 내역 수정

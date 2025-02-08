@@ -26,4 +26,6 @@ interface SubscribeRemoteDataSource {
     suspend fun getSubscribeBenefit(bookKey: String): NetworkState<GetSubscribeBenefitEntity>
 
     suspend fun getSubscribeUserBenefit(): NetworkState<GetSubscribeUserBenefitEntity>
+
+    suspend fun getSubscribeBook(bookKey: String): NetworkState<GetSubscribeAndroidEntity>
 }

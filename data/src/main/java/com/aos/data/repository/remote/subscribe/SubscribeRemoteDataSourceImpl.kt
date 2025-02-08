@@ -43,4 +43,8 @@ class SubscribeRemoteDataSourceImpl @Inject constructor(private val subscribeSer
     override suspend fun getSubscribeUserBenefit(): NetworkState<GetSubscribeUserBenefitEntity> {
         return subscribeService.getSubscribeUserBenefit()
     }
+
+    override suspend fun getSubscribeBook(bookKey: String): NetworkState<GetSubscribeAndroidEntity> {
+        return subscribeService.getSubscribeBook(bookKey)
+    }
 }

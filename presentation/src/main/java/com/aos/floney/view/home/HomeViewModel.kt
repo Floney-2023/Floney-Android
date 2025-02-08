@@ -221,6 +221,8 @@ class HomeViewModel @Inject constructor(
                 writerNickName = "",
                 writerProfileImg = "user_default",
                 repeatDuration = "없음",
+                memo = "",
+                imageUrls = listOf(),
                 seeProfileStatus = seeProfileStatus
             )
         } else {
