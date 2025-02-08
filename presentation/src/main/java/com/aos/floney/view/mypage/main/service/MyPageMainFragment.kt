@@ -5,6 +5,8 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import androidx.databinding.library.baseAdapters.BR
 import androidx.navigation.fragment.findNavController
@@ -21,6 +23,7 @@ import com.aos.floney.ext.repeatOnStarted
 import com.aos.floney.view.analyze.AnalyzeActivity
 import com.aos.floney.view.common.BaseAlertDialog
 import com.aos.floney.view.common.ErrorToastDialog
+import com.aos.floney.view.common.SuccessToastDialog
 import com.aos.floney.view.common.WarningPopupDialog
 import com.aos.floney.view.home.HomeActivity
 import com.aos.floney.view.home.HomeMonthTypeFragment
@@ -189,8 +192,13 @@ class MyPageMainFragment : BaseFragment<FragmentMyPageMainBinding, MyPageMainVie
                             if (intent.resolveActivity(requireActivity().packageManager) != null) {
                                 requireActivity().startActivity(intent)
                             } else {
-                                // Play Store 앱이 없는 경우 처리
-                                Timber.e("Playstore 필요")
+                                // Play Store 앱이 없는 경우 팝업
+                                val errorToastDialog = ErrorToastDialog(requireContext(), "플레이 스토어가 설치 되어 있지 않습니다.")
+                                errorToastDialog.show()
+
+                                Handler(Looper.myLooper()!!).postDelayed({
+                                    errorToastDialog.dismiss()
+                                }, 2000)
                             }
 
                         }
