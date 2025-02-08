@@ -32,7 +32,7 @@ class BillingManager(
         fun onPurchaseSuccess(checking: Boolean)
     }
 
-    private lateinit var billingClient : BillingClient
+    private lateinit var billingClient: BillingClient
 
     init {
         billingClient = BillingClient.newBuilder(activity)
@@ -136,5 +136,25 @@ class BillingManager(
             ).build()
 
         billingClient.launchBillingFlow(activity, billingFlowParams) // Activity로 구매 플로우 실행
+    }
+
+    fun queryActiveSubscriptions() {
+        billingClient.queryPurchasesAsync(BillingClient.ProductType.SUBS) { billingResult, purchasesList ->
+            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+                if (purchasesList != null) {
+                    for (purchase in purchasesList) {
+                        if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
+                            val purchaseToken = purchase.purchaseToken
+                            Timber.i("Active subscription found with token: $purchaseToken")
+
+                            // 서버로 구매 토큰을 보내거나 처리
+                            billingCallback.onPurchaseTokenReceived(purchaseToken, purchase)
+                        }
+                    }
+                }
+            } else {
+                Timber.e("Error querying active subscriptions")
+            }
+        }
     }
 }
