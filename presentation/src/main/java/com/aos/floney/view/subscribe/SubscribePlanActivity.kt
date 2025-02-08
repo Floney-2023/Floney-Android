@@ -8,6 +8,8 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.databinding.library.baseAdapters.BR
 import com.aos.data.util.SharedPreferenceUtil
@@ -18,6 +20,7 @@ import com.aos.floney.databinding.ActivityBookEntranceBinding
 import com.aos.floney.databinding.ActivitySubscribePlanBinding
 import com.aos.floney.ext.repeatOnStarted
 import com.aos.floney.view.common.BaseAlertDialog
+import com.aos.floney.view.common.ErrorToastDialog
 import com.aos.floney.view.common.WarningPopupDialog
 import com.aos.floney.view.home.HomeActivity
 import com.aos.floney.view.login.LoginActivity
@@ -66,7 +69,26 @@ class SubscribePlanActivity : BaseActivity<ActivitySubscribePlanBinding, Subscri
             // 구매 정보 복원하기
             viewModel.subscribeRestore.collect {
                 if(it) {
-                    finish()
+                    // 플레이스토어 정기 결제 내역으로 이동
+                    val packageName = packageName // 현재 앱의 패키지 이름
+                    val uri = Uri.parse("https://play.google.com/store/account/subscriptions?package=$packageName")
+
+                    val intent = Intent(Intent.ACTION_VIEW, uri).apply {
+                        setPackage("com.android.vending") // Play Store 앱으로만 열리도록 설정
+                    }
+
+                    // Play Store 앱이 설치되어 있는지 확인
+                    if (intent.resolveActivity(packageManager) != null) {
+                        startActivity(intent)
+                    } else {
+                        // Play Store 앱이 없는 경우 팝업
+                        val errorToastDialog = ErrorToastDialog(applicationContext, "플레이 스토어가 설치 되어 있지 않습니다.")
+                        errorToastDialog.show()
+
+                        Handler(Looper.myLooper()!!).postDelayed({
+                            errorToastDialog.dismiss()
+                        }, 2000)
+                    }
                 }
             }
         }
