@@ -92,16 +92,22 @@ class MyPageAlarmActivity : BaseActivity<ActivityMyPageAlarmBinding, MyPageAlarm
         val tabLayoutViewGroup = binding.tabLayout.getChildAt(0) as ViewGroup
         for (i in 0 until binding.tabLayout.tabCount) {
             val tab = tabLayoutViewGroup.getChildAt(i)
-            val layoutParams = tab.layoutParams as ViewGroup.LayoutParams
+            val layoutParams = tab.layoutParams as ViewGroup.MarginLayoutParams
 
-            if (tabCount == 2) {
+            if (binding.tabLayout.tabCount == 2) {
                 // 2개일 때는 반반씩 나누기
                 layoutParams.width = 0
                 (layoutParams as LinearLayout.LayoutParams).weight = 1f
-            } else if (tabCount >= 3) {
+            } else if (binding.tabLayout.tabCount >= 3) {
                 // 3개 이상일 때는 각 탭당 129dp로 고정
                 layoutParams.width = dpToPx(129)  // 129dp로 고정
             }
+
+            // 각 탭 간 간격 추가 (마지막 탭 제외)
+            if (i < binding.tabLayout.tabCount - 1) {
+                layoutParams.setMargins(0, 0, dpToPx(16), 0)  // 16dp 간격 추가
+            }
+
             tab.layoutParams = layoutParams
         }
     }

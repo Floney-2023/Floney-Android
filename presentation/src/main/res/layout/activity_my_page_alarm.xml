@@ -46,7 +46,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/white"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="28dp"
             android:layout_marginHorizontal="20dp"
             android:visibility="@{vm.bookList.size()>1? View.VISIBLE : View.GONE}"
             app:tabIndicator="@android:color/transparent"
@@ -60,14 +60,15 @@
             app:tabTextAppearance="@style/TabLayoutTextStyle"
             app:tabTextColor="@color/grayscale8"
             app:tabIndicatorFullWidth="true"
-            app:tabIndicatorHeight="4dp"/>
+            app:tabIndicatorHeight="4dp"
+            app:tabRippleColor="@android:color/transparent"/>
 
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/viewpager_alarm_view"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginStart="20dp"
-            android:layout_marginTop="25dp"
+            bind:setViewMarginTop="@{vm.bookList.size()>1 ? 24 : 36}"
             android:layout_marginEnd="20dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

@@ -4,7 +4,6 @@ import android.app.Activity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import androidx.test.internal.util.LogUtil
 import com.android.billingclient.api.Purchase
 import com.aos.data.util.SharedPreferenceUtil
 import com.aos.floney.base.BaseViewModel
