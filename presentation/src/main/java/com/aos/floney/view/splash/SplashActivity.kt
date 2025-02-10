@@ -26,9 +26,7 @@ import com.aos.data.util.CurrencyUtil
 import com.aos.floney.BuildConfig
 import com.aos.floney.util.RemoteConfigWrapper
 import com.aos.floney.view.book.entrance.BookEntranceActivity
-import com.aos.floney.view.book.setting.category.BookCategoryActivity
 import com.aos.floney.view.common.BaseAlertDialog
-import com.aos.floney.view.common.WarningPopupDialog
 import com.aos.floney.view.home.HomeActivity
 import com.aos.floney.view.settleup.SettleUpActivity
 import com.aos.floney.view.signup.SignUpCompleteActivity
@@ -58,11 +56,15 @@ class SplashActivity :
         setPreferenceUtil()
     }
 
-    private fun checkPauseUpdate() { // 서버 변경으로 인한 임시 중단 팝업
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun checkPauseUpdate(maintenanceStart: LocalDateTime, maintenanceEnd: LocalDateTime) {
+        val formattedStart = maintenanceStart.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))
+        val formattedEnd = maintenanceEnd.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))
+
         BaseAlertDialog(title = "앱 중단 알림", info = "원활한 앱 사용을 위해 \n" +
-                "2024.11.14 22:00 - 2024.11.15 09:00\n" +
-                "앱 점검을 진행합니다. \n" +
-                "위 시간 동안 앱 사용이 불가하니 양해 부탁드립니다.\n", false) {
+                "${formattedStart} - ${formattedEnd}\n" +
+                "위 기간 동안 앱 점검을 진행합니다. \n" +
+                "앱 사용이 불가하니 양해 부탁드립니다.\n", false) {
             finishAffinity()
         }.show(supportFragmentManager, "PauseUpdateDialog")
     }
@@ -149,18 +151,18 @@ class SplashActivity :
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun checkServerStatusAndUpdate() {
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+        // RemoteConfigWrapper에서 점검 시작 및 종료 시간 가져오기
+        val (maintenanceStart, maintenanceEnd) = remoteConfigWrapper.fetchMaintenanceTimes()
         val currentDateTime = LocalDateTime.now()
-        val maintenanceStart = LocalDateTime.parse("2024-11-14 22:00", formatter)
-        val maintenanceEnd = LocalDateTime.parse("2024-11-15 09:00", formatter)
 
         if (currentDateTime.isAfter(maintenanceStart) && currentDateTime.isBefore(maintenanceEnd)) {
-            checkPauseUpdate()
+            checkPauseUpdate(maintenanceStart, maintenanceEnd) // 일시 중지 팝업
         }
         else {
-            checkForMandatoryUpdate()
+            checkForMandatoryUpdate() // 버전 업데이트 판단 여부
         }
     }
+
 
     private fun checkForMandatoryUpdate() { // 강제 업데이트 팝업
         val minSupportedVersion = remoteConfigWrapper.fetchAndActivateConfig()
