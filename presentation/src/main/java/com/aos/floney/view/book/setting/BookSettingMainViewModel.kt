@@ -92,7 +92,6 @@ class BookSettingMainViewModel @Inject constructor(
     private var _invitePage = MutableEventFlow<Boolean>()
     val invitePage: EventFlow<Boolean> get() = _invitePage
 
-
     // 친구 초대 페이지
     private var _repeatPage = MutableEventFlow<Boolean>()
     val repeatPage: EventFlow<Boolean> get() = _repeatPage
@@ -108,6 +107,20 @@ class BookSettingMainViewModel @Inject constructor(
     // 가계부 즐겨찾기 페이지
     private var _favoritePage = MutableEventFlow<Boolean>()
     val favoritePage: EventFlow<Boolean> get() = _favoritePage
+
+    // 가계부 사용자 펼쳐진 여부
+    private var _isFold = MutableLiveData<Boolean>(true)
+    val isFold: LiveData<Boolean> get() = _isFold
+
+
+    fun onClickFold() {
+        viewModelScope.launch {
+            withContext(Dispatchers.Default) {
+                _isFold.postValue(!_isFold.value!!)
+            }
+        }
+    }
+
 
     // 마이페이지 정보 읽어오기
     fun searchBookSettingItems()
