@@ -3,37 +3,28 @@ package com.aos.floney.view.settleup
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.aos.data.util.SharedPreferenceUtil
-import com.aos.floney.BuildConfig
 import com.aos.floney.BuildConfig.appsflyer_settlement_url
-import com.aos.floney.R
 import com.aos.floney.base.BaseViewModel
 import com.aos.floney.ext.parseErrorMsg
 import com.aos.floney.util.EventFlow
 import com.aos.floney.util.MutableEventFlow
 import com.aos.model.settlement.UiSettlementAddModel
-import com.aos.model.settlement.settleOutcomes
-import com.aos.usecase.settlement.BooksOutComesUseCase
-import com.aos.usecase.settlement.BooksUsersUseCase
-import com.aos.usecase.settlement.NaverShortenUrlUseCase
-import com.aos.usecase.settlement.SettlementAddUseCase
 import com.aos.usecase.settlement.SettlementDetailSeeUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
-import com.aos.floney.BuildConfig.naver_client_id
-import com.aos.floney.BuildConfig.naver_client_secret
+import com.aos.usecase.booksetting.BooksCodeCheckUseCase
 
 @HiltViewModel
 class SettleUpDetailSeeViewModel @Inject constructor(
     stateHandle: SavedStateHandle,
     private val prefs: SharedPreferenceUtil,
     private val settlementDetailSeeUseCase : SettlementDetailSeeUseCase,
-    private val naverShortenUrlUseCase : NaverShortenUrlUseCase
+    private val booksCodeCheckUseCase: BooksCodeCheckUseCase
 ): BaseViewModel() {
 
 
@@ -70,10 +61,10 @@ class SettleUpDetailSeeViewModel @Inject constructor(
     fun onClickedSharePage(){
         viewModelScope.launch(Dispatchers.IO) {
             baseEvent(Event.ShowLoading)
-            naverShortenUrlUseCase(naver_client_id, naver_client_secret, provideSettlementUrl()).onSuccess {
-                // 불러오기 성공
-                _sharedPage.emit(it.result)
-                baseEvent(Event.HideLoading)
+            booksCodeCheckUseCase(
+                prefs.getString("bookKey","")).onSuccess {
+                    baseEvent(Event.HideLoading)
+                    _sharedPage.emit(provideSettlementUrl(it.code))
             }.onFailure {
                 baseEvent(Event.HideLoading)
                 baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@SettleUpDetailSeeViewModel)))
@@ -87,7 +78,7 @@ class SettleUpDetailSeeViewModel @Inject constructor(
         }
     }
     // url 생성
-    fun provideSettlementUrl(): String {
-        return "https://floney.onelink.me${appsflyer_settlement_url}?settlementId=${settlementModel.value!!.id ?: ""}&bookKey=${prefs.getString("bookKey", "")}"
+    fun provideSettlementUrl(code: String): String {
+        return "https://floney.onelink.me${appsflyer_settlement_url}?settlementId=${settlementModel.value!!.id ?: ""}&bookCode=${code}"
     }
 }
