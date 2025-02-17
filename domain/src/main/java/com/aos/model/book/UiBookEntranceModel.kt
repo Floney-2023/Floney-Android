@@ -7,7 +7,8 @@ import timber.log.Timber
 data class UiBookEntranceModel(
     val bookName: String,
     val bookImg: String,
-    val bookInfo: String
+    val bookInfo: String,
+    val bookKey : String
 ){
     interface OnItemClickListener {
         fun onItemClick(item: UiBookEntranceModel)

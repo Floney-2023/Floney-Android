@@ -5,8 +5,6 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.aos.data.util.CurrencyUtil
@@ -15,7 +13,6 @@ import com.aos.floney.BuildConfig.appsflyer_dev_key
 import com.aos.floney.R
 import com.aos.floney.base.BaseActivity
 import com.aos.floney.databinding.ActivitySettleUpBinding
-import com.aos.floney.databinding.ItemPopupSubscribeUseBinding
 import com.aos.floney.ext.repeatOnStarted
 import com.aos.floney.util.getCurrentDateTimeString
 import com.aos.floney.view.analyze.AnalyzeActivity
@@ -178,10 +175,11 @@ class SettleUpActivity : BaseActivity<ActivitySettleUpBinding, SettleUpViewModel
                             val deepLinkObj = deepLinkResult.deepLink
 
                             val settlementId = deepLinkObj.values["settlementId"].toString().toLong()
-                            val bookKey = deepLinkObj.values["bookKey"].toString()
+                            val bookCode = deepLinkObj.values["bookCode"].toString()
 
-                            Timber.e("settlement ${settlementId} ------ ${bookKey}")
-                            goShareSettlement(settlementId, bookKey)
+                            Timber.e("settlement : ${settlementId} bookCode : ${bookCode}")
+
+                            viewModel.convertBookCodeToKey(settlementId, bookCode)
                         }
                     }
                     DeepLinkResult.Status.NOT_FOUND -> {
@@ -224,17 +222,13 @@ class SettleUpActivity : BaseActivity<ActivitySettleUpBinding, SettleUpViewModel
         })
     }
     private fun setShareSettlementInform(){ // 딥 링크로 부터 받아온 값
-        val settlementId = intent.getStringExtra("settlementId")?.toLong()
-        val bookKey = intent.getStringExtra("bookKey")?:""
-        goShareSettlement(settlementId, bookKey)
+        val settlementId = intent.getStringExtra("settlementId")?.toLong() ?: 0
+        val bookCode = intent.getStringExtra("bookCode")?:""
+
+        Timber.e("settlement : ${settlementId} bookCode : ${bookCode}")
+        viewModel.convertBookCodeToKey(settlementId, bookCode)
     }
-    private fun goShareSettlement(settlementId: Long?, bookKey: String) {
-        if (settlementId != null && bookKey.isNotEmpty()) {
-            viewModel.settingBookKey(settlementId, bookKey)
-        } else {
-            Log.d("DeepLink", "SettleUp not found")
-        }
-    }
+
     private fun setSubscribePopup() {
         binding.includePopupSubscribe.ivExit.setOnClickListener {
             // 진입 시 표시되는 팝업일 경우에만 시간 체크

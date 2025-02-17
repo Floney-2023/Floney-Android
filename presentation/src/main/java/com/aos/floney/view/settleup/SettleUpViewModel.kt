@@ -1,5 +1,6 @@
 package com.aos.floney.view.settleup
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -9,7 +10,7 @@ import com.aos.floney.ext.parseErrorMsg
 import com.aos.floney.util.EventFlow
 import com.aos.floney.util.MutableEventFlow
 import com.aos.floney.util.getAdvertiseTenMinutesCheck
-import com.aos.floney.util.getCurrentDateTimeString
+import com.aos.usecase.bookadd.BooksEntranceUseCase
 import com.aos.usecase.subscribe.SubscribeBenefitUseCase
 import com.aos.usecase.subscribe.SubscribeCheckUseCase
 import com.aos.usecase.subscribe.SubscribeUserBenefitUseCase
@@ -27,7 +28,8 @@ class SettleUpViewModel @Inject constructor(
     private val prefs: SharedPreferenceUtil,
     private val subscribeBenefitUseCase: SubscribeBenefitUseCase,
     private val SubscribeUserBenefitUseCase: SubscribeUserBenefitUseCase,
-    private val subscribeCheckUseCase: SubscribeCheckUseCase
+    private val subscribeCheckUseCase: SubscribeCheckUseCase,
+    private val booksEntranceUseCase : BooksEntranceUseCase
 ): BaseViewModel() {
 
 
@@ -146,4 +148,21 @@ class SettleUpViewModel @Inject constructor(
         }
     }
 
+    fun convertBookCodeToKey(settlementId: Long, bookCode: String) {
+        viewModelScope.launch {
+            booksEntranceUseCase(bookCode).onSuccess {
+                goShareSettlement(settlementId, it.bookKey)
+            }.onFailure {
+                baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@SettleUpViewModel)))
+            }
+        }
+    }
+
+    private fun goShareSettlement(settlementId: Long?, bookKey: String) {
+        if (settlementId != null && bookKey.isNotEmpty()) {
+            settingBookKey(settlementId, bookKey)
+        } else {
+            baseEvent(Event.ShowToast("정산 공유하기 오류가 발생하였습니다."))
+        }
+    }
 }

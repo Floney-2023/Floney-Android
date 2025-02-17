@@ -495,7 +495,8 @@ fun GetBooksEntity.toUiBookEntranceModel() : UiBookEntranceModel {
     return UiBookEntranceModel(
         bookName = this.bookName,
         bookImg = this.bookImg,
-        bookInfo = formatBookInfo(this.startDay, this.memberCount)
+        bookInfo = formatBookInfo(this.startDay, this.memberCount),
+        bookKey = this.bookKey
     )
 }
 

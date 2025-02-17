@@ -255,7 +255,7 @@ class SplashActivity :
 
                         // 데이터를 Intent에 추가
                         intent.putExtra("settlementId", it.getQueryParameter("settlementId"))
-                        intent.putExtra("bookKey", it.getQueryParameter("bookKey"))
+                        intent.putExtra("bookCode", it.getQueryParameter("bookCode"))
 
                         startActivity(intent)
                         if (Build.VERSION.SDK_INT >= 34) {
