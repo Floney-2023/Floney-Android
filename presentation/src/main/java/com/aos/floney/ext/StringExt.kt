@@ -1,6 +1,7 @@
 package com.aos.floney.ext
 
 import android.provider.Settings.Global.getString
+import com.aos.floney.BuildConfig.appsflyer_settlement_url
 import com.aos.floney.R
 import com.aos.floney.base.BaseViewModel
 import org.json.JSONObject
@@ -48,4 +49,8 @@ fun String?.parseErrorCode(event: BaseViewModel? = null): String {
             msg
         }
     }
+}
+
+fun String.bookCodeToSettlementUrl(settlementId : Long): String {
+    return "https://floney.onelink.me$appsflyer_settlement_url?settlementId=${settlementId}&bookCode=${this}"
 }

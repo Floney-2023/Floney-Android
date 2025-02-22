@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.aos.data.util.SharedPreferenceUtil
 import com.aos.floney.BuildConfig.appsflyer_settlement_url
 import com.aos.floney.base.BaseViewModel
+import com.aos.floney.ext.bookCodeToSettlementUrl
 import com.aos.floney.ext.parseErrorMsg
 import com.aos.floney.util.EventFlow
 import com.aos.floney.util.MutableEventFlow
@@ -64,7 +65,7 @@ class SettleUpDetailSeeViewModel @Inject constructor(
             booksCodeCheckUseCase(
                 prefs.getString("bookKey","")).onSuccess {
                     baseEvent(Event.HideLoading)
-                    _sharedPage.emit(provideSettlementUrl(it.code))
+                    _sharedPage.emit(it.code.bookCodeToSettlementUrl(settlementModel.value!!.id))
             }.onFailure {
                 baseEvent(Event.HideLoading)
                 baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@SettleUpDetailSeeViewModel)))
@@ -76,9 +77,5 @@ class SettleUpDetailSeeViewModel @Inject constructor(
         viewModelScope.launch {
             _back.emit(true)
         }
-    }
-    // url 생성
-    fun provideSettlementUrl(code: String): String {
-        return "https://floney.onelink.me${appsflyer_settlement_url}?settlementId=${settlementModel.value!!.id ?: ""}&bookCode=${code}"
     }
 }

@@ -7,8 +7,10 @@ import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.aos.data.util.SharedPreferenceUtil
 import com.aos.floney.BuildConfig
+import com.aos.floney.BuildConfig.appsflyer_settlement_url
 import com.aos.floney.R
 import com.aos.floney.base.BaseViewModel
+import com.aos.floney.ext.bookCodeToSettlementUrl
 import com.aos.floney.ext.parseErrorMsg
 import com.aos.floney.util.EventFlow
 import com.aos.floney.util.MutableEventFlow
@@ -16,6 +18,7 @@ import com.aos.floney.util.getCurrentDateTimeString
 import com.aos.model.book.UiBookSettingModel
 import com.aos.model.settlement.UiSettlementAddModel
 import com.aos.model.settlement.settleOutcomes
+import com.aos.usecase.booksetting.BooksCodeCheckUseCase
 import com.aos.usecase.booksetting.BooksSettingGetUseCase
 import com.aos.usecase.mypage.AlarmSaveGetUseCase
 import com.aos.usecase.settlement.BooksOutComesUseCase
@@ -35,7 +38,7 @@ class SettleUpCompleteViewModel @Inject constructor(
     private val settlementAddUseCase : SettlementAddUseCase,
     private val booksSettingGetUseCase : BooksSettingGetUseCase,
     private val alarmSaveGetUseCase : AlarmSaveGetUseCase,
-    private val naverShortenUrlUseCase : NaverShortenUrlUseCase
+    private val booksCodeCheckUseCase: BooksCodeCheckUseCase
 ): BaseViewModel() {
 
 
@@ -132,14 +135,13 @@ class SettleUpCompleteViewModel @Inject constructor(
     }
     // 공유하기
     fun onClickedSharePage(){
+
         viewModelScope.launch(Dispatchers.IO) {
             baseEvent(Event.ShowLoading)
-            naverShortenUrlUseCase(
-                BuildConfig.naver_client_id,
-                BuildConfig.naver_client_secret, provideSettlementUrl()).onSuccess {
-                // 불러오기 성공
-                _settlementSharePage.emit(it.result)
+            booksCodeCheckUseCase(
+                prefs.getString("bookKey","")).onSuccess {
                 baseEvent(Event.HideLoading)
+                _settlementSharePage.emit(it.code.bookCodeToSettlementUrl(settlementModel.value!!.id))
             }.onFailure {
                 baseEvent(Event.HideLoading)
                 baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@SettleUpCompleteViewModel)))
@@ -151,9 +153,5 @@ class SettleUpCompleteViewModel @Inject constructor(
         viewModelScope.launch {
             _settlementPage.emit(true)
         }
-    }
-    // url 생성
-    fun provideSettlementUrl(): String {
-        return "https://floney.onelink.me${BuildConfig.appsflyer_settlement_url}?settlementId=${settlementModel.value!!.id ?: ""}&bookKey=${prefs.getString("bookKey", "")}"
     }
 }
