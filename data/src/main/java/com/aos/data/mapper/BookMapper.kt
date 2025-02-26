@@ -27,7 +27,6 @@ import com.aos.data.entity.response.settlement.PostBooksOutcomesEntity
 import com.aos.data.entity.response.settlement.PostNaverShortenUrlEntity
 import com.aos.data.entity.response.settlement.PostSettlementAddEntity
 import com.aos.data.util.CurrencyUtil
-import com.aos.data.util.checkDecimalPoint
 import com.aos.model.book.BudgetItem
 import com.aos.model.book.GetBooksCodeModel
 import com.aos.model.book.GetBooksInfoCurrencyModel
@@ -193,6 +192,7 @@ fun GetBookMonthEntity.toUiBookMonthModel(): UiBookMonthModel {
                         NumberFormat.getNumberInstance()
                             .format(totalIncome + carryOverInfo.carryOverMoney)
                     }${CurrencyUtil.currency}", "${NumberFormat.getNumberInstance().format(totalOutcome)}${CurrencyUtil.currency}"
+                    , totalBalance = "${NumberFormat.getNumberInstance().format(totalIncome - totalOutcome)}${CurrencyUtil.currency}"
                 ), CarryOverInfo(carryOverInfo.carryOverStatus, NumberFormat.getNumberInstance()
                     .format(carryOverInfo.carryOverMoney))
             )
@@ -200,10 +200,9 @@ fun GetBookMonthEntity.toUiBookMonthModel(): UiBookMonthModel {
             // 총 지출에 포함
             UiBookMonthModel(
                 list, ExtData(
-                    "${NumberFormat.getNumberInstance().format(totalIncome)}${CurrencyUtil.currency}", "${
-                        NumberFormat.getNumberInstance()
-                            .format(totalOutcome + kotlin.math.abs(carryOverInfo.carryOverMoney))
-                    }${CurrencyUtil.currency}"
+                    totalIncome = "${NumberFormat.getNumberInstance().format(totalIncome)}${CurrencyUtil.currency}",
+                    totalOutcome = "${NumberFormat.getNumberInstance().format(totalOutcome + kotlin.math.abs(carryOverInfo.carryOverMoney))}${CurrencyUtil.currency}",
+                    totalBalance = "${NumberFormat.getNumberInstance().format(totalIncome - totalOutcome)}${CurrencyUtil.currency}"
                 ), CarryOverInfo(carryOverInfo.carryOverStatus, NumberFormat.getNumberInstance()
                     .format(carryOverInfo.carryOverMoney))
             )
@@ -212,8 +211,9 @@ fun GetBookMonthEntity.toUiBookMonthModel(): UiBookMonthModel {
         // 이월 내역 없을 경우
         UiBookMonthModel(
             list, ExtData(
-                "${NumberFormat.getNumberInstance().format(totalIncome)}${CurrencyUtil.currency}",
-                "${NumberFormat.getNumberInstance().format(totalOutcome)}${CurrencyUtil.currency}"
+                totalIncome = "${NumberFormat.getNumberInstance().format(totalIncome)}${CurrencyUtil.currency}",
+                totalOutcome = "${NumberFormat.getNumberInstance().format(totalOutcome)}${CurrencyUtil.currency}",
+                totalBalance = "${NumberFormat.getNumberInstance().format(totalIncome - totalOutcome)}${CurrencyUtil.currency}"
             ), CarryOverInfo(carryOverInfo.carryOverStatus, NumberFormat.getNumberInstance()
                 .format(carryOverInfo.carryOverMoney))
         )
