@@ -5,18 +5,23 @@ import com.aos.data.entity.response.analyze.PostAnalyzeAssetEntity
 import com.aos.data.entity.response.analyze.PostAnalyzeBudgetEntity
 import com.aos.data.entity.response.analyze.PostAnalyzeCategoryInComeEntity
 import com.aos.data.entity.response.analyze.PostAnalyzeCategoryOutComeEntity
+import com.aos.data.entity.response.analyze.PostAnalyzeLineSubCategoryEntity
 import com.aos.data.util.CurrencyUtil
 import com.aos.model.analyze.AnalyzeResult
 import com.aos.model.analyze.Asset
 import com.aos.model.analyze.UiAnalyzeAssetModel
 import com.aos.model.analyze.UiAnalyzeCategoryInComeModel
 import com.aos.model.analyze.UiAnalyzeCategoryOutComeModel
+import com.aos.model.analyze.UiAnalyzeLineSubCategoryModel
 import com.aos.model.analyze.UiAnalyzePlanModel
+import com.aos.model.analyze.bookLines
+import com.aos.model.book.MyBookUsers
 import timber.log.Timber
 import java.text.NumberFormat
 import java.util.Calendar
 import kotlin.math.pow
 import kotlin.math.roundToInt
+import kotlin.math.roundToLong
 import kotlin.random.Random
 
 private val colorUsedArr = arrayListOf<Int>()
@@ -282,6 +287,23 @@ fun PostAnalyzeAssetEntity.toUiAnalyzeAssetModel(): UiAnalyzeAssetModel {
     )
 }
 
+// 상세 분석-지출/수입
+
+fun PostAnalyzeLineSubCategoryEntity.toUiLineSubCategoryModel(): UiAnalyzeLineSubCategoryModel {
+    return UiAnalyzeLineSubCategoryModel(
+        subcategoryName = this.subcategoryName,
+        bookLines = this.bookLines.map {
+            bookLines(
+                money = "${NumberFormat.getNumberInstance().format(it.money)}",
+                lineDate = it.lineDate.replace("-","."), // yyyy-mm-dd -> yyyy.mm.dd 형식으로 파싱
+                description = "${it.description}(${it.asset}}",
+                userProfileImg = it.userProfileImg ?: ""
+            )
+        }
+    )
+}
+
+
 // 랜덤 색상 가져오기 그래프는 3개까지는 색상 고정 그 이후는 랜덤 색상임
 fun getRandomColor(repeat: Int): List<Int> {
     if (repeat > 0) {
@@ -300,4 +322,15 @@ fun getRandomColor(repeat: Int): List<Int> {
 fun Double.round(decimals: Int): Double {
     val factor = 10.0.pow(decimals)
     return (this * factor).roundToInt() / factor
+}
+
+private fun getConvertReceiveRepeatValue(value: String): String {
+    Timber.e("value $value")
+    return when(value) {
+        "LATEST" -> "최신순"
+        "OLDEST" -> "오래된 순"
+        "USER_NICKNAME" -> "사용자 닉네임 가나다 순"
+        "LINE_SUBCATEGORY_NAME" -> "분류 가나다 순"
+        else -> ""
+    }
 }
