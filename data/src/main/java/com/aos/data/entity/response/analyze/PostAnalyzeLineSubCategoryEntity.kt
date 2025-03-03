@@ -5,11 +5,11 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class PostAnalyzeLineSubCategoryEntity(
     val subcategoryName: String,
-    val bookLines: List<bookLines>
+    val bookLines: List<BookLines>
 )
 
 @Serializable
-data class bookLines(
+data class BookLines(
     val money: Double,
     val asset: String,
     val lineDate: String,

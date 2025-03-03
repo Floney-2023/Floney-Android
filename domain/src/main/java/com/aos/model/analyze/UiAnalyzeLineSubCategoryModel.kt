@@ -4,26 +4,26 @@ import androidx.recyclerview.widget.DiffUtil
 
 data class UiAnalyzeLineSubCategoryModel(
     val subcategoryName: String,
-    val bookLines: List<bookLines>
+    val bookLines: List<BookSubData>
 ) {
     interface OnItemClickListener {
-        fun onItemClick(item: bookLines)
+        fun onItemClick(item: BookSubData)
     }
 
-    companion object : DiffUtil.ItemCallback<bookLines>() {
-        override fun areItemsTheSame(oldItem: bookLines, newItem: bookLines): Boolean {
+    companion object : DiffUtil.ItemCallback<BookSubData>() {
+        override fun areItemsTheSame(oldItem: BookSubData, newItem: BookSubData): Boolean {
             return oldItem.hashCode() == newItem.hashCode()
         }
 
-        override fun areContentsTheSame(oldItem: bookLines, newItem: bookLines): Boolean {
+        override fun areContentsTheSame(oldItem: BookSubData, newItem: BookSubData): Boolean {
             return oldItem == newItem
         }
     }
 }
 
-data class bookLines(
+data class BookSubData (
     val money: String,
-    val lineDate: String,
+    val descriptionDetail: String,
     val description: String,
     val userProfileImg: String? = ""
 )

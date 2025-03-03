@@ -5,14 +5,14 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <import type="com.aos.model.book.UiBookCategory" />
+        <import type="com.aos.model.analyze.UiAnalyzeLineSubCategoryModel" />
 
         <variable
             name="vm"
-            type="com.aos.floney.view.book.setting.excel.BookSettingExcelViewModel" />
+            type="com.aos.floney.view.analyze.subcategory.AnalyzeLineSubcategoryViewModel" />
         <variable
             name="eventHolder"
-            type="com.aos.model.book.UiBookCategory.OnItemClickListener" />
+            type="com.aos.model.analyze.UiAnalyzeLineSubCategoryModel.OnItemClickListener" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -22,63 +22,98 @@
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/bottom_sheet_book_setting_view"
+            android:id="@+id/cl_bottom_sheet_analyze_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/bottom_sheet_book_setting_title"
+                android:id="@+id/tv_bottom_sheet_analyze"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="24dp"
                 android:fontFamily="@font/pretendard_bold"
-                android:text="엑셀 내보내기"
+                android:text="@{vm.analyzeSubCategoryData.subcategoryName}"
+                tools:text="식비"
                 android:textColor="@color/grayscale1"
                 android:textSize="19dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <TextView
+                android:id="@+id/tv_select_year"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="@{() -> vm.onClickedTypeUser()}"
+                android:textColor="@color/black"
+                android:textSize="13dp"
+                android:text='@{vm.emails.empty ? "사용자 전체" : ("사용자 " + vm.emails.size())}'
+                tools:text="사용자 전체"
+                android:paddingTop="7dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="24dp"
+                android:paddingBottom="8dp"
+                android:layout_marginTop="18dp"
+                android:background="@drawable/bg_custom_radius_50_solid_d9"
+                android:fontFamily="@font/pretendard_medium"
+                app:layout_constraintStart_toStartOf="@+id/tv_bottom_sheet_analyze"
+                app:layout_constraintTop_toBottomOf="@+id/tv_bottom_sheet_analyze" />
+
+            <ImageView
+                android:id="@+id/imageView6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:src="@drawable/icon_chevron_left"
+                app:layout_constraintBottom_toBottomOf="@+id/tv_select_year"
+                app:layout_constraintEnd_toEndOf="@+id/tv_select_year"
+                app:layout_constraintTop_toTopOf="@+id/tv_select_year" />
+
+            <TextView
+                android:id="@+id/tv_select_sorted"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_custom_radius_50_solid_d9"
+                android:fontFamily="@font/pretendard_medium"
+                android:onClick="@{() -> vm.onClickedTypeSort()}"
+                android:paddingStart="12dp"
+                android:paddingTop="7dp"
+                android:paddingEnd="24dp"
+                android:paddingBottom="8dp"
+                android:layout_marginStart="8dp"
+                android:textColor="@color/black"
+                android:textSize="13dp"
+                android:text="@{vm.sortType}"
+                tools:text="최신 순"
+                app:layout_constraintBottom_toBottomOf="@+id/tv_select_year"
+                app:layout_constraintStart_toEndOf="@+id/tv_select_year"
+                app:layout_constraintTop_toTopOf="@+id/tv_select_year" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/icon_chevron_left"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintBottom_toBottomOf="@+id/tv_select_sorted"
+                app:layout_constraintEnd_toEndOf="@+id/tv_select_sorted"
+                app:layout_constraintTop_toTopOf="@+id/tv_select_sorted" />
+
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_category"
                 android:layout_width="match_parent"
-                android:layout_height="296dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="9dp"
-                android:layout_marginEnd="16dp"
-                app:layoutManager="com.google.android.flexbox.FlexboxLayoutManager"
-                app:layout_constraintBottom_toTopOf="@id/excel_button"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/bottom_sheet_book_setting_title"
-                bind:diffCallback="@{(Object)UiBookCategory.Companion}"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="16dp"
+                android:maxHeight="100dp"
+                tools:listitem="@layout/item_analyze_detail"
+                bind:diffCallback="@{(Object)UiAnalyzeLineSubCategoryModel.Companion}"
                 bind:eventHolder="@{eventHolder}"
-                bind:itemLayout="@{@layout/item_select}"
-                bind:items="@{vm.excelItem}"
-                bind:viewModel="@{vm}"
-                tools:listitem="@layout/item_category" />
-
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/excel_button"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="156dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginBottom="30dp"
-                android:background="@drawable/custom_radius_12_solid_primary1"
-                android:fontFamily="@font/pretendard_bold"
-                android:onClick="@{() -> vm.onClickAddComplete()}"
-                android:text="내보내기"
-                android:textColor="@color/white"
-                android:textSize="14dp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                bind:itemLayout="@{@layout/item_analyze_detail}"
+                bind:items="@{vm.analyzeSubCategoryData.bookLines}"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintVertical_bias="0.0" />
+                app:layout_constraintTop_toBottomOf="@id/tv_select_year" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

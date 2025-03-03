@@ -14,14 +14,12 @@ import com.aos.model.analyze.UiAnalyzeCategoryInComeModel
 import com.aos.model.analyze.UiAnalyzeCategoryOutComeModel
 import com.aos.model.analyze.UiAnalyzeLineSubCategoryModel
 import com.aos.model.analyze.UiAnalyzePlanModel
-import com.aos.model.analyze.bookLines
-import com.aos.model.book.MyBookUsers
+import com.aos.model.analyze.BookSubData
 import timber.log.Timber
 import java.text.NumberFormat
 import java.util.Calendar
 import kotlin.math.pow
 import kotlin.math.roundToInt
-import kotlin.math.roundToLong
 import kotlin.random.Random
 
 private val colorUsedArr = arrayListOf<Int>()
@@ -293,9 +291,9 @@ fun PostAnalyzeLineSubCategoryEntity.toUiLineSubCategoryModel(): UiAnalyzeLineSu
     return UiAnalyzeLineSubCategoryModel(
         subcategoryName = this.subcategoryName,
         bookLines = this.bookLines.map {
-            bookLines(
+            BookSubData(
                 money = "${NumberFormat.getNumberInstance().format(it.money)}",
-                lineDate = it.lineDate.replace("-","."), // yyyy-mm-dd -> yyyy.mm.dd 형식으로 파싱
+                descriptionDetail = "${it.asset} ‧ ${it.lineDate.replace("-",".")}", // yyyy-mm-dd -> yyyy.mm.dd 형식으로 파싱
                 description = "${it.description}(${it.asset}}",
                 userProfileImg = it.userProfileImg ?: ""
             )
