@@ -57,7 +57,7 @@
                 android:onClick="@{() -> vm.onClickedTypeUser()}"
                 android:textColor="@color/black"
                 android:textSize="13dp"
-                android:text='@{vm.emails.empty ? "사용자 전체" : ("사용자 " + vm.emails.size())}'
+                android:text='@{vm.userChip}'
                 tools:text="사용자 전체"
                 android:paddingTop="7dp"
                 android:paddingStart="12dp"
