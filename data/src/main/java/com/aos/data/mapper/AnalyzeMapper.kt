@@ -294,7 +294,7 @@ fun PostAnalyzeLineSubCategoryEntity.toUiLineSubCategoryModel(): UiAnalyzeLineSu
             BookSubData(
                 money = "${NumberFormat.getNumberInstance().format(it.money)}",
                 descriptionDetail = "${it.asset} ‧ ${it.lineDate.replace("-",".")}", // yyyy-mm-dd -> yyyy.mm.dd 형식으로 파싱
-                description = "${it.description}(${it.asset}}",
+                description = it.description,
                 userProfileImg = it.userProfileImg ?: ""
             )
         }

@@ -53,7 +53,10 @@ class AnalyzeLineSubcategoryViewModel @Inject constructor(
 
     private val mutex = Mutex()
 
-    init {
+    // 카테고리 설정
+    fun setCategory(selectedCategory: String, selectedSubCategory: String){
+        category.value = selectedCategory
+        subCategory.value = selectedSubCategory
         settingLineSubcategory()
     }
 
@@ -95,7 +98,7 @@ class AnalyzeLineSubcategoryViewModel @Inject constructor(
 }
 
 enum class SortType(val serverValue: String, val displayName: String) {
-    LATEST("LATEST", "최신순"),
+    LATEST("LATEST", "최신 순"),
     OLDEST("OLDEST", "오래된 순"),
     USER_NICKNAME("USER_NICKNAME", "사용자 닉네임 가나다 순"),
     LINE_SUBCATEGORY_NAME("LINE_SUBCATEGORY_NAME", "분류 가나다 순");

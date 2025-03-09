@@ -8,11 +8,15 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import com.aos.floney.R
 import com.aos.floney.base.BaseFragment
+import com.aos.floney.databinding.BottomSheetAnalyzeSubcategoryBinding
 import com.aos.floney.databinding.FragmentAnalyzeOutComeBinding
+import com.aos.floney.view.analyze.subcategory.BottomSheetAnaylzeLineSubcategory
+import com.aos.floney.view.book.setting.carryinfo.BookSettingCarryInfoSheetFragment
 import com.aos.model.analyze.AnalyzeResult
 import com.aos.model.analyze.UiAnalyzeCategoryOutComeModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 @AndroidEntryPoint
 class AnalyzeOutComeFragment :
@@ -58,7 +62,12 @@ class AnalyzeOutComeFragment :
     }
 
     override fun onItemClick(item: AnalyzeResult) {
-
+        Timber.i("click Outcome")
+        // 상세 지출 bottomSheet로 이동
+        val bottomSheetFragment = BottomSheetAnaylzeLineSubcategory(
+            "지출",
+            item.category)
+        bottomSheetFragment.show(parentFragmentManager, bottomSheetFragment.tag)
     }
 
 }

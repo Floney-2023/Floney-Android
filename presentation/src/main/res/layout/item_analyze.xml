@@ -7,11 +7,15 @@
         <variable
             name="item"
             type="com.aos.model.analyze.AnalyzeResult" />
+        <variable
+            name="eventHolder"
+            type="com.aos.model.analyze.UiAnalyzeCategoryOutComeModel.OnItemClickListener" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="68dp">
+        android:layout_height="68dp"
+        android:onClick="@{() -> eventHolder.onItemClick(item)}">
 
         <androidx.cardview.widget.CardView
             android:layout_width="4dp"

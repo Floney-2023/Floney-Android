@@ -17,7 +17,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="70dp"
+        android:layout_height="wrap_content"
         android:onClick="@{() -> eventHolder.onItemClick(item)}">
 
         <androidx.cardview.widget.CardView
@@ -57,26 +57,20 @@
             app:layout_constraintTop_toTopOf="parent"
             bind:setTextWithEllipsis="@{item.description}" />
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/tv_category"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
+            android:fontFamily="@font/pretendard_medium"
+            android:lineSpacingExtra="0dp"
+            android:text="@{item.descriptionDetail}"
+            android:textColor="@color/grayscale6"
+            android:textSize="12dp"
+            android:layout_marginBottom="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="@+id/tv_name"
-            app:layout_constraintTop_toBottomOf="@+id/tv_name">
-
-            <TextView
-                android:id="@+id/tv_category"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/pretendard_medium"
-                android:lineSpacingExtra="0dp"
-                tools:text="자산 ‧ 2024.9.30"
-                android:text="@{item.descriptionDetail}"
-                android:textColor="@color/grayscale6"
-                android:textSize="12dp" />
-        </LinearLayout>
+            app:layout_constraintTop_toBottomOf="@+id/tv_name"
+            tools:text="자산 ‧ 2024.9.30" />
 
         <TextView
             android:layout_width="wrap_content"

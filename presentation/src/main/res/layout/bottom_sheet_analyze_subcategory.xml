@@ -27,6 +27,15 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/icon_bottom_sheet_bar"
+                android:layout_marginTop="6dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
             <TextView
                 android:id="@+id/tv_bottom_sheet_analyze"
                 android:layout_width="wrap_content"
@@ -104,7 +113,8 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:layout_marginTop="16dp"
-                android:maxHeight="100dp"
+                android:paddingBottom="20dp"
+                android:maxHeight="400dp"
                 tools:listitem="@layout/item_analyze_detail"
                 bind:diffCallback="@{(Object)UiAnalyzeLineSubCategoryModel.Companion}"
                 bind:eventHolder="@{eventHolder}"
@@ -113,7 +123,7 @@
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_select_year" />
+                app:layout_constraintTop_toBottomOf="@id/tv_select_year"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>
