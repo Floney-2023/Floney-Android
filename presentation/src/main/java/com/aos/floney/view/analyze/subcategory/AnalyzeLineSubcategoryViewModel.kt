@@ -2,29 +2,21 @@ package com.aos.floney.view.analyze.subcategory
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.aos.data.util.CurrencyUtil
 import com.aos.data.util.SharedPreferenceUtil
-import com.aos.floney.R
 import com.aos.floney.base.BaseViewModel
-import com.aos.floney.ext.formatNumber
 import com.aos.floney.ext.parseErrorMsg
 import com.aos.floney.util.EventFlow
 import com.aos.floney.util.MutableEventFlow
 import com.aos.model.analyze.UiAnalyzeLineSubCategoryModel
-import com.aos.model.book.UiBookSettingModel
 import com.aos.model.settlement.BookUsers
 import com.aos.model.settlement.UiMemberSelectModel
-import com.aos.usecase.analyze.PostAnalyzeAssetUseCase
 import com.aos.usecase.analyze.PostAnalyzeLineSubCategoryUseCase
-import com.aos.usecase.booksetting.BooksInfoAssetUseCase
 import com.aos.usecase.settlement.BooksUsersUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
+import timber.log.Timber
 import javax.inject.Inject
 import java.util.Calendar
 
@@ -57,15 +49,26 @@ class AnalyzeLineSubcategoryViewModel @Inject constructor(
     // 사용자 email 리스트 파싱
     var email = MutableLiveData<List<String>>(emptyList())
 
+
+    // 정렬 타입 숫자
+    var flow = MutableLiveData<Int>(1)
+
     // 정렬 타입
-    var sortType = MutableLiveData<String>("최신 순")
+
+    private var _sortType = MutableLiveData<String>()
+    val sortType: LiveData<String> get() = _sortType
 
     // 검색한 달
     var month = MutableLiveData<String>("2025.01")
 
-    // 다음 정산 페이지
+    // 사용자 필터 bottomSheet
     private var _userSelectBottomSheet = MutableEventFlow<Boolean>()
     val userSelectBottomSheet: EventFlow<Boolean> get() = _userSelectBottomSheet
+
+
+    // 정렬 필터 bottomSheet
+    private var _sortBottomSheet = MutableEventFlow<Boolean>()
+    val sortBottomSheet: EventFlow<Boolean> get() = _sortBottomSheet
 
 
     // bottomSheet 닫기
@@ -109,6 +112,7 @@ class AnalyzeLineSubcategoryViewModel @Inject constructor(
             ?: emptyList()
     }
 
+    // 선택된 사용자 chip 텍스트 설정
     fun getSelectedUserChip() : String{
         val selectedUsers = _booksUsersList.value?.booksUsers?.filter { it.isCheck }.orEmpty()
 
@@ -141,14 +145,19 @@ class AnalyzeLineSubcategoryViewModel @Inject constructor(
             // "YYYY-MM" 형식으로 포맷
             val currentYearMonth = String.format("%d-%02d", year, month)
 
+
+            Timber.i("flowState :${flow.value}")
+            val sortType = flow.value?.let { fromIntToDisplayName(it) } ?: "최신 순"
+
             postAnalyzeLineSubCategoryUseCase(
                 bookKey = prefs.getString("bookKey",""),
                 category = category.value!!,
                 subcategory = subCategory.value!!,
                 emails = email.value!!,
-                sortingType = SortType.fromDisplayName(sortType.value!!).toString(),
+                sortingType = SortType.fromDisplayName(sortType).toString(),
                 yearMonth = currentYearMonth
             ).onSuccess {
+                _sortType.postValue(sortType)
                 _userChip.postValue(getSelectedUserChip())
                 _analyzeSubCategoryData.postValue(it)
             }.onFailure {
@@ -164,16 +173,40 @@ class AnalyzeLineSubcategoryViewModel @Inject constructor(
         }
     }
 
+    // 정렬 필터 선택
+    fun onClickedTypeSortChip(){
+        viewModelScope.launch {
+            _sortBottomSheet.emit(true)
+        }
+    }
     // 정렬 필터 변경
-    fun onClickedTypeSort(){
-
+    fun onClickedTypeSort(type : Int){
+        viewModelScope.launch {
+            flow.postValue(type)
+        }
     }
 
     // 사용자 필터 변경 (적용 버튼 클릭)
-    fun onClickSaveButton(){
+    fun onClickUserSaveButton(){
         // 사용자 이메일 값 변경 (서버에 보낼 사용자 리스트)
         email.value = getSelectedUserEmails()
 
+        viewModelScope.launch {
+            _closeSheet.emit(true)
+        }
+    }
+
+    fun fromIntToDisplayName(value: Int): String? {
+        return when (value) {
+            1 -> SortType.LATEST.displayName
+            2 -> SortType.OLDEST.displayName
+            3 -> SortType.LINE_SUBCATEGORY_NAME.displayName
+            4 -> SortType.USER_NICKNAME.displayName
+            else -> null // ✅ 예외 처리 (잘못된 값이 들어왔을 때)
+        }
+    }
+    // 정렬 필터 변경 (적용 버튼 클릭)
+    fun onClickSortSaveButton(){
         viewModelScope.launch {
             _closeSheet.emit(true)
         }
@@ -183,8 +216,8 @@ class AnalyzeLineSubcategoryViewModel @Inject constructor(
 enum class SortType(val serverValue: String, val displayName: String) {
     LATEST("LATEST", "최신 순"),
     OLDEST("OLDEST", "오래된 순"),
-    USER_NICKNAME("USER_NICKNAME", "사용자 닉네임 가나다 순"),
-    LINE_SUBCATEGORY_NAME("LINE_SUBCATEGORY_NAME", "분류 가나다 순");
+    LINE_SUBCATEGORY_NAME("LINE_SUBCATEGORY_NAME", "분류 가나다 순"),
+    USER_NICKNAME("USER_NICKNAME", "사용자 닉네임 가나다 순");
 
     companion object {
         // 서버에서 받은 값으로 Enum 찾기

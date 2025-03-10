@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:bind="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="vm"
+            type="com.aos.floney.view.analyze.subcategory.AnalyzeLineSubcategoryViewModel" />
+    </data>
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/background_bottom_sheet"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_bottom_sheet_analyze_user_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_bottom_sheet_analyze"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="24dp"
+                android:fontFamily="@font/pretendard_bold"
+                android:text="정렬"
+                android:textColor="@color/grayscale1"
+                android:textSize="19dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/li_latest_select_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:layout_marginTop="18dp"
+                android:onClick="@{() -> vm.onClickedTypeSort(1)}"
+                android:paddingVertical="21dp"
+                android:paddingStart="24dp"
+                android:paddingEnd="21dp"
+                app:layout_constraintTop_toBottomOf="@+id/tv_bottom_sheet_analyze">
+
+                <TextView
+                    android:id="@+id/tv_latest"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/pretendard_medium"
+                    android:text="최신 순"
+                    android:textColor="@color/grayscale2"
+                    android:textSize="14dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@{vm.flow == 1 ? @drawable/icon_check_box : @drawable/icon_check_box_outline_blank}"
+                    app:layout_constraintBottom_toBottomOf="@+id/tv_latest"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/tv_latest" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/li_oldest_select_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:onClick="@{() -> vm.onClickedTypeSort(2)}"
+                android:paddingVertical="21dp"
+                android:paddingStart="24dp"
+                android:paddingEnd="21dp"
+                app:layout_constraintTop_toBottomOf="@+id/li_latest_select_view">
+
+                <TextView
+                    android:id="@+id/tv_oldest"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/pretendard_medium"
+                    android:text="오래된 순"
+                    android:textColor="@color/grayscale2"
+                    android:textSize="14dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@{vm.flow == 2 ? @drawable/icon_check_box : @drawable/icon_check_box_outline_blank}"
+                    app:layout_constraintBottom_toBottomOf="@+id/tv_oldest"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/tv_oldest" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/li_category_select_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:onClick="@{() -> vm.onClickedTypeSort(3)}"
+                android:paddingVertical="21dp"
+                android:paddingStart="24dp"
+                android:paddingEnd="21dp"
+                app:layout_constraintTop_toBottomOf="@+id/li_oldest_select_view">
+
+                <TextView
+                    android:id="@+id/tv_category"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/pretendard_medium"
+                    android:text="분류 가나다 순"
+                    android:textColor="@color/grayscale2"
+                    android:textSize="14dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@{vm.flow == 3  ? @drawable/icon_check_box : @drawable/icon_check_box_outline_blank}"
+                    app:layout_constraintBottom_toBottomOf="@+id/tv_category"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/tv_category" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/li_user_sort_select_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:onClick="@{() -> vm.onClickedTypeSort(4)}"
+                android:paddingVertical="21dp"
+                android:paddingStart="24dp"
+                android:paddingEnd="21dp"
+                app:layout_constraintTop_toBottomOf="@+id/li_category_select_view">
+
+                <TextView
+                    android:id="@+id/tv_user_sort"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/pretendard_medium"
+                    android:text="사용자 가나다 순"
+                    android:textColor="@color/grayscale2"
+                    android:textSize="14dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@{vm.flow == 4 ? @drawable/icon_check_box : @drawable/icon_check_box_outline_blank}"
+                    app:layout_constraintBottom_toBottomOf="@+id/tv_user_sort"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/tv_user_sort" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/rv_analyze_user_select_button"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginBottom="30dp"
+                android:layout_marginTop="50dp"
+                android:background="@drawable/custom_radius_12_solid_primary1"
+                android:fontFamily="@font/pretendard_bold"
+                android:onClick="@{() -> vm.onClickSortSaveButton()}"
+                android:text="@string/book_setting_bottom_asset_save"
+                android:textColor="@color/white"
+                android:textSize="14dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/li_user_sort_select_view"
+                tools:layout_editor_absoluteX="20dp" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</layout>

@@ -6,6 +6,7 @@ import androidx.databinding.library.baseAdapters.BR
 import com.aos.floney.R
 import com.aos.floney.base.BaseBottomSheetFragment
 import com.aos.floney.databinding.BottomSheetAnalyzeSubcategoryBinding
+import com.aos.floney.databinding.BottomSheetAnalyzeSubcategorySortBinding
 import com.aos.floney.databinding.BottomSheetAnalyzeSubcategoryUserBinding
 import com.aos.floney.ext.repeatOnStarted
 import com.aos.floney.view.common.SuccessToastDialog
@@ -17,17 +18,16 @@ import timber.log.Timber
 
 
 @AndroidEntryPoint
-class BottomSheetAnaylzeUserSelectSubcategory(
+class BottomSheetAnaylzeSortSelectSubcategory(
     private val clickedChoiceBtn: () -> Unit
 ) :
-    BaseBottomSheetFragment<BottomSheetAnalyzeSubcategoryUserBinding, AnalyzeLineSubcategoryViewModel>
-        (R.layout.bottom_sheet_analyze_subcategory_user), UiMemberSelectModel.OnItemClickListener {
+    BaseBottomSheetFragment<BottomSheetAnalyzeSubcategorySortBinding, AnalyzeLineSubcategoryViewModel>
+        (R.layout.bottom_sheet_analyze_subcategory_sort) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.getUserList()
-        binding.setVariable(BR.eventHolder, this@BottomSheetAnaylzeUserSelectSubcategory)
-
+        binding.setVariable(BR.eventHolder, this@BottomSheetAnaylzeSortSelectSubcategory)
         setUpViewModelObserver()
     }
 
@@ -36,14 +36,9 @@ class BottomSheetAnaylzeUserSelectSubcategory(
             viewModel.closeSheet.collect {
                 if(it) {
                     clickedChoiceBtn()
-                    this@BottomSheetAnaylzeUserSelectSubcategory.dismiss()
+                    this@BottomSheetAnaylzeSortSelectSubcategory.dismiss()
                 }
             }
         }
-    }
-
-    override fun onItemClick(item: BookUsers) {
-        //사용자 클릭 시 업데이트
-        viewModel.settingSettlementMember(item)
     }
 }

@@ -77,7 +77,7 @@
                 android:layout_marginHorizontal="20dp"
                 android:background="@drawable/custom_radius_12_solid_primary1"
                 android:fontFamily="@font/pretendard_bold"
-                android:onClick="@{() -> vm.onClickSaveButton()}"
+                android:onClick="@{() -> vm.onClickUserSaveButton()}"
                 android:text="@string/book_setting_bottom_asset_save"
                 android:textColor="@color/white"
                 android:textSize="14dp"

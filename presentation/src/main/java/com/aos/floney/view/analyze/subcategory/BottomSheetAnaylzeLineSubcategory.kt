@@ -31,7 +31,20 @@ class BottomSheetAnaylzeLineSubcategory(
         repeatOnStarted {
             viewModel.userSelectBottomSheet.collect {
                 if (it) {
-                    val bottomSheetFragment = BottomSheetAnaylzeUserSelectSubcategory()
+                    val bottomSheetFragment = BottomSheetAnaylzeUserSelectSubcategory{
+                        viewModel.settingLineSubcategory()
+                    }
+                    bottomSheetFragment.show(parentFragmentManager, bottomSheetFragment.tag)
+                }
+            }
+        }
+
+        repeatOnStarted {
+            viewModel.sortBottomSheet.collect {
+                if (it) {
+                    val bottomSheetFragment = BottomSheetAnaylzeSortSelectSubcategory{
+                        viewModel.settingLineSubcategory()
+                    }
                     bottomSheetFragment.show(parentFragmentManager, bottomSheetFragment.tag)
                 }
             }

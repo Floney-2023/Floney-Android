@@ -85,7 +85,7 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_custom_radius_50_solid_d9"
                 android:fontFamily="@font/pretendard_medium"
-                android:onClick="@{() -> vm.onClickedTypeSort()}"
+                android:onClick="@{() -> vm.onClickedTypeSortChip()}"
                 android:paddingStart="12dp"
                 android:paddingTop="7dp"
                 android:paddingEnd="24dp"
