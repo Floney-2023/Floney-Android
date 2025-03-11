@@ -25,6 +25,10 @@ class AnalyzeOutComeViewModel @Inject constructor(
     private var _postAnalyzeOutComeCategoryResult = MutableLiveData<UiAnalyzeCategoryOutComeModel>()
     val postAnalyzeOutComeCategoryResult: LiveData<UiAnalyzeCategoryOutComeModel> get() = _postAnalyzeOutComeCategoryResult
 
+    // 지출 - 분석 선택된 월
+    private var _selectMonth = MutableLiveData<String>("")
+    val selectMonth : LiveData<String> get() = _selectMonth
+
     // 지출 분석 가져오기
     fun postAnalyzeCategory(date :String) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -32,6 +36,7 @@ class AnalyzeOutComeViewModel @Inject constructor(
             postAnalyzeOutComeCategoryUseCase(
                 prefs.getString("bookKey", ""), "지출", date
             ).onSuccess {
+                _selectMonth.postValue(date)
                 baseEvent(Event.HideLoading)
                 _postAnalyzeOutComeCategoryResult.postValue(it)
             }.onFailure {

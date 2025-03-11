@@ -1,38 +1,40 @@
 package com.aos.floney.view.analyze.subcategory
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.View
+import androidx.fragment.app.activityViewModels
+import com.aos.floney.BR
 import com.aos.floney.R
 import com.aos.floney.base.BaseBottomSheetFragment
 import com.aos.floney.databinding.BottomSheetAnalyzeSubcategoryBinding
 import com.aos.floney.ext.repeatOnStarted
-import com.aos.floney.view.common.SuccessToastDialog
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
-import timber.log.Timber
 
 
 @AndroidEntryPoint
 class BottomSheetAnaylzeLineSubcategory(
     private val category: String,
-    private val subcategory: String
+    private val subcategory: String,
+    private val date: String
 ) :
     BaseBottomSheetFragment<BottomSheetAnalyzeSubcategoryBinding, AnalyzeLineSubcategoryViewModel>
         (R.layout.bottom_sheet_analyze_subcategory) {
+    val activityViewModel: AnalyzeLineSubcategoryViewModel by activityViewModels()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.setCategory(category,subcategory)
+        binding.setVariable(BR.vm, activityViewModel)
+        activityViewModel.setCategory(category, subcategory, date)
+        activityViewModel.getUserList()
         setUpViewModelObserver()
     }
+
     private fun setUpViewModelObserver() {
         repeatOnStarted {
-            viewModel.userSelectBottomSheet.collect {
+            activityViewModel.userSelectBottomSheet.collect {
                 if (it) {
-                    val bottomSheetFragment = BottomSheetAnaylzeUserSelectSubcategory{
-                        viewModel.settingLineSubcategory()
+                    val bottomSheetFragment = BottomSheetAnaylzeUserSelectSubcategory { emailList ->
+                        activityViewModel.settingLineSubcategory()
                     }
                     bottomSheetFragment.show(parentFragmentManager, bottomSheetFragment.tag)
                 }
@@ -40,10 +42,10 @@ class BottomSheetAnaylzeLineSubcategory(
         }
 
         repeatOnStarted {
-            viewModel.sortBottomSheet.collect {
+            activityViewModel.sortBottomSheet.collect {
                 if (it) {
-                    val bottomSheetFragment = BottomSheetAnaylzeSortSelectSubcategory{
-                        viewModel.settingLineSubcategory()
+                    val bottomSheetFragment = BottomSheetAnaylzeSortSelectSubcategory { sortType ->
+                        activityViewModel.settingLineSubcategory()
                     }
                     bottomSheetFragment.show(parentFragmentManager, bottomSheetFragment.tag)
                 }

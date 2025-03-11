@@ -3,6 +3,7 @@ package com.aos.floney.view.analyze.subcategory
 import android.os.Bundle
 import android.view.View
 import androidx.databinding.library.baseAdapters.BR
+import androidx.fragment.app.activityViewModels
 import com.aos.floney.R
 import com.aos.floney.base.BaseBottomSheetFragment
 import com.aos.floney.databinding.BottomSheetAnalyzeSubcategoryBinding
@@ -19,23 +20,27 @@ import timber.log.Timber
 
 @AndroidEntryPoint
 class BottomSheetAnaylzeSortSelectSubcategory(
-    private val clickedChoiceBtn: () -> Unit
+    private val clickedChoiceBtn: (Int) -> Unit
 ) :
     BaseBottomSheetFragment<BottomSheetAnalyzeSubcategorySortBinding, AnalyzeLineSubcategoryViewModel>
         (R.layout.bottom_sheet_analyze_subcategory_sort) {
+    val activityViewModel: AnalyzeLineSubcategoryViewModel by activityViewModels() // ✅ Activity ViewModel 사용
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.getUserList()
+
+        binding.setVariable(BR.vm, activityViewModel)
+
         binding.setVariable(BR.eventHolder, this@BottomSheetAnaylzeSortSelectSubcategory)
         setUpViewModelObserver()
     }
 
     private fun setUpViewModelObserver() {
         repeatOnStarted {
-            viewModel.closeSheet.collect {
+            activityViewModel.closeSheet.collect {
                 if(it) {
-                    clickedChoiceBtn()
+                    clickedChoiceBtn(viewModel.flow.value ?: 1)
                     this@BottomSheetAnaylzeSortSelectSubcategory.dismiss()
                 }
             }

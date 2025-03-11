@@ -15,6 +15,8 @@ import com.aos.usecase.analyze.PostAnalyzeLineSubCategoryUseCase
 import com.aos.usecase.settlement.BooksUsersUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -38,9 +40,16 @@ class AnalyzeLineSubcategoryViewModel @Inject constructor(
     // 카테고리 상세
     var subCategory = MutableLiveData<String>("")
 
+    // 선택된 월
+    var month = MutableLiveData<String>("")
+
     // 사용자 리스트
     private var _booksUsersList = MutableLiveData<UiMemberSelectModel>()
     val booksUsersList: LiveData<UiMemberSelectModel> get() = _booksUsersList
+
+    // 사용자 필터 리스트
+    private var _booksUsersFilterCount = MutableLiveData<Int>()
+    val booksUsersFilterCount: LiveData<Int> get() = _booksUsersFilterCount
 
     // 사용자 chip 텍스트 설정
     private var _userChip = MutableLiveData<String>()
@@ -51,15 +60,14 @@ class AnalyzeLineSubcategoryViewModel @Inject constructor(
 
 
     // 정렬 타입 숫자
-    var flow = MutableLiveData<Int>(1)
+    // 기존 MutableLiveData → MutableStateFlow 사용 (데이터 유지됨)
+    private var _flow = MutableStateFlow(1) // ✅ 정렬 타입 (StateFlow 사용)
+    val flow: StateFlow<Int> get() = _flow
 
     // 정렬 타입
 
     private var _sortType = MutableLiveData<String>()
     val sortType: LiveData<String> get() = _sortType
-
-    // 검색한 달
-    var month = MutableLiveData<String>("2025.01")
 
     // 사용자 필터 bottomSheet
     private var _userSelectBottomSheet = MutableEventFlow<Boolean>()
@@ -93,7 +101,7 @@ class AnalyzeLineSubcategoryViewModel @Inject constructor(
     fun settingSettlementMember(bookUsers: BookUsers)
     {
         viewModelScope.launch(Dispatchers.IO) {
-            val updatedList = _booksUsersList.value?.booksUsers?.map { user ->
+            val updatedList = booksUsersList.value?.booksUsers?.map { user ->
                 if (user.email == bookUsers.email) {
                     user.copy(isCheck = !user.isCheck) // 선택된 멤버의 isCheck를 true로 설정
                 } else {
@@ -102,11 +110,13 @@ class AnalyzeLineSubcategoryViewModel @Inject constructor(
             }
             _booksUsersList.postValue(_booksUsersList.value?.copy(booksUsers = updatedList!!))
 
+            var emails = getSelectedUserEmails()
+            _booksUsersFilterCount.postValue(emails.size)
         }
     }
 
     fun getSelectedUserEmails() : List<String>{
-        return _booksUsersList.value?.booksUsers
+        return booksUsersList.value?.booksUsers
             ?.filter { it.isCheck } // isCheck가 true인 사용자만 필터링
             ?.map { it.email } // 각 사용자의 이메일만 추출하여 리스트로 변환
             ?: emptyList()
@@ -114,12 +124,12 @@ class AnalyzeLineSubcategoryViewModel @Inject constructor(
 
     // 선택된 사용자 chip 텍스트 설정
     fun getSelectedUserChip() : String{
-        val selectedUsers = _booksUsersList.value?.booksUsers?.filter { it.isCheck }.orEmpty()
+        val selectedUsers = booksUsersList.value?.booksUsers?.filter { it.isCheck }.orEmpty()
 
         return when {
             selectedUsers.isEmpty() -> "사용자 전체"
-            selectedUsers.size == _booksUsersList.value?.booksUsers?.size -> "사용자 전체"
             selectedUsers.size == 1 -> selectedUsers.first().nickname
+            selectedUsers.size == booksUsersList.value?.booksUsers?.size -> "사용자 전체"
             else -> {
                 val sortedNames = selectedUsers.map { it.nickname }.sorted()
                 "${sortedNames.first()} 외 ${selectedUsers.size - 1}명"
@@ -128,25 +138,23 @@ class AnalyzeLineSubcategoryViewModel @Inject constructor(
     }
 
     // 카테고리 설정
-    fun setCategory(selectedCategory: String, selectedSubCategory: String){
+    fun setCategory(selectedCategory: String, selectedSubCategory: String, selectedDate: String){
         category.value = selectedCategory
         subCategory.value = selectedSubCategory
+
+        // ✅ "yyyy-MM-dd" → "yyyy-MM" 형식으로 변환
+        val formattedDate = selectedDate.substring(0, 7) // 앞의 7자리 ("yyyy-MM")만 추출
+        month.value = formattedDate
+
         settingLineSubcategory()
     }
 
     // 상세 지출/수입 정보 읽어오기
     fun settingLineSubcategory() {
         viewModelScope.launch {
-            // Calendar 인스턴스 생성
-            val calendar = Calendar.getInstance()
-            // 현재 연도와 월을 가져옴
-            val year = calendar.get(Calendar.YEAR)
-            val month = calendar.get(Calendar.MONTH) + 1 // Calendar.MONTH는 0부터 시작하므로 +1 해줌
-            // "YYYY-MM" 형식으로 포맷
-            val currentYearMonth = String.format("%d-%02d", year, month)
-
 
             Timber.i("flowState :${flow.value}")
+            Timber.i("bookUser :${booksUsersList.value?.booksUsers}")
             val sortType = flow.value?.let { fromIntToDisplayName(it) } ?: "최신 순"
 
             postAnalyzeLineSubCategoryUseCase(
@@ -155,7 +163,7 @@ class AnalyzeLineSubcategoryViewModel @Inject constructor(
                 subcategory = subCategory.value!!,
                 emails = email.value!!,
                 sortingType = SortType.fromDisplayName(sortType).toString(),
-                yearMonth = currentYearMonth
+                yearMonth = month.value!!
             ).onSuccess {
                 _sortType.postValue(sortType)
                 _userChip.postValue(getSelectedUserChip())
@@ -182,7 +190,23 @@ class AnalyzeLineSubcategoryViewModel @Inject constructor(
     // 정렬 필터 변경
     fun onClickedTypeSort(type : Int){
         viewModelScope.launch {
-            flow.postValue(type)
+            _flow.emit(type)
+        }
+    }
+
+    // 사용자 필터 전체 선택/ 전체 취소 (적용 버튼 클릭)
+    fun onClickUserAll(flow: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val shouldCheck = (flow == 1) // ✅ flow == 1이면 전체 선택, 아니면 전체 해제
+
+            val updatedList = booksUsersList.value?.booksUsers?.map { user ->
+                user.copy(isCheck = shouldCheck) // ✅ 모든 사용자의 isCheck 값을 동일하게 변경
+            }
+
+            _booksUsersList.postValue(_booksUsersList.value?.copy(booksUsers = updatedList!!))
+
+            val emails = getSelectedUserEmails()
+            _booksUsersFilterCount.postValue(emails.size)
         }
     }
 

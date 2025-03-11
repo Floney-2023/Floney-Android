@@ -24,7 +24,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cl_bottom_sheet_analyze_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="468dp"
             android:orientation="vertical">
 
             <ImageView
@@ -110,11 +110,9 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:orientation="vertical"
                 android:layout_marginTop="16dp"
-                android:paddingBottom="20dp"
-                android:maxHeight="400dp"
                 tools:listitem="@layout/item_analyze_detail"
                 bind:diffCallback="@{(Object)UiAnalyzeLineSubCategoryModel.Companion}"
                 bind:eventHolder="@{eventHolder}"
@@ -122,6 +120,7 @@
                 bind:items="@{vm.analyzeSubCategoryData.bookLines}"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_select_year"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
