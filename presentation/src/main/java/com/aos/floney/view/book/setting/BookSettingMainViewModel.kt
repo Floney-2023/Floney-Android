@@ -28,6 +28,8 @@ import com.aos.usecase.booksetting.BooksSettingGetUseCase
 import com.aos.usecase.home.CheckUserBookUseCase
 import com.aos.usecase.mypage.AlarmSaveGetUseCase
 import com.aos.usecase.mypage.RecentBookkeySaveUseCase
+import com.aos.usecase.subscribe.SubscribeBenefitUseCase
+import com.aos.usecase.subscribe.SubscribeBookUseCase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -39,7 +41,8 @@ class BookSettingMainViewModel @Inject constructor(
     private val booksInitUseCase : BooksInitUseCase,
     private val booksOutUseCase: BooksOutUseCase,
     private val checkUserBookUseCase: CheckUserBookUseCase,
-    private val alarmSaveGetUseCase : AlarmSaveGetUseCase
+    private val alarmSaveGetUseCase : AlarmSaveGetUseCase,
+    private val subscribeBookUseCase: SubscribeBookUseCase,
 ): BaseViewModel() {
 
     // 회원 닉네임
@@ -49,6 +52,14 @@ class BookSettingMainViewModel @Inject constructor(
     // 가계부 리스트
     private var _mypageList = MutableLiveData<List<MyBooks>>()
     val mypageList: LiveData<List<MyBooks>> get() = _mypageList
+
+    // 가계부 인원 수 텍스트
+    private var _bookMember = MutableLiveData<String>()
+    val bookMember: LiveData<String> get() = _bookMember
+
+    // 가계부 구독 혜택 활성 여부
+    private var _isSubscribeValid = MutableLiveData<Boolean>()
+    val isSubscribeValid: LiveData<Boolean> get() = _isSubscribeValid
 
 
     // 이전 페이지
@@ -113,6 +124,26 @@ class BookSettingMainViewModel @Inject constructor(
     val isFold: LiveData<Boolean> get() = _isFold
 
 
+    private fun getSubscribeBook() {
+        viewModelScope.launch {
+            subscribeBookUseCase(prefs.getString("bookKey", "")).onSuccess {
+
+                // 가계부 구독 혜택 여부에 따른 Floney Plus+ <icon chip> 표시
+                _isSubscribeValid.postValue(it.isValid)
+
+                // 가계부 인원수 세팅 : 구독 중인 경우 최대 10명, 구독 안한 경우 최대 4명
+                val maxMembercount = if (it.isValid) 10 else 4
+                bookSettingInfo.value.let {
+                    val text = "${it?.ourBookUsers?.size}/${maxMembercount}명"
+                    _bookMember.postValue(text)
+                }
+            }.onFailure {
+                Timber.e("message ${it.message}")
+                baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@BookSettingMainViewModel)))
+            }
+        }
+    }
+
     fun onClickFold() {
         viewModelScope.launch {
             withContext(Dispatchers.Default) {
@@ -132,6 +163,7 @@ class BookSettingMainViewModel @Inject constructor(
 
                 CommonUtil.bookProfile = it.bookImg
                 _bookSettingInfo.postValue(it.copy(ourBookUsers = sortedList))
+                getSubscribeBook() // 가계부 인원 텍스트 설정
             }.onFailure {
                 baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@BookSettingMainViewModel)))
             }

@@ -79,6 +79,7 @@
                     android:textColor="@color/grayscale2"
                     android:textSize="11dp"
                     android:layout_marginTop="-1dp"
+                    android:visibility="@{vm.isSubscribeValid ? View.VISIBLE : View.GONE}"
                     app:layout_constraintBottom_toBottomOf="@+id/tv_mypage_title"
                     app:layout_constraintStart_toEndOf="@+id/tv_mypage_title"
                     app:layout_constraintTop_toTopOf="@+id/tv_mypage_title" />
@@ -184,7 +185,8 @@
                     android:background="@drawable/custom_radius_8_solid_primary10"
                     android:fontFamily="@font/pretendard_bold"
                     android:padding="6dp"
-                    android:text="10/10명"
+                    android:text="@{vm.bookMember}"
+                    tools:text="10/10명"
                     android:textColor="@color/primary2"
                     android:textSize="10dp"
                     android:layout_marginEnd="25dp"
