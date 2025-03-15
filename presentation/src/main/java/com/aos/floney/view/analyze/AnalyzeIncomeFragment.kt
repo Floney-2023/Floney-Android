@@ -7,18 +7,24 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
+import androidx.databinding.library.baseAdapters.BR
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import com.aos.floney.R
 import com.aos.floney.base.BaseFragment
 import com.aos.floney.databinding.FragmentAnalyzeIncomeBinding
+import com.aos.floney.view.analyze.subcategory.BottomSheetAnaylzeLineSubcategory
 import com.aos.model.analyze.AnalyzeResult
+import com.aos.model.analyze.UiAnalyzeCategoryInComeModel
 import com.aos.model.analyze.UiAnalyzeCategoryOutComeModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 @AndroidEntryPoint
-class AnalyzeIncomeFragment : BaseFragment<FragmentAnalyzeIncomeBinding, AnalyzeIncomeViewModel>(R.layout.fragment_analyze_income) {
+class AnalyzeIncomeFragment :
+    BaseFragment<FragmentAnalyzeIncomeBinding, AnalyzeIncomeViewModel>(R.layout.fragment_analyze_income),
+    UiAnalyzeCategoryInComeModel.OnItemClickListener {
 
     private val activityViewModel: AnalyzeViewModel by activityViewModels()
     override val applyTransition: Boolean = false
@@ -26,8 +32,13 @@ class AnalyzeIncomeFragment : BaseFragment<FragmentAnalyzeIncomeBinding, Analyze
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setUpUi()
         setUpViewModelObserver()
         viewModel.postAnalyzeCategory(activityViewModel.getFormatDate())
+    }
+
+    private fun setUpUi() {
+        binding.setVariable(BR.eventHolder, this)
     }
 
     private fun setUpViewModelObserver() {
@@ -51,6 +62,20 @@ class AnalyzeIncomeFragment : BaseFragment<FragmentAnalyzeIncomeBinding, Analyze
             activityViewModel.onChangedDate.collect {
                 viewModel.postAnalyzeCategory(it)
             }
+        }
+    }
+
+    override fun onItemClick(item: AnalyzeResult) {
+
+        Timber.i("click Outcome")
+        // 상세 지출 bottomSheet로 이동 (선택된 달이 있는 경우만)
+        viewModel.selectMonth.value?.let {
+            val bottomSheetFragment = BottomSheetAnaylzeLineSubcategory(
+                category = "수입",
+                subcategory = item.category,
+                date = it
+            )
+            bottomSheetFragment.show(parentFragmentManager, bottomSheetFragment.tag)
         }
     }
 

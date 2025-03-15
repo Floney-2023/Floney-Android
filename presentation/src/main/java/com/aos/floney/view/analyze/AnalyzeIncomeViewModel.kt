@@ -23,6 +23,10 @@ class AnalyzeIncomeViewModel @Inject constructor(
 ) : BaseViewModel() {
 
 
+    // 지출 - 분석 선택된 월
+    private var _selectMonth = MutableLiveData<String>("")
+    val selectMonth : LiveData<String> get() = _selectMonth
+
     // 지출 - 분석 결과값
     private var _postAnalyzeInComeCategoryResult = MutableLiveData<UiAnalyzeCategoryInComeModel>()
     val postAnalyzeInComeCategoryResult: LiveData<UiAnalyzeCategoryInComeModel> get() = _postAnalyzeInComeCategoryResult
@@ -36,6 +40,7 @@ class AnalyzeIncomeViewModel @Inject constructor(
                 prefs.getString("bookKey", ""), "수입", date
             ).onSuccess {
                 baseEvent(Event.HideLoading)
+                _selectMonth.postValue(date)
                 _postAnalyzeInComeCategoryResult.postValue(it)
             }.onFailure {
                 baseEvent(Event.HideLoading)

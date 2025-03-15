@@ -6,7 +6,7 @@
 
     <data>
 
-        <import type="com.aos.model.analyze.UiAnalyzeCategoryOutComeModel" />
+        <import type="com.aos.model.analyze.UiAnalyzeCategoryInComeModel" />
 
         <import type="android.view.View" />
 
@@ -16,7 +16,7 @@
 
         <variable
             name="eventHolder"
-            type="com.aos.model.analyze.UiAnalyzeCategoryOutComeModel.OnItemClickListener" />
+            type="com.aos.model.analyze.UiAnalyzeCategoryInComeModel.OnItemClickListener" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -97,9 +97,9 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/chart_stack_horizontal"
-            bind:diffCallback="@{(Object)UiAnalyzeCategoryOutComeModel.Companion}"
+            bind:diffCallback="@{(Object)UiAnalyzeCategoryInComeModel.Companion}"
             bind:eventHolder="@{eventHolder}"
-            bind:itemLayout="@{@layout/item_analyze}"
+            bind:itemLayout="@{@layout/item_income_analyze}"
             bind:items="@{vm.postAnalyzeInComeCategoryResult.analyzeResult}" />
 
         <ImageView

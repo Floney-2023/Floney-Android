@@ -99,7 +99,7 @@
             app:layout_constraintTop_toBottomOf="@id/chart_stack_horizontal"
             bind:diffCallback="@{(Object)UiAnalyzeCategoryOutComeModel.Companion}"
             bind:eventHolder="@{eventHolder}"
-            bind:itemLayout="@{@layout/item_analyze}"
+            bind:itemLayout="@{@layout/item_outcome_analyze}"
             bind:items="@{vm.postAnalyzeOutComeCategoryResult.analyzeResult}" />
 
         <ImageView

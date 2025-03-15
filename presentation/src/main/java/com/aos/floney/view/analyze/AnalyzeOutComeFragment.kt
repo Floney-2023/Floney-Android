@@ -64,9 +64,9 @@ class AnalyzeOutComeFragment :
         // 상세 지출 bottomSheet로 이동 (선택된 달이 있는 경우만)
         viewModel.selectMonth.value?.let {
             val bottomSheetFragment = BottomSheetAnaylzeLineSubcategory(
-                "지출",
-                item.category,
-                it
+                category = "지출",
+                subcategory = item.category,
+                date = it
             )
             bottomSheetFragment.show(parentFragmentManager, bottomSheetFragment.tag)
         }
