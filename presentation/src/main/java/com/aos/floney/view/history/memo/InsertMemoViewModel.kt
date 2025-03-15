@@ -22,6 +22,13 @@ class InsertMemoViewModel @Inject constructor(): BaseViewModel() {
     private var _onClickedBack = MutableEventFlow<Boolean>()
     val onClickedBack: EventFlow<Boolean> get() = _onClickedBack
 
+    // 작성했던 메모 내용 가져오기
+    fun initMemo(memo : String) {
+        viewModelScope.launch {
+            insertMemoValue.postValue(memo)
+        }
+    }
+
     // 작성 저장하기 버튼 클릭
     fun onClickedSaveWriting() {
         viewModelScope.launch {

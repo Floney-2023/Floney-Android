@@ -184,6 +184,10 @@ class HistoryViewModel @Inject constructor(
         this.memo = memo
     }
 
+    fun getMemo() : String {
+        return memo
+    }
+
     fun setUrlList(urlList: List<String>) {
         this.urlList = urlList
     }

@@ -137,6 +137,7 @@ class HistoryActivity :
         repeatOnStarted {
             viewModel.onClickMemo.collect {
                 val intent = Intent(this@HistoryActivity, InsertMemoActivity::class.java)
+                intent.putExtra("memo", viewModel.getMemo())
                 getResult.launch(intent)
             }
         }

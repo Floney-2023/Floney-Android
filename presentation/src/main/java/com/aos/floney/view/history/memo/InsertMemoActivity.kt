@@ -20,6 +20,9 @@ class InsertMemoActivity : BaseActivity<ActivityInsertMemoBinding, InsertMemoVie
 
     private fun setUpUi() {
         binding.setVariable(BR.vm, viewModel)
+
+        val receivedData = intent.getStringExtra("memo")
+        receivedData?.let { viewModel.initMemo(receivedData) }
     }
 
     private fun setupViewModelObserver() {
