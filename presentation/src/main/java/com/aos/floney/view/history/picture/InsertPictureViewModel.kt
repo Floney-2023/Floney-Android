@@ -12,6 +12,8 @@ import com.aos.floney.base.BaseViewModel
 import com.aos.floney.ext.parseErrorMsg
 import com.aos.floney.util.EventFlow
 import com.aos.floney.util.MutableEventFlow
+import com.aos.model.home.ImageUrls
+import com.aos.model.home.PictureItem
 import com.aos.usecase.subscribe.SubscribePresignedUrlUseCase
 import com.letspl.oceankeeper.util.ImgFileMaker
 import com.letspl.oceankeeper.util.RotateTransform
@@ -26,6 +28,7 @@ import java.io.FileOutputStream
 import java.net.HttpURLConnection
 import java.net.URL
 import java.text.SimpleDateFormat
+import java.util.ArrayList
 import java.util.Date
 import javax.inject.Inject
 
@@ -45,21 +48,26 @@ class InsertPictureViewModel @Inject constructor(
     private var _onClickedAddPicture = MutableEventFlow<Boolean>()
     val onClickedAddPicture: EventFlow<Boolean> get() = _onClickedAddPicture
 
-    private var _onSuccessImageUpload = MutableEventFlow<List<String>>()
-    val onSuccessImageUpload: EventFlow<List<String>> get() = _onSuccessImageUpload
+    private var _onSuccessImageUpload = MutableEventFlow<List<ImageUrls>>()
+    val onSuccessImageUpload: EventFlow<List<ImageUrls>> get() = _onSuccessImageUpload
 
     private var _onClickPictureDetail = MutableEventFlow<String>()
     val onClickPictureDetail: EventFlow<String> get() = _onClickPictureDetail
 
-    private var _sortPictures = MutableEventFlow<List<File>>()
-    val sortPictures: EventFlow<List<File>> get() = _sortPictures
+    private var _onClickPictureDetailNum = MutableEventFlow<Int>()
+    val onClickPictureDetailNum: EventFlow<Int> get() = _onClickPictureDetailNum
+
+    private var _sortPictures = MutableEventFlow<List<PictureItem>>()
+    val sortPictures: EventFlow<List<PictureItem>> get() = _sortPictures
 
     // 사진 촬영 uri
     private var takeCaptureUri: Uri? = null
-    private var imageFileList: MutableList<File> = mutableListOf()
 
-    // S3 받은 url 리스트
-    private val pictureUrlList = mutableListOf<String>()
+    // 로컬 이미지 리스트 (File 형태)
+    private var localImageList: MutableList<File> = mutableListOf()
+
+    // S3 받은 url 리스트 (String 형태 - 서버에 보낼 값)
+    private var cloudImageList = mutableListOf<ImageUrls>()
 
     // 이미지 업로드 정상 여부
     private var isSuccessImageUpload: Boolean = true
@@ -67,30 +75,44 @@ class InsertPictureViewModel @Inject constructor(
     // 몇번째 이미지 인지
     private var pictureNum = 0
 
+    // 클라우드 이미지 리스트 세팅 (내용 수정 시)
+    fun initPhotoList(originalUrl: List<ImageUrls>?) {
+        originalUrl?.let {  cloudImageList = it.toMutableList() }
+
+    }
+
     // 작성 저장하기 버튼 클릭
     fun onClickedSaveWriting() {
         baseEvent(Event.ShowLoading)
         viewModelScope.launch {
+
+            Timber.e("localImageList $localImageList")
+
             withContext(Dispatchers.IO) {
-                imageFileList.forEach {
+                localImageList.forEach {
                     getPresignedUrl(it)
                 }
             }
 
             baseEvent(Event.HideLoading)
-            Timber.e("pictureUrlList $pictureUrlList")
+            Timber.e("pictureUrlList $cloudImageList")
             if (isSuccessImageUpload) {
-                _onSuccessImageUpload.emit(pictureUrlList)
+                _onSuccessImageUpload.emit(cloudImageList)
             }
         }
     }
 
     // 사진 상세보기 클릭
     fun onClickedPictureDetail(num: Int) {
+        // num 번째 파일의 url를 읽어온다.
+        // 클라우드 이미지 리스트 -> 로컬 이미지 리스트 순서대로 접근한다.
+        // 몇 번쨰 이미지 값인 지 보낸다.
         viewModelScope.launch {
+            _onClickPictureDetailNum.emit(num)
+                /*
             getImageFile(num)?.let {
                 _onClickPictureDetail.emit(it.absolutePath)
-            }
+            }*/
         }
     }
 
@@ -181,7 +203,8 @@ class InsertPictureViewModel @Inject constructor(
 
                 if (connection.responseCode == 200) {
                     println("File uploaded successfully!")
-                    pictureUrlList.add(viewUrl)
+                    isSuccessImageUpload = true
+                    cloudImageList.add(ImageUrls(-1,viewUrl))
                 } else {
                     println("Upload failed with response code: ${connection.responseCode}")
                     baseEvent(Event.ShowToast(connection.responseMessage.parseErrorMsg(this@InsertPictureViewModel)))
@@ -209,15 +232,25 @@ class InsertPictureViewModel @Inject constructor(
         }
     }
 
-    fun deletePictureFile(path: String) {
+    fun deletePictureFile(imageUrls: ImageUrls) {
         viewModelScope.launch {
-            withContext(Dispatchers.Default) {
-                val removeItem = imageFileList.filter { it.absolutePath == path }
+            viewModelScope.launch {
+                withContext(Dispatchers.Default) {
+                    if (imageUrls.id != -1) {
+                        // 클라우드 리스트에서 삭제
+                        cloudImageList.removeAll { it == imageUrls }
+                    } else {
+                        // 로컬 리스트에서 삭제
+                        localImageList.removeAll { it.absolutePath == imageUrls.url }
+                    }
+                }
 
-                imageFileList.removeAll(removeItem)
+                // ✅ 클라우드 리스트를 PictureItem.CloudImage로 변환 + 로컬 리스트를 PictureItem.LocalImage로 변환
+                val sortedList: List<PictureItem> =  cloudImageList.map { PictureItem.CloudImage(ImageUrls(-1, it.url)) } +  // S3 URL 리스트 변환
+                            localImageList.map { PictureItem.LocalImage(it) }        // 로컬 파일 리스트 변환
+
+                _sortPictures.emit(sortedList)
             }
-
-            _sortPictures.emit(imageFileList)
         }
     }
 
@@ -235,7 +268,7 @@ class InsertPictureViewModel @Inject constructor(
     private fun setImageBitmap(bitmap: Bitmap?) {
         bitmap?.let {
             saveBitmapToTempFile(context, cropBitmapToSquare(it))?.let { file ->
-                imageFileList.add(file)
+                localImageList.add(file)
             }
         }
     }
@@ -251,8 +284,8 @@ class InsertPictureViewModel @Inject constructor(
         return pictureNum
     }
 
-    fun getPictureList(): List<String> {
-        return pictureUrlList
+    fun getPictureList(): List<ImageUrls> {
+        return cloudImageList
     }
 
     fun setPictureNum(num: Int) {
@@ -261,12 +294,17 @@ class InsertPictureViewModel @Inject constructor(
 
     // 파일 불러오기
     fun getImageFile(num: Int): File? {
-        return if (imageFileList.size >= num) imageFileList[num - 1] else null
+        val cloudImageSize = cloudImageList.size
+        return if (localImageList.size+cloudImageSize>= num) localImageList[num - cloudImageSize - 1] else null
     }
 
-    // 파일 리스트 불러오기
+    // 로컬 파일 리스트 불러오기
     fun getImageFileList(): List<File> {
-        return imageFileList
+        return localImageList
     }
 
+    // 클라우드 이미지 리스트 불러오기
+    fun getCloudFileList(): List<ImageUrls> {
+        return cloudImageList
+    }
 }

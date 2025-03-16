@@ -3,23 +3,22 @@ package com.aos.floney.view.history.picture
 import android.app.Activity
 import android.content.Intent
 import android.graphics.BitmapFactory
-import android.graphics.drawable.Drawable
-import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.os.Parcelable
+import android.widget.ImageView
 import com.aos.floney.BR
 import com.aos.floney.R
 import com.aos.floney.base.BaseActivity
 import com.aos.floney.databinding.ActivityInsertPictureDetailBinding
 import com.aos.floney.ext.repeatOnStarted
 import com.aos.floney.view.common.DeletePictureDialog
+import com.aos.model.home.ImageUrls
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
 import timber.log.Timber
 import java.io.File
-import java.util.ArrayList
+import java.io.Serializable
 
 class InsertPictureDetailActivity :
     BaseActivity<ActivityInsertPictureDetailBinding, InsertPictureDetailViewModel>(
@@ -31,7 +30,7 @@ class InsertPictureDetailActivity :
 
         setUpUi()
         setupViewModelObserver()
-        showImage(getImageUrl())
+        setImageInform()
     }
 
     private fun setUpUi() {
@@ -48,33 +47,70 @@ class InsertPictureDetailActivity :
             viewModel.onClickedDelete.collect {
                 DeletePictureDialog(this@InsertPictureDetailActivity) {
                     // 삭제 선택
-                    val intent = Intent()
-                    intent.putExtra("deleteFilePath", viewModel.getImageUrl())
-                    setResult(Activity.RESULT_OK, intent)
-                    finish()
+                    // cloud 이미지일 경우, 이미지 삭제 api 호출
+                    if (viewModel.getImageUrl().id != -1)
+                    {
+                        viewModel.imgDelete()
+                    }else {
+                        deleteComplete()
+                    }
+
                 }.show()
             }
         }
     }
 
-    private fun showImage(url: String) {
-        if (!url.isNullOrEmpty()) {
-            val file = File(url)
+    private fun deleteComplete(){
+        val intent = Intent()
+        intent.putExtra("deleteFilePath", viewModel.getImageUrl())
+        setResult(Activity.RESULT_OK, intent)
+        finish()
+    }
+
+    private fun showImage(imageUrls: ImageUrls) {
+        Timber.i("imageUrls ${imageUrls}")
+        if (imageUrls.id != -1){
+            setImageFromPresignedUrl(binding.ivDetail, imageUrls.url)
+        }
+        else if (imageUrls.url.isNotBlank()) {
+            val file = File(imageUrls.url)
             if (file.exists()) {
                 val bitmap = BitmapFactory.decodeFile(file.absolutePath)
                 binding.ivDetail.setImageBitmap(bitmap) // ImageView에 Bitmap 설정
             } else {
-                Timber.e("File does not exist: $url")
+                Timber.e("File does not exist: $imageUrls.url")
             }
         } else {
             Timber.e("Image path is null or empty")
         }
     }
 
-    // 이미지 가져오기
-    private fun getImageUrl(): String {
-        val url = intent.getStringExtra("url") ?: ""
-        viewModel.setImageUrl(url)
-        return url
+    fun setImageFromPresignedUrl(imageView: ImageView, presignedUrl: String) {
+
+        Glide.with(this)
+            .load(presignedUrl)
+            .fitCenter()
+            .centerCrop()
+            .diskCacheStrategy(DiskCacheStrategy.NONE)
+            .skipMemoryCache(true)
+            .into(imageView)
+    }
+
+    // 이미지 정보 가져오기
+    private fun setImageInform() {
+        val imageUrls : ImageUrls? = intent.serializable<ImageUrls>("url")
+        imageUrls?.let{
+            viewModel.setImageUrl(imageUrls)
+            showImage(imageUrls)
+        }
+    }
+}
+
+inline fun <reified T : Serializable> Intent.serializable(key: String): T? {
+    return if (Build.VERSION.SDK_INT >= 33) {
+        getSerializableExtra(key, T::class.java)
+    } else {
+        @Suppress("DEPRECATION")
+        getSerializableExtra(key) as? T
     }
 }

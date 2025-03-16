@@ -22,10 +22,11 @@
             app:layout_constraintBottom_toBottomOf="parent">
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:layout_gravity="center"
+                android:gravity="center"
                 android:padding="20dp">
 
                 <!-- 이미지가 세로로 긴 경우 스크롤 가능 -->

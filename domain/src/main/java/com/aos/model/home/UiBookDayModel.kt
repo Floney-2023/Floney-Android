@@ -1,7 +1,10 @@
 package com.aos.model.home
 
+import android.os.Parcelable
 import androidx.recyclerview.widget.DiffUtil
+import kotlinx.parcelize.Parcelize
 import timber.log.Timber
+import java.io.File
 import java.io.Serial
 import java.io.Serializable
 
@@ -43,10 +46,11 @@ data class DayMoney(
     val seeProfileStatus: Boolean
 )
 
+
 data class ImageUrls(
     val id: Int,
     val url: String,
-): Serializable
+) : Serializable
 
 // 내역 수정 전달 아이템
 data class DayMoneyModifyItem(
@@ -73,3 +77,8 @@ data class DayMoneyFavoriteItem(
     val assetSubcategoryName: String,
     val exceptStatus : Boolean
 ): Serializable
+
+sealed class PictureItem {
+    data class CloudImage(val imageUrls: ImageUrls) : PictureItem() // S3 이미지 URL
+    data class LocalImage(val file: File) : PictureItem()  // 로컬 이미지 파일
+}

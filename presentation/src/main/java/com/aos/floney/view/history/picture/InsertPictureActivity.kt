@@ -21,6 +21,8 @@ import com.aos.floney.databinding.ActivityInsertPictureBinding
 import com.aos.floney.ext.repeatOnStarted
 import com.aos.floney.view.common.ChoicePictureDialog
 import com.aos.floney.view.common.EditNotSaveDialog
+import com.aos.model.home.ImageUrls
+import com.aos.model.home.PictureItem
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import dagger.hilt.android.AndroidEntryPoint
@@ -68,7 +70,7 @@ class InsertPictureActivity :
                 viewModel.createBitmapFile(result.data?.data)
 
                 val pictureNum = viewModel.getPictureNum()
-
+                Timber.i("pictureNum ${pictureNum}")
                 val imageView = when (pictureNum) {
                     1 -> binding.ivPicture2
                     2 -> binding.ivPicture3
@@ -93,11 +95,18 @@ class InsertPictureActivity :
     private val getResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-                val url = result.data?.getStringExtra("deleteFilePath") ?: ""
-                Timber.e("url $url")
+
+                val imageUrls : ImageUrls? = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    result.data?.getParcelableExtra("deleteFilePath", ImageUrls::class.java)
+                } else {
+                    result.data?.getParcelableExtra("deleteFilePath")
+                }
+                Timber.e("url $imageUrls")
 
                 // 삭제 요청 받음
-                viewModel.deletePictureFile(url)
+                if (imageUrls != null) {
+                    viewModel.deletePictureFile(imageUrls)
+                }
             }
         }
 
@@ -111,6 +120,48 @@ class InsertPictureActivity :
 
     private fun setUpUi() {
         binding.setVariable(BR.vm, viewModel)
+
+        // 초기 url 이미지 세팅 (편집 모드일 경우)
+        val imageUrls : List<ImageUrls>? = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getParcelableArrayListExtra("url", ImageUrls::class.java)
+        } else {
+            intent.getParcelableArrayListExtra("url")
+        }
+
+        Timber.i("originalUrl : $imageUrls")
+        imageUrls?.let{
+            viewModel.setPictureNum(it.size)
+            when (it.size) {
+                0 -> {
+                    binding.ivAddPicture.isVisible = true
+                    resetPictureImage(binding.ivPicture1)
+                    resetPictureImage(binding.ivPicture2)
+                    resetPictureImage(binding.ivPicture3)
+                    resetPictureImage(binding.ivPicture4)
+                }
+
+                1 -> {
+                    setPictureImageFromUrl(binding.ivPicture2, it[0].url)
+                    resetPictureImage(binding.ivPicture3)
+                    resetPictureImage(binding.ivPicture4)
+                }
+
+                2 -> {
+                    setPictureImageFromUrl(binding.ivPicture2, it[0].url)
+                    setPictureImageFromUrl(binding.ivPicture3, it[1].url)
+                    resetPictureImage(binding.ivPicture4)
+                }
+
+                3 -> {
+                    binding.ivAddPicture.isVisible = true
+                    resetPictureImage(binding.ivPicture1)
+                    setPictureImageFromUrl(binding.ivPicture2, it[0].url)
+                    setPictureImageFromUrl(binding.ivPicture3, it[1].url)
+                    setPictureImageFromUrl(binding.ivPicture4, it[2].url)
+                }
+            }
+        }
+        viewModel.initPhotoList(imageUrls)
     }
 
     private fun setupViewModelObserver() {
@@ -141,7 +192,7 @@ class InsertPictureActivity :
             // 이미지 업로드 성공
             viewModel.onSuccessImageUpload.collect { url ->
                 val intent = Intent()
-                intent.putStringArrayListExtra("url", ArrayList(viewModel.getPictureList()))
+                intent.putExtra("url", viewModel.getPictureList().toTypedArray())
                 setResult(Activity.RESULT_OK, intent)
                 finish()
             }
@@ -153,6 +204,31 @@ class InsertPictureActivity :
                     Intent(this@InsertPictureActivity, InsertPictureDetailActivity::class.java)
                 intent.putExtra("url", url)
                 getResult.launch(intent)
+            }
+        }
+        repeatOnStarted {
+            // 사진 상세 버튼 클릭 (인덱스 값 감지)
+            viewModel.onClickPictureDetailNum.collect { index ->
+                var type = "" // 이미지 타입(클라우드, 로컬)
+                val maxPhotoSize = 4 // 최대 이미지 업로드 개수
+                val localStartNum = maxPhotoSize - viewModel.getCloudFileList().size
+
+                // 상세 이미지 Urls
+                val detailUrls: ImageUrls? = if (index <= viewModel.getCloudFileList().size) {
+                    viewModel.getCloudFileList()[index - 1]
+                } else {
+                    viewModel.getImageFile(localStartNum - 1)?.let {
+                        ImageUrls(-1, it.absolutePath)
+                    }
+                }
+
+                Timber.i("detailUrls ${detailUrls}")
+                detailUrls?.let {
+                    val intent =
+                        Intent(this@InsertPictureActivity, InsertPictureDetailActivity::class.java)
+                    intent.putExtra("url", detailUrls)
+                    getResult.launch(intent)
+                }
             }
         }
         repeatOnStarted {
@@ -197,6 +273,16 @@ class InsertPictureActivity :
         imageView.setBackgroundResource(R.drawable.input_picture_blank)
     }
 
+    private fun setPictureImageFromUrl(imageView: ImageView, url: String) {
+        Glide.with(this)
+            .load(url)
+            .fitCenter()
+            .centerCrop()
+            .diskCacheStrategy(DiskCacheStrategy.NONE)
+            .skipMemoryCache(true)
+            .into(imageView)
+    }
+
     private fun setPictureImage(imageView: ImageView, file: File) {
         Glide.with(this)
             .load(file)
@@ -205,6 +291,17 @@ class InsertPictureActivity :
             .diskCacheStrategy(DiskCacheStrategy.NONE)
             .skipMemoryCache(true)
             .into(imageView)
+    }
+
+    fun setPictureImage(imageView: ImageView, picture: PictureItem) {
+        when (picture) {
+            is PictureItem.CloudImage -> {
+                setPictureImageFromUrl(imageView, picture.imageUrls.url)
+            }
+            is PictureItem.LocalImage -> {
+                setPictureImage(imageView, picture.file)
+            }
+        }
     }
 
     private fun setUpBackPressHandler() {

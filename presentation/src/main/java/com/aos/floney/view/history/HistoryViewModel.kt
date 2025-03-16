@@ -16,6 +16,7 @@ import com.aos.floney.util.getAdvertiseTenMinutesCheck
 import com.aos.model.book.UiBookCategory
 import com.aos.model.home.DayMoneyFavoriteItem
 import com.aos.model.home.DayMoneyModifyItem
+import com.aos.model.home.ImageUrls
 import com.aos.usecase.history.DeleteBookLineUseCase
 import com.aos.usecase.history.DeleteBooksLinesAllUseCase
 import com.aos.usecase.history.GetBookCategoryUseCase
@@ -162,7 +163,7 @@ class HistoryViewModel @Inject constructor(
     var subscribeExpired = MutableLiveData<Boolean>(false)
 
     private var memo = ""
-    private var urlList = listOf<String>()
+    private var urlList = listOf<ImageUrls>()
 
     init {
         // 구독 여부 조회
@@ -188,8 +189,12 @@ class HistoryViewModel @Inject constructor(
         return memo
     }
 
-    fun setUrlList(urlList: List<String>) {
+    fun setUrlList(urlList: List<ImageUrls>) {
         this.urlList = urlList
+    }
+
+    fun getUrlList() : ArrayList<ImageUrls> {
+        return ArrayList(urlList)
     }
 
     // 내역 추가 시에는 날짜만 세팅함
@@ -210,9 +215,7 @@ class HistoryViewModel @Inject constructor(
         _nickname.value = item.writerNickName
         deleteChecked.value = item.exceptStatus
         memo = item.memo
-        urlList = item.imageUrls.map {
-            it.url
-        }
+        urlList = item.imageUrls
 
         Timber.e("memo $memo")
         Timber.e("url $urlList")
@@ -325,7 +328,7 @@ class HistoryViewModel @Inject constructor(
                 nickname = nickname.value!!,
                 repeatDuration = getConvertSendRepeatValue(),
                 memo = memo,
-                imageUrl = urlList
+                imageUrl = urlList.map { it.url }
             ).onSuccess {
                 _postBooksLines.emit(true)
             }.onFailure {
@@ -763,6 +766,8 @@ class HistoryViewModel @Inject constructor(
                 description = content.value!!,
                 except = deleteChecked.value!!,
                 nickname = nickname.value!!,
+                memo = memo,
+                imageUrls = urlList.map { it.url }
             ).onSuccess {
                 _postModifyBooksLines.emit(true)
             }.onFailure {

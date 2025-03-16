@@ -28,11 +28,13 @@ import com.aos.floney.view.home.HomeActivity
 import com.aos.model.book.UiBookCategory
 import com.aos.model.home.DayMoneyFavoriteItem
 import com.aos.model.home.DayMoneyModifyItem
+import com.aos.model.home.ImageUrls
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.DayViewDecorator
 import com.prolificinteractive.materialcalendarview.DayViewFacade
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.serialization.Serializable
 import timber.log.Timber
 
 
@@ -57,9 +59,14 @@ class HistoryActivity :
     private val imageResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-                // SecondActivity에서 전달한 데이터를 받음
-                val urlList = result.data?.getStringArrayListExtra("url") ?: listOf()
-                viewModel.setUrlList(urlList.toList())
+                // InsertPhotoActivity에서 전달한 데이터를 받음
+                val imageUrlsList = intent.getSerializableExtra("url") as ArrayList<ImageUrls>
+                imageUrlsList?.forEach { imageUrl ->
+                    // 각 이미지 URL 처리
+                    Timber.d("ImageUrl", "ID: ${imageUrl.id}, URL: ${imageUrl.url}")
+                }
+
+                imageUrlsList?.let {viewModel.setUrlList(it)}
             }
         }
 
@@ -144,6 +151,7 @@ class HistoryActivity :
         repeatOnStarted {
             viewModel.onClickPicture.collect {
                 val intent = Intent(this@HistoryActivity, InsertPictureActivity::class.java)
+                intent.putExtra("url",viewModel.getUrlList())
                 imageResult.launch(intent)
             }
         }
@@ -362,5 +370,14 @@ class HistoryActivity :
 
     override fun onItemClick(item: UiBookCategory) {
         Timber.e("item $item")
+    }
+}
+
+inline fun Intent.getSerializableArrayListExtra(key: String): ArrayList<Serializable>? {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        getSerializableExtra(key, ArrayList::class.java) as? ArrayList<Serializable>
+    } else {
+        @Suppress("DEPRECATION")
+        getSerializableExtra(key) as? ArrayList<Serializable>
     }
 }

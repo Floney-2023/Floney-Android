@@ -79,6 +79,8 @@ interface BookRepository {
         description: String,
         except: Boolean,
         nickname: String,
+        memo : String,
+        imageUrls : List<String>
     ): Result<PostBooksChangeModel>
 
     // 내역 삭제
