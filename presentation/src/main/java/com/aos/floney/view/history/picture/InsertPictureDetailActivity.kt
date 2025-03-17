@@ -90,7 +90,6 @@ class InsertPictureDetailActivity :
         Glide.with(this)
             .load(presignedUrl)
             .fitCenter()
-            .centerCrop()
             .diskCacheStrategy(DiskCacheStrategy.NONE)
             .skipMemoryCache(true)
             .into(imageView)
