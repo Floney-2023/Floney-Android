@@ -28,4 +28,6 @@ interface SubscribeRemoteDataSource {
     suspend fun getSubscribeUserBenefit(): NetworkState<GetSubscribeUserBenefitEntity>
 
     suspend fun getSubscribeBook(bookKey: String): NetworkState<GetSubscribeAndroidEntity>
+
+    suspend fun deleteCloudImg(id: Int): NetworkState<Void>
 }

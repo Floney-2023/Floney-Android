@@ -127,4 +127,19 @@ class SubscribeRepositoryImpl @Inject constructor(private val subscribeRemoteDat
             }
         }
     }
+
+    override suspend fun deleteCloudImg(id: Int): Result<Void> {
+        when (val data = subscribeRemoteDataSourceImpl.deleteCloudImg(id)) {
+            is NetworkState.Success -> return Result.success(data.body)
+            is NetworkState.Failure -> return Result.failure(
+                RetrofitFailureStateException(data.error, data.code)
+            )
+
+            is NetworkState.NetworkError -> return Result.failure(IllegalStateException("NetworkError"))
+            is NetworkState.UnknownError -> {
+                Timber.e(data.t?.message)
+                return Result.failure(IllegalStateException("unKnownError"))
+            }
+        }
+    }
 }

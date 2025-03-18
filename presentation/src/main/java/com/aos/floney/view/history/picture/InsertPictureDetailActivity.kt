@@ -16,10 +16,12 @@ import com.aos.floney.view.common.DeletePictureDialog
 import com.aos.model.home.ImageUrls
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import java.io.File
 import java.io.Serializable
 
+@AndroidEntryPoint
 class InsertPictureDetailActivity :
     BaseActivity<ActivityInsertPictureDetailBinding, InsertPictureDetailViewModel>(
         R.layout.activity_insert_picture_detail
@@ -56,6 +58,13 @@ class InsertPictureDetailActivity :
                     }
 
                 }.show()
+            }
+        }
+        repeatOnStarted {
+            viewModel.onDeleteComplete.collect {
+                if(it){
+                    deleteComplete()
+                }
             }
         }
     }

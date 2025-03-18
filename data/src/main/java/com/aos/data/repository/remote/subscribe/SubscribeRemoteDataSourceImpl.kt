@@ -47,4 +47,8 @@ class SubscribeRemoteDataSourceImpl @Inject constructor(private val subscribeSer
     override suspend fun getSubscribeBook(bookKey: String): NetworkState<GetSubscribeAndroidEntity> {
         return subscribeService.getSubscribeBook(bookKey)
     }
+
+    override suspend fun deleteCloudImg(id: Int): NetworkState<Void> {
+        return subscribeService.deleteCloudImg(id)
+    }
 }

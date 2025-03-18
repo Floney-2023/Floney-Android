@@ -11,6 +11,7 @@ import com.aos.data.entity.response.subscribe.GetSubscribeBenefitEntity
 import com.aos.data.entity.response.subscribe.GetSubscribeUserBenefitEntity
 import com.aos.util.NetworkState
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.POST
@@ -56,4 +57,10 @@ interface SubscribeService {
     suspend fun getSubscribeBook(
         @Query("bookKey") bookKey: String
     ): NetworkState<GetSubscribeAndroidEntity>
+
+    @DELETE("img")
+    @Headers("Auth: true")
+    suspend fun deleteCloudImg(
+        @Query("id") id: Int
+    ): NetworkState<Void>
 }
