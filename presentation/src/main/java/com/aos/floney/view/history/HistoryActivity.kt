@@ -59,11 +59,14 @@ class HistoryActivity :
     private val imageResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-                // InsertPhotoActivity에서 전달한 데이터를 받음
-                val imageUrlsList = intent.getSerializableExtra("url") as ArrayList<ImageUrls>
+                // InsertPhotoActivity에서 전달한 이미지 리스트 데이터를 받음
+                val imageUrlsList :ArrayList<ImageUrls>? = result.data?.getSerializableExtra("insertPhotoUrl") as? ArrayList<ImageUrls>?
+
+
+                Timber.i("imageUrlsList ${imageUrlsList}")
                 imageUrlsList?.forEach { imageUrl ->
                     // 각 이미지 URL 처리
-                    Timber.d("ImageUrl", "ID: ${imageUrl.id}, URL: ${imageUrl.url}")
+                    Timber.i("ID: ${imageUrl.id}, URL: ${imageUrl.url}")
                 }
 
                 imageUrlsList?.let {viewModel.setUrlList(it)}
@@ -151,7 +154,7 @@ class HistoryActivity :
         repeatOnStarted {
             viewModel.onClickPicture.collect {
                 val intent = Intent(this@HistoryActivity, InsertPictureActivity::class.java)
-                intent.putExtra("url",viewModel.getUrlList())
+                intent.putExtra("cloudPhotoUrl",viewModel.getUrlList())
                 imageResult.launch(intent)
             }
         }

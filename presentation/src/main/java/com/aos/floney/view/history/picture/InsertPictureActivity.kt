@@ -121,12 +121,8 @@ class InsertPictureActivity :
     private fun setUpUi() {
         binding.setVariable(BR.vm, viewModel)
 
-        // 초기 url 이미지 세팅 (편집 모드일 경우)
-        val imageUrls : List<ImageUrls>? = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getParcelableArrayListExtra("url", ImageUrls::class.java)
-        } else {
-            intent.getParcelableArrayListExtra("url")
-        }
+        // 초기 url 이미지 세팅 (이미 저장했던 이미지가 있는 경우)
+        val imageUrls : ArrayList<ImageUrls>? = intent.getSerializableExtra("cloudPhotoUrl") as? ArrayList<ImageUrls>
 
         Timber.i("originalUrl : $imageUrls")
         imageUrls?.let{
@@ -155,6 +151,14 @@ class InsertPictureActivity :
                 3 -> {
                     binding.ivAddPicture.isVisible = true
                     resetPictureImage(binding.ivPicture1)
+                    setPictureImageFromUrl(binding.ivPicture2, it[0].url)
+                    setPictureImageFromUrl(binding.ivPicture3, it[1].url)
+                    setPictureImageFromUrl(binding.ivPicture4, it[2].url)
+                }
+
+                4 -> {
+                    binding.ivAddPicture.isVisible = false
+                    setPictureImageFromUrl(binding.ivPicture1, it[3].url)
                     setPictureImageFromUrl(binding.ivPicture2, it[0].url)
                     setPictureImageFromUrl(binding.ivPicture3, it[1].url)
                     setPictureImageFromUrl(binding.ivPicture4, it[2].url)
@@ -192,8 +196,9 @@ class InsertPictureActivity :
             // 이미지 업로드 성공
             viewModel.onSuccessImageUpload.collect { url ->
                 val intent = Intent()
-                intent.putExtra("url", viewModel.getPictureList().toTypedArray())
+                intent.putExtra("insertPhotoUrl", ArrayList(viewModel.getPictureList()))
                 setResult(Activity.RESULT_OK, intent)
+                Timber.i("detailUrl ${ ArrayList(viewModel.getPictureList())}")
                 finish()
             }
         }
