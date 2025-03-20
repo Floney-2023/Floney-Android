@@ -267,17 +267,10 @@ class InsertPictureViewModel @Inject constructor(
     // 임시 촬영 파일 저장
     private fun setImageBitmap(bitmap: Bitmap?) {
         bitmap?.let {
-            saveBitmapToTempFile(context, cropBitmapToSquare(it))?.let { file ->
+            saveBitmapToTempFile(context, it)?.let { file ->
                 localImageList.add(file)
             }
         }
-    }
-
-    private fun cropBitmapToSquare(bitmap: Bitmap): Bitmap {
-        val size = Math.min(bitmap.width, bitmap.height)
-        val x = (bitmap.width - size) / 2
-        val y = (bitmap.height - size) / 2
-        return Bitmap.createBitmap(bitmap, x, y, size, size)
     }
 
     fun getPictureNum(): Int {
