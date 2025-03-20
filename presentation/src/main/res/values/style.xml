@@ -20,4 +20,7 @@
         <attr name="radius" format="dimension"/>
         <attr name="angles" format="reference"/>
     </declare-styleable>
+    <style name="RoundedImage">
+        <item name="cornerSize">12dp</item>
+    </style>
 </resources>

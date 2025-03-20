@@ -26,8 +26,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:layout_gravity="center"
-                android:gravity="center"
-                android:padding="20dp">
+                android:gravity="center">
 
                 <!-- 이미지가 세로로 긴 경우 스크롤 가능 -->
                 <ImageView
@@ -56,7 +55,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/pretendard_medium"
+            android:fontFamily="@font/pretendard_semibold"
             android:text="사진 상세"
             android:textColor="@color/grayscale1"
             android:textSize="16sp"
