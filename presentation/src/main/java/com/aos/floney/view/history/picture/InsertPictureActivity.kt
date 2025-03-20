@@ -96,11 +96,7 @@ class InsertPictureActivity :
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
 
-                val imageUrls : ImageUrls? = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    result.data?.getParcelableExtra("deleteFilePath", ImageUrls::class.java)
-                } else {
-                    result.data?.getParcelableExtra("deleteFilePath")
-                }
+                val imageUrls : ImageUrls? = result.data?.getSerializableExtra("deleteFilePath") as? ImageUrls
                 Timber.e("url $imageUrls")
 
                 // 삭제 요청 받음
@@ -214,15 +210,22 @@ class InsertPictureActivity :
         repeatOnStarted {
             // 사진 상세 버튼 클릭 (인덱스 값 감지)
             viewModel.onClickPictureDetailNum.collect { index ->
-                var type = "" // 이미지 타입(클라우드, 로컬)
-                val maxPhotoSize = 4 // 최대 이미지 업로드 개수
-                val localStartNum = maxPhotoSize - viewModel.getCloudFileList().size
+                // 현재 이미지 개수
+                val cloudImageCount = viewModel.getCloudFileList().size
+                val localImageCount = viewModel.getImageFileList().size
+                val totalImageCount = cloudImageCount + localImageCount
+
+                if (totalImageCount < index) // 이미지가 없는 뷰 클릭 시 return
+                    return@collect
 
                 // 상세 이미지 Urls
-                val detailUrls: ImageUrls? = if (index <= viewModel.getCloudFileList().size) {
+                val detailUrls: ImageUrls? = if (index <= cloudImageCount) {
+                    // 클라우드 이미지인 경우, 그냥 index로 가져옴
                     viewModel.getCloudFileList()[index - 1]
                 } else {
-                    viewModel.getImageFile(localStartNum - 1)?.let {
+                    // 로컬 이미지인 경우, 클라우드 개수만큼 빼줘야 올바른 index가 됨
+                    val localIndex = index - cloudImageCount - 1 // ★ 여기서 인덱스 보정
+                    viewModel.getImageFileList().getOrNull(localIndex)?.let {
                         ImageUrls(-1, it.absolutePath)
                     }
                 }
