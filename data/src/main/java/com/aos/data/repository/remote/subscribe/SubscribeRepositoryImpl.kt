@@ -128,7 +128,7 @@ class SubscribeRepositoryImpl @Inject constructor(private val subscribeRemoteDat
         }
     }
 
-    override suspend fun deleteCloudImg(id: Int): Result<Void> {
+    override suspend fun deleteCloudImg(id: Int): Result<Void?> {
         when (val data = subscribeRemoteDataSourceImpl.deleteCloudImg(id)) {
             is NetworkState.Success -> return Result.success(data.body)
             is NetworkState.Failure -> return Result.failure(
@@ -137,8 +137,11 @@ class SubscribeRepositoryImpl @Inject constructor(private val subscribeRemoteDat
 
             is NetworkState.NetworkError -> return Result.failure(IllegalStateException("NetworkError"))
             is NetworkState.UnknownError -> {
-                Timber.e(data.t?.message)
-                return Result.failure(IllegalStateException("unKnownError"))
+                return if(data.errorState == "body값이 null로 넘어옴") {
+                    Result.success(null)
+                } else {
+                    Result.failure(IllegalStateException("unKnownError"))
+                }
             }
         }
     }

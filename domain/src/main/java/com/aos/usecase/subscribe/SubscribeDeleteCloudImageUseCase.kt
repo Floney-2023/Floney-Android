@@ -9,7 +9,7 @@ class SubscribeDeleteCloudImageUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(
         id : Int
-    ): Result<Void> {
+    ): Result<Void?> {
         return subscribeRepository.deleteCloudImg(id)
     }
 }

@@ -58,7 +58,7 @@ interface SubscribeService {
         @Query("bookKey") bookKey: String
     ): NetworkState<GetSubscribeAndroidEntity>
 
-    @DELETE("img")
+    @DELETE("books/img")
     @Headers("Auth: true")
     suspend fun deleteCloudImg(
         @Query("id") id: Int

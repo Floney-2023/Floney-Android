@@ -29,5 +29,5 @@ interface SubscribeRepository {
     suspend fun getSubscribeUserBenefit(): Result<GetSubscribeUserBenefitModel>
 
     // s3 (클라우드) 이미지 삭제
-    suspend fun deleteCloudImg(id: Int): Result<Void>
+    suspend fun deleteCloudImg(id: Int): Result<Void?>
 }
