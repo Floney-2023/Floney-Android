@@ -141,6 +141,12 @@ class AnalyzeViewModel @Inject constructor(
         getFormatDateMonth()
     }
 
+    // 구독 만료 팝업 보이기
+    fun showSubscribePopupIfNeeded() {
+        // 로직이 생길 수 있다면 여기서 처리
+        subscribePopupShow.value = true
+    }
+
 
     // 구독 여부 가져오기
     fun getSubscribeChecking(){

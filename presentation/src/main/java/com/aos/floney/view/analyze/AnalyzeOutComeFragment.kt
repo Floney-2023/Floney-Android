@@ -60,15 +60,22 @@ class AnalyzeOutComeFragment :
     }
 
     override fun onItemClick(item: AnalyzeResult) {
-        Timber.i("click Outcome")
-        // 상세 지출 bottomSheet로 이동 (선택된 달이 있는 경우만)
-        viewModel.selectMonth.value?.let {
-            val bottomSheetFragment = BottomSheetAnaylzeLineSubcategory(
-                category = "지출",
-                subcategory = item.category,
-                date = it
-            )
-            bottomSheetFragment.show(parentFragmentManager, bottomSheetFragment.tag)
+        // 구독 만료가 아닐 때 분석 상세 bottomSheet 표시
+        if(activityViewModel.subscribeExpired.value == true){
+            // 상세 지출 bottomSheet로 이동 (선택된 달이 있는 경우만)
+            viewModel.selectMonth.value?.let {
+                val bottomSheetFragment = BottomSheetAnaylzeLineSubcategory(
+                    category = "지출",
+                    subcategory = item.category,
+                    date = it
+                )
+                bottomSheetFragment.show(parentFragmentManager, bottomSheetFragment.tag)
+            }
+        } else
+        {
+            // 구독 만료 팝업 표시
+            activityViewModel.showSubscribePopupIfNeeded()
         }
+
     }
 }
