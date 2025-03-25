@@ -183,13 +183,14 @@
                             android:fontFamily="@font/pretendard_semibold"
                             android:text="@{vm.getExtData.totalOutcome}"
                             android:textColor="@color/grayscale4"
+                            android:textSize="16dp"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintHorizontal_bias="0.0"
                             app:layout_constraintStart_toStartOf="@id/tv_total_outcome"
                             app:layout_constraintTop_toBottomOf="@id/tv_total_outcome"
                             app:layout_constraintVertical_bias="1.0"
-                            bind:adjustTotalMoneyText="@{vm.getExtData.totalOutcome}" />
+                            bind:adjustOnlyMoneyText="@{vm.getExtData.totalOutcome}" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <androidx.constraintlayout.widget.ConstraintLayout
@@ -223,13 +224,14 @@
                             android:fontFamily="@font/pretendard_semibold"
                             android:text="@{vm.getExtData.totalIncome}"
                             android:textColor="@color/grayscale4"
+                            android:textSize="16dp"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintHorizontal_bias="0.0"
                             app:layout_constraintStart_toStartOf="@id/tv_total_income"
                             app:layout_constraintTop_toBottomOf="@id/tv_total_income"
                             app:layout_constraintVertical_bias="1.0"
-                            bind:adjustTotalMoneyText="@{vm.getExtData.totalIncome}" />
+                            bind:adjustOnlyMoneyText="@{vm.getExtData.totalIncome}" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <androidx.constraintlayout.widget.ConstraintLayout
@@ -262,13 +264,14 @@
                             android:fontFamily="@font/pretendard_semibold"
                             android:text="@{vm.getExtData.totalBalance}"
                             android:textColor="@color/grayscale4"
+                            android:textSize="16dp"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintHorizontal_bias="0.0"
                             app:layout_constraintStart_toStartOf="@id/tv_total_balance"
                             app:layout_constraintTop_toBottomOf="@id/tv_total_balance"
                             app:layout_constraintVertical_bias="1.0"
-                            bind:adjustTotalMoneyText="@{vm.getExtData.totalBalance}" />
+                            bind:adjustOnlyMoneyText="@{vm.getExtData.totalBalance}" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                 </LinearLayout>

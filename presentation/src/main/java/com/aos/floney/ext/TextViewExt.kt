@@ -132,7 +132,8 @@ fun TextView.adjustTotalMoneyText(amount: String?) {
         }
 
         // 자릿수에 따른 글자 크기 조정
-        val amountValue = amount.replace(",", "").toLongOrNull()?.let { abs(it) } ?: return
+        val amountValue = filterAmount.replace(",", "").toLongOrNull()?.let { abs(it) } ?: return
+
         when {
             amountValue < 1_000_000_000 -> {
                 this.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18f)
