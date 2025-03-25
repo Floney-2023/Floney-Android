@@ -226,7 +226,10 @@ class SettleUpActivity : BaseActivity<ActivitySettleUpBinding, SettleUpViewModel
         val bookCode = intent.getStringExtra("bookCode")?:""
 
         Timber.e("settlement : ${settlementId} bookCode : ${bookCode}")
-        viewModel.convertBookCodeToKey(settlementId, bookCode)
+
+        // bookCode가 있는 경우(딥링크를 통해 정산 화면으로 들어온 경우)만 bookKey 세팅
+        if (bookCode.isNotBlank())
+            viewModel.convertBookCodeToKey(settlementId, bookCode)
     }
 
     private fun setSubscribePopup() {
