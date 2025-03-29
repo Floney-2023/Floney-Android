@@ -27,10 +27,12 @@ import com.aos.usecase.history.PostBooksLinesUseCase
 import com.aos.usecase.subscribe.SubscribeBenefitUseCase
 import com.aos.usecase.subscribe.SubscribeUserBenefitUseCase
 import com.aos.usecase.subscribe.SubscribeBookUseCase
+import com.aos.usecase.subscribe.SubscribeDeleteCloudImageUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.text.NumberFormat
 import java.util.Calendar
@@ -48,7 +50,8 @@ class HistoryViewModel @Inject constructor(
     private val postBooksFavoritesUseCase : PostBooksFavoritesUseCase,
     private val getBookFavoriteUseCase: GetBookFavoriteUseCase,
     private val subscribeBenefitUseCase: SubscribeBenefitUseCase,
-    private val SubscribeUserBenefitUseCase: SubscribeUserBenefitUseCase
+    private val SubscribeUserBenefitUseCase: SubscribeUserBenefitUseCase,
+    private val subscribeDeleteCloudImageUseCase : SubscribeDeleteCloudImageUseCase
 ) : BaseViewModel() {
 
     val onCheckedChangeListener: (Boolean) -> Unit = { isChecked ->
@@ -154,6 +157,9 @@ class HistoryViewModel @Inject constructor(
     // 예산/자산 제외 설정 여부
     val deleteChecked: MutableLiveData<Boolean> = MutableLiveData(false)
 
+    // 클라우드 이미지 삭제 여부
+    private var _onDeleteComplete = MutableEventFlow<Boolean>()
+    val onDeleteComplete: EventFlow<Boolean> get() = _onDeleteComplete
 
     // 내역 수정 시 해당 아이템 Id
     private var modifyId = 0
@@ -164,6 +170,7 @@ class HistoryViewModel @Inject constructor(
 
     private var memo = ""
     private var urlList = listOf<ImageUrls>()
+    private var deletedCloudImageList = mutableListOf<ImageUrls>()
 
     init {
         // 구독 여부 조회
@@ -195,6 +202,11 @@ class HistoryViewModel @Inject constructor(
 
     fun getUrlList() : ArrayList<ImageUrls> {
         return ArrayList(urlList)
+    }
+
+    // 삭제 클라우드 이미지 리스트 셋팅
+    fun setDeletedCloudImageList(list: MutableList<ImageUrls>) {
+        deletedCloudImageList = list
     }
 
     // 내역 추가 시에는 날짜만 세팅함
@@ -245,6 +257,37 @@ class HistoryViewModel @Inject constructor(
     // 즐겨찾기 추가 모드 설정
     fun setFavoriteMode(){
         mode.value = "favorite"
+    }
+
+    fun deleteAllDeletedCloudImages() {
+        viewModelScope.launch {
+            deletedCloudImageList.forEach { imageUrl ->
+                val result = withContext(Dispatchers.IO) {
+                    runCatching { subscribeDeleteCloudImageUseCase(imageUrl.id) }
+                }
+
+                result.onSuccess {
+                    Timber.d("삭제 성공: ${imageUrl.id}")
+                    _onDeleteComplete.emit(true)
+                }.onFailure {
+                    Timber.e("삭제 실패: ${imageUrl.id}")
+                    baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@HistoryViewModel)))
+                }
+            }
+        }
+    }
+
+
+    fun cloudImgDelete(imageUrl: ImageUrls) {
+        viewModelScope.launch(Dispatchers.IO) {
+            subscribeDeleteCloudImageUseCase(
+                imageUrl.id
+            ).onSuccess {
+                _onDeleteComplete.emit(true)
+            }.onFailure {
+                baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@HistoryViewModel)))
+            }
+        }
     }
 
     private fun getSubscribeBook() {
@@ -741,8 +784,10 @@ class HistoryViewModel @Inject constructor(
                         // 구독 만료 여부 업데이트
                         subscribeExpired.postValue(expiredCheck)
 
-                        if(!expiredCheck) // 만료되지 않았다면 수정
+                        if(!expiredCheck && deletedCloudImageList.isEmpty()) // 만료되지 않았다면 수정
                             goModifyHistory()
+                        else if (deletedCloudImageList.isNotEmpty())
+                            deleteAllDeletedCloudImages()
                     }
                 }
             } catch (e: Exception) {
@@ -751,6 +796,7 @@ class HistoryViewModel @Inject constructor(
             }
         }
     }
+
     fun goModifyHistory(){
         viewModelScope.launch(Dispatchers.IO) {
             val tempMoney = cost.value!!.replace(",", "")

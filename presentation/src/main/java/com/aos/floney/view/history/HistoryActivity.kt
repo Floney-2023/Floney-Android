@@ -64,10 +64,18 @@ class HistoryActivity :
 
 
                 Timber.i("imageUrlsList ${imageUrlsList}")
-                imageUrlsList?.forEach { imageUrl ->
-                    // 각 이미지 URL 처리
-                    Timber.i("ID: ${imageUrl.id}, URL: ${imageUrl.url}")
-                }
+
+                val newList = imageUrlsList ?: arrayListOf()
+                val oldList = viewModel.getUrlList()
+
+                // id != -1인 클라우드 이미지 중, oldList에는 있었지만 newList에는 없는 항목만 필터링
+                val deletedCloudImages = oldList
+                    .filter { it.id != -1 } // 클라우드 이미지만
+                    .filterNot { oldItem -> newList.any { it.id == oldItem.id } } // newList에 없는 것만
+
+                Timber.i("deleteCloudImages ${deletedCloudImages.size} ${deletedCloudImages}")
+                // 삭제된 클라우드 이미지 리스트 업데이트
+                viewModel.setDeletedCloudImageList(deletedCloudImages.toMutableList())
 
                 imageUrlsList?.let {viewModel.setUrlList(it)}
             }
@@ -337,6 +345,14 @@ class HistoryActivity :
 
                         }
                     }.show(supportFragmentManager, "baseChoiceDialog")
+                }
+            }
+        }
+
+        repeatOnStarted {
+            viewModel.onDeleteComplete.collect {
+                if(it){
+                    viewModel.goModifyHistory()
                 }
             }
         }

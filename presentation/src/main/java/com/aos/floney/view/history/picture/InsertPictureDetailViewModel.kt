@@ -16,7 +16,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class InsertPictureDetailViewModel @Inject constructor(
-    private val subscribeDeleteCloudImageUseCase : SubscribeDeleteCloudImageUseCase
 ): BaseViewModel() {
 
     private var _onClickedBack = MutableEventFlow<Boolean>()
@@ -25,23 +24,7 @@ class InsertPictureDetailViewModel @Inject constructor(
     private var _onClickedDelete = MutableEventFlow<Boolean>()
     val onClickedDelete: EventFlow<Boolean> get() = _onClickedDelete
 
-
-    private var _onDeleteComplete = MutableEventFlow<Boolean>()
-    val onDeleteComplete: EventFlow<Boolean> get() = _onDeleteComplete
-
     private lateinit var imageUrl : ImageUrls
-
-    fun imgDelete() {
-        viewModelScope.launch(Dispatchers.IO) {
-            subscribeDeleteCloudImageUseCase(
-                imageUrl.id
-            ).onSuccess {
-                _onDeleteComplete.emit(true)
-            }.onFailure {
-                baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@InsertPictureDetailViewModel)))
-            }
-        }
-    }
 
     fun onClickedBack() {
         viewModelScope.launch {

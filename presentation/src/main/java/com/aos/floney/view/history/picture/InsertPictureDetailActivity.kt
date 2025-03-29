@@ -49,22 +49,8 @@ class InsertPictureDetailActivity :
             viewModel.onClickedDelete.collect {
                 DeletePictureDialog(this@InsertPictureDetailActivity) {
                     // 삭제 선택
-                    // cloud 이미지일 경우, 이미지 삭제 api 호출
-                    if (viewModel.getImageUrl().id != -1)
-                    {
-                        viewModel.imgDelete()
-                    }else {
-                        deleteComplete()
-                    }
-
-                }.show()
-            }
-        }
-        repeatOnStarted {
-            viewModel.onDeleteComplete.collect {
-                if(it){
                     deleteComplete()
-                }
+                }.show()
             }
         }
     }
