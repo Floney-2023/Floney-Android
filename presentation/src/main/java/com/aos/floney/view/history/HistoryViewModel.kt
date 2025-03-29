@@ -451,12 +451,19 @@ class HistoryViewModel @Inject constructor(
 
     // 수정된 내용이 있는지 체크
     private fun isExistEdit(): Boolean {
-        return date.value != modifyItem!!.lineDate || cost.value != modifyItem!!.money || asset.value != modifyItem!!.assetSubCategory || line.value != modifyItem!!.lineSubCategory || content.value != modifyItem!!.description
+        return date.value != modifyItem!!.lineDate || cost.value != modifyItem!!.money || asset.value != modifyItem!!.assetSubCategory || line.value != modifyItem!!.lineSubCategory || content.value != modifyItem!!.description || isImageUrlChange()
     }
 
     // 추가한 내용이 있는지 체크
     private fun isExistAdd(): Boolean {
         return cost.value != "" || asset.value != "자산을 선택하세요" || line.value != "분류를 선택하세요" || content.value != ""
+    }
+
+    // 사진 이미지 변경된 내용 있는 지 체크한 후, 최종 수정
+    private fun isImageUrlChange() : Boolean {
+        val originalIds = modifyItem?.imageUrls?.map { it.id }?.toSet() ?: emptySet()
+        val newIds = urlList.map { it.id }.toSet()
+        return originalIds != newIds
     }
 
     // 닫기 버튼 클릭
