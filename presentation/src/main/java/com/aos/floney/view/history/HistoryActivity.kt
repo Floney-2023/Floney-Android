@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import androidx.activity.addCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
@@ -60,7 +61,8 @@ class HistoryActivity :
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 // InsertPhotoActivity에서 전달한 이미지 리스트 데이터를 받음
-                val imageUrlsList :ArrayList<ImageUrls>? = result.data?.getSerializableExtra("insertPhotoUrl") as? ArrayList<ImageUrls>?
+                val imageUrlsList: ArrayList<ImageUrls>? =
+                    result.data?.getSerializableExtra("insertPhotoUrl") as? ArrayList<ImageUrls>?
 
 
                 Timber.i("imageUrlsList ${imageUrlsList}")
@@ -77,13 +79,14 @@ class HistoryActivity :
                 // 삭제된 클라우드 이미지 리스트 업데이트
                 viewModel.setDeletedCloudImageList(deletedCloudImages.toMutableList())
 
-                imageUrlsList?.let {viewModel.setUrlList(it)}
+                imageUrlsList?.let { viewModel.setUrlList(it) }
             }
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        setUpBackPressedCallBack()
         setUpUi()
         setUpViewModelObserver()
         setUpCalendarBottomSheet()
@@ -91,6 +94,12 @@ class HistoryActivity :
         setSubscribePopup()
     }
 
+    private fun setUpBackPressedCallBack()
+    {
+        onBackPressedDispatcher.addCallback(this) {
+            viewModel.onClickCloseBtn()
+        }
+    }
     private fun setUpFavoriteItem() {
         launcher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
