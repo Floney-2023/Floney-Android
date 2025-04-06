@@ -66,7 +66,6 @@ class LoginViewModelTest {
             prefs,
             loginUseCase,
             checkUserBookUseCase,
-            booksCurrencySearchUseCase,
             authTokenCheckUseCase,
             socialLoginUseCase
         )
@@ -147,8 +146,6 @@ class LoginViewModelTest {
                 events.add(event)
             }
         }
-
-        viewModel.searchCurrency()
 
         assert(events.contains(false))
         job.cancel()
