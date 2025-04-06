@@ -213,7 +213,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:layoutAnimation="@anim/user_animation"
                         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                         bind:diffCallback="@{(Object)UiBookSettingModel.Companion}"
                         bind:eventHolder="@{eventHolder}"
