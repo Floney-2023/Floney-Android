@@ -3,6 +3,7 @@ package com.aos.floney.view.analyze.subcategory
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import androidx.test.internal.util.LogUtil
 import com.aos.data.util.SharedPreferenceUtil
 import com.aos.floney.base.BaseViewModel
 import com.aos.floney.ext.parseErrorMsg
@@ -88,8 +89,12 @@ class AnalyzeLineSubcategoryViewModel @Inject constructor(
     fun getUserList(){
         viewModelScope.launch(Dispatchers.IO) {
             booksUsersUseCase(prefs.getString("bookKey","")).onSuccess {
-                // 불러오기 성공
-                _booksUsersList.postValue(it)
+                // 처음 불러온 값은 모두 check된 것으로 설정하도록 한다.
+                val updatedList = it.booksUsers.map { user ->
+                    user.copy(isCheck = true)
+                }
+                _booksUsersList.postValue(it.copy(booksUsers = updatedList))
+                _booksUsersFilterCount.postValue(it.booksUsers.size)
             }.onFailure {
                 baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@AnalyzeLineSubcategoryViewModel)))
             }
@@ -98,21 +103,19 @@ class AnalyzeLineSubcategoryViewModel @Inject constructor(
 
 
     // 멤버 클릭 시, 정산 멤버 count
-    fun settingSettlementMember(bookUsers: BookUsers)
-    {
-        viewModelScope.launch(Dispatchers.IO) {
-            val updatedList = booksUsersList.value?.booksUsers?.map { user ->
-                if (user.email == bookUsers.email) {
-                    user.copy(isCheck = !user.isCheck) // 선택된 멤버의 isCheck를 true로 설정
-                } else {
-                    user
-                }
+    fun settingSettlementMember(bookUsers: BookUsers) {
+        val updatedList = booksUsersList.value?.booksUsers?.map { user ->
+            if (user.email == bookUsers.email) {
+                user.copy(isCheck = !user.isCheck)
+            } else {
+                user
             }
-            _booksUsersList.postValue(_booksUsersList.value?.copy(booksUsers = updatedList!!))
+        } ?: return
 
-            var emails = getSelectedUserEmails()
-            _booksUsersFilterCount.postValue(emails.size)
-        }
+        _booksUsersList.value = _booksUsersList.value?.copy(booksUsers = updatedList)
+
+        val emails = getSelectedUserEmails()
+        _booksUsersFilterCount.value = emails.size
     }
 
     fun getSelectedUserEmails() : List<String>{
@@ -195,18 +198,19 @@ class AnalyzeLineSubcategoryViewModel @Inject constructor(
     }
 
     // 사용자 필터 전체 선택/ 전체 취소 (적용 버튼 클릭)
-    fun onClickUserAll(flow: Int) {
+    fun onClickUserAll(flow: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
-            val shouldCheck = (flow == 1) // ✅ flow == 1이면 전체 선택, 아니면 전체 해제
+            // 클릭 이벤트 발생
+            // flow가 true면 전체 선택된 상태(전체 삭제 표시), 아니면 하나라도 선택되지 않은 상태(전체 선택 표시)
 
             val updatedList = booksUsersList.value?.booksUsers?.map { user ->
-                user.copy(isCheck = shouldCheck) // ✅ 모든 사용자의 isCheck 값을 동일하게 변경
+                user.copy(isCheck = !flow) // ✅ 모든 사용자의 isCheck 값을 동일하게 변경
             }
 
             _booksUsersList.postValue(_booksUsersList.value?.copy(booksUsers = updatedList!!))
 
-            val emails = getSelectedUserEmails()
-            _booksUsersFilterCount.postValue(emails.size)
+            val memberCount = if(flow) 0 else booksUsersList.value?.booksUsers?.size
+            _booksUsersFilterCount.postValue(memberCount ?: 0)
         }
     }
 
