@@ -17,6 +17,7 @@ import androidx.navigation.fragment.NavHostFragment
 import com.aos.floney.R
 import com.aos.floney.base.BaseActivity
 import com.aos.floney.databinding.ActivityHistoryBinding
+import com.aos.floney.ext.applyHistoryCloseTransition
 import com.aos.floney.ext.intentSerializable
 import com.aos.floney.ext.repeatOnStarted
 import com.aos.floney.view.book.setting.category.BookCategoryActivity
@@ -25,7 +26,6 @@ import com.aos.floney.view.common.BaseAlertDialog
 import com.aos.floney.view.common.BaseChoiceAlertDialog
 import com.aos.floney.view.history.memo.InsertMemoActivity
 import com.aos.floney.view.history.picture.InsertPictureActivity
-import com.aos.floney.view.home.HomeActivity
 import com.aos.model.book.UiBookCategory
 import com.aos.model.home.DayMoneyFavoriteItem
 import com.aos.model.home.DayMoneyModifyItem
@@ -35,7 +35,6 @@ import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.DayViewDecorator
 import com.prolificinteractive.materialcalendarview.DayViewFacade
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.serialization.Serializable
 import timber.log.Timber
 
 
@@ -177,17 +176,12 @@ class HistoryActivity :
         }
         repeatOnStarted {
             viewModel.deleteBookLines.collect {
-                startActivity(Intent(this@HistoryActivity, HomeActivity::class.java))
-                if (Build.VERSION.SDK_INT >= 34) {
-                    overrideActivityTransition(
-                        Activity.OVERRIDE_TRANSITION_OPEN,
-                        android.R.anim.fade_in,
-                        android.R.anim.fade_out
-                    )
-                } else {
-                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+                val resultIntent = Intent().apply {
+                    putExtra("isDelete", true)
                 }
+                setResult(Activity.RESULT_OK, resultIntent)
                 finish()
+                applyHistoryCloseTransition()
             }
         }
         repeatOnStarted {
@@ -266,28 +260,18 @@ class HistoryActivity :
         repeatOnStarted {
             viewModel.postBooksLines.collect {
                 if (it) {
-                    startActivity(
-                        Intent(
-                            this@HistoryActivity, HomeActivity::class.java
-                        ).putExtra("isSave", "exist")
-                    )
-                    if (Build.VERSION.SDK_INT >= 34) {
-                        overrideActivityTransition(
-                            Activity.OVERRIDE_TRANSITION_OPEN,
-                            android.R.anim.fade_in,
-                            android.R.anim.fade_out
-                        )
-                    } else {
-                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+                    val resultIntent = Intent().apply {
+                        putExtra("isSave", true)
                     }
-                    finishAffinity()
+                    setResult(Activity.RESULT_OK, resultIntent)
+                    finish()
                 }
             }
         }
 
         repeatOnStarted {
             viewModel.onClickCloseBtn.collect {
-                Timber.e("onClickCloseBtn $it")
+                Timber.i("onClickCloseBtn $it")
                 if (it) {
                     // 수정 내역 있음
                     BaseAlertDialog(
@@ -295,34 +279,25 @@ class HistoryActivity :
                     ) {
                         if (it) {
                             finish()
+                            applyHistoryCloseTransition()
                         }
                     }.show(supportFragmentManager, "baseAlertDialog")
                 } else {
                     // 수정 내역 없음
                     finish()
+                    applyHistoryCloseTransition()
                 }
             }
         }
         repeatOnStarted {
             viewModel.postModifyBooksLines.collect {
                 if (it) {
-                    startActivity(
-                        Intent(
-                            this@HistoryActivity, HomeActivity::class.java
-                        ).putExtra("isSave", "exist")
-                    )
-                    if (Build.VERSION.SDK_INT >= 34) {
-                        overrideActivityTransition(
-                            Activity.OVERRIDE_TRANSITION_OPEN,
-                            android.R.anim.fade_in,
-                            android.R.anim.fade_out
-                        )
-                    } else {
-                        overridePendingTransition(
-                            android.R.anim.fade_in, android.R.anim.fade_out
-                        )
+                    val resultIntent = Intent().apply {
+                        putExtra("isSave", true)
                     }
+                    setResult(Activity.RESULT_OK, resultIntent)
                     finish()
+                    applyHistoryCloseTransition()
                 }
             }
         }
@@ -338,20 +313,10 @@ class HistoryActivity :
                             // 즐겨찾기에 추가
                             viewModel.postAddFavorite()
                         } else {
-
                             val intent = Intent(
                                 this@HistoryActivity, BookFavoriteActivity::class.java
                             ).putExtra("entryPoint", "history")
                             launcher.launch(intent)
-
-//                            // 즐겨찾기 내역 보기
-//                            startActivity(Intent(this@HistoryActivity, BookFavoriteActivity::class.java))
-//                            if (Build.VERSION.SDK_INT >= 34) {
-//                                overrideActivityTransition(Activity.OVERRIDE_TRANSITION_OPEN, android.R.anim.fade_in, android.R.anim.fade_out)
-//                            } else {
-//                                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
-//                            }
-
                         }
                     }.show(supportFragmentManager, "baseChoiceDialog")
                 }
@@ -398,14 +363,5 @@ class HistoryActivity :
 
     override fun onItemClick(item: UiBookCategory) {
         Timber.e("item $item")
-    }
-}
-
-inline fun Intent.getSerializableArrayListExtra(key: String): ArrayList<Serializable>? {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        getSerializableExtra(key, ArrayList::class.java) as? ArrayList<Serializable>
-    } else {
-        @Suppress("DEPRECATION")
-        getSerializableExtra(key) as? ArrayList<Serializable>
     }
 }
