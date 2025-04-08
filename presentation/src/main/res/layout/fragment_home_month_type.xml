@@ -243,6 +243,7 @@
                         android:paddingStart="20dp"
                         android:paddingVertical="20dp"
                         android:paddingEnd="16dp"
+                        android:layout_marginEnd="5dp"
                         android:minWidth="133dp">
                         <TextView
                             android:id="@+id/tv_total_balance"
