@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
@@ -103,6 +104,19 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(R.layout.a
         setUpAccessCheck()
         setUpAdMob()
         setSubscribePopup()
+        setUpBackPressedCallBack()
+    }
+
+    private fun setUpBackPressedCallBack()
+    {
+        onBackPressedDispatcher.addCallback(this) {
+            if (binding.clShowDetail.isVisible) {
+                viewModel.onClickCloseShowDetail() // clShowDetail 숨기기 위한 처리
+            } else {
+                isEnabled = false // 콜백 비활성화 → 시스템 기본 백 동작 수행
+                onBackPressedDispatcher.onBackPressed()
+            }
+        }
     }
 
     private fun setUpUi() {
