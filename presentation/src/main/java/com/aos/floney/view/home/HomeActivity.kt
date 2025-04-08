@@ -6,7 +6,9 @@ import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.databinding.library.baseAdapters.BR
 import androidx.lifecycle.lifecycleScope
 import com.aos.data.util.SharedPreferenceUtil
@@ -36,6 +38,7 @@ import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 import dagger.hilt.android.AndroidEntryPoint
 import com.aos.floney.base.BaseViewModel
+import com.aos.floney.ext.applyHistoryOpenTransition
 import com.aos.floney.util.getCurrentDateTimeString
 import com.aos.floney.view.common.SuccessToastDialog
 import com.aos.floney.view.common.WarningPopupDialog
@@ -55,13 +58,26 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(R.layout.a
     private val fragmentManager = supportFragmentManager
     private var mRewardAd: RewardedAd? = null
 
+
+    private val launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val isSaved = result.data?.getBooleanExtra("isSave", false) ?: false
+            if (isSaved) {
+                viewModel.baseEvent(BaseViewModel.Event.ShowSuccessToast("저장이 완료되었습니다."))
+                result.data?.removeExtra("isSave")
+            }
+        }
+    }
+
     override fun onResume() {
         super.onResume()
 
         val prefs = SharedPreferenceUtil(this)
         lifecycleScope.launch {
-            viewModel.getBookInfo(prefs.getString("bookKey", ""))
             viewModel.getSubscribeChecking()
+            viewModel.getBookInfo(prefs.getString("bookKey", ""))
+            if (binding.clShowDetail.isVisible) // 일별 bottomSheet이 열려있는 경우 다시 일별 데이터 호출한다.
+                viewModel.getBookDays(viewModel.getFormatDateDay())
         }
     }
 
@@ -72,6 +88,9 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(R.layout.a
         if (intent.getStringExtra("isSave") != null) {
             viewModel.baseEvent(BaseViewModel.Event.ShowSuccessToast("저장이 완료되었습니다."))
             intent.removeExtra("isSave")
+        } else if (intent.getStringExtra("isDelete") != null) {
+            viewModel.baseEvent(BaseViewModel.Event.ShowToast("내역 삭제가 완료되었습니다."))
+            intent.removeExtra("isDelete")
         }
     }
 
@@ -125,22 +144,12 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(R.layout.a
                     viewModel.subscribePopupEnter.value = false // 진입 시 표시되는 팝업이 아님
                     viewModel.onClickCloseShowDetail() // bottomSheet 올라왔을 경우 닫기
                 }else { // 만료안된 경우, 내역 추가 화면 이동
-                    startActivity(
-                        Intent(
-                            this@HomeActivity,
-                            HistoryActivity::class.java
-                        ).putExtra("date", viewModel.getClickDate())
-                            .putExtra("nickname", viewModel.getMyNickname())
-                    )
-                    if (Build.VERSION.SDK_INT >= 34) {
-                        overrideActivityTransition(
-                            Activity.OVERRIDE_TRANSITION_OPEN,
-                            R.anim.slide_in,
-                            R.anim.slide_out_down
-                        )
-                    } else {
-                        overridePendingTransition(R.anim.slide_in, R.anim.slide_out_down)
+                    val intent = Intent(this@HomeActivity, HistoryActivity::class.java).apply {
+                        putExtra("date", viewModel.getClickDate())
+                        putExtra("nickname", viewModel.getMyNickname())
                     }
+                    launcher.launch(intent)
+                    applyHistoryOpenTransition()
                 }
             }
         }
@@ -220,11 +229,8 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(R.layout.a
 
     // 일별내역 아이템 클릭
     fun onClickDayItem(item: DayMoney) {
-        startActivity(
-            Intent(
-                this@HomeActivity,
-                HistoryActivity::class.java
-            ).putExtra(
+        val intent = Intent(this@HomeActivity, HistoryActivity::class.java).apply {
+            putExtra(
                 "dayItem", DayMoneyModifyItem(
                     id = item.id,
                     money = item.money,
@@ -240,16 +246,9 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(R.layout.a
                     imageUrls = item.imageUrls
                 )
             )
-        )
-        if (Build.VERSION.SDK_INT >= 34) {
-            overrideActivityTransition(
-                Activity.OVERRIDE_TRANSITION_OPEN,
-                R.anim.slide_in,
-                R.anim.slide_out_down
-            )
-        } else {
-            overridePendingTransition(R.anim.slide_in, R.anim.slide_out_down)
         }
+        launcher.launch(intent)
+        applyHistoryOpenTransition()
     }
 
     override fun onItemClick(item: DayMoney) {
