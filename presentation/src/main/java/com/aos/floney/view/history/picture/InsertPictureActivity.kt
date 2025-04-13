@@ -62,6 +62,7 @@ class InsertPictureActivity :
 
                 // 삭제 요청 받음
                 if (imageUrls != null) {
+                    viewModel.setIsModify(true)
                     viewModel.deletePictureFile(imageUrls)
                 }
             }
@@ -94,12 +95,16 @@ class InsertPictureActivity :
 
     private fun setupViewModelObserver() {
         repeatOnStarted {
-            // 사진 추가 버튼 클릭
+            // 뒤로 가기 버튼 클릭
             viewModel.onClickedBack.collect {
-                // 다이얼로그 표시
-                EditNotSaveDialog(this@InsertPictureActivity) {
+                if (viewModel.getIsModify()) {
+                    // 다이얼로그 표시
+                    EditNotSaveDialog(this@InsertPictureActivity) {
+                        finish()
+                    }.show()
+                } else {
                     finish()
-                }.show()
+                }
             }
         }
         repeatOnStarted {
@@ -253,6 +258,7 @@ class InsertPictureActivity :
     private fun handleImageResult(uri: Uri?) {
         viewModel.addPictureNum()
         viewModel.createBitmapFile(uri)
+        viewModel.setIsModify(true)
 
         val pictureNum = viewModel.getPictureNum()
         val imageView = when (pictureNum) {
@@ -277,7 +283,7 @@ class InsertPictureActivity :
     private fun setUpBackPressHandler() {
         this.onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                if (viewModel.getImageFileList().isNotEmpty()) {
+                if (viewModel.getIsModify()) {
                     // 다이얼로그 표시
                     EditNotSaveDialog(this@InsertPictureActivity) {
                         finish()

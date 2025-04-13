@@ -70,6 +70,9 @@ class InsertPictureViewModel @Inject constructor(
     // 몇번째 이미지 인지
     private var pictureNum = 0
 
+    // 몇번째 이미지 인지
+    private var isModify = false
+
     // 클라우드 이미지 리스트 세팅 (내용 수정 시)
     fun initPhotoList(cloudUrls: List<ImageUrls>?, localUrls: ArrayList<File>?) {
         cloudUrls?.let {  cloudImageList = it.toMutableList() }
@@ -123,6 +126,14 @@ class InsertPictureViewModel @Inject constructor(
 
     fun addPictureNum() {
         pictureNum++
+    }
+
+    fun setIsModify(checkModify: Boolean) {
+        isModify = checkModify
+    }
+
+    fun getIsModify() : Boolean {
+        return isModify
     }
 
     // 사진 촬영을 위해 임시 파일 생성
@@ -212,6 +223,10 @@ class InsertPictureViewModel @Inject constructor(
         }
     }
 
+    fun setPictureNum(num: Int) {
+        pictureNum = num
+    }
+
     fun getPictureNum(): Int {
         return pictureNum
     }
@@ -224,9 +239,6 @@ class InsertPictureViewModel @Inject constructor(
         return localImageList
     }
 
-    fun setPictureNum(num: Int) {
-        pictureNum = num
-    }
 
     // 파일 불러오기
     fun getImageFile(num: Int): File? {
