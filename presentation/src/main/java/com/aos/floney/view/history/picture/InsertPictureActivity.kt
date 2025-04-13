@@ -242,6 +242,14 @@ class InsertPictureActivity :
                         setPictureImage(binding.ivPicture3, files[1])
                         setPictureImage(binding.ivPicture4, files[2])
                     }
+
+                    4 -> {
+                        binding.ivAddPicture.isVisible = false
+                        setPictureImage(binding.ivPicture1, files[3])
+                        setPictureImage(binding.ivPicture2, files[0])
+                        setPictureImage(binding.ivPicture3, files[1])
+                        setPictureImage(binding.ivPicture4, files[2])
+                    }
                 }
             }
         }
