@@ -3,6 +3,7 @@ package com.aos.floney.view.history.picture
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
@@ -37,57 +38,17 @@ class InsertPictureActivity :
     // 사진 찍기 결과
     private val takePhoto = registerForActivityResult(ActivityResultContracts.TakePicture()) {
         if (it) {
-            viewModel.addPictureNum()
-            viewModel.createBitmapFile(viewModel.getTakeCaptureUri())
-
-            val pictureNum = viewModel.getPictureNum()
-            val imageView = when (pictureNum) {
-                1 -> binding.ivPicture2
-                2 -> binding.ivPicture3
-                3 -> binding.ivPicture4
-                4 -> {
-                    binding.ivAddPicture.isVisible = false
-                    binding.ivPicture1
-                }
-
-                else -> binding.ivPicture1
-            }
-
-            Glide.with(this)
-                .load(viewModel.getImageFile(pictureNum))
-                .fitCenter()
-                .centerCrop()
-                .into(imageView)
+            handleImageResult(viewModel.getTakeCaptureUri())
         }
     }
 
+    // 갤러리 사진 불러오기
     private val imageResult = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             lifecycleScope.launch {
-                viewModel.addPictureNum()
-                viewModel.createBitmapFile(result.data?.data)
-
-                val pictureNum = viewModel.getPictureNum()
-                Timber.i("pictureNum ${pictureNum}")
-                val imageView = when (pictureNum) {
-                    1 -> binding.ivPicture2
-                    2 -> binding.ivPicture3
-                    3 -> binding.ivPicture4
-                    4 -> {
-                        binding.ivAddPicture.isVisible = false
-                        binding.ivPicture1
-                    }
-
-                    else -> binding.ivPicture1
-                }
-
-                Glide.with(this@InsertPictureActivity)
-                    .load(viewModel.getImageFile(pictureNum))
-                    .fitCenter()
-                    .centerCrop()
-                    .into(imageView)
+                handleImageResult(result.data?.data)
             }
         }
     }
@@ -288,6 +249,30 @@ class InsertPictureActivity :
             }
         }
     }
+
+    private fun handleImageResult(uri: Uri?) {
+        viewModel.addPictureNum()
+        viewModel.createBitmapFile(uri)
+
+        val pictureNum = viewModel.getPictureNum()
+        val imageView = when (pictureNum) {
+            1 -> binding.ivPicture2
+            2 -> binding.ivPicture3
+            3 -> binding.ivPicture4
+            4 -> {
+                binding.ivAddPicture.isVisible = false
+                binding.ivPicture1
+            }
+            else -> binding.ivPicture1
+        }
+
+        Glide.with(this)
+            .load(viewModel.getImageFile(pictureNum))
+            .fitCenter()
+            .centerCrop()
+            .into(imageView)
+    }
+
 
     private fun setUpBackPressHandler() {
         this.onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
