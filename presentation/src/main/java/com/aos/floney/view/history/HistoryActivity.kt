@@ -16,6 +16,7 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.aos.floney.R
 import com.aos.floney.base.BaseActivity
+import com.aos.floney.base.BaseViewModel.Event
 import com.aos.floney.databinding.ActivityHistoryBinding
 import com.aos.floney.ext.applyHistoryCloseTransition
 import com.aos.floney.ext.intentSerializable
@@ -35,7 +36,10 @@ import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.DayViewDecorator
 import com.prolificinteractive.materialcalendarview.DayViewFacade
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import timber.log.Timber
+import java.io.File
 
 
 @AndroidEntryPoint
@@ -59,26 +63,27 @@ class HistoryActivity :
     private val imageResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-                // InsertPhotoActivity에서 전달한 이미지 리스트 데이터를 받음
-                val imageUrlsList: ArrayList<ImageUrls>? =
-                    result.data?.getSerializableExtra("insertPhotoUrl") as? ArrayList<ImageUrls>?
+                val cloudList = result.data?.getSerializableExtra("updateCloudPhotoUrl") as? ArrayList<ImageUrls> ?: arrayListOf()
+                val localList = result.data?.getSerializableExtra("updateLocalPhotoUrl") as? ArrayList<File> ?: arrayListOf()
 
+                Timber.i("cloudUrlList: $cloudList")
+                Timber.i("localUrlList: $localList")
 
-                Timber.i("imageUrlsList ${imageUrlsList}")
+                viewModel.processUpdatedPictureData(cloudList, localList)
 
-                val newList = imageUrlsList ?: arrayListOf()
-                val oldList = viewModel.getUrlList()
-
-                // id != -1인 클라우드 이미지 중, oldList에는 있었지만 newList에는 없는 항목만 필터링
+                /*// id != -1인 클라우드 이미지 중, oldList에는 있었지만 newList에는 없는 항목만 필터링
                 val deletedCloudImages = oldList
-                    .filter { it.id != -1 } // 클라우드 이미지만
                     .filterNot { oldItem -> newList.any { it.id == oldItem.id } } // newList에 없는 것만
 
                 Timber.i("deleteCloudImages ${deletedCloudImages.size} ${deletedCloudImages}")
+
                 // 삭제된 클라우드 이미지 리스트 업데이트
                 viewModel.setDeletedCloudImageList(deletedCloudImages.toMutableList())
 
-                imageUrlsList?.let { viewModel.setUrlList(it) }
+                cloudUrlList?.let { viewModel.setCloudUrlList(it) }
+
+                // 2. 로컬 이미지 업데이트 (최종 저장 전, s3에 추가하기 위함)
+                localUrlList?.let { viewModel.setLocalUrlList(it) }*/
             }
         }
 
@@ -170,7 +175,8 @@ class HistoryActivity :
         repeatOnStarted {
             viewModel.onClickPicture.collect {
                 val intent = Intent(this@HistoryActivity, InsertPictureActivity::class.java)
-                intent.putExtra("cloudPhotoUrl",viewModel.getUrlList())
+                intent.putExtra("cloudPhotoUrl",viewModel.getCloudUrlList())
+                intent.putExtra("localPhotoUrl",viewModel.getLocalUrlList())
                 imageResult.launch(intent)
             }
         }

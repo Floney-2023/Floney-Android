@@ -6,13 +6,11 @@ import androidx.lifecycle.viewModelScope
 import com.aos.data.util.CurrencyUtil
 import com.aos.data.util.SharedPreferenceUtil
 import com.aos.data.util.checkDecimalPoint
-import com.aos.data.util.getCurrencyCodeBySymbol
 import com.aos.floney.base.BaseViewModel
 import com.aos.floney.ext.formatNumber
 import com.aos.floney.ext.parseErrorMsg
 import com.aos.floney.util.EventFlow
 import com.aos.floney.util.MutableEventFlow
-import com.aos.floney.util.getAdvertiseTenMinutesCheck
 import com.aos.model.book.UiBookCategory
 import com.aos.model.home.DayMoneyFavoriteItem
 import com.aos.model.home.DayMoneyModifyItem
@@ -28,14 +26,16 @@ import com.aos.usecase.subscribe.SubscribeBenefitUseCase
 import com.aos.usecase.subscribe.SubscribeUserBenefitUseCase
 import com.aos.usecase.subscribe.SubscribeBookUseCase
 import com.aos.usecase.subscribe.SubscribeDeleteCloudImageUseCase
+import com.aos.usecase.subscribe.SubscribePresignedUrlUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
+import java.io.File
+import java.net.HttpURLConnection
+import java.net.URL
 import java.text.NumberFormat
-import java.util.Calendar
 import javax.inject.Inject
 
 @HiltViewModel
@@ -50,8 +50,9 @@ class HistoryViewModel @Inject constructor(
     private val postBooksFavoritesUseCase : PostBooksFavoritesUseCase,
     private val getBookFavoriteUseCase: GetBookFavoriteUseCase,
     private val subscribeBenefitUseCase: SubscribeBenefitUseCase,
-    private val SubscribeUserBenefitUseCase: SubscribeUserBenefitUseCase,
-    private val subscribeDeleteCloudImageUseCase : SubscribeDeleteCloudImageUseCase
+    private val subscribeUserBenefitUseCase: SubscribeUserBenefitUseCase,
+    private val subscribeDeleteCloudImageUseCase : SubscribeDeleteCloudImageUseCase,
+    private val subscribePresignedUrlUseCase: SubscribePresignedUrlUseCase
 ) : BaseViewModel() {
 
     val onCheckedChangeListener: (Boolean) -> Unit = { isChecked ->
@@ -169,8 +170,13 @@ class HistoryViewModel @Inject constructor(
     var subscribeExpired = MutableLiveData<Boolean>(false)
 
     private var memo = ""
-    private var urlList = listOf<ImageUrls>()
+    private var cloudUrlList = mutableListOf<ImageUrls>()
+    private var localUrlList = mutableListOf<File>()
     private var deletedCloudImageList = mutableListOf<ImageUrls>()
+
+
+    // 이미지 업로드 정상 여부
+    private var isSuccessImageUpload: Boolean = true
 
     init {
         // 구독 여부 조회
@@ -196,12 +202,20 @@ class HistoryViewModel @Inject constructor(
         return memo
     }
 
-    fun setUrlList(urlList: List<ImageUrls>) {
-        this.urlList = urlList
+    fun setCloudUrlList(urlList: List<ImageUrls>) {
+        this.cloudUrlList = urlList.toMutableList()
     }
 
-    fun getUrlList() : ArrayList<ImageUrls> {
-        return ArrayList(urlList)
+    fun getCloudUrlList() : ArrayList<ImageUrls> {
+        return ArrayList(cloudUrlList)
+    }
+
+    fun setLocalUrlList(urlList: List<File>) {
+        this.localUrlList = urlList.toMutableList()
+    }
+
+    fun getLocalUrlList() : ArrayList<File> {
+        return ArrayList(localUrlList)
     }
 
     // 삭제 클라우드 이미지 리스트 셋팅
@@ -227,10 +241,10 @@ class HistoryViewModel @Inject constructor(
         _nickname.value = item.writerNickName
         deleteChecked.value = item.exceptStatus
         memo = item.memo
-        urlList = item.imageUrls
+        cloudUrlList = item.imageUrls.toMutableList()
 
         Timber.e("memo $memo")
-        Timber.e("url $urlList")
+        Timber.e("url $cloudUrlList")
 
         _repeatClickItem.value = UiBookCategory(
             idx = 1,
@@ -244,6 +258,7 @@ class HistoryViewModel @Inject constructor(
             item.money.substring(2, item.money.length).trim() + CurrencyUtil.currency
         modifyItem!!.lineCategory = getCategory(item.lineCategory)
     }
+
     // 즐겨찾기 내역 불러오기
     fun setIntentFavoriteData(item: DayMoneyFavoriteItem) {
         mode.value = "add"
@@ -259,35 +274,19 @@ class HistoryViewModel @Inject constructor(
         mode.value = "favorite"
     }
 
-    fun deleteAllDeletedCloudImages() {
-        viewModelScope.launch {
-            deletedCloudImageList.forEach { imageUrl ->
-                val result = withContext(Dispatchers.IO) {
-                    runCatching { subscribeDeleteCloudImageUseCase(imageUrl.id) }
-                }
-
-                result.onSuccess {
-                    Timber.d("삭제 성공: ${imageUrl.id}")
-                    _onDeleteComplete.emit(true)
-                }.onFailure {
-                    Timber.e("삭제 실패: ${imageUrl.id}")
-                    baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@HistoryViewModel)))
-                }
-            }
+    // 받아온 클라우드/로컬 데이터 셋팅
+    fun processUpdatedPictureData(
+        newCloudList: List<ImageUrls>,
+        newLocalList: List<File>
+    ) {
+        val oldCloudList = getCloudUrlList()
+        val deleted = oldCloudList.filterNot { old ->
+            newCloudList.any { it.id == old.id }
         }
-    }
 
-
-    fun cloudImgDelete(imageUrl: ImageUrls) {
-        viewModelScope.launch(Dispatchers.IO) {
-            subscribeDeleteCloudImageUseCase(
-                imageUrl.id
-            ).onSuccess {
-                _onDeleteComplete.emit(true)
-            }.onFailure {
-                baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@HistoryViewModel)))
-            }
-        }
+        setDeletedCloudImageList(deleted.toMutableList())
+        setCloudUrlList(newCloudList.toMutableList())
+        setLocalUrlList(newLocalList.toMutableList())
     }
 
     private fun getSubscribeBook() {
@@ -371,7 +370,7 @@ class HistoryViewModel @Inject constructor(
                 nickname = nickname.value!!,
                 repeatDuration = getConvertSendRepeatValue(),
                 memo = memo,
-                imageUrl = urlList.map { it.url }
+                imageUrl = cloudUrlList.map { it.url }
             ).onSuccess {
                 _postBooksLines.emit(true)
             }.onFailure {
@@ -462,7 +461,7 @@ class HistoryViewModel @Inject constructor(
     // 사진 이미지 변경된 내용 있는 지 체크한 후, 최종 수정
     private fun isImageUrlChange() : Boolean {
         val originalIds = modifyItem?.imageUrls?.map { it.id }?.toSet() ?: emptySet()
-        val newIds = urlList.map { it.id }.toSet()
+        val newIds = cloudUrlList.map { it.id }.toSet()
         return originalIds != newIds
     }
 
@@ -771,7 +770,7 @@ class HistoryViewModel @Inject constructor(
                 }
 
                 // 유저 혜택 확인
-                val userBenefitResult = SubscribeUserBenefitUseCase()
+                val userBenefitResult = subscribeUserBenefitUseCase()
                 userBenefitResult.onFailure {
                     baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
                     return@launch // 실패 시 작업 종료
@@ -791,10 +790,14 @@ class HistoryViewModel @Inject constructor(
                         // 구독 만료 여부 업데이트
                         subscribeExpired.postValue(expiredCheck)
 
-                        if(!expiredCheck && deletedCloudImageList.isEmpty()) // 만료되지 않았다면 수정
-                            goModifyHistory()
-                        else if (deletedCloudImageList.isNotEmpty())
-                            deleteAllDeletedCloudImages()
+                        if(!expiredCheck){ // 만료되지 않음
+                            // 클라우드 삭제, 로컬 추가 이미지 없을 경우 바로 수정
+                            if(deletedCloudImageList.isEmpty() && localUrlList.isEmpty())
+                                goModifyHistory()
+
+                            // 클라우드 삭제 여부, 로컬 추가 이미지 있을 경우 따로 처리하낟.
+                            setCloudAddAndDelete()
+                        }
                     }
                 }
             } catch (e: Exception) {
@@ -803,6 +806,95 @@ class HistoryViewModel @Inject constructor(
             }
         }
     }
+
+    private fun setCloudAddAndDelete() {
+        viewModelScope.launch(Dispatchers.IO) {
+            baseEvent(Event.ShowLoading)
+            try {
+                // 플래그 변수로 모든 작업의 성공 여부 추적
+                var allOperationsSuccessful = true
+
+                // 삭제할 클라우드 이미지가 있는 경우
+                if (deletedCloudImageList.isNotEmpty()) {
+                    for (imageUrl in deletedCloudImageList) {
+                        val result = runCatching { subscribeDeleteCloudImageUseCase(imageUrl.id) }
+                        result.onSuccess {
+                            Timber.d("삭제 성공: ${imageUrl.id}")
+                        }.onFailure {
+                            Timber.e("삭제 실패: ${imageUrl.id}")
+                            baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@HistoryViewModel)))
+                            allOperationsSuccessful = false
+                        }
+                    }
+                }
+
+                // 추가할 로컬 이미지가 있는 경우
+                if (localUrlList.isNotEmpty()) {
+                    for (file in localUrlList) {
+                        // presigned URL 가져오기
+                        val urlResult = subscribePresignedUrlUseCase(prefs.getString("bookKey", ""))
+                        urlResult.onSuccess { presignedData ->
+                            val url = presignedData.url
+                            // 파일 업로드 시도
+                            val uploadSuccess = uploadFileToPresignedUrl(url, file, presignedData.viewUrl)
+                            if (!uploadSuccess) {
+                                allOperationsSuccessful = false
+                            }
+                        }.onFailure {
+                            baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@HistoryViewModel)))
+                            allOperationsSuccessful = false
+                        }
+                    }
+                }
+
+                // 모든 작업이 성공적으로 완료된 경우에만 수정 진행
+                if (allOperationsSuccessful) {
+                    goModifyHistory()
+                } else {
+                    baseEvent(Event.ShowToast("이미지 처리 중 오류가 발생했습니다."))
+                }
+            } finally {
+                baseEvent(Event.HideLoading)
+            }
+        }
+    }
+
+    // 업로드 함수 수정 - 성공 여부를 반환하도록 변경
+    private suspend fun uploadFileToPresignedUrl(
+        presignedUrl: String,
+        file: File,
+        viewUrl: String
+    ): Boolean {
+        return try {
+            withContext(Dispatchers.IO) {
+                val url = URL(presignedUrl)
+                val connection = url.openConnection() as HttpURLConnection
+                connection.requestMethod = "PUT"
+                connection.doOutput = true
+                connection.setRequestProperty("Content-Type", "image/jpeg")
+
+                file.inputStream().use { input ->
+                    connection.outputStream.use { output ->
+                        input.copyTo(output)
+                    }
+                }
+
+                if (connection.responseCode == 200) {
+                    println("File uploaded successfully!")
+                    cloudUrlList.add(ImageUrls(-1, viewUrl))
+                    true // 성공
+                } else {
+                    println("Upload failed with response code: ${connection.responseCode}")
+                    baseEvent(Event.ShowToast(connection.responseMessage.parseErrorMsg(this@HistoryViewModel)))
+                    false // 실패
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false // 예외 발생 시 실패
+        }
+    }
+
 
     fun goModifyHistory(){
         viewModelScope.launch(Dispatchers.IO) {
@@ -820,7 +912,7 @@ class HistoryViewModel @Inject constructor(
                 except = deleteChecked.value!!,
                 nickname = nickname.value!!,
                 memo = memo,
-                imageUrls = urlList.map { it.url }
+                imageUrls = cloudUrlList.map { it.url }
             ).onSuccess {
                 _postModifyBooksLines.emit(true)
             }.onFailure {

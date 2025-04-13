@@ -118,50 +118,17 @@ class InsertPictureActivity :
         binding.setVariable(BR.vm, viewModel)
 
         // 초기 url 이미지 세팅 (이미 저장했던 이미지가 있는 경우)
-        val imageUrls : ArrayList<ImageUrls>? = intent.getSerializableExtra("cloudPhotoUrl") as? ArrayList<ImageUrls>
+        val cloudUrls : ArrayList<ImageUrls>? = intent.getSerializableExtra("cloudPhotoUrl") as? ArrayList<ImageUrls>
+        val localUrls : ArrayList<File>? = intent.getSerializableExtra("localPhotoUrl") as? ArrayList<File>
 
-        Timber.i("originalUrl : $imageUrls")
-        imageUrls?.let{
-            viewModel.setPictureNum(it.size)
-            when (it.size) {
-                0 -> {
-                    binding.ivAddPicture.isVisible = true
-                    resetPictureImage(binding.ivPicture1)
-                    resetPictureImage(binding.ivPicture2)
-                    resetPictureImage(binding.ivPicture3)
-                    resetPictureImage(binding.ivPicture4)
-                }
+        Timber.i("cloudUrls : $cloudUrls")
+        Timber.i("localUrls : $localUrls")
 
-                1 -> {
-                    setPictureImageFromUrl(binding.ivPicture2, it[0].url)
-                    resetPictureImage(binding.ivPicture3)
-                    resetPictureImage(binding.ivPicture4)
-                }
-
-                2 -> {
-                    setPictureImageFromUrl(binding.ivPicture2, it[0].url)
-                    setPictureImageFromUrl(binding.ivPicture3, it[1].url)
-                    resetPictureImage(binding.ivPicture4)
-                }
-
-                3 -> {
-                    binding.ivAddPicture.isVisible = true
-                    resetPictureImage(binding.ivPicture1)
-                    setPictureImageFromUrl(binding.ivPicture2, it[0].url)
-                    setPictureImageFromUrl(binding.ivPicture3, it[1].url)
-                    setPictureImageFromUrl(binding.ivPicture4, it[2].url)
-                }
-
-                4 -> {
-                    binding.ivAddPicture.isVisible = false
-                    setPictureImageFromUrl(binding.ivPicture1, it[3].url)
-                    setPictureImageFromUrl(binding.ivPicture2, it[0].url)
-                    setPictureImageFromUrl(binding.ivPicture3, it[1].url)
-                    setPictureImageFromUrl(binding.ivPicture4, it[2].url)
-                }
-            }
+        if (!localUrls.isNullOrEmpty() || !cloudUrls.isNullOrEmpty()){
+            val totalCount = (localUrls?.size ?: 0) + (cloudUrls?.size ?: 0)
+            viewModel.setPictureNum(totalCount) // 개수 카운트
+            viewModel.initPhotoList(cloudUrls, localUrls) // 데이터 세팅
         }
-        viewModel.initPhotoList(imageUrls)
     }
 
     private fun setupViewModelObserver() {
@@ -192,9 +159,13 @@ class InsertPictureActivity :
             // 이미지 업로드 성공
             viewModel.onSuccessImageUpload.collect { url ->
                 val intent = Intent()
-                intent.putExtra("insertPhotoUrl", ArrayList(viewModel.getPictureList()))
+                intent.putExtra("updateCloudPhotoUrl", ArrayList(viewModel.getCloudPictureList()))
+                intent.putExtra("updateLocalPhotoUrl", ArrayList(viewModel.getLocalPictureList()))
+
                 setResult(Activity.RESULT_OK, intent)
-                Timber.i("detailUrl ${ ArrayList(viewModel.getPictureList())}")
+                Timber.i("getCloudPictureList ${ ArrayList(viewModel.getCloudPictureList())}")
+                Timber.i("getLocalPictureList ${ ArrayList(viewModel.getLocalPictureList())}")
+
                 finish()
             }
         }
@@ -240,7 +211,7 @@ class InsertPictureActivity :
             }
         }
         repeatOnStarted {
-            // 사진 삭제 후 정렬
+            // 사진 소팅 후 정렬
             viewModel.sortPictures.collect { files ->
                 viewModel.setPictureNum(files.size)
                 when (files.size) {
@@ -287,7 +258,6 @@ class InsertPictureActivity :
             .fitCenter()
             .centerCrop()
             .diskCacheStrategy(DiskCacheStrategy.NONE)
-            .skipMemoryCache(true)
             .into(imageView)
     }
 
@@ -297,7 +267,6 @@ class InsertPictureActivity :
             .fitCenter()
             .centerCrop()
             .diskCacheStrategy(DiskCacheStrategy.NONE)
-            .skipMemoryCache(true)
             .into(imageView)
     }
 

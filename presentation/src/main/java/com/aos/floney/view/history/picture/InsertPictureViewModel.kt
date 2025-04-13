@@ -9,13 +9,13 @@ import android.provider.MediaStore
 import androidx.lifecycle.viewModelScope
 import com.aos.data.util.SharedPreferenceUtil
 import com.aos.floney.base.BaseViewModel
-import com.aos.floney.ext.parseErrorMsg
 import com.aos.floney.util.EventFlow
 import com.aos.floney.util.MutableEventFlow
 import com.aos.model.home.ImageUrls
 import com.aos.model.home.PictureItem
 import com.aos.usecase.subscribe.SubscribePresignedUrlUseCase
-import com.letspl.oceankeeper.util.ImgFileMaker
+import com.aos.floney.util.ImgFileMaker
+import com.aos.floney.util.ImgFileMaker.createBitmapFromUri
 import com.letspl.oceankeeper.util.RotateTransform
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -25,12 +25,10 @@ import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
-import java.net.HttpURLConnection
-import java.net.URL
 import java.text.SimpleDateFormat
-import java.util.ArrayList
 import java.util.Date
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 @HiltViewModel
 class InsertPictureViewModel @Inject constructor(
@@ -69,36 +67,31 @@ class InsertPictureViewModel @Inject constructor(
     // S3 받은 url 리스트 (String 형태 - 서버에 보낼 값)
     private var cloudImageList = mutableListOf<ImageUrls>()
 
-    // 이미지 업로드 정상 여부
-    private var isSuccessImageUpload: Boolean = true
-
     // 몇번째 이미지 인지
     private var pictureNum = 0
 
     // 클라우드 이미지 리스트 세팅 (내용 수정 시)
-    fun initPhotoList(originalUrl: List<ImageUrls>?) {
-        originalUrl?.let {  cloudImageList = it.toMutableList() }
+    fun initPhotoList(cloudUrls: List<ImageUrls>?, localUrls: ArrayList<File>?) {
+        cloudUrls?.let {  cloudImageList = it.toMutableList() }
+        localUrls?.let {  localImageList = it.toMutableList() }
 
+        // ✅ 클라우드 리스트를 PictureItem.CloudImage로 변환 + 로컬 리스트를 PictureItem.LocalImage로 변환
+        val sortedList: List<PictureItem> =  cloudImageList.map { PictureItem.CloudImage(ImageUrls(-1, it.url)) } +  // S3 URL 리스트 변환
+                localImageList.map { PictureItem.LocalImage(it) }        // 로컬 파일 리스트 변환
+
+        viewModelScope.launch {
+            _sortPictures.emit(sortedList)
+        }
     }
 
     // 작성 저장하기 버튼 클릭
     fun onClickedSaveWriting() {
-        baseEvent(Event.ShowLoading)
         viewModelScope.launch {
 
             Timber.e("localImageList $localImageList")
+            Timber.e("cloudImageList $cloudImageList")
 
-            withContext(Dispatchers.IO) {
-                localImageList.forEach {
-                    getPresignedUrl(it)
-                }
-            }
-
-            baseEvent(Event.HideLoading)
-            Timber.e("pictureUrlList $cloudImageList")
-            if (isSuccessImageUpload) {
-                _onSuccessImageUpload.emit(cloudImageList)
-            }
+            _onSuccessImageUpload.emit(cloudImageList)
         }
     }
 
@@ -148,18 +141,14 @@ class InsertPictureViewModel @Inject constructor(
     // 회전 각도를 맞춘 이미지 파일 생성
     fun createBitmapFile(uri: Uri?): Bitmap? {
         return if (uri != null) {
-            val path =
-                ImgFileMaker.getFullPathFromUri(context, uri)!!
-            val angle = RotateTransform.getRotationAngle(path)
-            val bitmap = RotateTransform.rotateImage(
-                context,
-                BitmapFactory.decodeFile(path),
-                angle.toFloat(),
-                uri
-            )
-            if (bitmap != null) {
-                setImageBitmap(bitmap)
-                bitmap
+            val bitmap = createBitmapFromUri(context, uri)
+            val angle = RotateTransform.getRotationAngleFromExif(context, uri)
+            val rotated =
+                bitmap?.let { RotateTransform.rotateImage(context, it, angle.toFloat(), uri) }
+
+            if (rotated != null) {
+                setImageBitmap(rotated)
+                rotated
             } else {
                 baseEvent(Event.ShowToast("이미지 파일 생성에 실패하였습니다."))
                 null
@@ -167,53 +156,6 @@ class InsertPictureViewModel @Inject constructor(
         } else {
             baseEvent(Event.ShowToast("이미지 파일 설정에 실패하였습니다."))
             null
-        }
-    }
-
-    private suspend fun getPresignedUrl(file: File) {
-        subscribePresignedUrlUseCase(prefs.getString("bookKey", "")).onSuccess {
-            Timber.e("it $it")
-            val url = it.url
-            uploadFileToPresignedUrl(url, file, it.viewUrl)
-        }.onFailure {
-            baseEvent(Event.HideLoading)
-            baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@InsertPictureViewModel)))
-            isSuccessImageUpload = false
-        }
-    }
-
-    private suspend fun uploadFileToPresignedUrl(
-        presignedUrl: String,
-        file: File,
-        viewUrl: String
-    ) {
-        try {
-            withContext(Dispatchers.IO) {
-                val url = URL(presignedUrl)
-                val connection = url.openConnection() as HttpURLConnection
-                connection.requestMethod = "PUT"
-                connection.doOutput = true
-                connection.setRequestProperty("Content-Type", "image/jpeg") // 파일 형식에 맞게 변경
-
-                file.inputStream().use { input ->
-                    connection.outputStream.use { output ->
-                        input.copyTo(output)
-                    }
-                }
-
-                if (connection.responseCode == 200) {
-                    println("File uploaded successfully!")
-                    isSuccessImageUpload = true
-                    cloudImageList.add(ImageUrls(-1,viewUrl))
-                } else {
-                    println("Upload failed with response code: ${connection.responseCode}")
-                    baseEvent(Event.ShowToast(connection.responseMessage.parseErrorMsg(this@InsertPictureViewModel)))
-                    isSuccessImageUpload = false
-                }
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            isSuccessImageUpload = false
         }
     }
 
@@ -227,30 +169,27 @@ class InsertPictureViewModel @Inject constructor(
             tempFile
         } catch (e: Exception) {
             e.printStackTrace()
-            isSuccessImageUpload = false
             null
         }
     }
 
     fun deletePictureFile(imageUrls: ImageUrls) {
         viewModelScope.launch {
-            viewModelScope.launch {
-                withContext(Dispatchers.Default) {
-                    if (imageUrls.id != -1) {
-                        // 클라우드 리스트에서 삭제
-                        cloudImageList.removeAll { it == imageUrls }
-                    } else {
-                        // 로컬 리스트에서 삭제
-                        localImageList.removeAll { it.absolutePath == imageUrls.url }
-                    }
+            withContext(Dispatchers.Default) {
+                if (imageUrls.id != -1) {
+                    // 클라우드 리스트에서 삭제
+                    cloudImageList.removeAll { it == imageUrls }
+                } else {
+                    // 로컬 리스트에서 삭제
+                    localImageList.removeAll { it.absolutePath == imageUrls.url }
                 }
-
-                // ✅ 클라우드 리스트를 PictureItem.CloudImage로 변환 + 로컬 리스트를 PictureItem.LocalImage로 변환
-                val sortedList: List<PictureItem> =  cloudImageList.map { PictureItem.CloudImage(ImageUrls(-1, it.url)) } +  // S3 URL 리스트 변환
-                            localImageList.map { PictureItem.LocalImage(it) }        // 로컬 파일 리스트 변환
-
-                _sortPictures.emit(sortedList)
             }
+
+            // ✅ 클라우드 리스트를 PictureItem.CloudImage로 변환 + 로컬 리스트를 PictureItem.LocalImage로 변환
+            val sortedList: List<PictureItem> =  cloudImageList.map { PictureItem.CloudImage(ImageUrls(-1, it.url)) } +  // S3 URL 리스트 변환
+                    localImageList.map { PictureItem.LocalImage(it) }        // 로컬 파일 리스트 변환
+
+            _sortPictures.emit(sortedList)
         }
     }
 
@@ -277,8 +216,12 @@ class InsertPictureViewModel @Inject constructor(
         return pictureNum
     }
 
-    fun getPictureList(): List<ImageUrls> {
+    fun getCloudPictureList(): List<ImageUrls> {
         return cloudImageList
+    }
+
+    fun getLocalPictureList() : List<File> {
+        return localImageList
     }
 
     fun setPictureNum(num: Int) {
