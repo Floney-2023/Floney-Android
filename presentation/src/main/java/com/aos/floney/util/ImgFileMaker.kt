@@ -1,7 +1,8 @@
-package com.letspl.oceankeeper.util
+package com.aos.floney.util
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.provider.MediaStore
 import java.io.File
@@ -48,17 +49,15 @@ object ImgFileMaker {
         return fullPath
     }
 
-    // 비트맵을 파일로 변환함
-    fun saveBitmapToFile(bitmap: Bitmap, fileName: String?): File {
-        val file: File = File(fileName)
-        try {
-            val fos = FileOutputStream(file)
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 50, fos)
-            fos.flush()
-            fos.close()
-        } catch (e: IOException) {
+    fun createBitmapFromUri(context: Context, uri: Uri): Bitmap? {
+        return try {
+            val inputStream = context.contentResolver.openInputStream(uri)
+            BitmapFactory.decodeStream(inputStream).also {
+                inputStream?.close()
+            }
+        } catch (e: Exception) {
             e.printStackTrace()
+            null
         }
-        return file
     }
 }

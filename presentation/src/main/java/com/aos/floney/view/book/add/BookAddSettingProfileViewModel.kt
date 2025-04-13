@@ -10,7 +10,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.aos.data.util.CommonUtil
 import com.aos.data.util.SharedPreferenceUtil
 import com.aos.floney.R
 import com.aos.floney.base.BaseViewModel
@@ -21,7 +20,7 @@ import com.aos.usecase.bookadd.BooksCreateUseCase
 import com.aos.usecase.bookadd.ChangeBookImgUseCase
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
-import com.letspl.oceankeeper.util.ImgFileMaker
+import com.aos.floney.util.ImgFileMaker
 import com.letspl.oceankeeper.util.RotateTransform
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext

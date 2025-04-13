@@ -4,33 +4,27 @@ import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.drawable.Drawable
 import android.net.Uri
-import android.os.Handler
-import android.os.Looper
 import android.provider.MediaStore
 import androidx.lifecycle.viewModelScope
 import com.aos.data.util.CommonUtil
 import com.aos.floney.R
 import com.aos.floney.base.BaseViewModel
-import com.aos.floney.ext.getResourceUri
 import com.aos.floney.util.EventFlow
 import com.aos.floney.util.MutableEventFlow
 import com.aos.usecase.mypage.ChangeProfileUseCase
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
-import com.letspl.oceankeeper.util.ImgFileMaker
+import com.aos.floney.util.ImgFileMaker
 import com.letspl.oceankeeper.util.RotateTransform
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.ByteArrayOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
-import java.util.Random
 import javax.inject.Inject
 
 @HiltViewModel

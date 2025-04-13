@@ -20,7 +20,7 @@ import com.aos.usecase.bookadd.BooksCreateUseCase
 import com.aos.usecase.bookadd.ChangeBookImgUseCase
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
-import com.letspl.oceankeeper.util.ImgFileMaker
+import com.aos.floney.util.ImgFileMaker
 import com.letspl.oceankeeper.util.RotateTransform
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
