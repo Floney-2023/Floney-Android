@@ -68,23 +68,13 @@ class InsertPictureViewModel @Inject constructor(
     private var cloudImageList = mutableListOf<ImageUrls>()
 
     // 몇번째 이미지 인지
-    private var pictureNum = 0
-
-    // 몇번째 이미지 인지
     private var isModify = false
 
     // 클라우드 이미지 리스트 세팅 (내용 수정 시)
     fun initPhotoList(cloudUrls: List<ImageUrls>?, localUrls: ArrayList<File>?) {
         cloudUrls?.let {  cloudImageList = it.toMutableList() }
         localUrls?.let {  localImageList = it.toMutableList() }
-
-        // ✅ 클라우드 리스트를 PictureItem.CloudImage로 변환 + 로컬 리스트를 PictureItem.LocalImage로 변환
-        val sortedList: List<PictureItem> =  cloudImageList.map { PictureItem.CloudImage(ImageUrls(-1, it.url)) } +  // S3 URL 리스트 변환
-                localImageList.map { PictureItem.LocalImage(it) }        // 로컬 파일 리스트 변환
-
-        viewModelScope.launch {
-            _sortPictures.emit(sortedList)
-        }
+        updateImageList()
     }
 
     // 작성 저장하기 버튼 클릭
@@ -122,10 +112,6 @@ class InsertPictureViewModel @Inject constructor(
         viewModelScope.launch {
             _onClickedAddPicture.emit(true)
         }
-    }
-
-    fun addPictureNum() {
-        pictureNum++
     }
 
     fun setIsModify(checkModify: Boolean) {
@@ -195,11 +181,17 @@ class InsertPictureViewModel @Inject constructor(
                     localImageList.removeAll { it.absolutePath == imageUrls.url }
                 }
             }
+            updateImageList()
+        }
+    }
 
+    fun updateImageList() {
+        viewModelScope.launch {
             // ✅ 클라우드 리스트를 PictureItem.CloudImage로 변환 + 로컬 리스트를 PictureItem.LocalImage로 변환
-            val sortedList: List<PictureItem> =  cloudImageList.map { PictureItem.CloudImage(ImageUrls(-1, it.url)) } +  // S3 URL 리스트 변환
+            val sortedList: List<PictureItem> =  cloudImageList.map { PictureItem.CloudImage(ImageUrls(it.id, it.url)) } +  // S3 URL 리스트 변환
                     localImageList.map { PictureItem.LocalImage(it) }        // 로컬 파일 리스트 변환
 
+            Timber.i("sortedPictures : ${sortedList}")
             _sortPictures.emit(sortedList)
         }
     }
@@ -219,16 +211,9 @@ class InsertPictureViewModel @Inject constructor(
         bitmap?.let {
             saveBitmapToTempFile(context, it)?.let { file ->
                 localImageList.add(file)
+                updateImageList()
             }
         }
-    }
-
-    fun setPictureNum(num: Int) {
-        pictureNum = num
-    }
-
-    fun getPictureNum(): Int {
-        return pictureNum
     }
 
     fun getCloudPictureList(): List<ImageUrls> {

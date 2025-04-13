@@ -87,8 +87,6 @@ class InsertPictureActivity :
         Timber.i("localUrls : $localUrls")
 
         if (!localUrls.isNullOrEmpty() || !cloudUrls.isNullOrEmpty()){
-            val totalCount = (localUrls?.size ?: 0) + (cloudUrls?.size ?: 0)
-            viewModel.setPictureNum(totalCount) // 개수 카운트
             viewModel.initPhotoList(cloudUrls, localUrls) // 데이터 세팅
         }
     }
@@ -152,9 +150,10 @@ class InsertPictureActivity :
                 val localImageCount = viewModel.getImageFileList().size
                 val totalImageCount = cloudImageCount + localImageCount
 
-                if (totalImageCount < index) // 이미지가 없는 뷰 클릭 시 return
+                if (totalImageCount < index) { // 이미지가 없는 뷰 클릭 시 return
+                    viewModel.onClickedAddPicture()
                     return@collect
-
+                }
                 // 상세 이미지 Urls
                 val detailUrls: ImageUrls? = if (index <= cloudImageCount) {
                     // 클라우드 이미지인 경우, 그냥 index로 가져옴
@@ -179,7 +178,8 @@ class InsertPictureActivity :
         repeatOnStarted {
             // 사진 소팅 후 정렬
             viewModel.sortPictures.collect { files ->
-                viewModel.setPictureNum(files.size)
+                Timber.i("files ${files}")
+                Timber.i("files = $files, size = ${files?.size ?: "null or empty"}")
                 when (files.size) {
                     0 -> {
                         binding.ivAddPicture.isVisible = true
@@ -216,6 +216,9 @@ class InsertPictureActivity :
                         setPictureImage(binding.ivPicture3, files[1])
                         setPictureImage(binding.ivPicture4, files[2])
                     }
+                    else -> {
+                        viewModel.baseEvent(BaseViewModel.Event.ShowToast("이미지 불러오는데 문제가 생겼습니다."))
+                    }
                 }
             }
         }
@@ -227,11 +230,13 @@ class InsertPictureActivity :
     }
 
     private fun setPictureImageFromUrl(imageView: ImageView, url: String) {
+        Timber.i("url ${url}")
         Glide.with(this)
             .load(url)
             .fitCenter()
             .centerCrop()
             .diskCacheStrategy(DiskCacheStrategy.NONE)
+            .skipMemoryCache(true)
             .into(imageView)
     }
 
@@ -241,6 +246,7 @@ class InsertPictureActivity :
             .fitCenter()
             .centerCrop()
             .diskCacheStrategy(DiskCacheStrategy.NONE)
+            .skipMemoryCache(true)
             .into(imageView)
     }
 
@@ -256,27 +262,10 @@ class InsertPictureActivity :
     }
 
     private fun handleImageResult(uri: Uri?) {
-        viewModel.addPictureNum()
+        // 이미지 파일 생성
         viewModel.createBitmapFile(uri)
+        // 수정 내역 여부 처리
         viewModel.setIsModify(true)
-
-        val pictureNum = viewModel.getPictureNum()
-        val imageView = when (pictureNum) {
-            1 -> binding.ivPicture2
-            2 -> binding.ivPicture3
-            3 -> binding.ivPicture4
-            4 -> {
-                binding.ivAddPicture.isVisible = false
-                binding.ivPicture1
-            }
-            else -> binding.ivPicture1
-        }
-
-        Glide.with(this)
-            .load(viewModel.getImageFile(pictureNum))
-            .fitCenter()
-            .centerCrop()
-            .into(imageView)
     }
 
 
@@ -345,9 +334,4 @@ class InsertPictureActivity :
             }
         }
     }
-
-    override fun onDestroy() {
-        super.onDestroy()
-    }
-
 }
