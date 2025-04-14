@@ -1,6 +1,7 @@
 package com.aos.floney.view.home
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.aos.data.util.CurrencyUtil
@@ -109,10 +110,21 @@ class HomeViewModel @Inject constructor(
     var subscribeExpired = MutableLiveData<Boolean>(false)
 
     // 구독 팝업 표시 여부 (구독 만료 여부 & 10분 타이머 체크)
-    var subscribePopupShow = MutableLiveData<Boolean>(false)
+    private var _subscribePopupShow = MutableLiveData<Boolean>()
+    val subscribePopupShow: LiveData<Boolean> get() = _subscribePopupShow
 
     // 진입 시 표시되는 팝업인 지
     var subscribePopupEnter = MutableLiveData<Boolean>(true)
+
+    // dim 처리 여부 값 합쳐진 LiveData 선언
+    val showOverlay = MediatorLiveData<Boolean>().apply {
+        addSource(_onClickedShowDetail) { value = shouldShowOverlay() }
+        addSource(_subscribePopupShow) { value = shouldShowOverlay() }
+    }
+
+    private fun shouldShowOverlay(): Boolean {
+        return _onClickedShowDetail.value != null || _subscribePopupShow.value == true
+    }
 
     init {
         getFormatDateMonth()
@@ -520,13 +532,18 @@ class HomeViewModel @Inject constructor(
                         subscribeExpired.postValue(expiredCheck)
 
                         // 구독 팝업 표시 여부 업데이트 (구독 만료 O && 타이머 시간이 유효하지 않을 경우)
-                        subscribePopupShow.postValue(getAdvertiseTenMinutesCheck(remainTime) <= 0 && expiredCheck)
+                        changeSubscribePopupShow(getAdvertiseTenMinutesCheck(remainTime) <= 0 && expiredCheck)
                     }
                 }
             } catch (e: Exception) {
                 // 코루틴 실행 중 발생한 예외 처리
                 baseEvent(Event.ShowToast(e.message.parseErrorMsg()))
             }
+        }
+    }
+    fun changeSubscribePopupShow(isCheck : Boolean){
+        viewModelScope.launch(Dispatchers.IO) {
+            _subscribePopupShow.postValue(isCheck)
         }
     }
 }

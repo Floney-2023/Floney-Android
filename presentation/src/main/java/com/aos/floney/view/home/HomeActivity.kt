@@ -1,6 +1,7 @@
 package com.aos.floney.view.home
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Build
@@ -12,6 +13,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.databinding.library.baseAdapters.BR
 import androidx.lifecycle.lifecycleScope
+import androidx.test.internal.util.LogUtil
 import com.aos.data.util.SharedPreferenceUtil
 import com.aos.floney.BuildConfig
 import com.aos.floney.R
@@ -40,6 +42,7 @@ import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 import dagger.hilt.android.AndroidEntryPoint
 import com.aos.floney.base.BaseViewModel
 import com.aos.floney.ext.applyHistoryOpenTransition
+import com.aos.floney.ext.setStatusBarTransparent
 import com.aos.floney.util.getCurrentDateTimeString
 import com.aos.floney.view.common.SuccessToastDialog
 import com.aos.floney.view.common.WarningPopupDialog
@@ -74,6 +77,7 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(R.layout.a
         super.onResume()
 
         val prefs = SharedPreferenceUtil(this)
+
         lifecycleScope.launch {
             viewModel.getSubscribeChecking()
             viewModel.getBookInfo(prefs.getString("bookKey", ""))
@@ -121,6 +125,7 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(R.layout.a
 
     private fun setUpUi() {
         binding.setVariable(BR.eventHolder, this)
+
         setStatusBarColor(ContextCompat.getColor(this, R.color.background3))
 
         if (isDarkMode()) {
@@ -154,7 +159,7 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(R.layout.a
             viewModel.clickedAddHistory.collect {
                 if (viewModel.subscribeExpired.value!!) // 구독 만료일 경우, 구독 유도 팝업 표시
                 {
-                    viewModel.subscribePopupShow.postValue(true) // 팝업 표시
+                    viewModel.changeSubscribePopupShow(true) // 팝업 표시
                     viewModel.subscribePopupEnter.value = false // 진입 시 표시되는 팝업이 아님
                     viewModel.onClickCloseShowDetail() // bottomSheet 올라왔을 경우 닫기
                 }else { // 만료안된 경우, 내역 추가 화면 이동
@@ -220,6 +225,18 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(R.layout.a
                 }
 
             }
+        }
+
+        viewModel.showOverlay.observe(this) { show ->
+            changeStatusBarColor(show)
+        }
+    }
+
+    private fun changeStatusBarColor(isShow :Boolean){
+        if (isShow) {
+            setStatusBarColor(ContextCompat.getColor(this@HomeActivity, R.color.background_dim))
+        } else {
+            setStatusBarColor(ContextCompat.getColor(this@HomeActivity, R.color.background3))
         }
     }
 
@@ -446,8 +463,7 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(R.layout.a
                     "subscribeCheckTenMinutes",
                     getCurrentDateTimeString()
                 )
-
-            viewModel.subscribePopupShow.postValue(false)
+            viewModel.changeSubscribePopupShow(false)
         }
     }
 }
