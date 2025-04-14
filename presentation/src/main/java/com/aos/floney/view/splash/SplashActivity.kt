@@ -24,6 +24,7 @@ import com.aos.floney.view.login.LoginActivity
 import com.aos.floney.view.onboard.OnBoardActivity
 import com.aos.data.util.CurrencyUtil
 import com.aos.floney.BuildConfig
+import com.aos.floney.ext.setStatusBarTransparent
 import com.aos.floney.util.RemoteConfigWrapper
 import com.aos.floney.view.book.entrance.BookEntranceActivity
 import com.aos.floney.view.common.BaseAlertDialog
@@ -284,25 +285,7 @@ class SplashActivity :
             Log.e("name not found", e.toString())
         }
     }
-    private fun AppCompatActivity.setStatusBarTransparent() {
 
-        window.apply {
-            setFlags(
-                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
-            )
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                insetsController?.setSystemBarsAppearance(
-                    WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS,
-                    WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
-                )
-            }
-        }
-
-        if (Build.VERSION.SDK_INT >= 30) {    // API 30 에 적용
-            WindowCompat.setDecorFitsSystemWindows(window, false)
-        }
-    }
     private fun setPreferenceUtil(){
         CurrencyUtil.currency = sharedPreferenceUtil.getString("symbol", "원")
         sharedPreferenceUtil.setString("subscribeCheckTenMinutes", "")

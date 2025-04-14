@@ -32,9 +32,7 @@ import kotlin.collections.ArrayList
 
 @HiltViewModel
 class InsertPictureViewModel @Inject constructor(
-    @ApplicationContext private val context: Context,
-    private val prefs: SharedPreferenceUtil,
-    private val subscribePresignedUrlUseCase: SubscribePresignedUrlUseCase
+    @ApplicationContext private val context: Context
 ) : BaseViewModel() {
 
     private var _onClickedSaveWriting = MutableEventFlow<Boolean>()
@@ -222,13 +220,6 @@ class InsertPictureViewModel @Inject constructor(
 
     fun getLocalPictureList() : List<File> {
         return localImageList
-    }
-
-
-    // 파일 불러오기
-    fun getImageFile(num: Int): File? {
-        val cloudImageSize = cloudImageList.size
-        return if (localImageList.size+cloudImageSize>= num) localImageList[num - cloudImageSize - 1] else null
     }
 
     // 로컬 파일 리스트 불러오기
