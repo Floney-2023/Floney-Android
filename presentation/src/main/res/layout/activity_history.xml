@@ -338,6 +338,7 @@
                     app:layout_constraintBottom_toBottomOf="@id/tv_delete_plan"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/tv_delete_plan"
+                    app:sb_checked="@{vm.deleteChecked ?  true : false}"
                     app:onCheckedChanged="@{vm.onCheckedChangeListener}"
                     app:sb_background="@color/grayscale9"
                     app:sb_border_width="1.5dp"

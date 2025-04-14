@@ -27,7 +27,8 @@ class BookSettingFavoriteAddFragment :
         setUpViewModelObserver()
         setUpBackButton()
     }
-    fun setUpBackButton(){
+
+    private fun setUpBackButton(){
         // 뒤로 가기 콜백 등록
         val callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {

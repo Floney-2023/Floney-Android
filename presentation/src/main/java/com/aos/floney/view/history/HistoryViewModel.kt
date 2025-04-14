@@ -346,6 +346,7 @@ class HistoryViewModel @Inject constructor(
             when (mode.value) {
                 "add" -> postAddHistory()
                 "modify" -> postModifyHistory()
+                "favorite" -> postAddFavorite()
             }
         }
     }
@@ -518,7 +519,7 @@ class HistoryViewModel @Inject constructor(
 
     // 지출, 수입, 이체 클릭
     fun onClickFlow(type: String) {
-        if (mode.value == "add") {
+        if (mode.value == "add" || mode.value == "favorite") {
             line.postValue("분류를 선택하세요")
             flow.postValue(type)
         }
@@ -699,34 +700,31 @@ class HistoryViewModel @Inject constructor(
 
     // 즐겨찾기 추가
     fun postAddFavorite() {
-        if (isFavoriteInputData()) {
-            isFavoriteMaxData { isMax ->
-                if (isMax) {
-                    viewModelScope.launch(Dispatchers.IO) {
-                        postBooksFavoritesUseCase(
-                            bookKey = prefs.getString("bookKey", ""),
-                            money = cost.value!!.replace(",", "").replace(CurrencyUtil.currency,"")
-                                .toDouble(),
-                            description = if (content.value=="") line.value!! else content.value!!,
-                            lineCategoryName = flow.value!!,
-                            lineSubcategoryName = line.value!!,
-                            assetSubcategoryName = asset.value!!,
-                            exceptStatus = deleteChecked.value!!
-                        ).onSuccess {
-                            _postBooksFavorites.emit(true)
-                            baseEvent(Event.ShowSuccessToast("즐겨찾기에 추가되었습니다."))
-                        }.onFailure {
-                            baseEvent(Event.ShowToast("${flow.value!!} ${it.message.parseErrorMsg(this@HistoryViewModel)}"))
-                        }
+        isFavoriteMaxData { isMax ->
+            if (isMax) {
+                viewModelScope.launch(Dispatchers.IO) {
+                    postBooksFavoritesUseCase(
+                        bookKey = prefs.getString("bookKey", ""),
+                        money = cost.value!!.replace(",", "").replace(CurrencyUtil.currency,"")
+                            .toDouble(),
+                        description = if (content.value=="") line.value!! else content.value!!,
+                        lineCategoryName = flow.value!!,
+                        lineSubcategoryName = line.value!!,
+                        assetSubcategoryName = asset.value!!,
+                        exceptStatus = deleteChecked.value!!
+                    ).onSuccess {
+                        _postBooksFavorites.emit(true)
+                        baseEvent(Event.ShowSuccessToast("즐겨찾기에 추가되었습니다."))
+                    }.onFailure {
+                        baseEvent(Event.ShowToast("${flow.value!!} ${it.message.parseErrorMsg(this@HistoryViewModel)}"))
                     }
-                } else {
-                    baseEvent(Event.ShowToast("즐겨찾기 개수가 초과 되었습니다."))
                 }
+            } else {
+                baseEvent(Event.ShowToast("즐겨찾기 개수가 초과 되었습니다."))
             }
-        } else {
-            createFavoriteErrorMsg()
         }
     }
+
     fun isFavoriteMaxData(onResult: (Boolean) -> Unit) {
         var sum = 0
         viewModelScope.launch {
