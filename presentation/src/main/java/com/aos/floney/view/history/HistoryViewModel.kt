@@ -303,33 +303,30 @@ class HistoryViewModel @Inject constructor(
     // 자산/분류 카테고리 항목 가져오기
     private fun getBookCategory() {
         viewModelScope.launch(Dispatchers.IO) {
-            getBookCategoryUseCase(prefs.getString("bookKey", ""), parent).onSuccess { it ->
-                // 카테고리 선택 값 초기화
+            getBookCategoryUseCase(prefs.getString("bookKey", ""), parent).onSuccess { list ->
+
                 categoryClickItem = null
 
-                val tempValue = if (parent == "자산") {
-                    asset.value
-                } else {
-                    line.value
-                }
+                val tempValue = if (parent == "자산") asset.value else line.value
+                val isUnselected = tempValue == "자산을 선택하세요" || tempValue == "분류를 선택하세요"
 
-                val item = it.mapIndexed { index, innerItem ->
-
-                    if ((asset.value == "자산을 선택하세요" || line.value == "분류를 선택하세요") && index == 0) {
-                        categoryClickItem = innerItem
-                        UiBookCategory(
-                            innerItem.idx, true, innerItem.name, innerItem.default
-                        )
-                    } else if (innerItem.name == tempValue) {
-                        categoryClickItem = innerItem
-                        UiBookCategory(
-                            innerItem.idx, true, innerItem.name, innerItem.default
-                        )
+                val item = list.mapIndexed { index, innerItem ->
+                    val shouldSelect = if (isUnselected) {
+                        index == 0
                     } else {
-                        UiBookCategory(
-                            innerItem.idx, innerItem.checked, innerItem.name, innerItem.default
-                        )
+                        innerItem.name == tempValue
                     }
+
+                    if (shouldSelect) {
+                        categoryClickItem = innerItem
+                    }
+
+                    UiBookCategory(
+                        idx = innerItem.idx,
+                        checked = shouldSelect,
+                        name = innerItem.name,
+                        default = innerItem.default
+                    )
                 }
 
                 _categoryList.postValue(item.toMutableList())
