@@ -114,7 +114,10 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(R.layout.a
     private fun setUpBackPressedCallBack()
     {
         onBackPressedDispatcher.addCallback(this) {
-            if (binding.clShowDetail.isVisible) {
+            if (binding.includePopupSubscribe.root.isVisible){
+                viewModel.changeSubscribePopupShow(false)
+            }
+            else if (binding.clShowDetail.isVisible) {
                 viewModel.onClickCloseShowDetail() // clShowDetail 숨기기 위한 처리
             } else {
                 isEnabled = false // 콜백 비활성화 → 시스템 기본 백 동작 수행
