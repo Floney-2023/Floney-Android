@@ -19,9 +19,12 @@ import com.aos.floney.R
 import com.aos.floney.base.BaseActivity
 import com.aos.floney.base.BaseViewModel
 import com.aos.floney.databinding.ActivityInsertPictureBinding
+import com.aos.floney.ext.intentSerializable
+import com.aos.floney.ext.intentSerializableList
 import com.aos.floney.ext.repeatOnStarted
 import com.aos.floney.view.common.ChoicePictureDialog
 import com.aos.floney.view.common.EditNotSaveDialog
+import com.aos.model.home.DayMoneyFavoriteItem
 import com.aos.model.home.ImageUrls
 import com.aos.model.home.PictureItem
 import com.bumptech.glide.Glide
@@ -56,15 +59,13 @@ class InsertPictureActivity :
     private val getResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-
-                val imageUrls : ImageUrls? = result.data?.getSerializableExtra("deleteFilePath") as? ImageUrls
-                Timber.e("url $imageUrls")
-
-                // 삭제 요청 받음
-                if (imageUrls != null) {
-                    viewModel.setIsModify(true)
-                    viewModel.deletePictureFile(imageUrls)
-                }
+                val data: Intent? = result.data
+                data?.intentSerializable("deleteFilePath", ImageUrls::class.java)
+                    ?.let {
+                        Timber.e("url $it")
+                        viewModel.setIsModify(true)
+                        viewModel.deletePictureFile(it)
+                    }
             }
         }
 
@@ -80,14 +81,13 @@ class InsertPictureActivity :
         binding.setVariable(BR.vm, viewModel)
 
         // 초기 url 이미지 세팅 (이미 저장했던 이미지가 있는 경우)
-        val cloudUrls : ArrayList<ImageUrls>? = intent.getSerializableExtra("cloudPhotoUrl") as? ArrayList<ImageUrls>
-        val localUrls : ArrayList<File>? = intent.getSerializableExtra("localPhotoUrl") as? ArrayList<File>
+        val cloudUrls = intent.intentSerializableList<ImageUrls>("cloudPhotoUrl")
+        val localUrls = intent.intentSerializableList<File>("localPhotoUrl")
 
-        Timber.i("cloudUrls : $cloudUrls")
-        Timber.i("localUrls : $localUrls")
-
-        if (!localUrls.isNullOrEmpty() || !cloudUrls.isNullOrEmpty()){
-            viewModel.initPhotoList(cloudUrls, localUrls) // 데이터 세팅
+        if (cloudUrls.isNotEmpty() || localUrls.isNotEmpty()) {
+            Timber.i("cloudUrls : $cloudUrls")
+            Timber.i("localUrls : $localUrls")
+            viewModel.initPhotoList(cloudUrls, localUrls)
         }
     }
 

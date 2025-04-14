@@ -20,6 +20,7 @@ import com.aos.floney.base.BaseViewModel.Event
 import com.aos.floney.databinding.ActivityHistoryBinding
 import com.aos.floney.ext.applyHistoryCloseTransition
 import com.aos.floney.ext.intentSerializable
+import com.aos.floney.ext.intentSerializableList
 import com.aos.floney.ext.repeatOnStarted
 import com.aos.floney.view.book.setting.category.BookCategoryActivity
 import com.aos.floney.view.book.setting.favorite.BookFavoriteActivity
@@ -63,29 +64,19 @@ class HistoryActivity :
     private val imageResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-                val cloudList = result.data?.getSerializableExtra("updateCloudPhotoUrl") as? ArrayList<ImageUrls> ?: arrayListOf()
-                val localList = result.data?.getSerializableExtra("updateLocalPhotoUrl") as? ArrayList<File> ?: arrayListOf()
+                val data: Intent? = result.data
+
+                val cloudList = data?.intentSerializableList<ImageUrls>("updateCloudPhotoUrl")
+                val localList = data?.intentSerializableList<File>("updateLocalPhotoUrl")
 
                 Timber.i("cloudUrlList: $cloudList")
                 Timber.i("localUrlList: $localList")
 
-                viewModel.processUpdatedPictureData(cloudList, localList)
-
-                /*// id != -1인 클라우드 이미지 중, oldList에는 있었지만 newList에는 없는 항목만 필터링
-                val deletedCloudImages = oldList
-                    .filterNot { oldItem -> newList.any { it.id == oldItem.id } } // newList에 없는 것만
-
-                Timber.i("deleteCloudImages ${deletedCloudImages.size} ${deletedCloudImages}")
-
-                // 삭제된 클라우드 이미지 리스트 업데이트
-                viewModel.setDeletedCloudImageList(deletedCloudImages.toMutableList())
-
-                cloudUrlList?.let { viewModel.setCloudUrlList(it) }
-
-                // 2. 로컬 이미지 업데이트 (최종 저장 전, s3에 추가하기 위함)
-                localUrlList?.let { viewModel.setLocalUrlList(it) }*/
+                if (!cloudList.isNullOrEmpty() || !localList.isNullOrEmpty()) {
+                        viewModel.processUpdatedPictureData(cloudList, localList)
+                    }
+                }
             }
-        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

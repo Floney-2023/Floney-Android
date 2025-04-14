@@ -11,6 +11,7 @@ import com.aos.floney.BR
 import com.aos.floney.R
 import com.aos.floney.base.BaseActivity
 import com.aos.floney.databinding.ActivityInsertPictureDetailBinding
+import com.aos.floney.ext.intentSerializable
 import com.aos.floney.ext.repeatOnStarted
 import com.aos.floney.view.common.DeletePictureDialog
 import com.aos.model.home.ImageUrls
@@ -19,7 +20,6 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import java.io.File
-import java.io.Serializable
 
 @AndroidEntryPoint
 class InsertPictureDetailActivity :
@@ -92,19 +92,10 @@ class InsertPictureDetailActivity :
 
     // 이미지 정보 가져오기
     private fun setImageInform() {
-        val imageUrls : ImageUrls? = intent.serializable<ImageUrls>("url")
+        val imageUrls : ImageUrls? = intent.intentSerializable("url",ImageUrls::class.java)
         imageUrls?.let{
             viewModel.setImageUrl(imageUrls)
             showImage(imageUrls)
         }
-    }
-}
-
-inline fun <reified T : Serializable> Intent.serializable(key: String): T? {
-    return if (Build.VERSION.SDK_INT >= 33) {
-        getSerializableExtra(key, T::class.java)
-    } else {
-        @Suppress("DEPRECATION")
-        getSerializableExtra(key) as? T
     }
 }

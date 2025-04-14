@@ -276,17 +276,22 @@ class HistoryViewModel @Inject constructor(
 
     // 받아온 클라우드/로컬 데이터 셋팅
     fun processUpdatedPictureData(
-        newCloudList: List<ImageUrls>,
-        newLocalList: List<File>
+        newCloudList: ArrayList<ImageUrls>?,
+        newLocalList: ArrayList<File>?
     ) {
-        val oldCloudList = getCloudUrlList()
-        val deleted = oldCloudList.filterNot { old ->
-            newCloudList.any { it.id == old.id }
+        newCloudList?.let { cloudList ->
+            val oldCloudList = getCloudUrlList()
+            val deleted = oldCloudList.filterNot { old ->
+                cloudList.any { it.id == old.id }
+            }
+
+            setDeletedCloudImageList(deleted.toMutableList())
+            setCloudUrlList(cloudList.toMutableList())
         }
 
-        setDeletedCloudImageList(deleted.toMutableList())
-        setCloudUrlList(newCloudList.toMutableList())
-        setLocalUrlList(newLocalList.toMutableList())
+        newLocalList?.let { localList ->
+            setLocalUrlList(localList.toMutableList())
+        }
     }
 
     private fun getSubscribeBook() {
