@@ -2,7 +2,9 @@ package com.aos.floney.view.book.setting.category
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.os.bundleOf
 import androidx.databinding.library.baseAdapters.BR
+import androidx.fragment.app.setFragmentResult
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.aos.floney.R
@@ -45,6 +47,7 @@ class BookSettingCategoryAddFragment() : BaseFragment<FragmentBookSettingCategor
             // 이전 페이지로 (저장 O)
             viewModel.completePage.collect {
                 if(it.isNotEmpty()) {
+                    setFragmentResult("key", bundleOf("flow" to viewModel.flow.value))
                     findNavController().popBackStack()
                 }
             }

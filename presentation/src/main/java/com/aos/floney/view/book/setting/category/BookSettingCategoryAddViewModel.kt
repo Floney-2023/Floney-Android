@@ -2,6 +2,7 @@ package com.aos.floney.view.book.setting.category
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.aos.data.util.SharedPreferenceUtil
@@ -22,9 +23,14 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BookSettingCategoryAddViewModel @Inject constructor(
+    stateHandle: SavedStateHandle,
     private val prefs: SharedPreferenceUtil,
     private val booksCategoryAddUseCase: BooksCategoryAddUseCase
 ) : BaseViewModel() {
+
+    // 자산, 지출, 수입, 이체
+    private val _flow: MutableLiveData<String> = stateHandle.getLiveData("flow")
+    val flow: LiveData<String> get() = _flow
 
     // 항목이름
     var name = MutableLiveData<String>("")
@@ -37,9 +43,6 @@ class BookSettingCategoryAddViewModel @Inject constructor(
     // 이전 페이지
     private var _completePage = MutableEventFlow<String>()
     val completePage: EventFlow<String> get() = _completePage
-
-    // 자산, 지출, 수입, 이체
-    var flow = MutableLiveData<String>("자산")
 
     fun onClickedExit() {
         viewModelScope.launch {
@@ -70,6 +73,6 @@ class BookSettingCategoryAddViewModel @Inject constructor(
 
     // 자산, 지출, 수입, 이체 클릭
     fun onClickFlow(type: String) {
-        flow.postValue(type)
+        _flow.value = type
     }
 }
