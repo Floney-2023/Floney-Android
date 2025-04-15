@@ -50,7 +50,7 @@ fun PostAnalyzeCategoryOutComeEntity.toUiAnalyzeModel(): UiAnalyzeCategoryOutCom
     stepIdx = 0
     colorUsedArr.clear()
     randomColorArr.clear()
-    getRandomColor(this.analyzeResult.size)
+    randomColorArr.addAll(getRandomColor(this.analyzeResult.size))
 
     return UiAnalyzeCategoryOutComeModel(total = "총 ${
         NumberFormat.getNumberInstance().format(this.total)
@@ -122,7 +122,7 @@ fun PostAnalyzeCategoryInComeEntity.toUiAnalyzeModel(): UiAnalyzeCategoryInComeM
     stepIdx = 0
     colorUsedArr.clear()
     randomColorArr.clear()
-    getRandomColor(this.analyzeResult.size)
+    randomColorArr.addAll(getRandomColor(this.analyzeResult.size))
 
     Timber.e("different $differance")
     Timber.e("total $total")
@@ -304,17 +304,9 @@ fun PostAnalyzeLineSubCategoryEntity.toUiLineSubCategoryModel(): UiAnalyzeLineSu
 
 // 랜덤 색상 가져오기 그래프는 3개까지는 색상 고정 그 이후는 랜덤 색상임
 fun getRandomColor(repeat: Int): List<Int> {
-    if (repeat > 0) {
-        var random = 0
-        for (i in 0..repeat) {
-            random = Random.nextInt(0, 14)
-            if (!colorUsedArr.contains(random)) {
-                colorUsedArr.add(random)
-                randomColorArr.add(colorArr[random])
-            }
-        }
-    }
-    return randomColorArr
+    val colorCount = colorArr.size
+    val indices = (0 until colorCount).shuffled().take(repeat)
+    return indices.map { colorArr[it] }
 }
 
 fun Double.round(decimals: Int): Double {

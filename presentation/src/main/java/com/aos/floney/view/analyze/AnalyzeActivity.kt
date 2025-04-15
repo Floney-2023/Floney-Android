@@ -47,6 +47,9 @@ class AnalyzeActivity : BaseActivity<ActivityAnalyzeBinding, AnalyzeViewModel>(R
             if (isSaved) {
                 viewModel.baseEvent(BaseViewModel.Event.ShowSuccessToast("저장이 완료되었습니다."))
                 result.data?.removeExtra("isSave")
+
+                // 데이터를 다시 불러온다.
+                viewModel.onClickFlow(viewModel.flow.value!!)
             }
         }
     }
