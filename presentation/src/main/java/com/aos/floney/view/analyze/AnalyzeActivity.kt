@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
@@ -18,7 +19,9 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import com.aos.data.util.SharedPreferenceUtil
 import com.aos.floney.R
 import com.aos.floney.base.BaseActivity
+import com.aos.floney.base.BaseViewModel
 import com.aos.floney.databinding.ActivityAnalyzeBinding
+import com.aos.floney.ext.applyHistoryOpenTransition
 import com.aos.floney.ext.repeatOnStarted
 import com.aos.floney.util.getCurrentDateTimeString
 import com.aos.floney.view.book.setting.budget.BookSettingBudgetFragment
@@ -37,6 +40,16 @@ class AnalyzeActivity : BaseActivity<ActivityAnalyzeBinding, AnalyzeViewModel>(R
 
     @Inject
     lateinit var sharedPreferenceUtil: SharedPreferenceUtil
+
+    private val launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val isSaved = result.data?.getBooleanExtra("isSave", false) ?: false
+            if (isSaved) {
+                viewModel.baseEvent(BaseViewModel.Event.ShowSuccessToast("저장이 완료되었습니다."))
+                result.data?.removeExtra("isSave")
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -154,18 +167,12 @@ class AnalyzeActivity : BaseActivity<ActivityAnalyzeBinding, AnalyzeViewModel>(R
         repeatOnStarted {
             // 내역추가
             viewModel.clickedAddHistory.collect {
-                startActivity(
-                    Intent(
-                        this@AnalyzeActivity,
-                        HistoryActivity::class.java
-                    ).putExtra("date", it)
-                        .putExtra("nickname", userNickname)
-                )
-                if (Build.VERSION.SDK_INT >= 34) {
-                    overrideActivityTransition(Activity.OVERRIDE_TRANSITION_OPEN, R.anim.slide_in, R.anim.slide_out_down)
-                } else {
-                    overridePendingTransition(R.anim.slide_in, R.anim.slide_out_down)
+                val intent = Intent(this@AnalyzeActivity, HistoryActivity::class.java).apply {
+                    putExtra("date", it)
+                    putExtra("nickname", userNickname)
                 }
+                launcher.launch(intent)
+                applyHistoryOpenTransition()
             }
         }
     }

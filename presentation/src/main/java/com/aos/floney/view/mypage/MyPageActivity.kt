@@ -5,10 +5,13 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.databinding.library.baseAdapters.BR
 import com.aos.floney.R
 import com.aos.floney.base.BaseActivity
+import com.aos.floney.base.BaseViewModel
 import com.aos.floney.databinding.ActivityMyPageBinding
+import com.aos.floney.ext.applyHistoryOpenTransition
 import com.aos.floney.ext.repeatOnStarted
 import com.aos.floney.view.analyze.AnalyzeActivity
 import com.aos.floney.view.history.HistoryActivity
@@ -33,7 +36,17 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MyPageActivity : BaseActivity<ActivityMyPageBinding, MyPageViewModel>(R.layout.activity_my_page) {
-    private val fragmentManager = supportFragmentManager
+
+    private val launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val isSaved = result.data?.getBooleanExtra("isSave", false) ?: false
+            if (isSaved) {
+                viewModel.baseEvent(BaseViewModel.Event.ShowSuccessToast("저장이 완료되었습니다."))
+                result.data?.removeExtra("isSave")
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -45,17 +58,13 @@ class MyPageActivity : BaseActivity<ActivityMyPageBinding, MyPageViewModel>(R.la
         repeatOnStarted {
             // 내역추가
             viewModel.clickedAddHistory.collect {
-                startActivity(
-                    Intent(
-                        this@MyPageActivity,
-                        HistoryActivity::class.java
-                    ).putExtra("date", it)
-                        .putExtra("nickname", userNickname)
-                )
-                if (Build.VERSION.SDK_INT >= 34) {
-                    overrideActivityTransition(Activity.OVERRIDE_TRANSITION_OPEN, R.anim.slide_in, R.anim.slide_out_down)
-                } else {
-                    overridePendingTransition(R.anim.slide_in, R.anim.slide_out_down)
+                viewModel.clickedAddHistory.collect {
+                    val intent = Intent(this@MyPageActivity, HistoryActivity::class.java).apply {
+                        putExtra("date", it)
+                        putExtra("nickname", userNickname)
+                    }
+                    launcher.launch(intent)
+                    applyHistoryOpenTransition()
                 }
             }
         }
