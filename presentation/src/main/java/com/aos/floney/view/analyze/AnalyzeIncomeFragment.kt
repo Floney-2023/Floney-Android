@@ -1,11 +1,7 @@
 package com.aos.floney.view.analyze
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.databinding.library.baseAdapters.BR
 import androidx.fragment.app.activityViewModels
@@ -16,10 +12,8 @@ import com.aos.floney.databinding.FragmentAnalyzeIncomeBinding
 import com.aos.floney.view.analyze.subcategory.BottomSheetAnaylzeLineSubcategory
 import com.aos.model.analyze.AnalyzeResult
 import com.aos.model.analyze.UiAnalyzeCategoryInComeModel
-import com.aos.model.analyze.UiAnalyzeCategoryOutComeModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 @AndroidEntryPoint
 class AnalyzeIncomeFragment :
@@ -66,8 +60,8 @@ class AnalyzeIncomeFragment :
     }
 
     override fun onItemClick(item: AnalyzeResult) {
-        // 구독 만료가 아닐 때 분석 상세 bottomSheet 표시
-        if(activityViewModel.subscribeExpired.value == true){
+        // 구독 중일 때 분석 상세 bottomSheet 표시
+        if(activityViewModel.subscribeActive){
             // 상세 지출 bottomSheet로 이동 (선택된 달이 있는 경우만)
             viewModel.selectMonth.value?.let {
                 val bottomSheetFragment = BottomSheetAnaylzeLineSubcategory(
@@ -77,11 +71,12 @@ class AnalyzeIncomeFragment :
                 )
                 bottomSheetFragment.show(parentFragmentManager, bottomSheetFragment.tag)
             }
-        } else
+        } else // 구독 중일 아닐 경우
         {
-            // 구독 만료 팝업 표시
-            activityViewModel.showSubscribePopupIfNeeded()
+            // 혜택 적용 중이라면, 구독 팝업
+            if(activityViewModel.subscribeExpired)
+                activityViewModel.showSubscribePopupIfNeeded()
+            // 혜택 적용 중이 아니라면, 클릭 시 아무 일도 일어나지 않는다.
         }
     }
-
 }

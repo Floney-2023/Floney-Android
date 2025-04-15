@@ -10,12 +10,11 @@ import com.aos.floney.util.EventFlow
 import com.aos.floney.util.MutableEventFlow
 import com.aos.floney.util.getAdvertiseTenMinutesCheck
 import com.aos.usecase.subscribe.SubscribeBenefitUseCase
-import com.aos.usecase.subscribe.SubscribeCheckUseCase
+import com.aos.usecase.subscribe.SubscribeBookUseCase
 import com.aos.usecase.subscribe.SubscribeUserBenefitUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.text.SimpleDateFormat
@@ -29,7 +28,7 @@ class AnalyzeViewModel @Inject constructor(
     private val prefs: SharedPreferenceUtil,
     private val subscribeBenefitUseCase: SubscribeBenefitUseCase,
     private val SubscribeUserBenefitUseCase: SubscribeUserBenefitUseCase,
-    private val subscribeCheckUseCase: SubscribeCheckUseCase
+    private val subscribeBookCheckUseCase: SubscribeBookUseCase
 ): BaseViewModel() {
 
     // 지출, 수입, 예산, 자산
@@ -56,8 +55,11 @@ class AnalyzeViewModel @Inject constructor(
     private var _clickedAddHistory = MutableEventFlow<String>()
     val clickedAddHistory: EventFlow<String> get() = _clickedAddHistory
 
-    // 구독 만료 여부
-    var subscribeExpired = MutableLiveData<Boolean>(false)
+    // 구독 적용 여부
+    var subscribeActive = false
+
+    // 구독 만료됨 & 혜택 적용 여부
+    var subscribeExpired = false
 
     // 구독 유도 팝업 표시 여부
     var subscribePopupShow = MutableLiveData<Boolean>(false)
@@ -148,13 +150,16 @@ class AnalyzeViewModel @Inject constructor(
     }
 
 
-    // 구독 여부 가져오기
+    // 가계부 구독 여부 가져오기
     fun getSubscribeChecking(){
         viewModelScope.launch(Dispatchers.IO) {
-            subscribeCheckUseCase().onSuccess {
+            subscribeBookCheckUseCase(prefs.getString("bookKey", "")).onSuccess {
                 // 구독 안한 상태일 경우, 혜택(가계부, 개인)이 적용되어있는 지 확인
+                // 구독 한 상태일 경우, 적용 여부 업데이트
                 if(!it.isValid)
                     getSubscribeBenefitChecking()
+                else
+                    subscribeActive = true
             }.onFailure {
                 baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
             }
@@ -195,8 +200,8 @@ class AnalyzeViewModel @Inject constructor(
                         if (getAdvertiseTenMinutesCheck(remainTime) < 0)
                             prefs.setString("subscribeCheckTenMinutes", "")
 
-                        // 구독 만료 여부 업데이트
-                        subscribeExpired.postValue(expiredCheck)
+                        // 구독 적용 중 아닌데 혜택 있는 경우
+                        subscribeExpired = expiredCheck
 
                         // 구독 팝업 표시 여부 업데이트 (구독 만료 O && 타이머 시간이 유효하지 않을 경우)
                         subscribePopupShow.postValue(getAdvertiseTenMinutesCheck(remainTime) <= 0 && expiredCheck)
