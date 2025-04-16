@@ -20,8 +20,11 @@ import com.aos.usecase.mypage.MypageSearchUseCase
 import com.aos.usecase.subscribe.SubscribeAndroidUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -34,6 +37,9 @@ class SubscribePlanViewModel @Inject constructor(
     // 구독 하기
     private var _subscribe = MutableEventFlow<Boolean>()
     val subscribe: EventFlow<Boolean> get() = _subscribe
+
+    private val _subscribeChannel = Channel<Boolean>(Channel.CONFLATED)
+    val subscribeChannel = _subscribeChannel.receiveAsFlow()
 
     // 구독 해지하기 이동
     private var _resubscribe = MutableEventFlow<Boolean>()
@@ -55,8 +61,12 @@ class SubscribePlanViewModel @Inject constructor(
     private var pendingPurchase: Purchase? = null
 
     fun initBillingManager(activity: Activity) {
-        billingManager = BillingManager(activity, this) // 콜백으로 ViewModel 전달
-        billingManager.startConnection()
+        if (!::billingManager.isInitialized) {
+            billingManager = BillingManager(activity, this)
+            billingManager.startConnection()
+        } else {
+            Timber.d("BillingManager already initialized")
+        }
     }
 
     override fun onPurchaseTokenReceived(token: String, purchase: Purchase) {
@@ -99,7 +109,7 @@ class SubscribePlanViewModel @Inject constructor(
     // 구독 하기
     fun onClickSubscribe(){
         viewModelScope.launch {
-            _subscribe.emit(true)
+            _subscribeChannel.send(true)
         }
     }
 

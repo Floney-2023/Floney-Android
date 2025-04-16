@@ -55,7 +55,7 @@ class SubscribePlanActivity : BaseActivity<ActivitySubscribePlanBinding, Subscri
     private fun setUpViewModelObserver() {
         repeatOnStarted {
             // 구독하기
-            viewModel.subscribe.collect {
+            viewModel.subscribeChannel.collect {
                 if(it) {
                     viewModel.initBillingManager(this@SubscribePlanActivity)
                 }
