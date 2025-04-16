@@ -212,6 +212,7 @@ class HistoryViewModel @Inject constructor(
 
     fun setLocalUrlList(urlList: List<File>) {
         this.localUrlList = urlList.toMutableList()
+        Timber.i("this.localUrlList : ${this.localUrlList}")
     }
 
     fun getLocalUrlList() : ArrayList<File> {
@@ -828,8 +829,9 @@ class HistoryViewModel @Inject constructor(
                     }
                 }
 
+                Timber.i("this.localUrlList isNotEmpty : $localUrlList}")
                 // 추가할 로컬 이미지가 있는 경우
-                if (localUrlList.isNotEmpty()) {
+                if (localUrlList.isNotEmpty()) {Timber.d("this.localUrlList isNotEmpty?? : $localUrlList}")
                     for (file in localUrlList) {
                         // presigned URL 가져오기
                         val urlResult = subscribePresignedUrlUseCase(prefs.getString("bookKey", ""))

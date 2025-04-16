@@ -64,17 +64,16 @@ class HistoryActivity :
     private val imageResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-                val data: Intent? = result.data
 
-                val cloudList = data?.intentSerializableList<ImageUrls>("updateCloudPhotoUrl")
-                val localList = data?.intentSerializableList<File>("updateLocalPhotoUrl")
+                val cloudList = result.data?.intentSerializableList<ImageUrls>("updateCloudPhotoUrl")
+                val localList = result.data?.intentSerializableList<File>("updateLocalPhotoUrl")
 
                 Timber.i("cloudUrlList: $cloudList")
                 Timber.i("localUrlList: $localList")
 
-                if (!cloudList.isNullOrEmpty() || !localList.isNullOrEmpty()) {
-                        viewModel.processUpdatedPictureData(cloudList, localList)
-                    }
+
+                viewModel.processUpdatedPictureData(cloudList, localList)
+
                 }
             }
 
