@@ -219,11 +219,6 @@ class HistoryViewModel @Inject constructor(
         return ArrayList(localUrlList)
     }
 
-    // 삭제 클라우드 이미지 리스트 셋팅
-    fun setDeletedCloudImageList(list: MutableList<ImageUrls>) {
-        deletedCloudImageList = list
-    }
-
     // 내역 추가 시에는 날짜만 세팅함
     fun setIntentAddData(clickDate: String, nickname: String) {
         date.value = clickDate
@@ -280,14 +275,18 @@ class HistoryViewModel @Inject constructor(
         newCloudList: ArrayList<ImageUrls>?,
         newLocalList: ArrayList<File>?
     ) {
-        newCloudList?.let { cloudList ->
+        newCloudList?.let { newCloud ->
             val oldCloudList = getCloudUrlList()
             val deleted = oldCloudList.filterNot { old ->
-                cloudList.any { it.id == old.id }
+                newCloud.any { it.id == old.id }
             }
 
-            setDeletedCloudImageList(deleted.toMutableList())
-            setCloudUrlList(cloudList.toMutableList())
+            // 삭제할 값이 있다면, 삭제할 리스트에 넣어둔다.
+            deleted.takeIf { it.isNotEmpty() }?.let {
+                deletedCloudImageList.addAll(it)
+            }
+
+            setCloudUrlList(newCloud.toMutableList())
         }
 
         newLocalList?.let { localList ->
