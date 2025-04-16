@@ -59,8 +59,7 @@ class InsertPictureActivity :
     private val getResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-                val data: Intent? = result.data
-                data?.intentSerializable("deleteFilePath", ImageUrls::class.java)
+                result.data?.intentSerializable("deleteFilePath", ImageUrls::class.java)
                     ?.let {
                         Timber.e("url $it")
                         viewModel.setIsModify(true)
