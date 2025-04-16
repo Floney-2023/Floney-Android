@@ -50,9 +50,38 @@ class InsertPictureActivity :
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
+            val clipData = result.data?.clipData
+            val uriList = mutableListOf<Uri>()
+
+            val currentImageCount = viewModel.getCloudPictureList().size + viewModel.getLocalPictureList().size
+            val remainingCount = 4 - currentImageCount
+
+            val selectPhotoCount = when {
+                clipData?.itemCount != null -> clipData.itemCount
+                result.data?.data != null -> 1
+                else -> 0
+            }
+
+            if (selectPhotoCount > remainingCount) {
+                viewModel.baseEvent(BaseViewModel.Event.ShowToast("사진은 최대 4장까지 추가할 수 있어요."))
+                return@registerForActivityResult
+            }
+
+            if (clipData != null) { // 여러 장일 때
+                for (i in 0 until clipData.itemCount) {
+                    uriList.add(clipData.getItemAt(i).uri)
+                }
+            } else { // 한 장 업로드 했을 때
+                result.data?.data?.let { uriList.add(it) }
+            }
+
+            uriList.forEach { uri ->
+                handleImageResult(uri)
+            }
+            /*
             lifecycleScope.launch {
                 handleImageResult(result.data?.data)
-            }
+            }*/
         }
     }
 
@@ -285,14 +314,11 @@ class InsertPictureActivity :
 
     private fun selectGallery() {
         if (checkGalleryPermission()) {
-            // 권한이 있는 경우 갤러리 실행
-            val intent = Intent(Intent.ACTION_PICK)
-            // intent와 data와 type을 동시에 설정하는 메서드
-            intent.setDataAndType(
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*"
-            )
-
-            imageResult.launch(intent)
+            val intent = Intent(Intent.ACTION_GET_CONTENT)
+            intent.type = "image/*"
+            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+            intent.addCategory(Intent.CATEGORY_OPENABLE)
+            imageResult.launch(Intent.createChooser(intent, "사진을 선택하세요"))
         } else {
             viewModel.baseEvent(BaseViewModel.Event.ShowToast("이미지 접근 권한이 허용되지 않았습니다."))
         }
