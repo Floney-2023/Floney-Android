@@ -8,6 +8,7 @@ import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingClientStateListener
 import com.android.billingclient.api.BillingFlowParams
 import com.android.billingclient.api.BillingResult
+import com.android.billingclient.api.PendingPurchasesParams
 import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.QueryProductDetailsParams
@@ -32,11 +33,14 @@ class BillingManager(
         fun onPurchaseSuccess(checking: Boolean)
     }
 
-    private lateinit var billingClient: BillingClient
+    private var billingClient: BillingClient
 
     init {
         billingClient = BillingClient.newBuilder(activity)
-            .enablePendingPurchases()
+            .enablePendingPurchases(
+                PendingPurchasesParams.newBuilder().enableOneTimeProducts()
+                .enablePrepaidPlans()
+                .build())
             .setListener { billingResult, purchases ->
                 if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && purchases != null) {
                     for (purchase in purchases) {
@@ -84,13 +88,13 @@ class BillingManager(
         billingClient.startConnection(object : BillingClientStateListener {
             override fun onBillingServiceDisconnected() {
                 // Google Play 서비스 연결이 끊어진 경우 처리
-                Timber.e("checking 1")
+                Timber.e("checking 1 : onBillingServiceDisconnected")
             }
 
             override fun onBillingSetupFinished(billingResult: BillingResult) {
                 if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                     // 구독 상품 로드 또는 구매 가능 처리
-                    Timber.e("checking 2")
+                    Timber.e("checking 2 : onBillingSetupFinished")
                     querySubscriptionDetails()
                 }
             }
@@ -113,13 +117,12 @@ class BillingManager(
                 // SKU 세부 사항 로드 완료
                 val productDetails = productDetailsList[0] // 첫 번째 상품 정보 사용
                 // 구매 플로우 실행
-                Timber.e("checking 33 Error code: ${billingResult.responseCode}, message: ${productDetailsList}")
+                Timber.e("checking 3 : productDetails ${billingResult.responseCode}, message: ${productDetailsList}")
                 launchPurchaseFlow(productDetails)
 
             } else {
                 // 오류 처리
-                Timber.e("checking 3")
-                Timber.e("checking Error code: ${billingResult.responseCode}, message: ${productDetailsList}")
+                Timber.e("checking 4 : Error code: ${billingResult.responseCode}, message: ${productDetailsList}")
             }
         }
     }
@@ -136,25 +139,5 @@ class BillingManager(
             ).build()
 
         billingClient.launchBillingFlow(activity, billingFlowParams) // Activity로 구매 플로우 실행
-    }
-
-    fun queryActiveSubscriptions() {
-        billingClient.queryPurchasesAsync(BillingClient.ProductType.SUBS) { billingResult, purchasesList ->
-            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                if (purchasesList != null) {
-                    for (purchase in purchasesList) {
-                        if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
-                            val purchaseToken = purchase.purchaseToken
-                            Timber.i("Active subscription found with token: $purchaseToken")
-
-                            // 서버로 구매 토큰을 보내거나 처리
-                            billingCallback.onPurchaseTokenReceived(purchaseToken, purchase)
-                        }
-                    }
-                }
-            } else {
-                Timber.e("Error querying active subscriptions")
-            }
-        }
     }
 }
