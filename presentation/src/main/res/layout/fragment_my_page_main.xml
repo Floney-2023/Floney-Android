@@ -444,7 +444,6 @@
                             android:id="@+id/wallet_empty_view"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            bind:setWalletMargin="@{vm.walletAddCheck}"
                             android:background="@drawable/item_dashed_border"
                             android:gravity="center|center_vertical"
                             android:onClick="@{() -> vm.onClickBookAdd()}"

@@ -22,13 +22,3 @@ fun LinearLayout.setDynamicPaddingBottom(condition: Boolean) {
 fun dpToPx(context: Context, dp: Int): Int {
     return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp.toFloat(), context.resources.displayMetrics).toInt()
 }
-
-
-@BindingAdapter("bind:setWalletMargin")
-fun LinearLayout.setWalletMargin(status: Boolean) {
-    val marginTopValue = if (status) 16 else 0
-
-    val layoutParams = this.layoutParams as ViewGroup.MarginLayoutParams
-    layoutParams.topMargin = (marginTopValue * context.resources.displayMetrics.density).toInt()
-    this.layoutParams = layoutParams
-}
