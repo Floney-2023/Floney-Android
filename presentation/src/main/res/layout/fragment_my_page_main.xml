@@ -160,7 +160,7 @@
                         android:textColor="@color/grayscale6"
                         android:textSize="12dp"
                         android:lineSpacingExtra="-2sp"
-                        android:visibility="@{vm.subscribeCheck ? View.GONE : View.VISIBLE}"
+                        android:visibility="@{vm.subscribeCheck == null || vm.subscribeCheck ? View.GONE : View.VISIBLE}"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/li_user_inform_view" />
@@ -171,6 +171,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:paddingVertical="16dp"
+                        android:visibility="@{vm.subscribeCheck == null ? View.INVISIBLE : View.VISIBLE}"
                         android:background="@{vm.subscribeCheck ? @drawable/custom_radius_12_solid_g_white : @drawable/custom_radius_12_solid_grayscale_2}"
                         android:fontFamily="@font/pretendard_semibold"
                         android:onClick="@{() -> vm.onClickSubscribe()}"
@@ -223,7 +224,7 @@
                                 android:text="광고 제거하기"
                                 android:textAppearance="@style/mypage_card_view_1"
                                 android:textSize="15sp"
-                                android:visibility="@{vm.subscribeCheck ? View.GONE : View.VISIBLE}"
+                                android:visibility="@{vm.subscribeCheck == null || vm.subscribeCheck ? View.GONE : View.VISIBLE}"
                                 app:layout_constraintBottom_toBottomOf="@id/guideline_start"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
@@ -237,7 +238,7 @@
                                 android:lineSpacingMultiplier="1.3"
                                 android:visibility="@{vm.subscribeCheck ? View.VISIBLE : View.GONE}"
                                 android:textAppearance="@style/mypage_card_view_1"
-                                android:textSize="15sp"
+                                android:textSize="15dp"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -266,7 +267,7 @@
                                 android:autoSizeTextType="uniform"
                                 android:fontFamily="@font/pretendard_medium"
                                 android:text="남은 시간"
-                                android:visibility="@{vm.subscribeCheck ? View.GONE : View.VISIBLE}"
+                                android:visibility="@{vm.subscribeCheck == null || vm.subscribeCheck ? View.GONE : View.VISIBLE}"
                                 android:textColor="@color/grayscale7"
                                 android:textSize="12sp"
                                 app:layout_constraintBottom_toTopOf="@+id/guideline_middle"
@@ -295,7 +296,7 @@
                                 android:text="@{vm.advertiseTime}"
                                 android:textColor="@color/grayscale3"
                                 android:textSize="24sp"
-                                android:visibility="@{vm.subscribeCheck ? View.GONE : View.VISIBLE}"
+                                android:visibility="@{vm.subscribeCheck == null || vm.subscribeCheck ? View.GONE : View.VISIBLE}"
                                 app:layout_constraintBottom_toTopOf="@id/guideline_bottom"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toBottomOf="@+id/guideline_middle" />

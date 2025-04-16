@@ -60,12 +60,15 @@ import timber.log.Timber
 class MyPageMainFragment : BaseFragment<FragmentMyPageMainBinding, MyPageMainViewModel>(R.layout.fragment_my_page_main), UiMypageSearchModel.OnItemClickListener {
 
     private var mRewardAd: RewardedAd? = null
+
     override fun onItemClick(item: MyBooks) {
         viewModel.settingBookKey(item.bookKey)
     }
+
     override fun onResume() {
         super.onResume()
 
+        viewModel.settingAdvertiseTime()
         viewModel.searchMypageItems()
     }
 
@@ -224,7 +227,6 @@ class MyPageMainFragment : BaseFragment<FragmentMyPageMainBinding, MyPageMainVie
             viewModel.loadCheck.collect {
                 if(it) {
                     loadProfileImage()
-                    viewModel. getSubscribeStatus()
                 }
             }
         }

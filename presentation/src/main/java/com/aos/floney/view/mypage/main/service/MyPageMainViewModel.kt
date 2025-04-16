@@ -111,9 +111,9 @@ class MyPageMainViewModel @Inject constructor(
     private var _subscribePage = MutableEventFlow<Boolean>()
     val subscribePage: EventFlow<Boolean> get() = _subscribePage
 
-    // 구독 여부
-    private var _subscribeCheck = MutableLiveData<Boolean>(false)
-    val subscribeCheck: LiveData<Boolean> get() = _subscribeCheck
+    // 구독 여부 (null : 로딩중, false/true 관리)
+    private var _subscribeCheck = MutableLiveData<Boolean?>(null)
+    val subscribeCheck: LiveData<Boolean?> get() = _subscribeCheck
 
     // 구독 해지 팝업 로드
     private var _unsubscribePopup = MutableEventFlow<Boolean>()
@@ -121,11 +121,6 @@ class MyPageMainViewModel @Inject constructor(
 
     // 가계부 추가 가능 여부
     var walletAddCheck = MutableLiveData<Boolean>(false)
-
-    init {
-        settingAdvertiseTime()
-        searchMypageItems()
-    }
 
     // 광고 남은 시간 설정
     fun settingAdvertiseTime() {
@@ -154,20 +149,22 @@ class MyPageMainViewModel @Inject constructor(
     }
 
     // 구독 여부 가져오기
-    fun getSubscribeStatus() {
+    fun getSubscribeStatus(bookSize: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             subscribeCheckUseCase().onSuccess {
                 walletAddCheck.postValue(when {
-                    it.isValid -> mypageInfo.value!!.myBooks.size < 4
-                    else -> mypageInfo.value!!.myBooks.size < 2
+                    it.isValid -> bookSize < 4
+                    else -> bookSize < 2
                 })
 
-                Timber.e("기존 구독 상태 : ${_subscribeCheck.value} 현재 구독 상태 : ${it.isValid}")
+                Timber.e("기존 구독 상태 : ${subscribeCheck.value ?: "null"} 현재 구독 상태 : ${it.isValid}")
+                _subscribeCheck.postValue(it.isValid)
+
                 // 구독 상태였다가, 새로 읽어온 값이 false라면(=구독 취소된 상태) 구독 취소 팝업
                 if(subscribeCheck.value == true && !it.isValid)
                     _unsubscribePopup.emit(true)
 
-                _subscribeCheck.postValue(it.isValid)
+                _loadCheck.emit(true)
             }.onFailure {
                 baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
             }
@@ -195,7 +192,8 @@ class MyPageMainViewModel @Inject constructor(
                 CommonUtil.userProfileImg = it.profileImg
 
                 _mypageInfo.postValue(updatedResult)
-                _loadCheck.emit(true)
+
+                getSubscribeStatus(bookSize = updatedResult.myBooks.size)
             }.onFailure {
                 baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
             }
@@ -285,6 +283,7 @@ class MyPageMainViewModel @Inject constructor(
             _unsubscribePage.emit(true)
         }
     }
+
     // 최근 저장 가계부 저장 (가계부 전환)
     fun settingBookKey(bookKey: String) {
         viewModelScope.launch(Dispatchers.Main) {

@@ -143,7 +143,7 @@ class MyPageActivity : BaseActivity<ActivityMyPageBinding, MyPageViewModel>(R.la
         }
     }
     private fun setUpBottomNavigation() {
-        // 가운데 메뉴(제보하기)에 대한 터치 이벤트를 막기 위한 로직
+        // 가운데 메뉴(내역추가)에 대한 터치 이벤트를 막기 위한 로직
         binding.bottomNavigationView.apply {
             menu.getItem(2).isEnabled = false
             selectedItemId = R.id.mypageFragment
