@@ -166,7 +166,7 @@ class HistoryViewModel @Inject constructor(
     private var modifyId = 0
     private var modifyItem: DayMoneyModifyItem? = null
 
-    // 구독 만료 내역
+    // 구독 만료 여부
     var subscribeExpired = MutableLiveData<Boolean>(false)
 
     private var memo = ""
@@ -384,7 +384,11 @@ class HistoryViewModel @Inject constructor(
 
     // 내역 수정
     private fun postModifyHistory() {
-        getSubscribeBenefitChecking() // 구독 혜택 적용 확인
+        // 구독 중인 경우
+        if (getIsSubscribe.value!!)
+            handleImageBeforeModify()
+        else // 구독 중이 아닌 경우, 구독 혜택 적용 여부 확인
+            getSubscribeBenefitChecking()
     }
 
     // 내역 삭제
@@ -787,16 +791,11 @@ class HistoryViewModel @Inject constructor(
                             bookBenefit.maxFavorite || bookBenefit.overBookUser || userBenefit.maxBook
                         Timber.i("book : ${bookBenefit} user : ${userBenefit} remainTime : ${remainTime}")
 
-                        // 구독 만료 여부 업데이트
+                        // 구독 만료 여부 업데이트 -> true면 만료 팝업 표시
                         subscribeExpired.postValue(expiredCheck)
 
                         if(!expiredCheck){ // 만료되지 않음
-                            // 클라우드 삭제, 로컬 추가 이미지 없을 경우 바로 수정
-                            if(deletedCloudImageList.isEmpty() && localUrlList.isEmpty())
-                                goModifyHistory()
-
-                            // 클라우드 삭제 여부, 로컬 추가 이미지 있을 경우 따로 처리하낟.
-                            setCloudAddAndDelete()
+                            handleImageBeforeModify()
                         }
                     }
                 }
@@ -896,7 +895,15 @@ class HistoryViewModel @Inject constructor(
         }
     }
 
+    fun handleImageBeforeModify(){
+        // 클라우드 삭제, 로컬 추가 이미지 없을 경우 바로 수정
+        if(deletedCloudImageList.isEmpty() && localUrlList.isEmpty())
+            goModifyHistory()
 
+        // 클라우드 삭제 여부, 로컬 추가 이미지 있을 경우 따로 처리 후 수정한다.
+        setCloudAddAndDelete()
+    }
+    
     fun goModifyHistory(){
         viewModelScope.launch(Dispatchers.IO) {
             val tempMoney = cost.value!!.replace(",", "")
