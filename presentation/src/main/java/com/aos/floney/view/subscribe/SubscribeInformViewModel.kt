@@ -58,6 +58,9 @@ class SubscribeInformViewModel @Inject constructor(
 
     fun initBillingManager(activity: Activity) {
         billingManager = BillingManager(activity, this) // 콜백으로 ViewModel 전달
+    }
+
+    fun startSubscribeConnection(){
         billingManager.startConnection()
     }
 

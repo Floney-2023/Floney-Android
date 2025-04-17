@@ -47,6 +47,7 @@ class SubscribeInformActivity : BaseActivity<ActivitySubscribeInformBinding, Sub
 
         setUpUi()
         setUpViewModelObserver()
+        viewModel.initBillingManager(this)
     }
     override fun onResume() {
         super.onResume()

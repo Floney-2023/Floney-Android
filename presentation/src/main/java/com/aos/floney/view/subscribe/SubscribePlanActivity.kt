@@ -46,6 +46,7 @@ class SubscribePlanActivity : BaseActivity<ActivitySubscribePlanBinding, Subscri
 
         setUpUi()
         setUpViewModelObserver()
+        viewModel.initBillingManager(this@SubscribePlanActivity)
     }
 
     private fun setUpUi() {
@@ -57,7 +58,7 @@ class SubscribePlanActivity : BaseActivity<ActivitySubscribePlanBinding, Subscri
             // 구독하기
             viewModel.subscribeChannel.collect {
                 if(it) {
-                    viewModel.initBillingManager(this@SubscribePlanActivity)
+                    viewModel.startSubscribeConnection()
                 }
             }
         }

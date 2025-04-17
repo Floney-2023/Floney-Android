@@ -10,6 +10,7 @@ import com.aos.floney.R
 import com.aos.floney.base.BaseViewModel
 import com.aos.floney.ext.parseErrorCode
 import com.aos.floney.ext.parseErrorMsg
+import com.aos.floney.util.ClickUtil
 import com.aos.floney.util.EventFlow
 import com.aos.floney.util.MutableEventFlow
 import com.aos.model.book.UiBookEntranceModel
@@ -63,10 +64,13 @@ class SubscribePlanViewModel @Inject constructor(
     fun initBillingManager(activity: Activity) {
         if (!::billingManager.isInitialized) {
             billingManager = BillingManager(activity, this)
-            billingManager.startConnection()
         } else {
             Timber.d("BillingManager already initialized")
         }
+    }
+
+    fun startSubscribeConnection(){
+        billingManager.startConnection()
     }
 
     override fun onPurchaseTokenReceived(token: String, purchase: Purchase) {
@@ -107,11 +111,14 @@ class SubscribePlanViewModel @Inject constructor(
     }
 
     // 구독 하기
-    fun onClickSubscribe(){
-        viewModelScope.launch {
-            _subscribeChannel.send(true)
+    fun onClickSubscribe() {
+        ClickUtil.debounceClick {
+            viewModelScope.launch {
+                _subscribeChannel.send(true)
+            }
         }
     }
+
 
     // 서비스 이용 약관
     fun onClickService(){
