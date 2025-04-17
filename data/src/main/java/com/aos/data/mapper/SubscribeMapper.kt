@@ -77,15 +77,25 @@ fun calculateRemainingDays(
     expiryTimeMillis: String?,
     autoRenewing: Boolean
 ): String? {
-    val currentTime = System.currentTimeMillis()
-    val targetTime = if (autoRenewing) {
-        startTimeMillis?.toLongOrNull()
-    } else {
-        expiryTimeMillis?.toLongOrNull()
-    }
+    val currentDate = System.currentTimeMillis()
 
-    return targetTime?.let {
-        val diff =  (currentTime - it) / (1000 * 60 * 60 * 24)
-        if (autoRenewing) "D+${diff + 1}" else "D-${-diff - 1}"
+    return if (autoRenewing) {
+        startTimeMillis?.toLongOrNull()?.let { start ->
+            val startDate = start / (1000 * 60 * 60 * 24)
+            val todayDate = currentDate / (1000 * 60 * 60 * 24)
+            val diff = (todayDate - startDate + 1).toInt()
+            "D+$diff"
+        }
+    } else {
+        expiryTimeMillis?.toLongOrNull()?.let { expiry ->
+            val expiryDate = expiry / (1000 * 60 * 60 * 24)
+            val todayDate = currentDate / (1000 * 60 * 60 * 24)
+            val diff = (expiryDate - todayDate).toInt()
+            when {
+                diff > 0 -> "D-$diff"
+                diff == 0 -> "D-DAY"
+                else -> null
+            }
+        }
     }
 }
