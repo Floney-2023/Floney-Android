@@ -34,17 +34,12 @@ class SubscribePlanViewModel @Inject constructor(
     private val subscribeAndroidUseCase: SubscribeAndroidUseCase
 ): BaseViewModel(), BillingManager.BillingCallback {
 
-
     // 구독 하기
     private var _subscribe = MutableEventFlow<Boolean>()
     val subscribe: EventFlow<Boolean> get() = _subscribe
 
     private val _subscribeChannel = Channel<Boolean>(Channel.CONFLATED)
     val subscribeChannel = _subscribeChannel.receiveAsFlow()
-
-    // 구독 해지하기 이동
-    private var _resubscribe = MutableEventFlow<Boolean>()
-    val resubscribe: EventFlow<Boolean> get() = _resubscribe
 
     // 구매내역 복원하기
     private var _subscribeRestore = MutableEventFlow<Boolean>()
@@ -57,6 +52,10 @@ class SubscribePlanViewModel @Inject constructor(
     // 구독 정보 화면 나가기
     private var _back = MutableEventFlow<Boolean>()
     val back: EventFlow<Boolean> get() = _back
+
+    // 구독 정보 화면 나가기
+    private var _subscribeSuccess = MutableEventFlow<Boolean>()
+    val subscribeSuccess: EventFlow<Boolean> get() = _subscribeSuccess
 
     private lateinit var billingManager: BillingManager
     private var pendingPurchase: Purchase? = null
@@ -79,10 +78,8 @@ class SubscribePlanViewModel @Inject constructor(
     }
 
     override fun onPurchaseSuccess(checking: Boolean) {
-        if (checking){
-            baseEvent(Event.ShowSuccessToast("결제가 완료되었습니다."))
-        }else{
-            baseEvent(Event.ShowToast("결제가 실패되었습니다."))
+        viewModelScope.launch {
+            _subscribeSuccess.emit(checking)
         }
     }
 

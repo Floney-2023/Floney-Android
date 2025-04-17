@@ -415,6 +415,9 @@
     <string name="unsubscribe_popup_title">구독이 해지되었습니다.</string>
     <string name="unsubscribe_popup_info">구독을 다시 이용하고 싶으신 경우\n[마이페이지] > [구독 정보 보기]에서\n다시 시작하실 수 있습니다.</string>
 
+    <string name="subscribe_popup_title">구독이 시작되었어요!</string>
+    <string name="subscribe_popup_info">플로니와 함께 더 편리한 기능을 즐겨보세요.\n[마이페이지] > [구독 정보 보기]에서 상태를 확인하실 수 있어요.</string>
+
     <string name="unsubscribe_exit_popup_title">구독 서비스를 이용하고 있어요!</string>
     <string name="unsubscribe_exit_popup_info">구독을 해지하지 않은 경우 탈퇴할 수 없습니다.\n마이페이지에서 구독 정보를 확인해 주세요.</string>
 

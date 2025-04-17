@@ -16,8 +16,10 @@ import com.aos.data.util.SharedPreferenceUtil
 import com.aos.floney.BuildConfig
 import com.aos.floney.R
 import com.aos.floney.base.BaseActivity
+import com.aos.floney.base.BaseViewModel
 import com.aos.floney.databinding.ActivityBookEntranceBinding
 import com.aos.floney.databinding.ActivitySubscribePlanBinding
+import com.aos.floney.ext.applyCloseTransition
 import com.aos.floney.ext.repeatOnStarted
 import com.aos.floney.view.common.BaseAlertDialog
 import com.aos.floney.view.common.ErrorToastDialog
@@ -105,5 +107,32 @@ class SubscribePlanActivity : BaseActivity<ActivitySubscribePlanBinding, Subscri
                 }
             }
         }
+        repeatOnStarted {
+            // 구독 성공 bottomSheet 표시 및 마이페이지 화면으로 이동
+            viewModel.subscribeSuccess.collect {
+                if(it) {
+                    showsubscribeComplete()
+                } else
+                    viewModel.baseEvent(BaseViewModel.Event.ShowToast("결제가 실패되었습니다. 플로니팀으로 연락 부탁드립니다."))
+            }
+        }
+    }
+
+    fun showsubscribeComplete(){
+        // 구독 해지 완료 팝업
+        val exitDialogFragment = WarningPopupDialog(
+            getString(R.string.subscribe_popup_title),
+            getString(R.string.subscribe_popup_info),
+            getString(R.string.already_pick_button),getString(R.string.already_pick_button),
+            true
+        ) { checked ->
+            if (!checked){
+                val intent = Intent(this@SubscribePlanActivity, MyPageActivity::class.java)
+                startActivity(intent)
+                applyCloseTransition()
+                finish()
+            }
+        }
+        exitDialogFragment.show(supportFragmentManager, "initDialog")
     }
 }

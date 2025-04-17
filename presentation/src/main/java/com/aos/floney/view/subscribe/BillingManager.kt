@@ -57,7 +57,7 @@ class BillingManager(
     // 구매 정보 처리
     private fun handlePurchase(purchase: Purchase) {
         // 구매 토큰을 서버로 보내기 전에 구매 상태를 확인해야 함
-        if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
+        if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED  && !purchase.isAcknowledged) {
             // 구매가 완료된 상태에서만 처리
             val purchaseToken = purchase.purchaseToken
             Timber.i("Purchase successful, token: $purchaseToken")
