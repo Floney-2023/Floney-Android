@@ -42,6 +42,7 @@ class BookSettingMainFragment :
 
     private fun setUpUi() {
         binding.setVariable(BR.eventHolder, this@BookSettingMainFragment)
+        binding.setVariable(BR.vm, viewModel)
     }
     private fun setUpViewModelObserver() {
         repeatOnStarted {
