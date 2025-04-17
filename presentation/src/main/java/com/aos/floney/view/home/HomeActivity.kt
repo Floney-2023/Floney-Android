@@ -13,7 +13,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.databinding.library.baseAdapters.BR
 import androidx.lifecycle.lifecycleScope
-import androidx.test.internal.util.LogUtil
 import com.aos.data.util.SharedPreferenceUtil
 import com.aos.floney.BuildConfig
 import com.aos.floney.R
