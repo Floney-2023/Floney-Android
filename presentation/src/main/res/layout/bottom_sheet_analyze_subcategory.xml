@@ -74,7 +74,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
-                android:src="@drawable/icon_chevron_left"
+                android:src="@drawable/icon_chevron_filter"
                 app:layout_constraintBottom_toBottomOf="@+id/tv_select_year"
                 app:layout_constraintEnd_toEndOf="@+id/tv_select_year"
                 app:layout_constraintTop_toTopOf="@+id/tv_select_year" />
@@ -102,7 +102,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/icon_chevron_left"
+                android:src="@drawable/icon_chevron_filter"
                 android:layout_marginEnd="8dp"
                 app:layout_constraintBottom_toBottomOf="@+id/tv_select_sorted"
                 app:layout_constraintEnd_toEndOf="@+id/tv_select_sorted"
