@@ -248,7 +248,7 @@ class MyPageMainFragment : BaseFragment<FragmentMyPageMainBinding, MyPageMainVie
                     val exitDialogFragment = WarningPopupDialog(
                         getString(R.string.unsubscribe_popup_title),
                         getString(R.string.unsubscribe_popup_info),
-                        getString(R.string.already_pick_button),getString(R.string.already_pick_button),
+                        "",getString(R.string.already_pick_button),
                         true
                     ){}
                     exitDialogFragment.show(parentFragmentManager, "initDialog")

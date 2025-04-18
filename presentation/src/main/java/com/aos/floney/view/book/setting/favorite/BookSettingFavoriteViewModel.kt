@@ -85,38 +85,32 @@ class BookSettingFavoriteViewModel @Inject constructor(
 
     // 추가하기 버튼 클릭
     fun onClickAddBtn() {
-        var sum = 0
         viewModelScope.launch {
             baseEvent(Event.ShowLoading)
-            getBookFavoriteUseCase(prefs.getString("bookKey", ""), getCategory("수입")).onSuccess { it ->
-                sum+=it.size
-                getBookFavoriteUseCase(prefs.getString("bookKey", ""), getCategory("이체")).onSuccess { it ->
-                    sum+=it.size
-                    getBookFavoriteUseCase(prefs.getString("bookKey", ""), getCategory("지출")).onSuccess { it ->
-                        sum+=it.size
-                        baseEvent(Event.HideLoading)
-                        if (sum==15){
-                            baseEvent(Event.ShowToast("즐겨찾기 개수가 초과 되었습니다."))
-                        }
-                        else {
-                            _addPage.emit(true)
-                        }
 
-                    }.onFailure {
-                        baseEvent(Event.HideLoading)
-                        baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@BookSettingFavoriteViewModel)))
-                    }
-                }.onFailure {
+            val categories = listOf("수입", "이체", "지출")
+            var totalCount = 0
+
+            for (category in categories) {
+                val result = getBookFavoriteUseCase(prefs.getString("bookKey", ""), getCategory(category))
+                if (result.isSuccess) {
+                    totalCount += result.getOrNull()?.size ?: 0
+                } else {
                     baseEvent(Event.HideLoading)
-                    baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@BookSettingFavoriteViewModel)))
+                    baseEvent(Event.ShowToast(result.exceptionOrNull()?.message.parseErrorMsg(this@BookSettingFavoriteViewModel)))
+                    return@launch
                 }
-            }.onFailure {
+            }
 
-                baseEvent(Event.HideLoading)
-                baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@BookSettingFavoriteViewModel)))
+            baseEvent(Event.HideLoading)
+            if (totalCount >= 15) {
+                baseEvent(Event.ShowToast("즐겨찾기 개수가 초과 되었습니다."))
+            } else {
+                _addPage.emit(true)
             }
         }
     }
+
     // 편집버튼 클릭
     fun onClickEdit(){
         edit.value = !edit.value!!

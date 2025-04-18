@@ -119,7 +119,7 @@ class SubscribePlanActivity : BaseActivity<ActivitySubscribePlanBinding, Subscri
     }
 
     fun showsubscribeComplete(){
-        // 구독 해지 완료 팝업
+        // 구독 시작 팝업
         val exitDialogFragment = WarningPopupDialog(
             getString(R.string.subscribe_popup_title),
             getString(R.string.subscribe_popup_info),
@@ -130,7 +130,7 @@ class SubscribePlanActivity : BaseActivity<ActivitySubscribePlanBinding, Subscri
                 val intent = Intent(this@SubscribePlanActivity, MyPageActivity::class.java)
                 startActivity(intent)
                 applyCloseTransition()
-                finish()
+                finishAffinity()
             }
         }
         exitDialogFragment.show(supportFragmentManager, "initDialog")

@@ -22,6 +22,7 @@ import com.aos.floney.base.BaseActivity
 import com.aos.floney.base.BaseViewModel
 import com.aos.floney.databinding.ActivityAnalyzeBinding
 import com.aos.floney.ext.applyHistoryOpenTransition
+import com.aos.floney.ext.applyOpenTransition
 import com.aos.floney.ext.repeatOnStarted
 import com.aos.floney.util.getCurrentDateTimeString
 import com.aos.floney.view.book.setting.budget.BookSettingBudgetFragment
@@ -30,6 +31,7 @@ import com.aos.floney.view.home.HomeActivity
 import com.aos.floney.view.home.HomeDayTypeFragment
 import com.aos.floney.view.mypage.MyPageActivity
 import com.aos.floney.view.settleup.SettleUpActivity
+import com.aos.floney.view.subscribe.SubscribePlanActivity
 import com.aos.model.user.UserModel.userNickname
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
@@ -73,31 +75,19 @@ class AnalyzeActivity : BaseActivity<ActivityAnalyzeBinding, AnalyzeViewModel>(R
             when (it.itemId) {
                 R.id.homeFragment -> {
                     startActivity(Intent(this, HomeActivity::class.java))
-                    if (Build.VERSION.SDK_INT >= 34) {
-                        overrideActivityTransition(Activity.OVERRIDE_TRANSITION_OPEN, android.R.anim.fade_in, android.R.anim.fade_out)
-                    } else {
-                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
-                    }
+                    applyOpenTransition()
                     finish()
                     false
                 }
                 R.id.settleUpFragment -> {
                     startActivity(Intent(this, SettleUpActivity::class.java))
-                    if (Build.VERSION.SDK_INT >= 34) {
-                        overrideActivityTransition(Activity.OVERRIDE_TRANSITION_OPEN, android.R.anim.fade_in, android.R.anim.fade_out)
-                    } else {
-                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
-                    }
+                    applyOpenTransition()
                     finish()
                     false
                 }
                 R.id.mypageFragment -> {
                     startActivity(Intent(this, MyPageActivity::class.java))
-                    if (Build.VERSION.SDK_INT >= 34) {
-                        overrideActivityTransition(Activity.OVERRIDE_TRANSITION_OPEN, android.R.anim.fade_in, android.R.anim.fade_out)
-                    } else {
-                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
-                    }
+                    applyOpenTransition()
                     finish()
                     false
                 }
@@ -115,7 +105,11 @@ class AnalyzeActivity : BaseActivity<ActivityAnalyzeBinding, AnalyzeViewModel>(R
             }
         }
     }
-    
+
+    fun goToSubscribePlanActivity(){
+        startActivity(Intent(this, SubscribePlanActivity::class.java))
+        applyOpenTransition()
+    }
     private fun setUpViewModelObserver() {
         viewModel.flow.observe(this) {
             when(it) {

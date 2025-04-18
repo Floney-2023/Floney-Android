@@ -10,6 +10,8 @@ import com.aos.floney.R
 import com.aos.floney.base.BaseFragment
 import com.aos.floney.databinding.FragmentAnalyzeOutComeBinding
 import com.aos.floney.view.analyze.subcategory.BottomSheetAnaylzeLineSubcategory
+import com.aos.floney.view.common.WarningPopupDialog
+import com.aos.floney.view.mypage.MyPageActivity
 import com.aos.model.analyze.AnalyzeResult
 import com.aos.model.analyze.UiAnalyzeCategoryOutComeModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -75,7 +77,22 @@ class AnalyzeOutComeFragment :
             // 혜택 적용 중이라면, 구독 팝업
             if(activityViewModel.subscribeExpired)
                 activityViewModel.showSubscribePopupIfNeeded()
-            // 혜택 적용 중이 아니라면, 클릭 시 아무 일도 일어나지 않는다.
+            else { // 혜택 적용 중이 아니라면, 클릭 시 구독 유도 팝업이 표시되도록 한다.
+                val exitDialogFragment = WarningPopupDialog(
+                    getString(R.string.subscribe_prompt_title),
+                    getString(R.string.subscribe_prompt_inform),
+                    getString(R.string.already_pick_button),
+                    getString(R.string.subscribe_plan_btn),
+                    true
+                ) {  checked ->
+                    if (!checked) // 구독 플랜 보기로 이동
+                    {
+                        val activity = requireActivity() as AnalyzeActivity
+                        activity.goToSubscribePlanActivity()
+                    }
+                }
+                exitDialogFragment.show(parentFragmentManager, "exitDialog")
+            }
         }
     }
 }

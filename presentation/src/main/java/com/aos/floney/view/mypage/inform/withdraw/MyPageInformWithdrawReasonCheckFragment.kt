@@ -42,11 +42,7 @@ class MyPageInformWithdrawReasonCheckFragment :
                             "",
                             getString(R.string.already_pick_button),
                             false
-                        ) { checked ->
-                            if (checked) {
-                                
-                            }
-                        }
+                        ) {}
                         subScribeDialogFragment.show(parentFragmentManager, "WithdrawDialog")
                     }
                     else {
