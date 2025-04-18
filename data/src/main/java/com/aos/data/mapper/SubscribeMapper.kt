@@ -1,5 +1,7 @@
 package com.aos.data.mapper
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.aos.data.entity.response.subscribe.GetPresignedUrlEntity
 import com.aos.data.entity.response.subscribe.GetSubscribeAndroidEntity
 import com.aos.data.entity.response.subscribe.GetSubscribeAndroidInfoEntity
@@ -12,6 +14,9 @@ import com.aos.model.subscribe.GetSubscribeAndroidModel
 import com.aos.model.subscribe.GetSubscribeBenefitModel
 import com.aos.model.subscribe.GetSubscribeUserBenefitModel
 import java.text.NumberFormat
+import java.time.Instant
+import java.time.ZoneId
+import java.time.temporal.ChronoUnit
 import kotlin.math.absoluteValue
 import kotlin.math.roundToLong
 
@@ -72,6 +77,7 @@ fun formatDate(timestamp: String?): String? {
     }
 }
 
+
 fun calculateRemainingDays(
     startTimeMillis: String?,
     expiryTimeMillis: String?,
@@ -79,23 +85,51 @@ fun calculateRemainingDays(
 ): String? {
     val currentDate = System.currentTimeMillis()
 
-    return if (autoRenewing) {
-        startTimeMillis?.toLongOrNull()?.let { start ->
-            val startDate = start / (1000 * 60 * 60 * 24)
-            val todayDate = currentDate / (1000 * 60 * 60 * 24)
-            val diff = (todayDate - startDate + 1).toInt()
-            "D+$diff"
-        }
-    } else {
-        expiryTimeMillis?.toLongOrNull()?.let { expiry ->
-            val expiryDate = expiry / (1000 * 60 * 60 * 24)
-            val todayDate = currentDate / (1000 * 60 * 60 * 24)
-            val diff = (expiryDate - todayDate).toInt()
-            when {
-                diff > 0 -> "D-$diff"
-                diff == 0 -> "D-DAY"
-                else -> null
+    return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+        // SDK 26 미만
+        if (autoRenewing) {
+            startTimeMillis?.toLongOrNull()?.let { start ->
+                val startDate = start / (1000 * 60 * 60 * 24)
+                val todayDate = currentDate / (1000 * 60 * 60 * 24)
+                val diff = (todayDate - startDate + 1).toInt()
+                return "D+$diff"
+            }
+        } else {
+            expiryTimeMillis?.toLongOrNull()?.let { expiry ->
+                val expiryDate = expiry / (1000 * 60 * 60 * 24)
+                val todayDate = currentDate / (1000 * 60 * 60 * 24)
+                val diff = (expiryDate - todayDate).toInt()
+                return when {
+                    diff > 0 -> "D-$diff"
+                    diff == 0 -> "D-DAY"
+                    else -> null
+                }
             }
         }
+        null // fallback
+    } else {
+        // SDK 26 이상
+        val zone = ZoneId.systemDefault()
+
+        if (autoRenewing) {
+            startTimeMillis?.toLongOrNull()?.let { start ->
+                val startDate = Instant.ofEpochMilli(start).atZone(zone).toLocalDate()
+                val todayDate = Instant.now().atZone(zone).toLocalDate()
+                val diff = ChronoUnit.DAYS.between(startDate, todayDate).toInt() + 1
+                return "D+$diff"
+            }
+        } else {
+            expiryTimeMillis?.toLongOrNull()?.let { expiry ->
+                val expiryDate = Instant.ofEpochMilli(expiry).atZone(zone).toLocalDate()
+                val todayDate = Instant.now().atZone(zone).toLocalDate()
+                val diff = ChronoUnit.DAYS.between(todayDate, expiryDate).toInt()
+                return when {
+                    diff > 0 -> "D-$diff"
+                    diff == 0 -> "D-DAY"
+                    else -> null
+                }
+            }
+        }
+        null // fallback
     }
 }
