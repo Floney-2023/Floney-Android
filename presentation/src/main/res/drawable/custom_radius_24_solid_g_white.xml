@@ -11,15 +11,14 @@
                 android:endColor="#31C690"
                 android:type="linear" />
             <corners android:radius="24dp" />
-            <stroke android:width="2dp" android:color="@android:color/transparent" />
         </shape>
     </item>
 
     <!-- 흰색 배경 -->
-    <item android:left="2dp" android:right="2dp" android:top="2dp" android:bottom="2dp">
+    <item android:left="1.2dp" android:right="1.2dp" android:top="1.2dp" android:bottom="1.2dp">
         <shape android:shape="rectangle">
             <solid android:color="@android:color/white" />
-            <corners android:radius="24dp" />
+            <corners android:radius="22.8dp" />
         </shape>
     </item>
 

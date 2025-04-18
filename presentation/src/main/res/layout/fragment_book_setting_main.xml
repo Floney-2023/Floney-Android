@@ -58,7 +58,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
-                    android:layout_marginTop="30dp"
+                    android:layout_marginTop="18dp"
                     android:fontFamily="@font/floney_pretendard_bold"
                     android:text="@string/book_setting_title"
                     android:textColor="@color/grayscale2"
@@ -78,7 +78,7 @@
                     android:text="Floney Plus+"
                     android:textColor="@color/grayscale2"
                     android:textSize="11dp"
-                    android:layout_marginTop="-1dp"
+                    android:layout_marginTop="3dp"
                     android:visibility="@{vm.isSubscribeValid ? View.VISIBLE : View.GONE}"
                     app:layout_constraintBottom_toBottomOf="@+id/tv_mypage_title"
                     app:layout_constraintStart_toEndOf="@+id/tv_mypage_title"
@@ -173,10 +173,11 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:onClick="@{() -> vm.onClickFold()}"
-                    android:src="@{vm.isFold ? @drawable/icon_chevron_up : @drawable/icon_chevron_down}"
+                    android:src="@{vm.isFold ? @drawable/icon_chevron_down : @drawable/icon_chevron_up}"
                     app:layout_constraintBottom_toBottomOf="@+id/tv_user_title"
                     app:layout_constraintStart_toEndOf="@+id/tv_user_title"
-                    app:layout_constraintTop_toTopOf="@+id/tv_user_title" />
+                    app:layout_constraintTop_toTopOf="@+id/tv_user_title"
+                    app:tint="@color/grayscale7" />
 
                 <TextView
                     android:id="@+id/tv_user_count"
