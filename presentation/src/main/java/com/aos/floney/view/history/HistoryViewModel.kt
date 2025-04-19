@@ -730,32 +730,31 @@ class HistoryViewModel @Inject constructor(
             }
         }
     }
-
+    
     fun isFavoriteMaxData(onResult: (Boolean) -> Unit) {
-        var sum = 0
         viewModelScope.launch {
-            getBookFavoriteUseCase(prefs.getString("bookKey", ""),"INCOME").onSuccess { it ->
-                sum+=it.size
-                getBookFavoriteUseCase(prefs.getString("bookKey", ""), "OUTCOME").onSuccess { it ->
-                    sum+=it.size
-                    getBookFavoriteUseCase(prefs.getString("bookKey", ""), "TRANSFER").onSuccess { it ->
-                        sum+=it.size
 
-                        if (sum==15){
-                            onResult(false)
-                        }
-                        else {
-                            onResult(true)
-                        }
+            baseEvent(Event.ShowLoading)
 
-                    }.onFailure {
-                        baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@HistoryViewModel)))
-                    }
-                }.onFailure {
-                    baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@HistoryViewModel)))
+            val categories = listOf("수입", "이체", "지출")
+            var totalCount = 0
+
+            for (category in categories) {
+                val result = getBookFavoriteUseCase(prefs.getString("bookKey", ""), getCategory(category))
+                if (result.isSuccess) {
+                    totalCount += result.getOrNull()?.size ?: 0
+                } else {
+                    baseEvent(Event.HideLoading)
+                    baseEvent(Event.ShowToast(result.exceptionOrNull()?.message.parseErrorMsg(this@HistoryViewModel)))
+                    return@launch
                 }
-            }.onFailure {
-                baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@HistoryViewModel)))
+            }
+
+            baseEvent(Event.HideLoading)
+            if (totalCount > 15) {
+                onResult(false)
+            } else {
+                onResult(true)
             }
         }
     }
