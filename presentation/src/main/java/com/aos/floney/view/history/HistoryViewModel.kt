@@ -107,8 +107,8 @@ class HistoryViewModel @Inject constructor(
     private var _postBooksFavorites = MutableEventFlow<Boolean>()
     val postBooksFavorites: EventFlow<Boolean> get() = _postBooksFavorites
 
-    private var _getIsSubscribe = MutableLiveData<Boolean>(false)
-    val getIsSubscribe: LiveData<Boolean> get() = _getIsSubscribe
+    private var _getBookIsSubscribe = MutableLiveData<Boolean>(false)
+    val getIsSubscribe: LiveData<Boolean> get() = _getBookIsSubscribe
 
     // 날짜
     private var tempDate = ""
@@ -297,7 +297,7 @@ class HistoryViewModel @Inject constructor(
     private fun getSubscribeBook() {
         viewModelScope.launch {
             subscribeBookUseCase(prefs.getString("bookKey", "")).onSuccess {
-                _getIsSubscribe.postValue(it.isValid)
+                _getBookIsSubscribe.postValue(it.isValid)
             }.onFailure {
                 Timber.e("message ${it.message}")
                 baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@HistoryViewModel)))
@@ -706,34 +706,42 @@ class HistoryViewModel @Inject constructor(
 
     // 즐겨찾기 추가
     fun postAddFavorite() {
-        isFavoriteMaxData { isMax ->
-            if (isMax) {
-                viewModelScope.launch(Dispatchers.IO) {
-                    postBooksFavoritesUseCase(
-                        bookKey = prefs.getString("bookKey", ""),
-                        money = cost.value!!.replace(",", "").replace(CurrencyUtil.currency,"")
-                            .toDouble(),
-                        description = if (content.value=="") line.value!! else content.value!!,
-                        lineCategoryName = flow.value!!,
-                        lineSubcategoryName = line.value!!,
-                        assetSubcategoryName = asset.value!!,
-                        exceptStatus = deleteChecked.value!!
-                    ).onSuccess {
-                        _postBooksFavorites.emit(true)
-                        baseEvent(Event.ShowSuccessToast("즐겨찾기에 추가되었습니다."))
-                    }.onFailure {
-                        baseEvent(Event.ShowToast("${flow.value!!} ${it.message.parseErrorMsg(this@HistoryViewModel)}"))
-                    }
+        // 구독을 한 상태라면, 별도의 즐겨찾기 여부 확인 없이 즐겨찾기를 추가한다.
+        if(getIsSubscribe.value == true){
+            applyAddFavorite()
+        } else {
+            isFavoriteMaxData { isMax ->
+                if (isMax) {
+                    applyAddFavorite()
+                } else {
+                    baseEvent(Event.ShowToast("즐겨찾기 개수가 초과 되었습니다."))
                 }
-            } else {
-                baseEvent(Event.ShowToast("즐겨찾기 개수가 초과 되었습니다."))
             }
         }
     }
-    
+
+    fun applyAddFavorite(){
+        viewModelScope.launch(Dispatchers.IO) {
+            postBooksFavoritesUseCase(
+                bookKey = prefs.getString("bookKey", ""),
+                money = cost.value!!.replace(",", "").replace(CurrencyUtil.currency,"")
+                    .toDouble(),
+                description = if (content.value=="") line.value!! else content.value!!,
+                lineCategoryName = flow.value!!,
+                lineSubcategoryName = line.value!!,
+                assetSubcategoryName = asset.value!!,
+                exceptStatus = deleteChecked.value!!
+            ).onSuccess {
+                _postBooksFavorites.emit(true)
+                baseEvent(Event.ShowSuccessToast("즐겨찾기에 추가되었습니다."))
+            }.onFailure {
+                baseEvent(Event.ShowToast("${flow.value!!} ${it.message.parseErrorMsg(this@HistoryViewModel)}"))
+            }
+        }
+    }
+
     fun isFavoriteMaxData(onResult: (Boolean) -> Unit) {
         viewModelScope.launch {
-
             baseEvent(Event.ShowLoading)
 
             val categories = listOf("수입", "이체", "지출")

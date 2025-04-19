@@ -86,6 +86,13 @@ class BookSettingFavoriteViewModel @Inject constructor(
     // 추가하기 버튼 클릭
     fun onClickAddBtn() {
         viewModelScope.launch {
+
+            // 구독을 한 상태라면 즐겨찾기 개수와 상관없이 추가한다.
+            if (prefs.getBoolean("isBookSubscribe",false)){
+                _addPage.emit(true)
+                return@launch
+            }
+
             baseEvent(Event.ShowLoading)
 
             val categories = listOf("수입", "이체", "지출")
