@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.aos.data.util.SharedPreferenceUtil
 import com.aos.floney.base.BaseViewModel
 import com.aos.floney.ext.parseErrorMsg
+import com.aos.floney.ext.toCategoryCode
 import com.aos.floney.util.EventFlow
 import com.aos.floney.util.MutableEventFlow
 import com.aos.model.book.UiBookFavoriteModel
@@ -69,7 +70,7 @@ class BookSettingFavoriteViewModel @Inject constructor(
     // 자산/분류 카테고리 항목 가져오기
     fun getBookCategory() {
         viewModelScope.launch(Dispatchers.IO) {
-            getBookFavoriteUseCase(prefs.getString("bookKey", ""), getCategory(flow.value!!)).onSuccess { it ->
+            getBookFavoriteUseCase(prefs.getString("bookKey", ""), flow.value!!.toCategoryCode()).onSuccess { it ->
                 val item = it.map {
                     UiBookFavoriteModel(
                         it.idx, edit.value!!, it.description,it.lineCategoryName,it.lineSubcategoryName,it.assetSubcategoryName, it.money, it.exceptStatus
@@ -99,7 +100,7 @@ class BookSettingFavoriteViewModel @Inject constructor(
             var totalCount = 0
 
             for (category in categories) {
-                val result = getBookFavoriteUseCase(prefs.getString("bookKey", ""), getCategory(category))
+                val result = getBookFavoriteUseCase(prefs.getString("bookKey", ""), category.toCategoryCode())
                 if (result.isSuccess) {
                     totalCount += result.getOrNull()?.size ?: 0
                 } else {
@@ -141,23 +142,6 @@ class BookSettingFavoriteViewModel @Inject constructor(
                 baseEvent(Event.ShowLoading)
                 baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@BookSettingFavoriteViewModel)))
             }
-        }
-    }
-    private fun getCategory(category: String): String {
-        return when (category) {
-            "수입" -> {
-                "INCOME"
-            }
-
-            "지출" -> {
-                "OUTCOME"
-            }
-
-            "이체" -> {
-                "TRANSFER"
-            }
-
-            else -> ""
         }
     }
 

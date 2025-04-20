@@ -9,6 +9,8 @@ import com.aos.data.util.checkDecimalPoint
 import com.aos.floney.base.BaseViewModel
 import com.aos.floney.ext.formatNumber
 import com.aos.floney.ext.parseErrorMsg
+import com.aos.floney.ext.toCategoryCode
+import com.aos.floney.ext.toCategoryName
 import com.aos.floney.util.EventFlow
 import com.aos.floney.util.MutableEventFlow
 import com.aos.model.book.UiBookCategory
@@ -230,7 +232,7 @@ class HistoryViewModel @Inject constructor(
         modifyId = item.id
         cost.value = item.money.substring(2, item.money.length).trim() + CurrencyUtil.currency
         date.value = item.lineDate
-        flow.value = getCategory(item.lineCategory)
+        flow.value = item.lineCategory.toCategoryName()
         asset.value = item.assetSubCategory
         line.value = item.lineSubCategory
         content.value = item.description
@@ -252,7 +254,7 @@ class HistoryViewModel @Inject constructor(
         modifyItem = item
         modifyItem!!.money =
             item.money.substring(2, item.money.length).trim() + CurrencyUtil.currency
-        modifyItem!!.lineCategory = getCategory(item.lineCategory)
+        modifyItem!!.lineCategory = item.lineCategory.toCategoryName()
     }
 
     // 즐겨찾기 내역 불러오기
@@ -678,25 +680,6 @@ class HistoryViewModel @Inject constructor(
         }
     }
 
-    // 카테고리 가져오기 영문 -> 한글
-    private fun getCategory(category: String): String {
-        return when (category) {
-            "INCOME" -> {
-                "수입"
-            }
-
-            "OUTCOME" -> {
-                "지출"
-            }
-
-            "TRANSFER" -> {
-                "이체"
-            }
-
-            else -> ""
-        }
-    }
-
     // 즐겨찾기 버튼 클릭
     fun onClickFavorite(){
         viewModelScope.launch {
@@ -748,7 +731,7 @@ class HistoryViewModel @Inject constructor(
             var totalCount = 0
 
             for (category in categories) {
-                val result = getBookFavoriteUseCase(prefs.getString("bookKey", ""), getCategory(category))
+                val result = getBookFavoriteUseCase(prefs.getString("bookKey", ""), category.toCategoryCode())
                 if (result.isSuccess) {
                     totalCount += result.getOrNull()?.size ?: 0
                 } else {

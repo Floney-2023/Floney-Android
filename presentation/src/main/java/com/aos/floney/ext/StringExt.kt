@@ -54,3 +54,17 @@ fun String?.parseErrorCode(event: BaseViewModel? = null): String {
 fun String.bookCodeToSettlementUrl(settlementId : Long): String {
     return "https://floney.onelink.me$appsflyer_settlement_url?settlementId=${settlementId}&bookCode=${this}"
 }
+
+fun String.toCategoryCode(): String = when (this) {
+    "수입" -> "INCOME"
+    "지출" -> "OUTCOME"
+    "이체" -> "TRANSFER"
+    else -> ""
+}
+
+fun String.toCategoryName(): String = when (this) {
+    "INCOME" -> "수입"
+    "OUTCOME" -> "지출"
+    "TRANSFER" -> "이체"
+    else -> ""
+}
