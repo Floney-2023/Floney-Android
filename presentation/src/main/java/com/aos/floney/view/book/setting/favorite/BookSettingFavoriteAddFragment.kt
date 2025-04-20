@@ -3,6 +3,8 @@ package com.aos.floney.view.book.setting.favorite
 import android.os.Bundle
 import android.view.View
 import androidx.activity.OnBackPressedCallback
+import androidx.core.os.bundleOf
+import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
 import com.aos.floney.R
 import com.aos.floney.base.BaseFragment
@@ -63,6 +65,7 @@ class BookSettingFavoriteAddFragment :
         repeatOnStarted {
             viewModel.postBooksFavorites.collect {
                 if(it) {
+                    setFragmentResult("key", bundleOf("flow" to viewModel.flow.value))
                     findNavController().popBackStack()
                 }
             }

@@ -2,6 +2,7 @@ package com.aos.floney.view.history
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.aos.data.util.CurrencyUtil
 import com.aos.data.util.SharedPreferenceUtil
@@ -42,6 +43,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HistoryViewModel @Inject constructor(
+    stateHandle: SavedStateHandle,
     private val prefs: SharedPreferenceUtil,
     private val subscribeBookUseCase: SubscribeBookUseCase,
     private val getBookCategoryUseCase: GetBookCategoryUseCase,
@@ -126,8 +128,10 @@ class HistoryViewModel @Inject constructor(
     // 금액
     var cost = MutableLiveData<String>("")
 
-    // 지출, 수입, 이체
-    var flow = MutableLiveData<String>("지출")
+    // 자산, 지출, 수입, 이체
+    private val _flow: MutableLiveData<String> = stateHandle.getLiveData("flow", "지출")
+    val flow: LiveData<String> get() = _flow
+
 
     // 자산
     var asset = MutableLiveData<String>("자산을 선택하세요")
@@ -232,7 +236,7 @@ class HistoryViewModel @Inject constructor(
         modifyId = item.id
         cost.value = item.money.substring(2, item.money.length).trim() + CurrencyUtil.currency
         date.value = item.lineDate
-        flow.value = item.lineCategory.toCategoryName()
+        _flow.value = item.lineCategory.toCategoryName()
         asset.value = item.assetSubCategory
         line.value = item.lineSubCategory
         content.value = item.description
@@ -264,7 +268,7 @@ class HistoryViewModel @Inject constructor(
         line.value = item.lineSubcategoryName
         asset.value = item.assetSubcategoryName
         content.value = item.description
-        flow.value = item.lineCategoryName
+        _flow.value = item.lineCategoryName
         deleteChecked.value = item.exceptStatus
     }
     // 즐겨찾기 추가 모드 설정
@@ -529,7 +533,7 @@ class HistoryViewModel @Inject constructor(
     fun onClickFlow(type: String) {
         if (mode.value == "add" || mode.value == "favorite") {
             line.postValue("분류를 선택하세요")
-            flow.postValue(type)
+            _flow.postValue(type)
         }
     }
 

@@ -5,6 +5,7 @@ import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.databinding.library.baseAdapters.BR
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.aos.floney.R
@@ -22,10 +23,6 @@ import timber.log.Timber
 class BookSettingFavoriteFragment : BaseFragment<FragmentBookSettingFavoriteBinding, BookSettingFavoriteViewModel>(R.layout.fragment_book_setting_favorite) , UiBookFavoriteModel.OnItemClickListener {
     private val activityViewModel: BookFavoriteViewModel by activityViewModels()
 
-    override fun onResume() {
-        super.onResume()
-        viewModel.getBookCategory()
-    }
     override fun onItemClick(item: UiBookFavoriteModel) {
         if (viewModel.edit.value!!)
         {
@@ -61,7 +58,18 @@ class BookSettingFavoriteFragment : BaseFragment<FragmentBookSettingFavoriteBind
         setUpUi()
         setUpViewModelObserver()
         setUpBackButton()
+        setUpResultListener()
     }
+
+    private fun setUpResultListener(){
+        // 저장 콜백 등록
+        setFragmentResultListener("key") { key, bundle ->
+            val result = bundle.getString("flow")
+            viewModel.flow.value = result
+            viewModel.getBookCategory()
+        }
+    }
+
     fun setUpBackButton(){
         // 뒤로 가기 콜백 등록
         val callback = object : OnBackPressedCallback(true) {
@@ -103,7 +111,7 @@ class BookSettingFavoriteFragment : BaseFragment<FragmentBookSettingFavoriteBind
 
             viewModel.addPage.collect {
                 if(it) {
-                    val addAction = BookSettingFavoriteFragmentDirections.actionBookSettingFavoriteFragmentToBookSettingFavoriteAddFragment()
+                    val addAction = BookSettingFavoriteFragmentDirections.actionBookSettingFavoriteFragmentToBookSettingFavoriteAddFragment(viewModel.flow.value!!)
                     findNavController().navigate(addAction)
                 }
             }
