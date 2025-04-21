@@ -2,6 +2,7 @@ package com.aos.floney.view.splash
 
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.pm.PackageManager.*
 import android.net.Uri
 import android.os.Build
@@ -51,7 +52,6 @@ class SplashActivity :
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        getAppKeyHash()
         setupSplashAnimation()
         setStatusBarTransparent()
         setPreferenceUtil()
@@ -114,9 +114,12 @@ class SplashActivity :
     }
 
     private fun getCurrentAppVersion(): String {
-        return packageManager.getPackageInfo(packageName, 0).versionName
+        return try {
+            packageManager.getPackageInfo(packageName, 0)?.versionName ?: "0.0.0"
+        } catch (e: PackageManager.NameNotFoundException) {
+            "0.0.0"
+        }
     }
-
     fun isUpdateRequired(latestVersion: String?, currentVersion: String): Boolean {
         if (latestVersion == null) return false
 
@@ -268,21 +271,6 @@ class SplashActivity :
 
                 }
             }
-        }
-    }
-    private fun getAppKeyHash() {
-        try {
-            val info = packageManager.getPackageInfo(packageName, GET_SIGNATURES)
-            for (signature in info.signatures) {
-                var md: MessageDigest
-                md = MessageDigest.getInstance("SHA")
-                md.update(signature.toByteArray())
-                val something = String(Base64.encode(md.digest(), 0))
-                Timber.e("Hashkey ${something}")
-            }
-        } catch (e: Exception) {
-            // TODO Auto-generated catch block
-            Log.e("name not found", e.toString())
         }
     }
 
