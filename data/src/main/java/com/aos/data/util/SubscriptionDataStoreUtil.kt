@@ -20,7 +20,7 @@ class SubscriptionDataStoreUtil @Inject constructor(
 
     private val KEY_BOOK_SUBSCRIBE = booleanPreferencesKey("book_subscribe")
     private val KEY_USER_SUBSCRIBE = booleanPreferencesKey("user_subscribe")
-    private val KEY_SUBSCRIBE_BENEFIT = booleanPreferencesKey("subscribe_benefit")
+    private val KEY_SUBSCRIBE_EXPIRED = booleanPreferencesKey("subscribe_expired")
 
     // 저장
     suspend fun setBookSubscribe(value: Boolean) {
@@ -31,8 +31,8 @@ class SubscriptionDataStoreUtil @Inject constructor(
         context.dataStore.edit { it[KEY_USER_SUBSCRIBE] = value }
     }
 
-    suspend fun setSubscribeBenefit(value: Boolean) {
-        context.dataStore.edit { it[KEY_SUBSCRIBE_BENEFIT] = value }
+    suspend fun setSubscribeExpired(value: Boolean) {
+        context.dataStore.edit { it[KEY_SUBSCRIBE_EXPIRED] = value }
     }
 
     // 조회
@@ -44,7 +44,7 @@ class SubscriptionDataStoreUtil @Inject constructor(
         return context.dataStore.data.map { it[KEY_USER_SUBSCRIBE] ?: false }
     }
 
-    fun getSubscribeBenefit(): Flow<Boolean> {
-        return context.dataStore.data.map { it[KEY_SUBSCRIBE_BENEFIT] ?: false }
+    fun getSubscribeExpired(): Flow<Boolean> {
+        return context.dataStore.data.map { it[KEY_SUBSCRIBE_EXPIRED] ?: false }
     }
 }
