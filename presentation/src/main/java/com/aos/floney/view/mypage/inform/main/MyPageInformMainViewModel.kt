@@ -3,6 +3,7 @@ package com.aos.floney.view.mypage.inform.main
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.aos.data.util.SharedPreferenceUtil
+import com.aos.data.util.SubscriptionDataStoreUtil
 import com.aos.floney.R
 import com.aos.floney.base.BaseViewModel
 import com.aos.floney.ext.parseErrorMsg
@@ -19,6 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MyPageInformMainViewModel @Inject constructor(
     private val prefs: SharedPreferenceUtil,
+    private val subscriptionDataStoreUtil : SubscriptionDataStoreUtil,
     private val nicknameChangeUseCase : NicknameChangeUseCase,
     private val mypageSearchUseCase : MypageSearchUseCase,
     private val logoutUseCase : LogoutUseCase
@@ -133,6 +135,7 @@ class MyPageInformMainViewModel @Inject constructor(
                     prefs.setString("refreshToken", "")
                     prefs.setString("bookKey","")
                     prefs.getString("subscribeCheckTenMinutes", "")
+                    subscriptionDataStoreUtil.initAllToFalse()
 
                     _logOutPage.emit(true)
                 }.onFailure {

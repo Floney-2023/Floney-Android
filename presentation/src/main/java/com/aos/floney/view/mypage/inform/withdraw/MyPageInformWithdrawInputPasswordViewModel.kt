@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.aos.data.util.SharedPreferenceUtil
+import com.aos.data.util.SubscriptionDataStoreUtil
 import com.aos.floney.R
 import com.aos.floney.base.BaseViewModel
 import com.aos.floney.ext.parseErrorMsg
@@ -22,6 +23,7 @@ import javax.inject.Inject
 class MyPageInformWithdrawInputPasswordViewModel @Inject constructor(
     stateHandle: SavedStateHandle,
     private val prefs: SharedPreferenceUtil,
+    private val subscriptionDataStoreUtil: SubscriptionDataStoreUtil,
     private val withdrawUseCase: WithdrawUseCase,
     private val checkUserPasswordUseCase: CheckUserPasswordUseCase
 ): BaseViewModel() {
@@ -86,6 +88,7 @@ class MyPageInformWithdrawInputPasswordViewModel @Inject constructor(
 
                 prefs.setString("bookKey","")
                 prefs.setString("accessToken","")
+                subscriptionDataStoreUtil.initAllToFalse()
 
                 _withdrawPage.emit(true)
             }.onFailure {

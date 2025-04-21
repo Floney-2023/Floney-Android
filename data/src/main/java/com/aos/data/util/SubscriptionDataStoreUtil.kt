@@ -35,6 +35,14 @@ class SubscriptionDataStoreUtil @Inject constructor(
         context.dataStore.edit { it[KEY_SUBSCRIBE_EXPIRED] = value }
     }
 
+    suspend fun initAllToFalse() {
+        context.dataStore.edit {
+            it[KEY_BOOK_SUBSCRIBE] = false
+            it[KEY_USER_SUBSCRIBE] = false
+            it[KEY_SUBSCRIBE_EXPIRED] = false
+        }
+    }
+
     // 조회
     fun getBookSubscribe(): Flow<Boolean> {
         return context.dataStore.data.map { it[KEY_BOOK_SUBSCRIBE] ?: false }
