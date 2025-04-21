@@ -490,9 +490,8 @@ class HomeViewModel @Inject constructor(
                 // 가계부 구독 여부 캐싱
                 subscriptionDataStoreUtil.setBookSubscribe(it.isValid)
 
-                // 가계부 구독 안한 상태일 경우, 혜택(가계부, 개인)이 적용되어있는 지 확인
-                if(!it.isValid)
-                    getSubscribeBenefitChecking()
+                // 3. 혜택(가계부, 개인)이 적용되어있는 지 확인
+                getSubscribeBenefitChecking()
 
             }.onFailure {
                 baseEvent(Event.ShowToast(it.message.parseErrorMsg()))

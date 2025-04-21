@@ -156,6 +156,10 @@ class AnalyzeViewModel @Inject constructor(
     // 구독 만료 여부 가져오기
     fun getSubscribeBenefitChecking(){
         viewModelScope.launch(Dispatchers.IO) {
+            // 둘 다 적용 중인 상태라면 확인하지 않는다.
+            if (subscriptionDataStoreUtil.getBookSubscribe().first() && subscriptionDataStoreUtil.getUserSubscribe().first())
+                return@launch
+
             // 10분 타이머 남은 시간
             val remainTime = prefs.getString("subscribeCheckTenMinutes", "")
 

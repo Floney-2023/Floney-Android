@@ -384,11 +384,13 @@ class HistoryViewModel @Inject constructor(
 
     // 내역 수정
     private fun postModifyHistory() {
-        // 구독 중인 경우
-        if (getIsSubscribe.value!!)
-            handleImageBeforeModify()
-        else // 구독 중이 아닌 경우, 구독 혜택 적용 여부 확인
-            getSubscribeBenefitChecking()
+        viewModelScope.launch {
+            // 가계부, 유저 둘 다 혜택 적용 중이라면 적용 여부 확인 없이 수정한다.
+            if (subscriptionDataStoreUtil.getBookSubscribe().first() && subscriptionDataStoreUtil.getUserSubscribe().first())
+                handleImageBeforeModify()
+            else // 구독 중이 아닌 경우, 구독 혜택 적용 여부 확인
+                getSubscribeBenefitChecking()
+        }
     }
 
     // 내역 삭제
