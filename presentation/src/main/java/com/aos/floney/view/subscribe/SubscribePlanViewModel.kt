@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.android.billingclient.api.Purchase
 import com.aos.data.util.SharedPreferenceUtil
+import com.aos.data.util.SubscriptionDataStoreUtil
 import com.aos.floney.R
 import com.aos.floney.base.BaseViewModel
 import com.aos.floney.ext.parseErrorCode
@@ -30,7 +31,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SubscribePlanViewModel @Inject constructor(
-    private val prefs: SharedPreferenceUtil,
+    private val subscriptionDataStoreUtil: SubscriptionDataStoreUtil,
     private val subscribeAndroidUseCase: SubscribeAndroidUseCase
 ): BaseViewModel(), BillingManager.BillingCallback {
 
@@ -79,6 +80,7 @@ class SubscribePlanViewModel @Inject constructor(
 
     override fun onPurchaseSuccess(checking: Boolean) {
         viewModelScope.launch {
+            subscriptionDataStoreUtil.setUserSubscribe(true)
             _subscribeSuccess.emit(checking)
         }
     }
