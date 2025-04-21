@@ -1,20 +1,18 @@
 package com.aos.floney.view.history.picture
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.provider.MediaStore
+import android.provider.Settings
 import android.widget.ImageView
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.databinding.library.baseAdapters.BR
-import androidx.lifecycle.lifecycleScope
+import androidx.fragment.app.FragmentManager
 import com.aos.floney.R
 import com.aos.floney.base.BaseActivity
 import com.aos.floney.base.BaseViewModel
@@ -22,15 +20,15 @@ import com.aos.floney.databinding.ActivityInsertPictureBinding
 import com.aos.floney.ext.intentSerializable
 import com.aos.floney.ext.intentSerializableList
 import com.aos.floney.ext.repeatOnStarted
+import com.aos.floney.util.PermissionUtil
+import com.aos.floney.view.common.BaseAlertDialog
 import com.aos.floney.view.common.ChoicePictureDialog
 import com.aos.floney.view.common.EditNotSaveDialog
-import com.aos.model.home.DayMoneyFavoriteItem
 import com.aos.model.home.ImageUrls
 import com.aos.model.home.PictureItem
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.File
 
@@ -78,10 +76,6 @@ class InsertPictureActivity :
             uriList.forEach { uri ->
                 handleImageResult(uri)
             }
-            /*
-            lifecycleScope.launch {
-                handleImageResult(result.data?.data)
-            }*/
         }
     }
 
@@ -313,49 +307,31 @@ class InsertPictureActivity :
     }
 
     private fun selectGallery() {
-        if (checkGalleryPermission()) {
-            val intent = Intent(Intent.ACTION_GET_CONTENT)
-            intent.type = "image/*"
-            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
-            intent.addCategory(Intent.CATEGORY_OPENABLE)
-            imageResult.launch(Intent.createChooser(intent, "사진을 선택하세요"))
-        } else {
-            viewModel.baseEvent(BaseViewModel.Event.ShowToast("이미지 접근 권한이 허용되지 않았습니다."))
-        }
+        PermissionUtil.checkAndRequestGalleryPermission(
+            activity = this,
+            fragmentManager = supportFragmentManager,
+            onGranted = {
+                val intent = Intent(Intent.ACTION_GET_CONTENT)
+                intent.type = "image/*"
+                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+                intent.addCategory(Intent.CATEGORY_OPENABLE)
+                imageResult.launch(Intent.createChooser(intent, "사진을 선택하세요"))
+            }
+        )
     }
 
-    private fun checkGalleryPermission(): Boolean {
-        val readPermission = ContextCompat.checkSelfPermission(
-            this, android.Manifest.permission.READ_EXTERNAL_STORAGE
-        )
-        val imagePermission = ContextCompat.checkSelfPermission(
-            this, android.Manifest.permission.READ_MEDIA_IMAGES
-        )
-
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            Timber.e("true")
-            if (imagePermission == PackageManager.PERMISSION_DENIED) {
-                ActivityCompat.requestPermissions(
-                    this, arrayOf(
-                        android.Manifest.permission.READ_MEDIA_IMAGES
-                    ), 1
-                )
-
-                false
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == PermissionUtil.REQUEST_GALLERY_PERMISSION) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                selectGallery()
             } else {
-                true
-            }
-        } else {
-            Timber.e("else")
-            if (readPermission == PackageManager.PERMISSION_DENIED) {
-                ActivityCompat.requestPermissions(
-                    this, arrayOf(
-                        android.Manifest.permission.READ_EXTERNAL_STORAGE
-                    ), 1
-                )
-                false
-            } else {
-                true
+
+                viewModel.baseEvent(BaseViewModel.Event.ShowToast("이미지 접근 권한이 허용되지 않았습니다."))
             }
         }
     }

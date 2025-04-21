@@ -123,7 +123,7 @@ class SubscribePlanActivity : BaseActivity<ActivitySubscribePlanBinding, Subscri
         val exitDialogFragment = WarningPopupDialog(
             getString(R.string.subscribe_popup_title),
             getString(R.string.subscribe_popup_info),
-            getString(R.string.already_pick_button),getString(R.string.already_pick_button),
+            "",getString(R.string.already_pick_button),
             true
         ) { checked ->
             if (!checked){
