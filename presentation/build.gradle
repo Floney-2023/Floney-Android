@@ -15,13 +15,12 @@ properties.load(project.rootProject.file('local.properties').newDataInputStream(
 android {
     packagingOptions { resources.excludes.add("META-INF/*")}
         namespace 'com.aos.floney'
-    compileSdk 34
-    compileSdkVersion 34
+    compileSdk 35
 
     defaultConfig {
         applicationId "com.aos.floney"
         minSdk 24
-        targetSdk 34
+        targetSdk 35
         versionCode 46
         versionName "2.0.1"
 
@@ -59,7 +58,7 @@ android {
         targetCompatibility JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '17'
     }
 
     dataBinding {
@@ -131,21 +130,21 @@ dependencies {
     implementation 'com.appsflyer:af-android-sdk:6.9.0'
 
     // google AdMob
-    implementation("com.google.android.gms:play-services-ads:23.3.0")
+    implementation("com.google.android.gms:play-services-ads:24.2.0")
 
     // viweModels
-    implementation 'androidx.activity:activity-ktx:1.1.0'
+    implementation 'androidx.activity:activity-ktx:1.10.1'
     implementation 'androidx.fragment:fragment-ktx:1.2.5'
 
     // Timber
     implementation 'com.jakewharton.timber:timber:5.0.1'
 
     // Hilt
-    implementation "com.google.dagger:hilt-android:2.44"
+    implementation "com.google.dagger:hilt-android:2.51.1"
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.7.0'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.8.7'
     androidTestImplementation 'org.junit.jupiter:junit-jupiter:5.8.1'
-    kapt "com.google.dagger:hilt-compiler:2.44"
+    kapt "com.google.dagger:hilt-compiler:2.55"
 
     // serialization
     implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0")
@@ -153,26 +152,26 @@ dependencies {
 
     // Room
     implementation("androidx.room:room-runtime:2.4.3")
-    implementation("androidx.room:room-ktx:2.4.3")
-    kapt("androidx.room:room-compiler:2.4.3")
+    implementation("androidx.room:room-ktx:2.7.0")
+    kapt("androidx.room:room-compiler:2.7.0")
 
     // jatpack Navigation
-    implementation("androidx.navigation:navigation-fragment-ktx:2.5.3")
+    implementation("androidx.navigation:navigation-fragment-ktx:2.8.9")
     implementation("androidx.navigation:navigation-ui-ktx:2.5.3")
 
     // gson
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
-    implementation 'com.google.code.gson:gson:2.10'
+    implementation 'com.google.code.gson:gson:2.10.1'
 
     // Glide
     implementation 'com.github.bumptech.glide:glide:4.14.2'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.14.2'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0'
 
     // viewmodelscope
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7")
 
     // okhttp, logging interceptor
-    implementation("com.squareup.okhttp3:okhttp:4.10.0")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.10.0")
 
     // retrofit
@@ -182,7 +181,7 @@ dependencies {
     implementation 'com.github.hadibtf:SemiCircleArcProgressBar:1.1.1'
 
     // defaultSplash
-    implementation "androidx.core:core-splashscreen:1.2.0-alpha01"
+    implementation "androidx.core:core-splashscreen:1.2.0-beta01"
 
     // test
     implementation 'androidx.core:core-ktx:1.9.0'
