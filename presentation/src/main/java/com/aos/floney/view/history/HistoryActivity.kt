@@ -26,8 +26,10 @@ import com.aos.floney.view.book.setting.category.BookCategoryActivity
 import com.aos.floney.view.book.setting.favorite.BookFavoriteActivity
 import com.aos.floney.view.common.BaseAlertDialog
 import com.aos.floney.view.common.BaseChoiceAlertDialog
+import com.aos.floney.view.common.WarningPopupDialog
 import com.aos.floney.view.history.memo.InsertMemoActivity
 import com.aos.floney.view.history.picture.InsertPictureActivity
+import com.aos.floney.view.home.HomeActivity
 import com.aos.model.book.UiBookCategory
 import com.aos.model.home.DayMoneyFavoriteItem
 import com.aos.model.home.DayMoneyModifyItem
@@ -323,6 +325,27 @@ class HistoryActivity :
             viewModel.onDeleteComplete.collect {
                 if(it){
                     viewModel.goModifyHistory()
+                }
+            }
+        }
+        repeatOnStarted {
+            // 구독 유도 팝업
+            viewModel.subscribePrompt.collect {
+                if(it) {
+                    val exitDialogFragment = WarningPopupDialog(
+                        getString(R.string.subscribe_prompt_title),
+                        getString(R.string.subscribe_prompt_inform),
+                        getString(R.string.already_pick_button),
+                        getString(R.string.subscribe_plan_btn),
+                        true
+                    ) {  checked ->
+                        if (!checked) // 구독 플랜 보기로 이동
+                        {
+                            startActivity(Intent(this@HistoryActivity, HomeActivity::class.java))
+
+                        }
+                    }
+                    exitDialogFragment.show(supportFragmentManager, "exitDialog")
                 }
             }
         }

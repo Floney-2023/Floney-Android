@@ -11,6 +11,7 @@ import com.aos.floney.base.BaseFragment
 import com.aos.floney.databinding.FragmentBookSettingFavoriteAddBinding
 import com.aos.floney.ext.repeatOnStarted
 import com.aos.floney.view.common.BaseAlertDialog
+import com.aos.floney.view.common.WarningPopupDialog
 import com.aos.floney.view.history.CategoryBottomSheetDialog
 import com.aos.floney.view.history.HistoryViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -83,6 +84,27 @@ class BookSettingFavoriteAddFragment :
                 } else {
                     // 수정 내역 없음
                     findNavController().popBackStack()
+                }
+            }
+        }
+        repeatOnStarted {
+            // 구독 유도 팝업
+            viewModel.subscribePrompt.collect {
+                if(it) {
+                    val exitDialogFragment = WarningPopupDialog(
+                        getString(R.string.subscribe_prompt_title),
+                        getString(R.string.subscribe_prompt_inform),
+                        getString(R.string.already_pick_button),
+                        getString(R.string.subscribe_plan_btn),
+                        true
+                    ) {  checked ->
+                        if (!checked) // 구독 플랜 보기로 이동
+                        {
+                            val activity = requireActivity() as BookFavoriteActivity
+                            activity.goToSubscribePlanActivity()
+                        }
+                    }
+                    exitDialogFragment.show(parentFragmentManager, "exitDialog")
                 }
             }
         }

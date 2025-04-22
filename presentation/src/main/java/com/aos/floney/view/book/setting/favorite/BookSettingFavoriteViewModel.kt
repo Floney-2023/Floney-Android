@@ -27,15 +27,9 @@ class BookSettingFavoriteViewModel @Inject constructor(
     private val subscriptionDataStoreUtil: SubscriptionDataStoreUtil
 ) : BaseViewModel() {
 
-    // 닫기 클릭
-    private var _onClickCloseBtn = MutableEventFlow<Boolean>()
-    val onClickCloseBtn: EventFlow<Boolean> get() = _onClickCloseBtn
-
-    // 카테고리 클릭
-    private var _onClickCategory = MutableEventFlow<Boolean>()
-    val onClickCategory: EventFlow<Boolean> get() = _onClickCategory
-
-
+    // 구독 유도 팝업
+    private var _subscribePrompt = MutableEventFlow<Boolean>()
+    val subscribePrompt: EventFlow<Boolean> get() = _subscribePrompt
 
     // 이전 페이지
     private var _back = MutableEventFlow<Boolean>()
@@ -90,9 +84,8 @@ class BookSettingFavoriteViewModel @Inject constructor(
     // 추가하기 버튼 클릭
     fun onClickAddBtn() {
         viewModelScope.launch {
-
-            // 구독을 한 상태라면 즐겨찾기 개수와 상관없이 추가한다.
-            if (subscriptionDataStoreUtil.getUserSubscribe().first()){
+            // 구독자면 그냥 패스
+            if (subscriptionDataStoreUtil.getBookSubscribe().first()) {
                 _addPage.emit(true)
                 return@launch
             }
@@ -100,27 +93,28 @@ class BookSettingFavoriteViewModel @Inject constructor(
             baseEvent(Event.ShowLoading)
 
             val categories = listOf("수입", "이체", "지출")
-            var totalCount = 0
-
-            for (category in categories) {
+            val overLimit = categories.any { category ->
                 val result = getBookFavoriteUseCase(prefs.getString("bookKey", ""), category.toCategoryCode())
-                if (result.isSuccess) {
-                    totalCount += result.getOrNull()?.size ?: 0
-                } else {
+                val count = result.getOrNull()?.size ?: 0
+
+                if (result.isFailure) {
                     baseEvent(Event.HideLoading)
                     baseEvent(Event.ShowToast(result.exceptionOrNull()?.message.parseErrorMsg(this@BookSettingFavoriteViewModel)))
-                    return@launch
+                    return@any false // 중단
                 }
+
+                count >= 5 // 하나라도 5개 이상이면 true
             }
 
             baseEvent(Event.HideLoading)
-            if (totalCount >= 15) {
-                baseEvent(Event.ShowToast("즐겨찾기 개수가 초과 되었습니다."))
+            if (overLimit) {
+                _subscribePrompt.emit(true)
             } else {
                 _addPage.emit(true)
             }
         }
     }
+
 
     // 편집버튼 클릭
     fun onClickEdit(){

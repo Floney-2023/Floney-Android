@@ -173,6 +173,11 @@ class HistoryViewModel @Inject constructor(
     // 구독 만료 여부
     var subscribeExpired = MutableLiveData<Boolean>(false)
 
+
+    // 구독 유도 팝업
+    private var _subscribePrompt = MutableEventFlow<Boolean>()
+    val subscribePrompt: EventFlow<Boolean> get() = _subscribePrompt
+
     private var memo = ""
     private var cloudUrlList = mutableListOf<ImageUrls>()
     private var localUrlList = mutableListOf<File>()
@@ -697,7 +702,9 @@ class HistoryViewModel @Inject constructor(
                 if (isMax) {
                     applyAddFavorite()
                 } else {
-                    baseEvent(Event.ShowToast("즐겨찾기 개수가 초과 되었습니다."))
+                    viewModelScope.launch {
+                        _subscribePrompt.emit(true)
+                    }
                 }
             }
         }
@@ -728,27 +735,28 @@ class HistoryViewModel @Inject constructor(
             baseEvent(Event.ShowLoading)
 
             val categories = listOf("수입", "이체", "지출")
-            var totalCount = 0
 
             for (category in categories) {
                 val result = getBookFavoriteUseCase(prefs.getString("bookKey", ""), category.toCategoryCode())
-                if (result.isSuccess) {
-                    totalCount += result.getOrNull()?.size ?: 0
-                } else {
+                if (result.isFailure) {
                     baseEvent(Event.HideLoading)
                     baseEvent(Event.ShowToast(result.exceptionOrNull()?.message.parseErrorMsg(this@HistoryViewModel)))
+                    return@launch
+                }
+
+                val count = result.getOrNull()?.size ?: 0
+                if (count >= 5) {
+                    baseEvent(Event.HideLoading)
+                    onResult(false) // 하나라도 5 초과 → false
                     return@launch
                 }
             }
 
             baseEvent(Event.HideLoading)
-            if (totalCount > 15) {
-                onResult(false)
-            } else {
-                onResult(true)
-            }
+            onResult(true) // 전부 5 미만이면 가능
         }
     }
+
 
     // 구독 혜택 받고 있는 지 여부 가져오기
     fun getSubscribeBenefitChecking() {
