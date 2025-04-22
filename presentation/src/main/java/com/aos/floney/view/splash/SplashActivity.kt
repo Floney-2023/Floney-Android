@@ -224,7 +224,6 @@ class SplashActivity :
                         }
                     }
                     else {
-                        val inviteCode = it.getQueryParameter("inviteCode")
                         val intent = Intent(this@SplashActivity, BookEntranceActivity::class.java)
 
                         // 데이터를 Intent에 추가
@@ -241,7 +240,6 @@ class SplashActivity :
                 }
                 "floney_settlement_share" -> {
                     if(sharedPreferenceUtil.getString("accessToken", "") == "") { // accessToken 유효 X
-                        val inviteCode = it.getQueryParameter("inviteCode")
                         val intent = Intent(this@SplashActivity, LoginActivity::class.java)
 
                         // 데이터를 Intent에 추가
