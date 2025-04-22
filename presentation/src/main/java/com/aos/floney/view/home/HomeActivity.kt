@@ -77,8 +77,8 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(R.layout.a
         super.onResume()
 
         val prefs = SharedPreferenceUtil(this)
-
         lifecycleScope.launch {
+            viewModel.setUserSubscribeChecking()
             viewModel.getBookInfo(prefs.getString("bookKey", ""))
             if (binding.clShowDetail.isVisible) // 일별 bottomSheet이 열려있는 경우 다시 일별 데이터 호출한다.
                 viewModel.getBookDays(viewModel.getFormatDateDay())

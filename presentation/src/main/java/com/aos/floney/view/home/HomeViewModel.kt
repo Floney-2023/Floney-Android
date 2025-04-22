@@ -134,7 +134,6 @@ class HomeViewModel @Inject constructor(
     init {
         getFormatDateMonth()
         setAdvertisement()
-        setUserSubscribeChecking()
     }
 
     fun initCalendarMonth() {
