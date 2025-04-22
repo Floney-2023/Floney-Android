@@ -4,8 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import androidx.test.internal.util.LogUtil
 import com.aos.data.util.CurrencyUtil
 import com.aos.data.util.SharedPreferenceUtil
+import com.aos.data.util.SubscriptionDataStoreUtil
 import com.aos.data.util.checkDecimalPoint
 import com.aos.floney.base.BaseViewModel
 import com.aos.floney.ext.formatNumber
@@ -25,13 +27,11 @@ import com.aos.usecase.history.GetBookFavoriteUseCase
 import com.aos.usecase.history.PostBooksFavoritesUseCase
 import com.aos.usecase.history.PostBooksLinesChangeUseCase
 import com.aos.usecase.history.PostBooksLinesUseCase
-import com.aos.usecase.subscribe.SubscribeBenefitUseCase
-import com.aos.usecase.subscribe.SubscribeUserBenefitUseCase
-import com.aos.usecase.subscribe.SubscribeBookUseCase
 import com.aos.usecase.subscribe.SubscribeDeleteCloudImageUseCase
 import com.aos.usecase.subscribe.SubscribePresignedUrlUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -45,7 +45,7 @@ import javax.inject.Inject
 class HistoryViewModel @Inject constructor(
     stateHandle: SavedStateHandle,
     private val prefs: SharedPreferenceUtil,
-    private val subscribeBookUseCase: SubscribeBookUseCase,
+    private val subscriptionDataStoreUtil: SubscriptionDataStoreUtil,
     private val getBookCategoryUseCase: GetBookCategoryUseCase,
     private val postBooksLinesUseCase: PostBooksLinesUseCase,
     private val postBooksLinesChangeUseCase: PostBooksLinesChangeUseCase,
@@ -53,8 +53,6 @@ class HistoryViewModel @Inject constructor(
     private val deleteBooksLinesAllUseCase: DeleteBooksLinesAllUseCase,
     private val postBooksFavoritesUseCase : PostBooksFavoritesUseCase,
     private val getBookFavoriteUseCase: GetBookFavoriteUseCase,
-    private val subscribeBenefitUseCase: SubscribeBenefitUseCase,
-    private val subscribeUserBenefitUseCase: SubscribeUserBenefitUseCase,
     private val subscribeDeleteCloudImageUseCase : SubscribeDeleteCloudImageUseCase,
     private val subscribePresignedUrlUseCase: SubscribePresignedUrlUseCase
 ) : BaseViewModel() {
@@ -302,12 +300,8 @@ class HistoryViewModel @Inject constructor(
 
     private fun getSubscribeBook() {
         viewModelScope.launch {
-            subscribeBookUseCase(prefs.getString("bookKey", "")).onSuccess {
-                _getBookIsSubscribe.postValue(it.isValid)
-            }.onFailure {
-                Timber.e("message ${it.message}")
-                baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@HistoryViewModel)))
-            }
+            Timber.d("checking history ${subscriptionDataStoreUtil.getBookSubscribe().first()}")
+            _getBookIsSubscribe.postValue(subscriptionDataStoreUtil.getBookSubscribe().first())
         }
     }
 
@@ -390,11 +384,13 @@ class HistoryViewModel @Inject constructor(
 
     // 내역 수정
     private fun postModifyHistory() {
-        // 구독 중인 경우
-        if (getIsSubscribe.value!!)
-            handleImageBeforeModify()
-        else // 구독 중이 아닌 경우, 구독 혜택 적용 여부 확인
-            getSubscribeBenefitChecking()
+        viewModelScope.launch {
+            // 가계부, 유저 둘 다 혜택 적용 중이라면 적용 여부 확인 없이 수정한다.
+            if (subscriptionDataStoreUtil.getBookSubscribe().first() && subscriptionDataStoreUtil.getUserSubscribe().first())
+                handleImageBeforeModify()
+            else // 구독 중이 아닌 경우, 구독 혜택 적용 여부 확인
+                getSubscribeBenefitChecking()
+        }
     }
 
     // 내역 삭제
@@ -757,45 +753,12 @@ class HistoryViewModel @Inject constructor(
     // 구독 혜택 받고 있는 지 여부 가져오기
     fun getSubscribeBenefitChecking() {
         viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val bookKey = prefs.getString("bookKey", "")
+            val expiredCheck = subscriptionDataStoreUtil.getSubscribeExpired().first()
+            // 구독 만료 여부 업데이트 -> true면 만료 팝업 표시
+            subscribeExpired.postValue(expiredCheck)
 
-                // 가계부 혜택 확인
-                val benefitResult = subscribeBenefitUseCase(bookKey)
-                benefitResult.onFailure {
-                    baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
-                    return@launch // 실패 시 작업 종료
-                }
-
-                // 유저 혜택 확인
-                val userBenefitResult = subscribeUserBenefitUseCase()
-                userBenefitResult.onFailure {
-                    baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
-                    return@launch // 실패 시 작업 종료
-                }
-
-                // 두 작업이 모두 성공한 경우 처리
-                benefitResult.onSuccess { bookBenefit ->
-                    userBenefitResult.onSuccess { userBenefit ->
-                        // 10분 타이머 남은 시간
-                        val remainTime = prefs.getString("subscribeCheckTenMinutes", "")
-
-                        // 구독 만료 여부
-                        val expiredCheck =
-                            bookBenefit.maxFavorite || bookBenefit.overBookUser || userBenefit.maxBook
-                        Timber.i("book : ${bookBenefit} user : ${userBenefit} remainTime : ${remainTime}")
-
-                        // 구독 만료 여부 업데이트 -> true면 만료 팝업 표시
-                        subscribeExpired.postValue(expiredCheck)
-
-                        if(!expiredCheck){ // 만료되지 않음
-                            handleImageBeforeModify()
-                        }
-                    }
-                }
-            } catch (e: Exception) {
-                // 코루틴 실행 중 발생한 예외 처리
-                baseEvent(Event.ShowToast(e.message.parseErrorMsg()))
+            if(!expiredCheck){ // 만료되지 않음
+                handleImageBeforeModify()
             }
         }
     }

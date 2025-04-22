@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.aos.data.util.SharedPreferenceUtil
+import com.aos.data.util.SubscriptionDataStoreUtil
 import com.aos.floney.base.BaseViewModel
 import com.aos.floney.ext.parseErrorMsg
 import com.aos.floney.ext.toCategoryCode
@@ -14,6 +15,7 @@ import com.aos.usecase.booksetting.BooksFavoriteDeleteUseCase
 import com.aos.usecase.history.GetBookFavoriteUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -21,7 +23,8 @@ import javax.inject.Inject
 class BookSettingFavoriteViewModel @Inject constructor(
     private val prefs: SharedPreferenceUtil,
     private val getBookFavoriteUseCase: GetBookFavoriteUseCase,
-    private val booksFavoriteDeleteUseCase: BooksFavoriteDeleteUseCase
+    private val booksFavoriteDeleteUseCase: BooksFavoriteDeleteUseCase,
+    private val subscriptionDataStoreUtil: SubscriptionDataStoreUtil
 ) : BaseViewModel() {
 
     // 닫기 클릭
@@ -89,7 +92,7 @@ class BookSettingFavoriteViewModel @Inject constructor(
         viewModelScope.launch {
 
             // 구독을 한 상태라면 즐겨찾기 개수와 상관없이 추가한다.
-            if (prefs.getBoolean("isBookSubscribe",false)){
+            if (subscriptionDataStoreUtil.getUserSubscribe().first()){
                 _addPage.emit(true)
                 return@launch
             }

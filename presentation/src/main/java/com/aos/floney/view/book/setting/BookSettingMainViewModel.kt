@@ -1,24 +1,19 @@
 package com.aos.floney.view.book.setting
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.aos.data.util.CommonUtil
-import com.aos.floney.R
 import com.aos.floney.base.BaseViewModel
 import com.aos.floney.ext.parseErrorMsg
 import com.aos.floney.util.EventFlow
 import com.aos.floney.util.MutableEventFlow
-import com.aos.model.user.UiMypageSearchModel
-import com.aos.usecase.mypage.MypageSearchUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
 import com.aos.data.util.SharedPreferenceUtil
+import com.aos.data.util.SubscriptionDataStoreUtil
 import com.aos.floney.util.getCurrentDateTimeString
 import com.aos.model.book.UiBookSettingModel
 import com.aos.model.user.MyBooks
@@ -27,10 +22,8 @@ import com.aos.usecase.booksetting.BooksOutUseCase
 import com.aos.usecase.booksetting.BooksSettingGetUseCase
 import com.aos.usecase.home.CheckUserBookUseCase
 import com.aos.usecase.mypage.AlarmSaveGetUseCase
-import com.aos.usecase.mypage.RecentBookkeySaveUseCase
-import com.aos.usecase.subscribe.SubscribeBenefitUseCase
-import com.aos.usecase.subscribe.SubscribeBookUseCase
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 
@@ -42,7 +35,7 @@ class BookSettingMainViewModel @Inject constructor(
     private val booksOutUseCase: BooksOutUseCase,
     private val checkUserBookUseCase: CheckUserBookUseCase,
     private val alarmSaveGetUseCase : AlarmSaveGetUseCase,
-    private val subscribeBookUseCase: SubscribeBookUseCase,
+    private val subscriptionDataStoreUtil: SubscriptionDataStoreUtil
 ): BaseViewModel() {
 
     // 회원 닉네임
@@ -126,20 +119,17 @@ class BookSettingMainViewModel @Inject constructor(
 
     private fun getSubscribeBook() {
         viewModelScope.launch {
-            subscribeBookUseCase(prefs.getString("bookKey", "")).onSuccess {
+            val isBookSubscribe = subscriptionDataStoreUtil.getBookSubscribe().first()
 
-                // 가계부 구독 혜택 여부에 따른 Floney Plus+ <icon chip> 표시
-                _isSubscribeValid.postValue(it.isValid)
+            // 가계부 구독 혜택 여부에 따른 Floney Plus+ <icon chip> 표시
+            _isSubscribeValid.postValue(isBookSubscribe)
 
-                // 가계부 인원수 세팅 : 구독 중인 경우 최대 10명, 구독 안한 경우 최대 4명
-                val maxMembercount = if (it.isValid) 10 else 4
-                bookSettingInfo.value.let {
-                    val text = "${it?.ourBookUsers?.size}/${maxMembercount}명"
-                    _bookMember.postValue(text)
-                }
-            }.onFailure {
-                Timber.e("message ${it.message}")
-                baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@BookSettingMainViewModel)))
+            // 가계부 인원수 세팅 : 구독 중인 경우 최대 10명, 구독 안한 경우 최대 4명
+            val maxMembercount = if (isBookSubscribe) 10 else 4
+
+            bookSettingInfo.value.let {
+                val text = "${it?.ourBookUsers?.size}/${maxMembercount}명"
+                _bookMember.postValue(text)
             }
         }
     }

@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.aos.data.util.CurrencyUtil
 import com.aos.data.util.SharedPreferenceUtil
+import com.aos.data.util.SubscriptionDataStoreUtil
 import com.aos.floney.R
 import com.aos.floney.base.BaseViewModel
 import com.aos.floney.ext.parseErrorMsg
@@ -25,11 +26,13 @@ import com.aos.usecase.booksetting.BooksCurrencySearchUseCase
 import com.aos.usecase.home.GetBookInfoUseCase
 import com.aos.usecase.home.GetMoneyHistoryDaysUseCase
 import com.aos.usecase.subscribe.SubscribeBenefitUseCase
+import com.aos.usecase.subscribe.SubscribeBookUseCase
 import com.aos.usecase.subscribe.SubscribeCheckUseCase
 import com.aos.usecase.subscribe.SubscribeUserBenefitUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.text.SimpleDateFormat
@@ -41,12 +44,14 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val prefs: SharedPreferenceUtil,
+    private val subscriptionDataStoreUtil: SubscriptionDataStoreUtil,
     private val getMoneyHistoryDaysUseCase: GetMoneyHistoryDaysUseCase,
     private val booksCurrencySearchUseCase : BooksCurrencySearchUseCase,
     private val getBookInfoUseCase: GetBookInfoUseCase,
-    private val subscribeCheckUseCase: SubscribeCheckUseCase,
+    private val subscribeUserUseCase: SubscribeCheckUseCase,
+    private val subscribeBookUseCase: SubscribeBookUseCase,
     private val subscribeBenefitUseCase: SubscribeBenefitUseCase,
-    private val SubscribeUserBenefitUseCase: SubscribeUserBenefitUseCase
+    private val subscribeUserBenefitUseCase: SubscribeUserBenefitUseCase
 ) : BaseViewModel() {
 
     // 날짜 데이터
@@ -129,6 +134,7 @@ class HomeViewModel @Inject constructor(
     init {
         getFormatDateMonth()
         setAdvertisement()
+        setUserSubscribeChecking()
     }
 
     fun initCalendarMonth() {
@@ -475,25 +481,48 @@ class HomeViewModel @Inject constructor(
                 _accessCheck.emit(true)
         }
     }
-    // 구독 여부 가져오기
-    fun getSubscribeChecking(){
-        viewModelScope.launch(Dispatchers.IO) {
-            subscribeCheckUseCase().onSuccess {
-                subscribeCheck.postValue(it.isValid)
 
-                // 구독 안한 상태일 경우, 혜택(가계부, 개인)이 적용되어있는 지 확인
-                if(!it.isValid)
-                    getSubscribeBenefitChecking()
-                else // 구독을 한 상태라면 광고 off 상태로 변경
-                {
-                    prefs.setString("advertiseTime", "")
-                    _showAdvertisement.postValue(false)
-                }
+    // 구독 여부 세팅
+    fun setBookSubscribeChecking(){
+        viewModelScope.launch(Dispatchers.IO) {
+            subscribeBookUseCase(prefs.getString("bookKey","")).onSuccess {
+
+                // 가계부 구독 여부 캐싱
+                subscriptionDataStoreUtil.setBookSubscribe(it.isValid)
+
+                // 3. 혜택(가계부, 개인)이 적용되어있는 지 확인
+                getSubscribeBenefitChecking()
+
             }.onFailure {
                 baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
             }
         }
     }
+
+    fun setUserSubscribeChecking() {
+        // 1. 유저 구독 여부 확인
+        viewModelScope.launch(Dispatchers.IO) {
+            subscribeUserUseCase().onSuccess {
+                subscribeCheck.postValue(it.isValid)
+
+                // 유저 구독 여부 캐싱
+                subscriptionDataStoreUtil.setUserSubscribe(it.isValid)
+
+                if (it.isValid) { // 개인 구독이 되었다면 광고 시간 reset
+                    prefs.setString("advertiseTime", "")
+                    _showAdvertisement.postValue(false)
+                }
+
+                // 2. 가계부 구독 여부 확인
+                setBookSubscribeChecking()
+
+            }.onFailure {
+                baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
+            }
+        }
+    }
+
+
     // 구독 혜택 받고 있는 지 여부 가져오기
     fun getSubscribeBenefitChecking(){
         viewModelScope.launch(Dispatchers.IO) {
@@ -508,7 +537,7 @@ class HomeViewModel @Inject constructor(
                 }
 
                 // 유저 혜택 확인
-                val userBenefitResult = SubscribeUserBenefitUseCase()
+                val userBenefitResult = subscribeUserBenefitUseCase()
                 userBenefitResult.onFailure {
                     baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
                     return@launch // 실패 시 작업 종료
@@ -520,9 +549,19 @@ class HomeViewModel @Inject constructor(
                         // 10분 타이머 남은 시간
                         val remainTime = prefs.getString("subscribeCheckTenMinutes", "")
 
-                        // 구독 만료 여부
-                        val expiredCheck = bookBenefit.maxFavorite || bookBenefit.overBookUser || userBenefit.maxBook
-                        Timber.i("book : ${bookBenefit} user : ${userBenefit} remainTime : ${remainTime}")
+                        // 구독 만료 여부 확인
+                        // 유저 관점에서
+                        val expiredUser = !subscriptionDataStoreUtil.getUserSubscribe().first() && userBenefit.maxBook
+
+                        // 가계부 관점에서
+                        val expiredBook = !subscriptionDataStoreUtil.getBookSubscribe().first() && (bookBenefit.maxFavorite || bookBenefit.overBookUser)
+
+                        Timber.i("book : ${expiredBook} user : ${expiredUser} remainTime : ${remainTime}")
+
+                        val expiredCheck = expiredUser || expiredBook
+
+                        // 구독 혜택 적용 여부 캐싱
+                        subscriptionDataStoreUtil.setSubscribeExpired(expiredCheck)
 
                         // 10분 지났을 경우 리셋
                         if (getAdvertiseTenMinutesCheck(remainTime) < 0)

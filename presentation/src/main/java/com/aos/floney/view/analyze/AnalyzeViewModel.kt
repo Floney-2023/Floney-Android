@@ -4,19 +4,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.aos.data.util.SharedPreferenceUtil
+import com.aos.data.util.SubscriptionDataStoreUtil
 import com.aos.floney.base.BaseViewModel
-import com.aos.floney.ext.parseErrorMsg
 import com.aos.floney.util.EventFlow
 import com.aos.floney.util.MutableEventFlow
 import com.aos.floney.util.getAdvertiseTenMinutesCheck
-import com.aos.usecase.subscribe.SubscribeBenefitUseCase
-import com.aos.usecase.subscribe.SubscribeBookUseCase
-import com.aos.usecase.subscribe.SubscribeUserBenefitUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -26,9 +23,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AnalyzeViewModel @Inject constructor(
     private val prefs: SharedPreferenceUtil,
-    private val subscribeBenefitUseCase: SubscribeBenefitUseCase,
-    private val SubscribeUserBenefitUseCase: SubscribeUserBenefitUseCase,
-    private val subscribeBookCheckUseCase: SubscribeBookUseCase
+    private val subscriptionDataStoreUtil: SubscriptionDataStoreUtil
 ): BaseViewModel() {
 
     // 지출, 수입, 예산, 자산
@@ -67,6 +62,7 @@ class AnalyzeViewModel @Inject constructor(
     init {
         getFormatDateMonth()
         getSubscribeChecking()
+        getSubscribeBenefitChecking()
     }
 
     // 지출, 수입, 이체 클릭
@@ -152,65 +148,31 @@ class AnalyzeViewModel @Inject constructor(
 
     // 가계부 구독 여부 가져오기
     fun getSubscribeChecking(){
-        viewModelScope.launch(Dispatchers.IO) {
-            subscribeBookCheckUseCase(prefs.getString("bookKey", "")).onSuccess {
-                // 구독 안한 상태일 경우, 혜택(가계부, 개인)이 적용되어있는 지 확인
-                // 구독 한 상태일 경우, 적용 여부 업데이트
-                if(!it.isValid)
-                    getSubscribeBenefitChecking()
-                else
-                    subscribeActive = true
-            }.onFailure {
-                baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
-            }
+        viewModelScope.launch {
+            subscribeActive = subscriptionDataStoreUtil.getBookSubscribe().first()
         }
     }
 
-    // 구독 혜택 받고 있는 지 여부 가져오기
+    // 구독 만료 여부 가져오기
     fun getSubscribeBenefitChecking(){
         viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val bookKey = prefs.getString("bookKey", "")
+            // 둘 다 적용 중인 상태라면 확인하지 않는다.
+            if (subscriptionDataStoreUtil.getBookSubscribe().first() && subscriptionDataStoreUtil.getUserSubscribe().first())
+                return@launch
 
-                // 가계부 혜택 확인
-                val benefitResult = subscribeBenefitUseCase(bookKey)
-                benefitResult.onFailure {
-                    baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
-                    return@launch // 실패 시 작업 종료
-                }
+            // 10분 타이머 남은 시간
+            val remainTime = prefs.getString("subscribeCheckTenMinutes", "")
 
-                // 유저 혜택 확인
-                val userBenefitResult = SubscribeUserBenefitUseCase()
-                userBenefitResult.onFailure {
-                    baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
-                    return@launch // 실패 시 작업 종료
-                }
+            // 10분 지났을 경우 리셋
+            if (getAdvertiseTenMinutesCheck(remainTime) < 0)
+                prefs.setString("subscribeCheckTenMinutes", "")
 
-                // 두 작업이 모두 성공한 경우 처리
-                benefitResult.onSuccess { bookBenefit ->
-                    userBenefitResult.onSuccess { userBenefit ->
-                        // 10분 타이머 남은 시간
-                        val remainTime = prefs.getString("subscribeCheckTenMinutes", "")
+            // 구독 적용 중 아닌데 혜택 있는 경우
+            subscribeExpired = subscriptionDataStoreUtil.getSubscribeExpired().first()
 
-                        // 구독 만료 여부
-                        val expiredCheck = bookBenefit.maxFavorite || bookBenefit.overBookUser || userBenefit.maxBook
-                        Timber.i("book : ${bookBenefit} user : ${userBenefit} remainTime : ${remainTime}")
+            // 구독 팝업 표시 여부 업데이트 (구독 만료 O && 타이머 시간이 유효하지 않을 경우)
+            subscribePopupShow.postValue(getAdvertiseTenMinutesCheck(remainTime) <= 0 && subscribeExpired)
 
-                        // 10분 지났을 경우 리셋
-                        if (getAdvertiseTenMinutesCheck(remainTime) < 0)
-                            prefs.setString("subscribeCheckTenMinutes", "")
-
-                        // 구독 적용 중 아닌데 혜택 있는 경우
-                        subscribeExpired = expiredCheck
-
-                        // 구독 팝업 표시 여부 업데이트 (구독 만료 O && 타이머 시간이 유효하지 않을 경우)
-                        subscribePopupShow.postValue(getAdvertiseTenMinutesCheck(remainTime) <= 0 && expiredCheck)
-                    }
-                }
-            } catch (e: Exception) {
-                // 코루틴 실행 중 발생한 예외 처리
-                baseEvent(Event.ShowToast(e.message.parseErrorMsg()))
-            }
         }
     }
 }

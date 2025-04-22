@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.aos.data.util.SharedPreferenceUtil
+import com.aos.data.util.SubscriptionDataStoreUtil
 import com.aos.floney.R
 import com.aos.floney.base.BaseViewModel
 import com.aos.floney.ext.parseErrorMsg
@@ -20,6 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MyPageInformWithdrawReasonCheckViewModel @Inject constructor(
     private val prefs: SharedPreferenceUtil,
+    private val subscriptionDataStoreUtil: SubscriptionDataStoreUtil,
     private val withdrawUseCase: WithdrawUseCase,
     private val subscribeCheckUseCase: SubscribeCheckUseCase
 ) : BaseViewModel() {
@@ -219,6 +221,7 @@ class MyPageInformWithdrawReasonCheckViewModel @Inject constructor(
 
                 prefs.setString("bookKey","")
                 prefs.setString("accessToken","")
+                subscriptionDataStoreUtil.initAllToFalse()
 
                 _withdrawPage.emit(true)
             }.onFailure {

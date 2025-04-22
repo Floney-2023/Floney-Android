@@ -133,8 +133,11 @@ class InsertPictureActivity :
                 // 다이얼로그 표시
                 ChoicePictureDialog(this@InsertPictureActivity, {
                     // 사진 촬영
-                    viewModel.setTakeCaptureUri(viewModel.createTempImageFile())
-                    takePhoto.launch(viewModel.getTakeCaptureUri())
+                    viewModel.getTakeCaptureUri()?.let { uri ->
+                        takePhoto.launch(uri)
+                    } ?: run {
+                        viewModel.baseEvent(BaseViewModel.Event.ShowToast("이미지 파일을 만들 수 없습니다."))
+                    }
                 }, {
                     // 앨범에서 사진 선택
                     selectGallery()
