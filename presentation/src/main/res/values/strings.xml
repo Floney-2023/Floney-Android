@@ -228,6 +228,8 @@
     <string name="book_entrance_button">입장하기</string>
     <string name="book_entrance_code_button"><u>코드 입력하기</u></string>
 
+    <string name="book_entrance_over_alert">사용할 수 있는 가계부 개수를 초과했습니다.</string>
+
     <!--5-3 가계부 초대받기(공통)-->
     <string name="my_page_book_add_invite_check_code_title">가계부 코드 입력</string>
     <string name="my_page_book_add_invite_check_code_info">가계부에 입장하기 위해\n초대 받은 가계부의 코드를 입력하세요.</string>
@@ -418,8 +420,8 @@
     <string name="subscribe_popup_title">구독이 시작되었어요!</string>
     <string name="subscribe_popup_info">플로니와 함께 더 편리한 기능을 즐겨보세요.\n[마이페이지] > [구독 정보 보기]에서 상태를 확인하실 수 있어요.</string>
 
-    <string name="subscribe_prompt_title">구독 후 사용할 수 있어요.</string>
-    <string name="subscribe_prompt_inform">Floney Plus+ 구독하고\n다양한 기능을 제한없이 사용해 보세요.</string>
+    <string name="subscribe_prompt_title">방장의 구독이 필요해요</string>
+    <string name="subscribe_prompt_inform">방장이 Floney Plus+를 구독하면\n다양한 기능을 제한없이 사용할 수 있어요.</string>
     <string name="subscribe_plan_btn">구독 플랜 보기</string>
 
     <string name="unsubscribe_exit_popup_title">구독 서비스를 이용하고 있어요!</string>

@@ -35,7 +35,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/pretendard_bold"
-                android:text="구독 후 다시 이용해 보세요"
+                android:text="방장의 구독이 필요해요"
                 android:textColor="@android:color/white"
                 android:textSize="16dp"
                 app:layout_constraintStart_toStartOf="parent"
