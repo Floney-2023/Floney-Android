@@ -66,7 +66,6 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(R.layout.a
                 result.data?.removeExtra("isSave")
             }
 
-            viewModel.getBookInfoData() // 정보 업데이트
             if (binding.clShowDetail.isVisible) // 일별 bottomSheet이 열려있는 경우 다시 일별 데이터 호출한다.
                 viewModel.getBookDays(viewModel.getFormatDateDay())
         }
@@ -77,6 +76,7 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(R.layout.a
 
         lifecycleScope.launch {
             viewModel.setUserSubscribeChecking()
+            viewModel.getBookInfoData() // 정보 업데이트
         }
     }
 
