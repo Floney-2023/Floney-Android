@@ -13,12 +13,12 @@ fun Activity.applyHistoryOpenTransition() {
         overrideActivityTransition(
             Activity.OVERRIDE_TRANSITION_OPEN,
             R.anim.slide_in,         // 아래에서 위로
-            R.anim.slide_out_down    // 안보이는 백그라운드용 (빈 애니메이션)
+            R.anim.none
         )
     } else {
         overridePendingTransition(
             R.anim.slide_in,
-            R.anim.slide_out_down
+            R.anim.none
         )
     }
 }
@@ -27,17 +27,16 @@ fun Activity.applyHistoryCloseTransition() {
     if (Build.VERSION.SDK_INT >= 34) {
         overrideActivityTransition(
             Activity.OVERRIDE_TRANSITION_CLOSE,
-            R.anim.slide_in,         // 다시 아래로 내려감
-            R.anim.slide_out_down
+            R.anim.none,
+            R.anim.slide_out // 슬라이드 다운
         )
     } else {
         overridePendingTransition(
-            R.anim.slide_in,
-            R.anim.slide_out_down
+            R.anim.none,
+            R.anim.slide_out
         )
     }
 }
-
 
 fun Activity.applyOpenTransition() {
     if (Build.VERSION.SDK_INT >= 34) {

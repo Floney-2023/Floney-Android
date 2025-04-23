@@ -147,10 +147,10 @@ class HomeViewModel @Inject constructor(
     }
 
     // 가계부 정보 가져오기
-    fun getBookInfo(code: String) {
+    fun getBookInfoData() {
         viewModelScope.launch {
             baseEvent(Event.ShowLoading)
-            getBookInfoUseCase(code).onSuccess {
+            getBookInfoUseCase(prefs.getString("bookKey","")).onSuccess {
 
                 // 프로필 보기 여부 저장
                 prefs.setBoolean("seeProfileStatus", it.seeProfileStatus)

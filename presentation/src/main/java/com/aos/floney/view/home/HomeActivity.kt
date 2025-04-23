@@ -1,12 +1,9 @@
 package com.aos.floney.view.home
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import android.view.View
 import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
@@ -42,9 +39,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import com.aos.floney.base.BaseViewModel
 import com.aos.floney.ext.applyHistoryOpenTransition
 import com.aos.floney.ext.applyOpenTransition
-import com.aos.floney.ext.setStatusBarTransparent
 import com.aos.floney.util.getCurrentDateTimeString
-import com.aos.floney.view.common.SuccessToastDialog
 import com.aos.floney.view.common.WarningPopupDialog
 import com.aos.floney.view.login.LoginActivity
 import com.google.android.gms.ads.AdSize
@@ -70,18 +65,18 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(R.layout.a
                 viewModel.baseEvent(BaseViewModel.Event.ShowSuccessToast("저장이 완료되었습니다."))
                 result.data?.removeExtra("isSave")
             }
+
+            viewModel.getBookInfoData() // 정보 업데이트
+            if (binding.clShowDetail.isVisible) // 일별 bottomSheet이 열려있는 경우 다시 일별 데이터 호출한다.
+                viewModel.getBookDays(viewModel.getFormatDateDay())
         }
     }
 
     override fun onResume() {
         super.onResume()
 
-        val prefs = SharedPreferenceUtil(this)
         lifecycleScope.launch {
             viewModel.setUserSubscribeChecking()
-            viewModel.getBookInfo(prefs.getString("bookKey", ""))
-            if (binding.clShowDetail.isVisible) // 일별 bottomSheet이 열려있는 경우 다시 일별 데이터 호출한다.
-                viewModel.getBookDays(viewModel.getFormatDateDay())
         }
     }
 
@@ -127,6 +122,7 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(R.layout.a
 
     private fun setUpUi() {
         binding.setVariable(BR.eventHolder, this)
+        viewModel.getBookInfoData() // 정보 업데이트
 
         setStatusBarColor(ContextCompat.getColor(this, R.color.background3))
 
