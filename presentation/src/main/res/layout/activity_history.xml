@@ -110,7 +110,7 @@
             android:hint="금액을 입력하세요"
             android:maxLength="18"
             android:maxLines="1"
-            android:onTextChanged="@{vm.onCostTextChanged}"
+            android:onTextChanged="@{vm::onCostTextChanged}"
             android:text="@{vm.cost}"
             android:textColor="@color/primary2"
             android:textColorHint="@color/grayscale9"

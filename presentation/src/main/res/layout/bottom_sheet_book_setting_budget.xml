@@ -75,7 +75,7 @@
                     android:textColorHint="@color/grayscale6"
                     android:fontFamily="@font/pretendard_regular"
                     android:text="@{vm.cost}"
-                    android:onTextChanged="@{vm.onCostTextChanged}"
+                    android:onTextChanged="@{vm::onCostTextChanged}"
                     android:textColor="@color/grayscale2"
                     android:textSize="14dp"
                     app:layout_constraintBottom_toBottomOf="parent"
