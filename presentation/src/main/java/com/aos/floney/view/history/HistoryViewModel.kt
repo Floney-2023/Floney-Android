@@ -51,9 +51,9 @@ class HistoryViewModel @Inject constructor(
     private val postBooksLinesChangeUseCase: PostBooksLinesChangeUseCase,
     private val deleteBookLineUseCase: DeleteBookLineUseCase,
     private val deleteBooksLinesAllUseCase: DeleteBooksLinesAllUseCase,
-    private val postBooksFavoritesUseCase : PostBooksFavoritesUseCase,
+    private val postBooksFavoritesUseCase: PostBooksFavoritesUseCase,
     private val getBookFavoriteUseCase: GetBookFavoriteUseCase,
-    private val subscribeDeleteCloudImageUseCase : SubscribeDeleteCloudImageUseCase,
+    private val subscribeDeleteCloudImageUseCase: SubscribeDeleteCloudImageUseCase,
     private val subscribePresignedUrlUseCase: SubscribePresignedUrlUseCase
 ) : BaseViewModel() {
 
@@ -207,7 +207,7 @@ class HistoryViewModel @Inject constructor(
         this.memo = memo
     }
 
-    fun getMemo() : String {
+    fun getMemo(): String {
         return memo
     }
 
@@ -215,7 +215,7 @@ class HistoryViewModel @Inject constructor(
         this.cloudUrlList = urlList.toMutableList()
     }
 
-    fun getCloudUrlList() : ArrayList<ImageUrls> {
+    fun getCloudUrlList(): ArrayList<ImageUrls> {
         return ArrayList(cloudUrlList)
     }
 
@@ -224,7 +224,7 @@ class HistoryViewModel @Inject constructor(
         Timber.i("this.localUrlList : ${this.localUrlList}")
     }
 
-    fun getLocalUrlList() : ArrayList<File> {
+    fun getLocalUrlList(): ArrayList<File> {
         return ArrayList(localUrlList)
     }
 
@@ -267,15 +267,17 @@ class HistoryViewModel @Inject constructor(
     // 즐겨찾기 내역 불러오기
     fun setIntentFavoriteData(item: DayMoneyFavoriteItem) {
         mode.value = "add"
-        cost.value = NumberFormat.getNumberInstance().format(if (checkDecimalPoint() && item.money.contains('.')) item.money.toDouble() else item.money.toInt()) + CurrencyUtil.currency
+        cost.value = NumberFormat.getNumberInstance()
+            .format(if (checkDecimalPoint() && item.money.contains('.')) item.money.toDouble() else item.money.toInt()) + CurrencyUtil.currency
         line.value = item.lineSubcategoryName
         asset.value = item.assetSubcategoryName
         content.value = item.description
         _flow.value = item.lineCategoryName
         deleteChecked.value = item.exceptStatus
     }
+
     // 즐겨찾기 추가 모드 설정
-    fun setFavoriteMode(){
+    fun setFavoriteMode() {
         mode.value = "favorite"
     }
 
@@ -363,13 +365,13 @@ class HistoryViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             postBooksLinesUseCase(
                 bookKey = prefs.getString("bookKey", ""),
-                money = cost.value!!.replace(",", "").replace(CurrencyUtil.currency,"")
+                money = cost.value!!.replace(",", "").replace(CurrencyUtil.currency, "")
                     .toDouble(),
                 flow = flow.value!!,
                 asset = asset.value!!,
                 line = line.value!!,
                 lineDate = date.value!!.replace(".", "-"),
-                description = if(content.value!! == ""){
+                description = if (content.value!! == "") {
                     line.value!!.toString()
                 } else {
                     content.value!!
@@ -391,7 +393,9 @@ class HistoryViewModel @Inject constructor(
     private fun postModifyHistory() {
         viewModelScope.launch {
             // 가계부, 유저 둘 다 혜택 적용 중이라면 적용 여부 확인 없이 수정한다.
-            if (subscriptionDataStoreUtil.getBookSubscribe().first() && subscriptionDataStoreUtil.getUserSubscribe().first())
+            if (subscriptionDataStoreUtil.getBookSubscribe()
+                    .first() && subscriptionDataStoreUtil.getUserSubscribe().first()
+            )
                 handleImageBeforeModify()
             else // 구독 중이 아닌 경우, 구독 혜택 적용 여부 확인
                 getSubscribeBenefitChecking()
@@ -434,16 +438,13 @@ class HistoryViewModel @Inject constructor(
         return cost.value != "" && asset.value != "자산을 선택하세요" && line.value != "분류를 선택하세요"
     }
 
-    // 즐겨찾기 데이터 입력 되었는지 체크
-    fun isFavoriteInputData(): Boolean {
-        return cost.value != "" && asset.value != "자산을 선택하세요" && line.value != "분류를 선택하세요"
-    }
     fun isFavoriteAllData(): Boolean {
         return cost.value != "" || asset.value != "자산을 선택하세요" || line.value != "분류를 선택하세요"
     }
+
     // 에러 메세지 생성
     private fun createErrorMsg() {
-        if(cost.value == "") {
+        if (cost.value == "") {
             baseEvent(Event.ShowToast("금액을 입력해주세요"))
         } else if (asset.value == "자산을 선택하세요") {
             baseEvent(Event.ShowToast("자산을 선택해주세요"))
@@ -453,7 +454,7 @@ class HistoryViewModel @Inject constructor(
     }
 
     private fun createFavoriteErrorMsg() {
-        if(cost.value == "") {
+        if (cost.value == "") {
             baseEvent(Event.ShowToast("금액을 입력해주세요"))
         } else if (asset.value == "자산을 선택하세요") {
             baseEvent(Event.ShowToast("자산을 선택해주세요"))
@@ -473,7 +474,7 @@ class HistoryViewModel @Inject constructor(
     }
 
     // 사진 이미지 변경된 내용 있는 지 체크한 후, 최종 수정
-    private fun isImageUrlChange() : Boolean {
+    private fun isImageUrlChange(): Boolean {
         val originalIds = modifyItem?.imageUrls?.map { it.id }?.toSet() ?: emptySet()
         val newIds = cloudUrlList.map { it.id }.toSet()
         return originalIds != newIds
@@ -514,7 +515,12 @@ class HistoryViewModel @Inject constructor(
     // 삭제 버튼 클릭
     fun onClickDeleteBtn() {
         viewModelScope.launch {
-            _onClickDelete.emit(OnClickedDelete((!getConvertSendRepeatValue().equals("NONE")), modifyId))
+            _onClickDelete.emit(
+                OnClickedDelete(
+                    (!getConvertSendRepeatValue().equals("NONE")),
+                    modifyId
+                )
+            )
         }
     }
 
@@ -588,10 +594,10 @@ class HistoryViewModel @Inject constructor(
 
     // 반복내역 서버로 보내기 위한 값으로 변경
     private fun getConvertSendRepeatValue(): String {
-        return if(_repeatClickItem.value == null) {
+        return if (_repeatClickItem.value == null) {
             "NONE"
         } else {
-            when(_repeatClickItem.value!!.name) {
+            when (_repeatClickItem.value!!.name) {
                 "없음" -> "NONE"
                 "매일" -> "EVERYDAY"
                 "매주" -> "WEEK"
@@ -606,13 +612,13 @@ class HistoryViewModel @Inject constructor(
     // 반복내역 서버로부터 받은 값을 UI 로 변경
     private fun getConvertReceiveRepeatValue(value: String): String {
         Timber.e("value $value")
-        return when(value) {
-             "NONE" -> "없음"
-             "EVERYDAY" -> "매일"
-             "WEEK" -> "매주"
-             "MONTH" -> "매달"
-             "WEEKDAY" -> "주중"
-             "WEEKEND" -> "주말"
+        return when (value) {
+            "NONE" -> "없음"
+            "EVERYDAY" -> "매일"
+            "WEEK" -> "매주"
+            "MONTH" -> "매달"
+            "WEEKDAY" -> "주중"
+            "WEEKEND" -> "주말"
             else -> ""
         }
     }
@@ -686,7 +692,7 @@ class HistoryViewModel @Inject constructor(
     }
 
     // 즐겨찾기 버튼 클릭
-    fun onClickFavorite(){
+    fun onClickFavorite() {
         viewModelScope.launch {
             _onClickFavorite.emit(true)
         }
@@ -694,10 +700,8 @@ class HistoryViewModel @Inject constructor(
 
     // 즐겨찾기 추가
     fun postAddFavorite() {
-        // 구독을 한 상태라면, 별도의 즐겨찾기 여부 확인 없이 즐겨찾기를 추가한다.
-        if(getIsSubscribe.value == true){
-            applyAddFavorite()
-        } else {
+        // 다 입력이 되었는 지 확인
+        if (isAllInputData()) {
             isFavoriteMaxData { isMax ->
                 if (isMax) {
                     applyAddFavorite()
@@ -710,13 +714,13 @@ class HistoryViewModel @Inject constructor(
         }
     }
 
-    fun applyAddFavorite(){
+    fun applyAddFavorite() {
         viewModelScope.launch(Dispatchers.IO) {
             postBooksFavoritesUseCase(
                 bookKey = prefs.getString("bookKey", ""),
-                money = cost.value!!.replace(",", "").replace(CurrencyUtil.currency,"")
+                money = cost.value!!.replace(",", "").replace(CurrencyUtil.currency, "")
                     .toDouble(),
-                description = if (content.value=="") line.value!! else content.value!!,
+                description = if (content.value == "") line.value!! else content.value!!,
                 lineCategoryName = flow.value!!,
                 lineSubcategoryName = line.value!!,
                 assetSubcategoryName = asset.value!!,
@@ -732,12 +736,21 @@ class HistoryViewModel @Inject constructor(
 
     fun isFavoriteMaxData(onResult: (Boolean) -> Unit) {
         viewModelScope.launch {
-            baseEvent(Event.ShowLoading)
 
+            // 구독을 한 상태라면, 별도의 즐겨찾기 여부 확인 없이 즐겨찾기를 추가한다.
+            if (getIsSubscribe.value == true) {
+                onResult(true)
+                return@launch
+            }
+
+            baseEvent(Event.ShowLoading)
             val categories = listOf("수입", "이체", "지출")
 
             for (category in categories) {
-                val result = getBookFavoriteUseCase(prefs.getString("bookKey", ""), category.toCategoryCode())
+                val result = getBookFavoriteUseCase(
+                    prefs.getString("bookKey", ""),
+                    category.toCategoryCode()
+                )
                 if (result.isFailure) {
                     baseEvent(Event.HideLoading)
                     baseEvent(Event.ShowToast(result.exceptionOrNull()?.message.parseErrorMsg(this@HistoryViewModel)))
@@ -765,7 +778,7 @@ class HistoryViewModel @Inject constructor(
             // 구독 만료 여부 업데이트 -> true면 만료 팝업 표시
             subscribeExpired.postValue(expiredCheck)
 
-            if(!expiredCheck){ // 만료되지 않음
+            if (!expiredCheck) { // 만료되지 않음
                 handleImageBeforeModify()
             }
         }
@@ -794,14 +807,16 @@ class HistoryViewModel @Inject constructor(
 
                 Timber.i("this.localUrlList isNotEmpty : $localUrlList}")
                 // 추가할 로컬 이미지가 있는 경우
-                if (localUrlList.isNotEmpty()) {Timber.d("this.localUrlList isNotEmpty?? : $localUrlList}")
+                if (localUrlList.isNotEmpty()) {
+                    Timber.d("this.localUrlList isNotEmpty?? : $localUrlList}")
                     for (file in localUrlList) {
                         // presigned URL 가져오기
                         val urlResult = subscribePresignedUrlUseCase(prefs.getString("bookKey", ""))
                         urlResult.onSuccess { presignedData ->
                             val url = presignedData.url
                             // 파일 업로드 시도
-                            val uploadSuccess = uploadFileToPresignedUrl(url, file, presignedData.viewUrl)
+                            val uploadSuccess =
+                                uploadFileToPresignedUrl(url, file, presignedData.viewUrl)
                             if (!uploadSuccess) {
                                 allOperationsSuccessful = false
                             }
@@ -860,16 +875,16 @@ class HistoryViewModel @Inject constructor(
         }
     }
 
-    fun handleImageBeforeModify(){
+    fun handleImageBeforeModify() {
         // 클라우드 삭제, 로컬 추가 이미지 없을 경우 바로 수정
-        if(deletedCloudImageList.isEmpty() && localUrlList.isEmpty())
+        if (deletedCloudImageList.isEmpty() && localUrlList.isEmpty())
             goModifyHistory()
 
         // 클라우드 삭제 여부, 로컬 추가 이미지 있을 경우 따로 처리 후 수정한다.
         setCloudAddAndDelete()
     }
-    
-    fun goModifyHistory(){
+
+    fun goModifyHistory() {
         viewModelScope.launch(Dispatchers.IO) {
             val tempMoney = cost.value!!.replace(",", "")
             postBooksLinesChangeUseCase(
