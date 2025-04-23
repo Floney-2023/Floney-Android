@@ -17,6 +17,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.inputmethod.InputMethodManager
+import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.annotation.LayoutRes
@@ -29,6 +30,7 @@ import androidx.lifecycle.ViewModelLazy
 import com.aos.floney.BR
 import com.aos.floney.R
 import com.aos.floney.ext.repeatOnStarted
+import com.aos.floney.ext.setupTouchEffect
 import com.aos.floney.view.common.ErrorToastDialog
 import com.aos.floney.view.common.SuccessToastDialog
 import com.aos.floney.view.login.LoginActivity
@@ -225,7 +227,9 @@ fun AppCompatActivity.setupUI(view: View) {
     if (view is ViewGroup) {
         for (i in 0 until view.childCount) {
             val innerView = view.getChildAt(i)
-            innerView.setupTouchEffect()
+            if (innerView is Button) {
+                innerView.setupTouchEffect()
+            }
         }
     }
 }

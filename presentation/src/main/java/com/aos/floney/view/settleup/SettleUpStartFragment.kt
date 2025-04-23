@@ -1,8 +1,6 @@
 package com.aos.floney.view.settleup
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
@@ -11,16 +9,9 @@ import androidx.navigation.fragment.findNavController
 import com.aos.data.util.SharedPreferenceUtil
 import com.aos.floney.R
 import com.aos.floney.base.BaseFragment
-import com.aos.floney.base.setupTouchEffect
 import com.aos.floney.databinding.FragmentSettleUpStartBinding
-import com.aos.floney.databinding.FragmentSignUpAgreeBinding
 import com.aos.floney.ext.repeatOnStarted
-import com.aos.floney.view.home.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint

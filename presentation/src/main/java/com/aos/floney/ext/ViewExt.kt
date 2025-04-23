@@ -1,8 +1,11 @@
 package com.aos.floney.ext
 
+import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import android.graphics.Typeface
 import android.os.Build
 import android.util.TypedValue
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
@@ -31,4 +34,26 @@ fun View.setViewMarginTop(value: Int) {
     val layoutParams = this.layoutParams as ViewGroup.MarginLayoutParams
     layoutParams.topMargin = (marginTopValue * context.resources.displayMetrics.density).toInt()
     this.layoutParams = layoutParams
+}
+
+@SuppressLint("ClickableViewAccessibility")
+fun View.setViewTouchEffect() {
+    this.setOnTouchListener { v, event ->
+        when (event.action) {
+            MotionEvent.ACTION_DOWN -> {
+                v.animateAlpha(from = v.alpha, to = 0.6f)
+            }
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                v.animateAlpha(from = v.alpha, to = 1.0f)
+            }
+        }
+        false
+    }
+}
+
+private fun View.animateAlpha(from: Float, to: Float) {
+    ObjectAnimator.ofFloat(this, View.ALPHA, from, to).apply {
+        duration = 150
+        start()
+    }
 }

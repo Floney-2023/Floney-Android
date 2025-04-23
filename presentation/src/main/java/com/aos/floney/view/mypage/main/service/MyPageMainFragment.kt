@@ -1,9 +1,7 @@
 package com.aos.floney.view.mypage.main.service
 
-import android.app.Activity
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -12,37 +10,17 @@ import androidx.databinding.library.baseAdapters.BR
 import androidx.navigation.fragment.findNavController
 import com.aos.floney.BuildConfig
 import com.aos.floney.R
-import com.aos.floney.base.BaseActivity
 import com.aos.floney.base.BaseFragment
-import com.aos.floney.base.BaseViewModel
-import com.aos.floney.base.setupTouchEffect
-import com.aos.floney.base.setupUI
-import com.aos.floney.databinding.ActivityMyPageBinding
 import com.aos.floney.databinding.FragmentMyPageMainBinding
 import com.aos.floney.ext.repeatOnStarted
-import com.aos.floney.view.analyze.AnalyzeActivity
+import com.aos.floney.ext.setViewTouchEffect
 import com.aos.floney.view.common.BaseAlertDialog
 import com.aos.floney.view.common.ErrorToastDialog
-import com.aos.floney.view.common.SuccessToastDialog
 import com.aos.floney.view.common.WarningPopupDialog
-import com.aos.floney.view.home.HomeActivity
-import com.aos.floney.view.home.HomeMonthTypeFragment
 import com.aos.floney.view.mypage.MyPageActivity
-import com.aos.floney.view.mypage.alarm.MyPageAlarmActivity
-import com.aos.floney.view.mypage.bookadd.MypageBookAddSelectBottomSheetFragment
-import com.aos.floney.view.mypage.bookadd.codeinput.MyPageBookCodeInputActivity
-import com.aos.floney.view.mypage.bookadd.create.MyPageBookCreateActivity
-import com.aos.floney.view.mypage.inform.MyPageInformActivity
-import com.aos.floney.view.mypage.main.service.MyPageServicePrivacyFragment
-import com.aos.floney.view.mypage.main.service.MyPageServiceTermsFragment
-import com.aos.floney.view.mypage.main.service.MyPageServiceTermsViewModel
-import com.aos.floney.view.mypage.setting.MyPageSettingActivity
-import com.aos.floney.view.settleup.SettleUpActivity
-import com.aos.floney.view.signup.SignUpActivity
 import com.aos.model.user.MyBooks
 import com.aos.model.user.UiMypageSearchModel
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.FullScreenContentCallback
@@ -79,7 +57,7 @@ class MyPageMainFragment : BaseFragment<FragmentMyPageMainBinding, MyPageMainVie
         setUpViewModelObserver()
     }
     private fun setUpUi() {
-        binding.liUserInformView.setupTouchEffect()
+        binding.liUserInformView.setViewTouchEffect()
         binding.setVariable(BR.eventHolder, this@MyPageMainFragment)
     }
 

@@ -4,6 +4,7 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
@@ -23,7 +24,9 @@ import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import android.view.inputmethod.InputMethodManager
+import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatDialog
@@ -36,6 +39,7 @@ import androidx.lifecycle.ViewModelLazy
 import com.aos.floney.BR
 import com.aos.floney.R
 import com.aos.floney.ext.repeatOnStarted
+import com.aos.floney.ext.setupTouchEffect
 import com.aos.floney.view.common.ErrorToastDialog
 import com.aos.floney.view.common.SuccessToastDialog
 import com.aos.floney.view.login.LoginActivity
@@ -255,24 +259,9 @@ fun Fragment.setupUI(view: View) {
     if (view is ViewGroup) {
         for (i in 0 until view.childCount) {
             val innerView = view.getChildAt(i)
-            innerView.setupTouchEffect()
-        }
-    }
-
-}
-
-fun View.setupTouchEffect() {
-    if (this.isClickable || this.isLongClickable){
-        this.setOnTouchListener { v, event ->
-            when (event.action) {
-                MotionEvent.ACTION_DOWN -> {
-                    v.alpha = 0.7f
-                }
-                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                    v.alpha = 1.0f
-                }
+            if (innerView is Button) {
+                innerView.setupTouchEffect()
             }
-            false
         }
     }
 }
