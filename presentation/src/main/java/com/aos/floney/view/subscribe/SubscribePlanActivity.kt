@@ -51,6 +51,11 @@ class SubscribePlanActivity : BaseActivity<ActivitySubscribePlanBinding, Subscri
         viewModel.initBillingManager(this@SubscribePlanActivity)
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        viewModel.cleanupBillingManager()
+    }
+
     private fun setUpUi() {
         binding.setVariable(BR.eventHolder, this)
     }
@@ -112,8 +117,15 @@ class SubscribePlanActivity : BaseActivity<ActivitySubscribePlanBinding, Subscri
             viewModel.subscribeSuccess.collect {
                 if(it) {
                     showsubscribeComplete()
-                } else
-                    viewModel.baseEvent(BaseViewModel.Event.ShowToast("결제가 실패되었습니다. 플로니팀으로 연락 부탁드립니다."))
+                } else {
+                    // Show error message
+                    val errorToastDialog =
+                        ErrorToastDialog(applicationContext, "결제가 실패되었습니다. 나중에 다시 시도해주세요.")
+                    errorToastDialog.show()
+                    Handler(Looper.myLooper()!!).postDelayed({
+                        errorToastDialog.dismiss()
+                    }, 2000)
+                }
             }
         }
     }

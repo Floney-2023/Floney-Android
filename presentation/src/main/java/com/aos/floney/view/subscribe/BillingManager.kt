@@ -39,8 +39,9 @@ class BillingManager(
         billingClient = BillingClient.newBuilder(activity)
             .enablePendingPurchases(
                 PendingPurchasesParams.newBuilder().enableOneTimeProducts()
-                .enablePrepaidPlans()
-                .build())
+                    .enablePrepaidPlans()
+                    .build()
+            )
             .setListener { billingResult, purchases ->
                 if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && purchases != null) {
                     for (purchase in purchases) {
@@ -57,7 +58,7 @@ class BillingManager(
     // 구매 정보 처리
     private fun handlePurchase(purchase: Purchase) {
         // 구매 토큰을 서버로 보내기 전에 구매 상태를 확인해야 함
-        if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED  && !purchase.isAcknowledged) {
+        if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED && !purchase.isAcknowledged) {
             // 구매가 완료된 상태에서만 처리
             val purchaseToken = purchase.purchaseToken
             Timber.i("Purchase successful, token: $purchaseToken")
@@ -84,11 +85,35 @@ class BillingManager(
         }
     }
 
+    private var connectionRetryCount = 0
+    private val MAX_RETRY_ATTEMPTS = 3
+
+    private fun retryBillingConnection() {
+        if (connectionRetryCount < MAX_RETRY_ATTEMPTS) {
+            connectionRetryCount++
+            Timber.d("Retrying billing connection, attempt: $connectionRetryCount")
+            startConnection()
+        } else {
+            Timber.e("Failed to connect to billing service after $MAX_RETRY_ATTEMPTS attempts")
+            // Notify the user
+            billingCallback.onPurchaseSuccess(false)
+        }
+    }
+
     fun startConnection() {
+        // If already connected, proceed with subscription query
+        if (billingClient.isReady) {
+            Timber.d("Billing client is already connected")
+            querySubscriptionDetails()
+            return
+        }
+
         billingClient.startConnection(object : BillingClientStateListener {
             override fun onBillingServiceDisconnected() {
                 // Google Play 서비스 연결이 끊어진 경우 처리
-                Timber.e("checking 1 : onBillingServiceDisconnected")
+                Timber.e("Billing service disconnected. Attempting to reconnect...")
+                // Try to reconnect
+                retryBillingConnection()
             }
 
             override fun onBillingSetupFinished(billingResult: BillingResult) {
@@ -128,16 +153,35 @@ class BillingManager(
     }
 
     fun launchPurchaseFlow(productDetails: ProductDetails) {
-        val billingFlowParams = BillingFlowParams.newBuilder()
-            .setProductDetailsParamsList(
-                listOf(
-                    BillingFlowParams.ProductDetailsParams.newBuilder()
-                        .setProductDetails(productDetails)
-                        .setOfferToken(productDetails.subscriptionOfferDetails?.get(0)?.offerToken!!)
-                        .build()
-                )
-            ).build()
+        if (!billingClient.isReady) {
+            Timber.e("Billing client is not ready")
+            billingCallback.onPurchaseSuccess(false)
+            return
+        }
 
-        billingClient.launchBillingFlow(activity, billingFlowParams) // Activity로 구매 플로우 실행
+        try {
+            val billingFlowParams = BillingFlowParams.newBuilder()
+                .setProductDetailsParamsList(
+                    listOf(
+                        BillingFlowParams.ProductDetailsParams.newBuilder()
+                            .setProductDetails(productDetails)
+                            .setOfferToken(productDetails.subscriptionOfferDetails?.get(0)?.offerToken!!)
+                            .build()
+                    )
+                ).build()
+
+            val billingResult = billingClient.launchBillingFlow(activity, billingFlowParams)
+            if (billingResult.responseCode != BillingClient.BillingResponseCode.OK) {
+                Timber.e("Failed to launch billing flow: ${billingResult.debugMessage}")
+                billingCallback.onPurchaseSuccess(false)
+            }
+        } catch (e: Exception) {
+            Timber.e("Exception launching billing flow: ${e.message}")
+            billingCallback.onPurchaseSuccess(false)
+        }
+    }
+
+    fun endConnection() {
+        billingClient.endConnection()
     }
 }

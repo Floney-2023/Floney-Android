@@ -60,6 +60,7 @@ class SubscribePlanViewModel @Inject constructor(
 
     private lateinit var billingManager: BillingManager
     private var pendingPurchase: Purchase? = null
+    private var isProcessingPurchase = false
 
     fun initBillingManager(activity: Activity) {
         if (!::billingManager.isInitialized) {
@@ -69,8 +70,28 @@ class SubscribePlanViewModel @Inject constructor(
         }
     }
 
+    fun cleanupBillingManager() {
+        if (::billingManager.isInitialized) {
+            billingManager.endConnection()
+        }
+    }
+
     fun startSubscribeConnection(){
-        billingManager.startConnection()
+        if (isProcessingPurchase) {
+            Timber.d("Purchase already in progress, ignoring request")
+            return
+        }
+
+        isProcessingPurchase = true
+        viewModelScope.launch {
+            try {
+                billingManager.startConnection()
+            } catch (e: Exception) {
+                Timber.e("Error starting billing connection: ${e.message}")
+                isProcessingPurchase = false
+                baseEvent(Event.ShowToast("결제 연결에 실패했습니다. 다시 시도해주세요."))
+            }
+        }
     }
 
     override fun onPurchaseTokenReceived(token: String, purchase: Purchase) {
@@ -79,10 +100,18 @@ class SubscribePlanViewModel @Inject constructor(
     }
 
     override fun onPurchaseSuccess(checking: Boolean) {
+        isProcessingPurchase = false
         viewModelScope.launch {
-            subscriptionDataStoreUtil.setUserSubscribe(true)
+            if (checking) {
+                subscriptionDataStoreUtil.setUserSubscribe(true)
+            }
             _subscribeSuccess.emit(checking)
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        cleanupBillingManager()
     }
 
     private fun sendTokenToServer(purchaseToken: String) {
@@ -90,6 +119,7 @@ class SubscribePlanViewModel @Inject constructor(
             subscribeAndroidUseCase(purchaseToken).onSuccess {
                 pendingPurchase?.let { billingManager.acknowledgePurchase(it) } // acknowledgePurchase 호출
             }.onFailure {
+                isProcessingPurchase = false
                 baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@SubscribePlanViewModel)))
             }
         }
