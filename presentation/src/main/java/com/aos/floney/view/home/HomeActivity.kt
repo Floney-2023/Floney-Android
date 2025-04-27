@@ -122,7 +122,6 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(R.layout.a
 
     private fun setUpUi() {
         binding.setVariable(BR.eventHolder, this)
-        viewModel.getBookInfoData() // 정보 업데이트
 
         setStatusBarColor(ContextCompat.getColor(this, R.color.background3))
 

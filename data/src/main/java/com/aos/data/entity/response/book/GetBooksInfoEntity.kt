@@ -15,7 +15,7 @@ data class GetBooksInfoEntity(
 @Serializable
 data class BookUser(
     val name: String,
-    val profileImg: String,
+    val profileImg: String ?= "user_default",
     val email: String,
     val me: Boolean,
     val role: String

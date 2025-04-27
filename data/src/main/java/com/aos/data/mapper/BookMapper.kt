@@ -276,12 +276,12 @@ fun GetBookDaysEntity.toUiBookMonthModel(): UiBookDayModel {
 fun GetBookInfoEntity.toUiBookInfoModel(): UiBookInfoModel {
     val ourBookUsers = this.ourBookUsers.map {
         OurBookUsers(
-            name = it.name, profileImg = it.profileImg, role = it.role, me = it.me
+            name = it.name, profileImg = it.profileImg ?: "user_default" , role = it.role, me = it.me
         )
     }
     return UiBookInfoModel(
         bookName = this.bookName,
-        bookImg = this.bookImg?:"book_default",
+        bookImg = this.bookImg ?: "book_default",
         startDay = this.startDay,
         seeProfileStatus = this.seeProfileStatus,
         carryOver = this.carryOver,
@@ -420,7 +420,7 @@ fun GetBooksInfoEntity.toUiBookSettingModel(): UiBookSettingModel {
     val myBookUsers = this.ourBookUsers.map {
         val roleString = if (it.me) "${it.role}·나" else it.role
         MyBookUsers(
-            name = it.name, profileImg = it.profileImg, email = it.email, role = roleString, me = it.me
+            name = it.name, profileImg = it.profileImg ?: "user_default", email = it.email, role = roleString, me = it.me
         )
     }
     return UiBookSettingModel(
