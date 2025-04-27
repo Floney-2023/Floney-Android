@@ -27,17 +27,11 @@ class SubscribeInformActivity : BaseActivity<ActivitySubscribeInformBinding, Sub
 
         setUpUi()
         setUpViewModelObserver()
-        viewModel.initBillingManager(this@SubscribeInformActivity)
     }
 
     override fun onResume() {
         super.onResume()
         viewModel.getSubscribeData()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        viewModel.cleanupBillingManager()
     }
 
     private fun setUpUi() {
@@ -94,9 +88,5 @@ class SubscribeInformActivity : BaseActivity<ActivitySubscribeInformBinding, Sub
                 }
             }
         }
-    }
-
-    fun onSubscribeRetry() {
-        viewModel.startSubscribeConnection()
     }
 }

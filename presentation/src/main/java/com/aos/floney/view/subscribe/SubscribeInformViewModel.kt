@@ -21,10 +21,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SubscribeInformViewModel @Inject constructor(
-    private val prefs: SharedPreferenceUtil,
-    private val subscribeAndroidUseCase: SubscribeAndroidUseCase,
     private val subscribeAndroidInfoUseCase: SubscribeAndroidInfoUseCase
-): BaseViewModel(), BillingManager.BillingCallback {
+): BaseViewModel() {
 
     // 구독 정보
     private var _subscribeInfo = MutableLiveData<UiSubscribeAndroidInfoModel>()
@@ -42,73 +40,12 @@ class SubscribeInformViewModel @Inject constructor(
     private var _back = MutableEventFlow<Boolean>()
     val back: EventFlow<Boolean> get() = _back
 
-    private lateinit var billingManager: BillingManager
-    private var pendingPurchase: Purchase? = null
-    private var isProcessingPurchase = false
-
-    fun initBillingManager(activity: Activity) {
-        if (!::billingManager.isInitialized) {
-            billingManager = BillingManager(activity, this)
-        } else {
-            Timber.d("BillingManager already initialized")
-        }
-    }
-
-    fun cleanupBillingManager() {
-        if (::billingManager.isInitialized) {
-            billingManager.endConnection()
-        }
-    }
-
-    fun startSubscribeConnection() {
-        if (isProcessingPurchase) {
-            Timber.d("Purchase already in progress, ignoring request")
-            return
-        }
-
-        isProcessingPurchase = true
-        viewModelScope.launch {
-            try {
-                billingManager.startConnection()
-            } catch (e: Exception) {
-                Timber.e("Error starting billing connection: ${e.message}")
-                isProcessingPurchase = false
-                baseEvent(Event.ShowToast("결제 연결에 실패했습니다. 다시 시도해주세요."))
-            }
-        }
-    }
-
     fun getSubscribeData(){
         viewModelScope.launch(Dispatchers.IO) {
             subscribeAndroidInfoUseCase().onSuccess {
                 Timber.i("subscribeInfo : ${it}")
                 _subscribeInfo.postValue(it)
             }.onFailure {
-                baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@SubscribeInformViewModel)))
-            }
-        }
-    }
-
-    override fun onPurchaseTokenReceived(token: String, purchase: Purchase) {
-        pendingPurchase = purchase
-        sendTokenToServer(token)
-    }
-
-    override fun onPurchaseSuccess(checking: Boolean) {
-        isProcessingPurchase = false
-        if (checking){
-            baseEvent(Event.ShowSuccessToast("결제가 완료되었습니다."))
-        }else{
-            baseEvent(Event.ShowToast("결제가 실패되었습니다."))
-        }
-    }
-
-    private fun sendTokenToServer(purchaseToken: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            subscribeAndroidUseCase(purchaseToken).onSuccess {
-                pendingPurchase?.let { billingManager.acknowledgePurchase(it) }
-            }.onFailure {
-                isProcessingPurchase = false
                 baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@SubscribeInformViewModel)))
             }
         }
@@ -130,11 +67,8 @@ class SubscribeInformViewModel @Inject constructor(
 
     // 다시 구독하기
     fun onClickSubscribeRetry(){
-        startSubscribeConnection()
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        cleanupBillingManager()
+        viewModelScope.launch {
+            _resubscribe.emit(true)
+        }
     }
 }

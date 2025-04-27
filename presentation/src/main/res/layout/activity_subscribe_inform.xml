@@ -134,7 +134,7 @@
             android:paddingVertical="16dp"
             android:background="@drawable/custom_radius_12_solid_primary1"
             android:fontFamily="@font/pretendard_bold"
-            android:onClick="@{() -> eventHolder.onSubscribeRetry()}"
+            android:onClick="@{() -> vm.onClickSubscribeRetry()}"
             android:text="@string/subscribe_inform_item_retry"
             android:textColor="@color/white"
             android:textSize="14dp"

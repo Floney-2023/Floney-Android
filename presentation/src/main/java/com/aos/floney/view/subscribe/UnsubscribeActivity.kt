@@ -97,10 +97,8 @@ class UnsubscribeActivity : BaseActivity<ActivityUnsubscribeBinding, Unsubscribe
 
         repeatOnStarted {
             viewModel.subscribePage.collect {
-                if(!it) { // 구독 해지 완료(구독 false인 상태)면, 팝업
+                if(!it) { // 구독 해지 완료(구독 정기결제 여부가 false인 상태)면, 팝업
                     showUnsubscribeComplete()
-                } else{ // 해지 안했을 경우
-
                 }
             }
         }

@@ -15,16 +15,18 @@ import com.aos.usecase.bookadd.BooksEntranceUseCase
 import com.aos.usecase.bookadd.BooksJoinUseCase
 import com.aos.usecase.home.GetBookInfoUseCase
 import com.aos.usecase.mypage.MypageSearchUseCase
+import com.aos.usecase.subscribe.SubscribeAndroidInfoUseCase
 import com.aos.usecase.subscribe.SubscribeCheckUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
 class UnsubscribeViewModel @Inject constructor(
-    private val prefs: SharedPreferenceUtil,
+    private val subscribeAndroidInfoUseCase: SubscribeAndroidInfoUseCase,
     private val subscribeCheckUseCase: SubscribeCheckUseCase
 ): BaseViewModel() {
 
@@ -48,8 +50,9 @@ class UnsubscribeViewModel @Inject constructor(
     // 구독 여부 가져오기
     fun getSubscribeStatus() {
         viewModelScope.launch(Dispatchers.IO) {
-            subscribeCheckUseCase().onSuccess {
-                _subscribePage.emit(it.isValid)
+            subscribeAndroidInfoUseCase().onSuccess {
+                Timber.i("subscribeInfo : ${it}")
+                _subscribePage.emit(it.autoRenewing)
             }.onFailure {
                 baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
             }
