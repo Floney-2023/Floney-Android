@@ -53,7 +53,7 @@ fun PostAnalyzeCategoryOutComeEntity.toUiAnalyzeModel(): UiAnalyzeCategoryOutCom
     return UiAnalyzeCategoryOutComeModel(total = "총 ${
         NumberFormat.getNumberInstance().format(this.total)
     }${CurrencyUtil.currency}을\n소비했어요",
-        differance = if (differance < 0 && total == 0.0) {
+        differance = if (differance < 0) {
             "저번달 대비 ${
                 NumberFormat.getNumberInstance().format(this.differance * -1.0)
             }${CurrencyUtil.currency}을\n덜 사용했어요"
