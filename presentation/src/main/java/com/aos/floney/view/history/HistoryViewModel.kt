@@ -4,12 +4,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import androidx.test.internal.util.LogUtil
 import com.aos.data.util.CurrencyUtil
 import com.aos.data.util.SharedPreferenceUtil
 import com.aos.data.util.SubscriptionDataStoreUtil
 import com.aos.data.util.checkDecimalPoint
 import com.aos.floney.base.BaseViewModel
+import com.aos.floney.ext.formatMoneyWithCurrency
 import com.aos.floney.ext.formatNumber
 import com.aos.floney.ext.parseErrorMsg
 import com.aos.floney.ext.toCategoryCode
@@ -237,7 +237,7 @@ class HistoryViewModel @Inject constructor(
     fun setIntentModifyData(item: DayMoneyModifyItem) {
         mode.value = "modify"
         modifyId = item.id
-        cost.value = item.money.substring(2, item.money.length).trim() + CurrencyUtil.currency
+        cost.value = item.money.formatMoneyWithCurrency()
         date.value = item.lineDate
         _flow.value = item.lineCategory.toCategoryName()
         asset.value = item.assetSubCategory

@@ -1,6 +1,7 @@
 package com.aos.floney.ext
 
 import android.provider.Settings.Global.getString
+import com.aos.data.util.CurrencyUtil
 import com.aos.floney.BuildConfig.appsflyer_settlement_url
 import com.aos.floney.R
 import com.aos.floney.base.BaseViewModel
@@ -67,4 +68,17 @@ fun String.toCategoryName(): String = when (this) {
     "OUTCOME" -> "지출"
     "TRANSFER" -> "이체"
     else -> ""
+}
+
+fun String?.formatMoneyWithCurrency(): String {
+    if (this.isNullOrBlank()) return "0" + CurrencyUtil.currency
+
+    return when {
+        this.startsWith("+") || this.startsWith("-") -> {
+            this.substring(1).trim() + CurrencyUtil.currency
+        }
+        else -> {
+            this.trim() + CurrencyUtil.currency
+        }
+    }
 }
