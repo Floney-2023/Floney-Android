@@ -396,7 +396,7 @@ fun GetSettleUpLastEntity.toGetsettleUpLastModel(): GetSettlementLastModel {
 fun List<GetBooksUsersEntity>.toUiMemberSelectModel(): UiMemberSelectModel {
     val myBookUsers = this.map {
         BookUsers(
-            email = it.email, nickname = it.nickname, profileImg = it.profileImg, isCheck = false
+            email = it.email, nickname = it.nickname, profileImg = it.profileImg ?: "user_default", isCheck = false
         )
     }
     return UiMemberSelectModel(
