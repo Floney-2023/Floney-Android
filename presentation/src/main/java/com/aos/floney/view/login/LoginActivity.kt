@@ -100,11 +100,6 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginViewModel>(R.layou
             // 세션이 만료되어 로그인 화면으로 이동한 경우
             val hasKakaoAccount = intent.getBooleanExtra("has_kakao_account", false)
             val hasGoogleAccount = intent.getBooleanExtra("has_google_account", false)
-            val hasNaverAccount = intent.getBooleanExtra("has_naver_account", false)
-            val hasAppleAccount = intent.getBooleanExtra("has_apple_account", false)
-
-            // 자동 로그인 메시지 표시
-            binding.tvSimpleLogin.text = "간편하게 자동 로그인하기"
 
             // 사용자가 이전에 소셜 로그인으로 가입했다면 자동 로그인 시도
             when {

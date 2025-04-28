@@ -58,7 +58,6 @@ class SessionManager @Inject constructor(
 
         // UI 스레드에서 실행
         activity.runOnUiThread {
-            Toast.makeText(activity, "로그인이 만료되었습니다. 다시 로그인해주세요.", Toast.LENGTH_LONG).show()
 
             // 모든 액티비티 스택을 비우고 로그인 화면으로 이동
             val intent = Intent(activity, LoginActivity::class.java).apply {
