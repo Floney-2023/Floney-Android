@@ -26,9 +26,11 @@ import com.aos.floney.view.onboard.OnBoardActivity
 import com.aos.data.util.CurrencyUtil
 import com.aos.floney.BuildConfig
 import com.aos.floney.ext.setStatusBarTransparent
+import com.aos.floney.util.NetworkUtils
 import com.aos.floney.util.RemoteConfigWrapper
 import com.aos.floney.view.book.entrance.BookEntranceActivity
 import com.aos.floney.view.common.BaseAlertDialog
+import com.aos.floney.view.common.WarningPopupDialog
 import com.aos.floney.view.home.HomeActivity
 import com.aos.floney.view.settleup.SettleUpActivity
 import com.aos.floney.view.signup.SignUpCompleteActivity
@@ -155,6 +157,20 @@ class SplashActivity :
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun checkServerStatusAndUpdate() {
+        if (!NetworkUtils.isNetworkConnected(this)) {
+
+            val exitDialogFragment = WarningPopupDialog(
+                title = "네트워크 연결 오류",
+                info = "인터넷 연결을 확인한 후 다시 시도해주세요.\n앱을 종료합니다.",
+                leftButton = "",
+                rightButton = getString(R.string.already_pick_button),
+                check = true
+            ) { finishAffinity() }
+
+            exitDialogFragment.show(supportFragmentManager, "initDialog")
+            return
+        }
+
         // RemoteConfigWrapper에서 점검 시작 및 종료 시간 가져오기
         val (maintenanceStart, maintenanceEnd) = remoteConfigWrapper.fetchMaintenanceTimes()
         val currentDateTime = LocalDateTime.now()
