@@ -73,6 +73,11 @@ class LoginViewModel @Inject constructor(
                         baseEvent(Event.HideLoading)
                         prefs.setString("accessToken", it.accessToken)
                         prefs.setString("refreshToken", it.refreshToken)
+                        prefs.setString("loginMethod", "normal")
+                        prefs.setBoolean("has_kakao_account", false)
+                        prefs.setBoolean("has_google_account", false)
+                        prefs.setBoolean("has_naver_account", false)
+                        prefs.setBoolean("has_apple_account", false)
 
                         checkUserBooks()
                     }.onFailure {
@@ -139,6 +144,15 @@ class LoginViewModel @Inject constructor(
             socialLoginUseCase(provider, token).onSuccess {
                 prefs.setString("accessToken", it.accessToken)
                 prefs.setString("refreshToken", it.refreshToken)
+                prefs.setString("loginMethod", provider)
+
+                // 소셜 로그인 타입 저장 (나중에 자동 로그인에 사용)
+                when (provider.lowercase()) {
+                    "kakao" -> prefs.setBoolean("has_kakao_account", true)
+                    "google" -> prefs.setBoolean("has_google_account", true)
+                    "naver" -> prefs.setBoolean("has_naver_account", true)
+                    "apple" -> prefs.setBoolean("has_apple_account", true)
+                }
 
                 checkUserBooks()
             }.onFailure {
