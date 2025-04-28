@@ -25,6 +25,7 @@ import com.aos.floney.base.BaseFragment
 import com.aos.floney.base.BaseViewModel
 import com.aos.floney.databinding.FragmentMyPageInformProfilechangeBinding
 import com.aos.floney.ext.repeatOnStarted
+import com.aos.floney.util.PermissionUtil
 import com.aos.floney.view.common.BaseAlertDialog
 import com.aos.floney.view.common.ChoiceImageDialog
 import com.aos.floney.view.mypage.inform.MyPageInformActivity
@@ -168,79 +169,56 @@ class MyPageInformProfileChangeFragment :
     }
 
     private fun onClickChoiceImage() {
-        if (checkGalleryPermission()) {
-            ChoiceImageDialog(requireContext(), {
-                // 사진 촬영하기
-                viewModel.setTakeCaptureUri(viewModel.createTempImageFile())
-                takePhoto.launch(viewModel.getTakeCaptureUri())
-            }, {
-                // 앨범에서 사진 선택
-                selectGallery()
-            }, {
-                // 랜덤 이미지
-                val bitmap = BitmapFactory.decodeResource(
-                    requireContext().resources,
-                    viewModel.getRandomProfileDrawable()
-                )
+        PermissionUtil.checkAndRequestGalleryPermission(
+            activity = requireActivity(),
+            fragmentManager = parentFragmentManager,
+            onGranted = {
+                ChoiceImageDialog(requireContext(), {
+                    // 사진 촬영하기
+                    viewModel.setTakeCaptureUri(viewModel.createTempImageFile())
+                    takePhoto.launch(viewModel.getTakeCaptureUri())
+                }, {
+                    // 앨범에서 사진 선택
+                    selectGallery()
+                }, {
+                    // 랜덤 이미지
+                    val bitmap = BitmapFactory.decodeResource(
+                        requireContext().resources,
+                        viewModel.getRandomProfileDrawable()
+                    )
 
-                viewModel.setImageBitmap(bitmap)
+                    viewModel.setImageBitmap(bitmap)
 
-                Glide.with(requireContext())
-                    .load(bitmap)
-                    .fitCenter()
-                    .centerCrop()
-                    .into(binding.profileImg)
-            }).show()
-        } else {
-            viewModel.baseEvent(BaseViewModel.Event.ShowToast("이미지 접근 권한이 허용되지 않았습니다. "))
-        }
+                    Glide.with(requireContext())
+                        .load(bitmap)
+                        .fitCenter()
+                        .centerCrop()
+                        .into(binding.profileImg)
+                }).show()
+            }
+        )
     }
 
     private fun selectGallery() {
-        if (checkGalleryPermission()) {
-            // 권한이 있는 경우 갤러리 실행
-            val intent = Intent(Intent.ACTION_PICK)
-            // intent와 data와 type을 동시에 설정하는 메서드
-            intent.setDataAndType(
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*"
-            )
+        val intent = Intent(Intent.ACTION_PICK)
+        intent.setDataAndType(
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*"
+        )
 
-            imageResult.launch(intent)
-        }
+        imageResult.launch(intent)
     }
 
-    private fun checkGalleryPermission(): Boolean {
-        val readPermission = ContextCompat.checkSelfPermission(
-            requireContext(), android.Manifest.permission.READ_EXTERNAL_STORAGE
-        )
-        val imagePermission = ContextCompat.checkSelfPermission(
-            requireContext(), android.Manifest.permission.READ_MEDIA_IMAGES
-        )
-
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            Timber.e("true")
-            if (imagePermission == PackageManager.PERMISSION_DENIED) {
-                ActivityCompat.requestPermissions(
-                    requireActivity(), arrayOf(
-                        android.Manifest.permission.READ_MEDIA_IMAGES
-                    ), 1
-                )
-
-                false
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == PermissionUtil.REQUEST_GALLERY_PERMISSION) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                onClickChoiceImage()
             } else {
-                true
-            }
-        } else {
-            Timber.e("else")
-            if (readPermission == PackageManager.PERMISSION_DENIED) {
-                ActivityCompat.requestPermissions(
-                    requireActivity(), arrayOf(
-                        android.Manifest.permission.READ_EXTERNAL_STORAGE
-                    ), 1
-                )
-                false
-            } else {
-                true
+                viewModel.baseEvent(BaseViewModel.Event.ShowToast("이미지 접근 권한이 허용되지 않았습니다."))
             }
         }
     }
