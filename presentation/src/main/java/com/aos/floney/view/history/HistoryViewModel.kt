@@ -259,8 +259,7 @@ class HistoryViewModel @Inject constructor(
         )
 
         modifyItem = item
-        modifyItem!!.money =
-            item.money.substring(2, item.money.length).trim() + CurrencyUtil.currency
+        modifyItem!!.money =item.money.formatMoneyWithCurrency()
         modifyItem!!.lineCategory = item.lineCategory.toCategoryName()
     }
 
