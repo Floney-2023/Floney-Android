@@ -9,6 +9,7 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.aos.data.util.AuthInterceptor
 import com.aos.data.util.SharedPreferenceUtil
+import com.aos.floney.ext.applyOpenTransition
 import com.aos.floney.view.login.LoginActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -53,8 +54,6 @@ class SessionManager @Inject constructor(
         // 로그인 정보 확인 (소셜 로그인으로 쉽게 재인증 가능한지)
         val hasKakaoAccount = prefs.getBoolean("has_kakao_account", false)
         val hasGoogleAccount = prefs.getBoolean("has_google_account", false)
-        val hasNaverAccount = prefs.getBoolean("has_naver_account", false)
-        val hasAppleAccount = prefs.getBoolean("has_apple_account", false)
 
         // UI 스레드에서 실행
         activity.runOnUiThread {
@@ -67,11 +66,10 @@ class SessionManager @Inject constructor(
                 putExtra("expired_session", true)
                 putExtra("has_kakao_account", hasKakaoAccount)
                 putExtra("has_google_account", hasGoogleAccount)
-                putExtra("has_naver_account", hasNaverAccount)
-                putExtra("has_apple_account", hasAppleAccount)
             }
             activity.startActivity(intent)
-            activity.finish()
+            activity.applyOpenTransition()
+            activity.finishAffinity()
         }
     }
 }

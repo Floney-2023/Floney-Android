@@ -8,7 +8,8 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -19,7 +20,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import okhttp3.Route
 import timber.log.Timber
-import java.io.IOException
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -32,6 +33,12 @@ class AuthInterceptor @Inject constructor(
     private val _sessionExpiredEvent = MutableSharedFlow<Boolean>()
     val sessionExpiredEvent: SharedFlow<Boolean> = _sessionExpiredEvent
 
+    // 토큰 갱신을 위한 Mutex
+    private val refreshTokenMutex = Mutex()
+
+    // 마지막으로 갱신된 토큰을 캐싱
+    @Volatile private var lastRefreshedAccessToken: String? = null
+
     override fun authenticate(route: Route?, response: Response): Request? {
         val originRequest = response.request
 
@@ -40,38 +47,57 @@ class AuthInterceptor @Inject constructor(
         }
 
         val refreshToken = prefs.getString("refreshToken", "")
+
         if (refreshToken.isBlank()) {
             Timber.e("Refresh token is empty or null")
             notifySessionExpired()
             return null
         }
 
-        // CoroutineScope 내에서 실행하여 비동기적으로 토큰 재발급
-        val refreshRequest = Request.Builder()
-            .url("${BuildConfig.BASE_URL}users/reissue")
-            .post(createTokenReissueRequestBody())
-            .build()
+        return runBlocking(Dispatchers.IO) {
+            refreshTokenMutex.withLock {
+                // 이미 다른 요청에서 토큰이 갱신되었는지 확인
+                lastRefreshedAccessToken?.let { token ->
+                    Timber.d("Reusing already refreshed token")
+                    return@withLock originRequest.newBuilder()
+                        .header("Authorization", "Bearer $token")
+                        .build()
+                }
 
-        try {
-            val refreshedToken = executeRefreshTokenRequest(refreshRequest)
-            return refreshedToken?.let {
-                updateTokenInPrefs(it.accessToken, it.refreshToken)
-                originRequest.newBuilder().header("Authorization", "Bearer ${it.accessToken}").build()
-            } ?: run {
-                Timber.e("Failed to refresh token, token response is null")
-                notifySessionExpired()
-                null
+                try {
+                    val refreshRequest = Request.Builder()
+                        .url("${BuildConfig.BASE_URL}users/reissue")
+                        .post(createTokenReissueRequestBody())
+                        .build()
+
+                    Timber.d("Sending refresh token request")
+
+                    val refreshedToken = executeRefreshTokenRequest(refreshRequest)
+
+                    refreshedToken?.let {
+                        updateTokenInPrefs(it.accessToken, it.refreshToken)
+
+                        // 캐시 업데이트
+                        lastRefreshedAccessToken = it.accessToken
+
+                        Timber.d("Success to refresh token")
+                        originRequest.newBuilder()
+                            .header("Authorization", "Bearer ${it.accessToken}")
+                            .build()
+                    } ?: run {
+                        Timber.e("Failed to refresh token, token response is null")
+                        lastRefreshedAccessToken = null
+                        notifySessionExpired()
+                        null
+                    }
+                } catch (e: Exception) {
+                    Timber.e(e, "Error during token refresh")
+                    lastRefreshedAccessToken = null
+                    notifySessionExpired()
+                    null
+                }
             }
-        } catch (e: IOException) {
-            Timber.e(e, "Failed to refresh token due to IO exception")
-            notifySessionExpired()
-        } catch (e: Exception) {
-            Timber.e(e, "Unexpected error during token refresh")
-            notifySessionExpired()
         }
-
-        // 새로운 요청을 기다리지 않고 null 반환
-        return null
     }
 
     private fun notifySessionExpired() {
@@ -81,7 +107,13 @@ class AuthInterceptor @Inject constructor(
     }
 
     private fun executeRefreshTokenRequest(refreshRequest: Request): PostUserReissueEntity? {
-        val response = OkHttpClient().newCall(refreshRequest).execute()
+        val client = OkHttpClient.Builder()
+            .connectTimeout(10, TimeUnit.SECONDS)
+            .readTimeout(10, TimeUnit.SECONDS)
+            .writeTimeout(10, TimeUnit.SECONDS)
+            .build()
+
+        val response = client.newCall(refreshRequest).execute()
         return response.use {
             if (response.isSuccessful) {
                 val json = Json { ignoreUnknownKeys = true }
@@ -115,20 +147,19 @@ class AuthInterceptor @Inject constructor(
     private fun clearTokens() {
         prefs.setString("accessToken", "")
         prefs.setString("refreshToken", "")
+        lastRefreshedAccessToken = null
     }
 
     private fun createTokenReissueRequestBody(): RequestBody {
         val accessToken = prefs.getString("accessToken", "")
         val refreshToken = prefs.getString("refreshToken", "")
 
-        Timber.d("Creating token reissue request with access token length: ${accessToken.length}, refresh token length: ${refreshToken.length}")
-
         val requestBodyString = """
         {
             "accessToken": "$accessToken",
             "refreshToken": "$refreshToken"
         }
-    """.trimIndent()
+        """.trimIndent()
 
         return requestBodyString.toRequestBody("application/json".toMediaTypeOrNull())
     }
