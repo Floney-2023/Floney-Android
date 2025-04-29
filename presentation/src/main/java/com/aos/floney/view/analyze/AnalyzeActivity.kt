@@ -120,6 +120,7 @@ class AnalyzeActivity : BaseActivity<ActivityAnalyzeBinding, AnalyzeViewModel>(R
                 }
                 "수입" -> {
                     supportFragmentManager.beginTransaction()
+                        .setCustomAnimations(androidx.appcompat.R.anim.abc_fade_in, androidx.appcompat.R.anim.abc_fade_out)
                         .replace(R.id.fl_container, AnalyzeIncomeFragment()).commit()
                 }
                 "예산" -> {

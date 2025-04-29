@@ -56,6 +56,7 @@
             app:layout_constraintTop_toBottomOf="@id/tv_out_come_cash" />
 
         <ImageView
+            android:id="@+id/imageView8"
             android:layout_width="76dp"
             android:layout_height="80dp"
             android:layout_marginTop="38dp"
@@ -70,11 +71,11 @@
             android:layout_height="20dp"
             android:layout_centerInParent="true"
             android:layout_marginStart="20dp"
-            android:layout_marginTop="28dp"
             android:layout_marginEnd="20dp"
+            android:layout_marginTop="26dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_different_cash" />
+            app:layout_constraintTop_toBottomOf="@+id/imageView8" />
 
         <View
             android:layout_width="0dp"

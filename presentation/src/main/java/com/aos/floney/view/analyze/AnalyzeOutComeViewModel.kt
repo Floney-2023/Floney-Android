@@ -32,15 +32,15 @@ class AnalyzeOutComeViewModel @Inject constructor(
     // 지출 분석 가져오기
     fun postAnalyzeCategory(date :String) {
         viewModelScope.launch(Dispatchers.IO) {
-            baseEvent(Event.ShowLoading)
+            baseEvent(Event.ShowCircleLoading)
             postAnalyzeOutComeCategoryUseCase(
                 prefs.getString("bookKey", ""), "지출", date
             ).onSuccess {
                 _selectMonth.postValue(date)
-                baseEvent(Event.HideLoading)
+                baseEvent(Event.HideCircleLoading)
                 _postAnalyzeOutComeCategoryResult.postValue(it)
             }.onFailure {
-                baseEvent(Event.HideLoading)
+                baseEvent(Event.HideCircleLoading)
                 baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@AnalyzeOutComeViewModel)))
             }
         }

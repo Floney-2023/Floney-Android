@@ -25,10 +25,13 @@ class AnalyzeAssetViewModel @Inject constructor(private val pref: SharedPreferen
 
     fun postAnalyzeAsset(date: String) {
         viewModelScope.launch(Dispatchers.IO) {
+            baseEvent(Event.ShowCircleLoading)
             postAnalyzeAssetUseCase(pref.getString("bookKey", ""), date.substring(0, 7)).onSuccess {
                 Timber.e("it $it")
+                baseEvent(Event.HideCircleLoading)
                 _postAssetResult.postValue(it)
             }.onFailure {
+                baseEvent(Event.HideCircleLoading)
                 baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@AnalyzeAssetViewModel)))
             }
         }

@@ -4,7 +4,15 @@ import android.app.Activity
 import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.os.Build
+import android.view.View
 import android.view.WindowManager
+import androidx.appcompat.app.AppCompatDialog
+import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import com.aos.floney.R
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -24,15 +32,12 @@ class LottieLoadingManager @Inject constructor() {
     fun showLoading(activity: Activity) {
         if (loadingDialog?.isShowing == true) return
 
-        loadingDialog = Dialog(activity).apply {
-            setCancelable(false)
-            setContentView(R.layout.layout_circle_loading)
+        loadingDialog = AppCompatDialog(activity).apply {
             window?.apply {
-                setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-                setLayout(
-                    WindowManager.LayoutParams.MATCH_PARENT,
-                    WindowManager.LayoutParams.MATCH_PARENT
-                )
+                setContentView(R.layout.layout_circle_loading)
+                setCancelable(false)
+                window?.setDimAmount(0f)
+                window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             }
         }
 
