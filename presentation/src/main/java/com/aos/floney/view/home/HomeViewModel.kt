@@ -93,7 +93,7 @@ class HomeViewModel @Inject constructor(
     private var _onClickedShowDetail = MutableLiveData<MonthMoney?>(null)
     val onClickedShowDetail: LiveData<MonthMoney?> get() = _onClickedShowDetail
 
-    private lateinit var myNickname: String
+    private var myNickname: String = ""
 
     // 설정 페이지
     private var _settingPage = MutableEventFlow<Boolean>()

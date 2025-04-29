@@ -39,7 +39,11 @@ class AuthInterceptor @Inject constructor(
     // 마지막으로 갱신된 토큰을 캐싱
     @Volatile private var lastRefreshedAccessToken: String? = null
 
+    @Volatile private var sessionExpired = false
+
     override fun authenticate(route: Route?, response: Response): Request? {
+        if (sessionExpired) return null
+
         val originRequest = response.request
 
         if (originRequest.header("Authorization").isNullOrEmpty()) {
@@ -55,8 +59,19 @@ class AuthInterceptor @Inject constructor(
         }
 
         return runBlocking(Dispatchers.IO) {
+
+            // 이미 성공적으로 토큰이 갱신된 경우 → 재사용
+            lastRefreshedAccessToken?.let { token ->
+                return@runBlocking originRequest.newBuilder()
+                    .header("Authorization", "Bearer $token")
+                    .build()
+            }
+
+
             refreshTokenMutex.withLock {
-                // 이미 다른 요청에서 토큰이 갱신되었는지 확인
+                if (sessionExpired) return@runBlocking null
+
+                // Mutex 안에 다시 한 번 체크
                 lastRefreshedAccessToken?.let { token ->
                     Timber.d("Reusing already refreshed token")
                     return@withLock originRequest.newBuilder()
@@ -101,6 +116,7 @@ class AuthInterceptor @Inject constructor(
     }
 
     private fun notifySessionExpired() {
+        sessionExpired = true
         CoroutineScope(Dispatchers.IO).launch {
             _sessionExpiredEvent.emit(true)
         }
@@ -128,7 +144,7 @@ class AuthInterceptor @Inject constructor(
                 }
             } else {
                 Timber.e("Token refresh failed with code: ${response.code}")
-                clearTokens()
+                notifySessionExpired()
                 null
             }
         }
@@ -144,7 +160,7 @@ class AuthInterceptor @Inject constructor(
         prefs.setString("refreshToken", refreshToken)
     }
 
-    private fun clearTokens() {
+    fun clearTokens() {
         prefs.setString("accessToken", "")
         prefs.setString("refreshToken", "")
         lastRefreshedAccessToken = null
@@ -161,6 +177,12 @@ class AuthInterceptor @Inject constructor(
         }
         """.trimIndent()
 
+        Timber.d(requestBodyString)
+
         return requestBodyString.toRequestBody("application/json".toMediaTypeOrNull())
+    }
+
+    fun resetSessionExpiredFlag() {
+        sessionExpired = false
     }
 }

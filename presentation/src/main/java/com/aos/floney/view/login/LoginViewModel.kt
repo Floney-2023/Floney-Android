@@ -3,6 +3,7 @@ package com.aos.floney.view.login
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.aos.data.util.AuthInterceptor
 import com.aos.data.util.CurrencyUtil
 import com.aos.data.util.SharedPreferenceUtil
 import com.aos.floney.R
@@ -35,6 +36,7 @@ class LoginViewModel @Inject constructor(
     private val checkUserBookUseCase: CheckUserBookUseCase,
     private val authTokenCheckUseCase: AuthTokenCheckUseCase,
     private val socialLoginUseCase: SocialLoginUseCase,
+    private val authInterceptor: AuthInterceptor
 ): BaseViewModel() {
 
     var email = MutableLiveData<String>("")
@@ -71,14 +73,15 @@ class LoginViewModel @Inject constructor(
                     baseEvent(Event.ShowLoading)
                     loginUseCase(email.value ?: "", password.value ?: "").onSuccess {
                         baseEvent(Event.HideLoading)
+
                         prefs.setString("accessToken", it.accessToken)
                         prefs.setString("refreshToken", it.refreshToken)
                         prefs.setString("loginMethod", "normal")
+
                         prefs.setBoolean("has_kakao_account", false)
                         prefs.setBoolean("has_google_account", false)
-                        prefs.setBoolean("has_naver_account", false)
-                        prefs.setBoolean("has_apple_account", false)
 
+                        authInterceptor.resetSessionExpiredFlag()
                         checkUserBooks()
                     }.onFailure {
                         baseEvent(Event.HideLoading)
@@ -146,12 +149,12 @@ class LoginViewModel @Inject constructor(
                 prefs.setString("refreshToken", it.refreshToken)
                 prefs.setString("loginMethod", provider)
 
+                authInterceptor.resetSessionExpiredFlag()
+
                 // 소셜 로그인 타입 저장 (나중에 자동 로그인에 사용)
                 when (provider.lowercase()) {
                     "kakao" -> prefs.setBoolean("has_kakao_account", true)
                     "google" -> prefs.setBoolean("has_google_account", true)
-                    "naver" -> prefs.setBoolean("has_naver_account", true)
-                    "apple" -> prefs.setBoolean("has_apple_account", true)
                 }
 
                 checkUserBooks()

@@ -49,6 +49,7 @@ class AppApplication : Application(), Application.ActivityLifecycleCallbacks {
             authInterceptor.sessionExpiredEvent.collectLatest { isExpired ->
                 if (isExpired) {
                     Timber.d("세션이 만료되었습니다. 로그인 화면으로 이동합니다.")
+                    authInterceptor.clearTokens()
                     currentActivity?.let { activity ->
                         if (activity !is LoginActivity) {
                             // 로그인 화면으로 이동
