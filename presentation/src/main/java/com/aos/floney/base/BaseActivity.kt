@@ -31,18 +31,23 @@ import com.aos.floney.BR
 import com.aos.floney.R
 import com.aos.floney.ext.repeatOnStarted
 import com.aos.floney.ext.setupTouchEffect
+import com.aos.floney.util.LottieLoadingManager
 import com.aos.floney.view.common.ErrorToastDialog
 import com.aos.floney.view.common.SuccessToastDialog
 import com.aos.floney.view.login.LoginActivity
 import com.aos.floney.view.splash.SplashActivity
 import timber.log.Timber
 import java.lang.reflect.ParameterizedType
+import javax.inject.Inject
 
 abstract class BaseActivity<B : ViewDataBinding, VM : BaseViewModel>(
     @LayoutRes private val layoutResId: Int,
 ) : AppCompatActivity() {
 
     protected lateinit var binding: B
+
+    @Inject
+    lateinit var lottieLoadingManager: LottieLoadingManager
 
     private val viewModelClass = ((javaClass.genericSuperclass as ParameterizedType?)
         ?.actualTypeArguments
@@ -143,6 +148,9 @@ abstract class BaseActivity<B : ViewDataBinding, VM : BaseViewModel>(
                     startActivity(Intent(this, LoginActivity::class.java))
                     finishAffinity()
                 }
+
+                BaseViewModel.Event.HideCircleLoading -> hideCircleLoading()
+                BaseViewModel.Event.ShowCircleLoading -> showCircleLoading()
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -196,6 +204,27 @@ abstract class BaseActivity<B : ViewDataBinding, VM : BaseViewModel>(
             e.printStackTrace()
         }
     }
+
+    private fun showCircleLoading() {
+        try {
+            if (::lottieLoadingManager.isInitialized) {
+                lottieLoadingManager.showLoading(this)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun hideCircleLoading() {
+        try {
+            if (::lottieLoadingManager.isInitialized) {
+                lottieLoadingManager.hideLoading()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
     // 상태바 색상 설정 함수
     protected fun setStatusBarColor(color: Int) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

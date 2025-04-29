@@ -67,6 +67,7 @@ class AnalyzeViewModel @Inject constructor(
 
     // 지출, 수입, 이체 클릭
     fun onClickFlow(type: String) {
+        if (flow.value == type) return
         _flow.postValue(type)
     }
 

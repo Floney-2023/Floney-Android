@@ -106,7 +106,7 @@
             android:layout_width="80dp"
             android:layout_height="108dp"
             android:src="@drawable/not_exist_analyze"
-            android:visibility="@{vm.postAnalyzeOutComeCategoryResult.analyzeResult.size() > 0 ? View.GONE : View.VISIBLE}"
+            android:visibility="@{vm.postAnalyzeOutComeCategoryResult.analyzeResult.size() > 0 || vm.postAnalyzeOutComeCategoryResult.analyzeResult == null ? View.GONE : View.VISIBLE}"
             app:layout_constraintBottom_toBottomOf="@id/rv_analyze"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

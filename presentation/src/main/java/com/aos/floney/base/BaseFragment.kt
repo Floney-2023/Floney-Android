@@ -40,6 +40,7 @@ import com.aos.floney.BR
 import com.aos.floney.R
 import com.aos.floney.ext.repeatOnStarted
 import com.aos.floney.ext.setupTouchEffect
+import com.aos.floney.util.LottieLoadingManager
 import com.aos.floney.view.common.ErrorToastDialog
 import com.aos.floney.view.common.SuccessToastDialog
 import com.aos.floney.view.login.LoginActivity
@@ -47,6 +48,7 @@ import com.google.android.material.transition.MaterialFadeThrough
 import com.google.android.material.transition.MaterialSharedAxis
 import timber.log.Timber
 import java.lang.reflect.ParameterizedType
+import javax.inject.Inject
 
 abstract class BaseFragment<B : ViewDataBinding, VM : BaseViewModel>(
     @LayoutRes private val layoutResId: Int,
@@ -65,6 +67,9 @@ abstract class BaseFragment<B : ViewDataBinding, VM : BaseViewModel>(
         { defaultViewModelProviderFactory },
         { defaultViewModelCreationExtras },
     )
+
+    @Inject
+    lateinit var lottieLoadingManager: LottieLoadingManager
 
     private val loadingDialog by lazy {
         AppCompatDialog(requireContext()).apply {
@@ -154,6 +159,9 @@ abstract class BaseFragment<B : ViewDataBinding, VM : BaseViewModel>(
                     startActivity(Intent(requireContext(), LoginActivity::class.java))
                     requireActivity().finishAffinity()
                 }
+
+                BaseViewModel.Event.HideCircleLoading -> hideCircleLoading()
+                BaseViewModel.Event.ShowCircleLoading -> showCircleLoading()
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -235,6 +243,27 @@ abstract class BaseFragment<B : ViewDataBinding, VM : BaseViewModel>(
             e.printStackTrace()
         }
     }
+
+    private fun showCircleLoading() {
+        try {
+            if (::lottieLoadingManager.isInitialized) {
+                lottieLoadingManager.showLoading(requireActivity())
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun hideCircleLoading() {
+        try {
+            if (::lottieLoadingManager.isInitialized) {
+                lottieLoadingManager.hideLoading()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
     protected open fun onBackPressed() {
         // 상속받는 클래스에서 필요에 따라 구현
     }

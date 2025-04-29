@@ -12,6 +12,7 @@ import com.aos.usecase.analyze.PostAnalyzeInComeCategoryUseCase
 import com.aos.usecase.analyze.PostAnalyzeOutComeCategoryUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -35,15 +36,15 @@ class AnalyzeIncomeViewModel @Inject constructor(
     // 지출 분석 가져오기
     fun postAnalyzeCategory(date :String) {
         viewModelScope.launch(Dispatchers.IO) {
-            baseEvent(Event.ShowLoading)
+            baseEvent(Event.ShowCircleLoading)
             postAnalyzeInComeCategoryUseCase(
                 prefs.getString("bookKey", ""), "수입", date
             ).onSuccess {
-                baseEvent(Event.HideLoading)
+                baseEvent(Event.HideCircleLoading)
                 _selectMonth.postValue(date)
                 _postAnalyzeInComeCategoryResult.postValue(it)
             }.onFailure {
-                baseEvent(Event.HideLoading)
+                baseEvent(Event.HideCircleLoading)
                 baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@AnalyzeIncomeViewModel)))
             }
         }

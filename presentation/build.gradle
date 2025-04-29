@@ -177,6 +177,9 @@ dependencies {
     // retrofit
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
 
+    // Lottie
+    implementation 'com.airbnb.android:lottie:6.4.0'
+
     //semiCircleProgressBar
     implementation 'com.github.hadibtf:SemiCircleArcProgressBar:1.1.1'
 

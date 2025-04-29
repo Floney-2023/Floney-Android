@@ -56,9 +56,10 @@
             app:layout_constraintTop_toBottomOf="@id/tv_out_come_cash" />
 
         <ImageView
+            android:id="@+id/imageView7"
             android:layout_width="76dp"
-            android:layout_height="80dp"
-            android:layout_marginTop="38dp"
+            android:layout_height="76dp"
+            android:layout_marginTop="34dp"
             android:layout_marginEnd="24dp"
             android:src="@drawable/analyze_income_img"
             app:layout_constraintEnd_toEndOf="parent"
@@ -74,18 +75,20 @@
             android:layout_marginEnd="20dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_different_cash" />
+            app:layout_constraintTop_toBottomOf="@+id/imageView7" />
 
         <View
+            android:id="@+id/view3"
             android:layout_width="0dp"
             android:layout_height="20dp"
             android:layout_marginStart="20dp"
+            android:layout_marginTop="28dp"
             android:layout_marginEnd="20dp"
             android:background="@drawable/custom_radius_8_solid_grayscale10"
-            android:visibility="@{vm.postAnalyzeInComeCategoryResult.analyzeResult.size() > 0 ? View.GONE : View.VISIBLE}"
+            android:visibility="@{vm.postAnalyzeInComeCategoryResult.analyzeResult.size() > 0 ? View.INVISIBLE : View.VISIBLE}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/chart_stack_horizontal" />
+            app:layout_constraintTop_toBottomOf="@+id/imageView7" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_analyze"
@@ -106,7 +109,7 @@
             android:layout_width="80dp"
             android:layout_height="108dp"
             android:src="@drawable/not_exist_analyze"
-            android:visibility="@{vm.postAnalyzeInComeCategoryResult.analyzeResult.size() > 0 ? View.GONE : View.VISIBLE}"
+            android:visibility="@{vm.postAnalyzeInComeCategoryResult.analyzeResult.size() > 0 || vm.postAnalyzeInComeCategoryResult.analyzeResult == null ? View.GONE : View.VISIBLE}"
             app:layout_constraintBottom_toBottomOf="@id/rv_analyze"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
