@@ -1,0 +1,67 @@
+name: Android Dev Test
+
+on:
+  push:
+    branches:
+      - release/floney-ver.3  #
+
+jobs:
+  build-and-distribute-debug:
+    runs-on: ubuntu-latest
+
+    env:
+      LOCAL_PROPERTIES_CONTENTS: ${{ secrets.LOCAL_PROPERTIES_CONTENTS }}
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Decode google-services.json
+        run: echo "${{ secrets.GOOGLE_SERVICES_JSON_DEBUG }}" | base64 -d > presentation/google-services.json
+
+      - name: Create local.properties
+        run: echo "$LOCAL_PROPERTIES_CONTENTS" > local.properties
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+
+      - name: Build Debug AAB
+        run: ./gradlew bundleDebug
+
+      - name: Extract versionName from build.gradle
+        id: version
+        run: echo "version_name=$(grep versionName app/build.gradle | head -1 | awk -F\\\" '{print $2}')" >> $GITHUB_OUTPUT
+
+      - name: Read release notes
+        id: notes
+        run: |
+          notes=$(cat release-notes.txt | sed ':a;N;$!ba;s/\n/\\n/g')
+          echo "release_notes=$notes" >> $GITHUB_OUTPUT
+
+      - name: Install Firebase CLI
+        run: curl -sL https://firebase.tools | bash
+
+      - name: Distribute Debug AAB to Firebase App Distribution
+        run: |
+          firebase appdistribution:distribute app/build/outputs/bundle/debug/app-debug.aab \
+            --app "${{ secrets.FIREBASE_APP_ID_DEBUG }}" \
+            --groups "internal-testers" \
+            --release-notes "$(cat release-notes.txt)" \
+            --token "${{ secrets.FIREBASE_TOKEN }}"
+
+      - name: Notify Slack
+        run: |
+          curl -X POST -H 'Content-type: application/json' \
+            --data "{
+              \"text\": \"🚀 *Floney Debug v${{ steps.version.outputs.version_name }} 배포 완료!*\n📝 *Release Notes:*\n${{ steps.notes.outputs.release_notes }}\"
+            }" \
+            ${{ secrets.SLACK_WEBHOOK_URL }}
