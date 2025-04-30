@@ -49,7 +49,7 @@ jobs:
       - name: Read release notes
         id: notes
         run: |
-          notes=$(cat release-notes.txt | sed ':a;N;$!ba;s/\n/\\n/g')
+          notes=$(cat releasenotes.txt | sed ':a;N;$!ba;s/\n/\\n/g')
           echo "release_notes=$notes" >> $GITHUB_OUTPUT
 
       - name: Install Firebase CLI
@@ -57,10 +57,10 @@ jobs:
 
       - name: Distribute Debug AAB to Firebase App Distribution
         run: |
-          firebase appdistribution:distribute app/build/outputs/bundle/debug/app-debug.aab \
-            --app "${{ secrets.FIREBASE_APP_ID_DEBUG }}" \
+          firebase appdistribution:distribute presentation/build/outputs/bundle/debug/presentation-debug.aab \
+            --app "${{ secrets.FIREBASE_APP_ID }}" \
             --groups "internal-testers" \
-            --release-notes "$(cat release-notes.txt)" \
+            --release-notes "$(cat releasenotes.txt)" \
             --token "${{ secrets.FIREBASE_TOKEN }}"
 
       - name: Notify Slack
