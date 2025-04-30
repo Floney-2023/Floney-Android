@@ -59,6 +59,7 @@ jobs:
         run: |
           firebase appdistribution:distribute presentation/build/outputs/bundle/debug/presentation-debug.aab \
             --app "${{ secrets.FIREBASE_APP_ID }}" \
+            --project "floney" \
             --groups "internal-testers" \
             --release-notes "$(cat releasenotes.txt)" \
             --token "${{ secrets.FIREBASE_TOKEN }}"
