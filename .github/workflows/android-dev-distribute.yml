@@ -31,7 +31,7 @@ jobs:
       - name: Putting data
         env:
           DATA: ${{ secrets.GOOGLE_SERVICES_JSON }}
-        run: echo $DATA > /home/runner/work/Floney-AOS/Floney-AOS/presentaion/google-services.json
+        run: echo $DATA > /home/runner/work/Floney-AOS/Floney-AOS/presentation/google-services.json
 
       - name: Create local.properties
         run: echo "$LOCAL_PROPERTIES_CONTENTS" > local.properties
