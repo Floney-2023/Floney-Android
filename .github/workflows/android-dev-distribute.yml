@@ -3,7 +3,7 @@ name: Android Dev Test
 on:
   push:
     branches:
-      - release/floney-ver.3  #
+      - release/floney-ver.3
 
 jobs:
   build-and-distribute-debug:
@@ -39,8 +39,8 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
-      - name: Build Debug AAB
-        run: ./gradlew bundleDebug
+      - name: Build Debug APK
+        run: ./gradlew assembleDebug
 
       - name: Extract versionName from build.gradle
         id: version
@@ -55,11 +55,10 @@ jobs:
       - name: Install Firebase CLI
         run: curl -sL https://firebase.tools | bash
 
-      - name: Distribute Debug AAB to Firebase App Distribution
+      - name: Distribute Debug APK to Firebase App Distribution
         run: |
-          firebase appdistribution:distribute presentation/build/outputs/bundle/debug/presentation-debug.aab \
+          firebase appdistribution:distribute presentation/build/outputs/apk/debug/presentation-debug.apk \
             --app "${{ secrets.FIREBASE_APP_ID }}" \
-            --project "floney" \
             --groups "internal-testers" \
             --release-notes "$(cat releasenotes.txt)" \
             --token "${{ secrets.FIREBASE_TOKEN }}"
