@@ -65,7 +65,7 @@ jobs:
         run: |
           firebase appdistribution:distribute $APK_PATH \
             --app "${{ secrets.FIREBASE_APP_ID }}" \
-            --groups "internal-testers" \
+            --groups "Floney-Android-Tester" \
             --release-notes "$(cat releasenotes.txt)" \
             --token "${{ secrets.FIREBASE_TOKEN }}"
 
