@@ -91,36 +91,6 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginViewModel>(R.layou
 
         setUpViewModelObserver()
 
-        // 세션 만료로 이동된 경우 간편 로그인 처리
-        handleExpiredSession()
-    }
-
-    private fun handleExpiredSession() {
-        val isExpiredSession = intent.getBooleanExtra("expired_session", false)
-        if (isExpiredSession) {
-            // 세션이 만료되어 로그인 화면으로 이동한 경우
-            val hasKakaoAccount = intent.getBooleanExtra("has_kakao_account", false)
-            val hasGoogleAccount = intent.getBooleanExtra("has_google_account", false)
-
-            // 사용자가 이전에 소셜 로그인으로 가입했다면 자동 로그인 시도
-            when {
-                hasKakaoAccount -> {
-                    Timber.d("세션 만료 후 카카오 자동 로그인 시도")
-                    // 카카오 자동 로그인 진행
-                    viewModel.baseEvent(BaseViewModel.Event.ShowToast("카카오 계정으로 자동 로그인 중..."))
-                    onClickedKakaoLogin()
-                }
-                hasGoogleAccount -> {
-                    Timber.d("세션 만료 후 구글 자동 로그인 시도")
-                    // 구글 자동 로그인 진행
-                    viewModel.baseEvent(BaseViewModel.Event.ShowToast("구글 계정으로 자동 로그인 중..."))
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                        onClickGoogleLogin()
-                    }
-                }
-                // 기타 소셜 로그인 케이스 추가 가능
-            }
-        }
     }
 
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)

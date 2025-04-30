@@ -143,8 +143,8 @@ class AuthInterceptor @Inject constructor(
                     }
                 }
             } else {
-                Timber.e("Token refresh failed with code: ${response.code}")
-                notifySessionExpired()
+                Timber.d("Token refresh failed with code: ${response.code}")
+                Timber.d("Token refresh failed with message: ${response.message}")
                 null
             }
         }

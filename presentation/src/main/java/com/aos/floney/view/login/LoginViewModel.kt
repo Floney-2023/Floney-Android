@@ -78,9 +78,6 @@ class LoginViewModel @Inject constructor(
                         prefs.setString("refreshToken", it.refreshToken)
                         prefs.setString("loginMethod", "normal")
 
-                        prefs.setBoolean("has_kakao_account", false)
-                        prefs.setBoolean("has_google_account", false)
-
                         authInterceptor.resetSessionExpiredFlag()
                         checkUserBooks()
                     }.onFailure {
@@ -150,12 +147,6 @@ class LoginViewModel @Inject constructor(
                 prefs.setString("loginMethod", provider)
 
                 authInterceptor.resetSessionExpiredFlag()
-
-                // 소셜 로그인 타입 저장 (나중에 자동 로그인에 사용)
-                when (provider.lowercase()) {
-                    "kakao" -> prefs.setBoolean("has_kakao_account", true)
-                    "google" -> prefs.setBoolean("has_google_account", true)
-                }
 
                 checkUserBooks()
             }.onFailure {

@@ -8,7 +8,7 @@ import android.widget.Toast
 import androidx.lifecycle.ProcessLifecycleOwner
 import com.aos.data.util.AuthInterceptor
 import com.aos.floney.BuildConfig
-import com.aos.floney.util.SessionManager
+import com.aos.floney.ext.applyOpenTransition
 import com.aos.floney.view.login.LoginActivity
 import com.kakao.sdk.common.KakaoSdk
 import dagger.hilt.android.HiltAndroidApp
@@ -21,9 +21,6 @@ import javax.inject.Inject
 
 @HiltAndroidApp
 class AppApplication : Application(), Application.ActivityLifecycleCallbacks {
-
-    @Inject
-    lateinit var sessionManager: SessionManager
 
     @Inject
     lateinit var authInterceptor: AuthInterceptor
@@ -53,11 +50,30 @@ class AppApplication : Application(), Application.ActivityLifecycleCallbacks {
                     currentActivity?.let { activity ->
                         if (activity !is LoginActivity) {
                             // 로그인 화면으로 이동
-                            sessionManager.handleSessionExpired(activity)
+                            handleSessionExpired(activity)
                         }
                     }
                 }
             }
+        }
+    }
+
+    fun handleSessionExpired(activity: Activity) {
+        // 현재 활동 중인 액티비티가 이미 LoginActivity라면 무시
+        if (activity is LoginActivity) {
+            return
+        }
+
+        // UI 스레드에서 실행
+        activity.runOnUiThread {
+
+            // 모든 액티비티 스택을 비우고 로그인 화면으로 이동
+            val intent = Intent(activity, LoginActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            }
+            activity.startActivity(intent)
+            activity.applyOpenTransition()
+            activity.finishAffinity()
         }
     }
 
