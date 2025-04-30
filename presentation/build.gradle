@@ -40,6 +40,9 @@ android {
             signingConfig signingConfigs.debug
         }
         debug {
+            applicationIdSuffix ".debug"
+            versionNameSuffix "-debug"
+
             buildConfigField "String", "BASE_URL", properties['base.dev.url']
             buildConfigField "String", "GOOGLE_APP_BANNER_KEY", "${properties['google_app_banner_debug_key']}"
             buildConfigField "String", "GOOGLE_APP_REWARD_KEY", "${properties['google_app_reward_debug_key']}"
