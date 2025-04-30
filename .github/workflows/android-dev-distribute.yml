@@ -40,7 +40,10 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build Debug APK
-        run: ./gradlew :presentation:assembleDebug
+        run: ./gradlew assembleDebug
+
+      - name: List build outputs
+        run: find . -name "*.apk" -type f
 
       - name: Extract versionName from build.gradle
         id: version
@@ -59,6 +62,7 @@ jobs:
         run: |
           firebase appdistribution:distribute presentation/build/outputs/apk/debug/presentation-debug.apk \
             --app "${{ secrets.FIREBASE_APP_ID }}" \
+            --project "floney" \
             --groups "internal-testers" \
             --release-notes "$(cat releasenotes.txt)" \
             --token "${{ secrets.FIREBASE_TOKEN }}"
