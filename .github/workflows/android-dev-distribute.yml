@@ -25,8 +25,13 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v3
 
-      - name: Decode google-services.json
-        run: echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 -d > presentation/google-services.json
+      - name: Create file
+        run: cat presentation/google-services.json | base64
+
+      - name: Putting data
+        env:
+          DATA: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: echo $DATA > presentaion/google-services.json
 
       - name: Create local.properties
         run: echo "$LOCAL_PROPERTIES_CONTENTS" > local.properties
