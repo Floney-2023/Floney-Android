@@ -40,7 +40,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build Debug APK
-        run: ./gradlew assembleDebug
+        run: ./gradlew :presentation:assembleDebug
 
       - name: Extract versionName from build.gradle
         id: version
