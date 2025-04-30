@@ -40,10 +40,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build Debug APK
-        run: ./gradlew assembleDebug
-
-      - name: List build outputs
-        run: find . -name "*.apk" -type f
+        run: ./gradlew :presentation:assembleDebug
 
       - name: Extract versionName from build.gradle
         id: version
@@ -58,11 +55,17 @@ jobs:
       - name: Install Firebase CLI
         run: curl -sL https://firebase.tools | bash
 
-      - name: Distribute Debug APK to Firebase App Distribution
+      - name: Find Debug APK Path
+        id: find_apk
         run: |
-          firebase appdistribution:distribute presentation/build/outputs/apk/debug/presentation-debug.apk \
+          apk_path=$(find presentation/build/intermediates/apk/debug -name "*.apk" | head -n 1)
+          echo "apk_path=$apk_path"
+          echo "apk_path=$apk_path" >> $GITHUB_ENV
+
+      - name: Distribute Debug APK
+        run: |
+          firebase appdistribution:distribute ${{ steps.find_apk.outputs.apk_path }} \
             --app "${{ secrets.FIREBASE_APP_ID }}" \
-            --project "floney" \
             --groups "internal-testers" \
             --release-notes "$(cat releasenotes.txt)" \
             --token "${{ secrets.FIREBASE_TOKEN }}"
