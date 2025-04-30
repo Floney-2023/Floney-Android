@@ -1,9 +1,9 @@
-name: Android Dev Test
+name: Android Release
 
 on:
   push:
     branches:
-      - release/floney-ver.3  #
+      - main
 
 jobs:
   build-and-deploy:
