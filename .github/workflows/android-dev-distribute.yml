@@ -56,19 +56,19 @@ jobs:
         run: curl -sL https://firebase.tools | bash
 
       - name: Find Debug APK Path
-        id: find_apk
         run: |
-          apk_path=$(find presentation/build/intermediates/apk/debug -name "*.apk" | head -n 1)
+          apk_path=$(find presentation/build -name "*.apk" | head -n 1)
           echo "apk_path=$apk_path"
-          echo "apk_path=$apk_path" >> $GITHUB_ENV
+          echo "APK_PATH=$apk_path" >> $GITHUB_ENV
 
       - name: Distribute Debug APK
         run: |
-          firebase appdistribution:distribute ${{ steps.find_apk.outputs.apk_path }} \
+          firebase appdistribution:distribute $APK_PATH \
             --app "${{ secrets.FIREBASE_APP_ID }}" \
             --groups "internal-testers" \
             --release-notes "$(cat releasenotes.txt)" \
             --token "${{ secrets.FIREBASE_TOKEN }}"
+
 
       - name: Notify Slack
         run: |
