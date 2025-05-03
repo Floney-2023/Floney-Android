@@ -5,6 +5,7 @@ import android.content.Intent
 import android.credentials.GetCredentialException
 import android.os.Build
 import android.os.Bundle
+import android.view.inputmethod.EditorInfo
 import androidx.activity.result.ActivityResultLauncher
 import androidx.annotation.RequiresApi
 import androidx.credentials.CustomCredential
@@ -88,9 +89,24 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginViewModel>(R.layou
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mAuth = FirebaseAuth.getInstance()
-
+        setActionListener()
         setUpViewModelObserver()
+    }
 
+    private fun setActionListener() {
+        binding.etEmail.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_NEXT) {
+                binding.pwText.requestFocus()
+                true
+            } else false
+        }
+
+        binding.pwText.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                viewModel.onClickLogin()
+                true
+            } else false
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
