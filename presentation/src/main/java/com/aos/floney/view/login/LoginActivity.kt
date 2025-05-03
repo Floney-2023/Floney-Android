@@ -5,7 +5,9 @@ import android.content.Intent
 import android.credentials.GetCredentialException
 import android.os.Build
 import android.os.Bundle
+import android.view.View
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import androidx.activity.result.ActivityResultLauncher
 import androidx.annotation.RequiresApi
 import androidx.credentials.CustomCredential
@@ -93,6 +95,12 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginViewModel>(R.layou
         setUpViewModelObserver()
     }
 
+    private fun hideKeyboard() {
+        val imm = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        val view = currentFocus ?: View(this)
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+
     private fun setActionListener() {
         binding.etEmail.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_NEXT) {
@@ -103,6 +111,7 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginViewModel>(R.layou
 
         binding.pwText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
+                hideKeyboard()
                 viewModel.onClickLogin()
                 true
             } else false
@@ -210,7 +219,6 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginViewModel>(R.layou
         }
     }
 
-    // 카카오 로그인
     private fun onClickedKakaoLogin() {
         if (NetworkUtils.isNetworkConnected(applicationContext)) {
             val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
