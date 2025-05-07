@@ -259,22 +259,24 @@ class HomeViewModel @Inject constructor(
 
     private fun adjustIncomeOrOutcome(extData: ExtData, carryInfoData: DayMoney?): ExtData {
         val carryOverMoney = carryInfoData?.money?.replace(",", "")?.toDoubleOrNull() ?: 0.0
+        val totalIncome = extData.totalIncome.replace(",", "")?.toDoubleOrNull() ?: 0.0
+        val totalOutcome = extData.totalOutcome.replace(",", "")?.toDoubleOrNull() ?: 0.0
 
         val newTotalIncome = if (carryOverMoney > 0) {
-            extData.totalIncome + carryOverMoney
+            totalIncome + carryOverMoney
         } else {
-            extData.totalIncome
+            totalIncome
         }
 
         val newTotalOutcome = if (carryOverMoney < 0) {
-            extData.totalOutcome + kotlin.math.abs(carryOverMoney)
+            totalOutcome + kotlin.math.abs(carryOverMoney)
         } else {
-            extData.totalOutcome
+            totalOutcome
         }
 
         return extData.copy(
-            totalIncome = newTotalIncome,
-            totalOutcome = newTotalOutcome
+            totalIncome = "$newTotalIncome${CurrencyUtil.currency}",
+            totalOutcome = "$newTotalOutcome${CurrencyUtil.currency}"
         )
     }
 
