@@ -192,11 +192,11 @@ fun GetBookMonthEntity.toUiBookMonthModel(): UiBookMonthModel {
             // 총 수입에 포함
             UiBookMonthModel(
                 list, ExtData(
-                    "${
+                    totalIncome ="${
                         NumberFormat.getNumberInstance()
                             .format(totalIncome + carryOverInfo.carryOverMoney)
                     }${CurrencyUtil.currency}",
-                    "${
+                    totalOutcome ="${
                         NumberFormat.getNumberInstance().format(totalOutcome)
                     }${CurrencyUtil.currency}",
                     totalBalance = "${
@@ -293,15 +293,25 @@ fun GetBookDaysEntity.toUiBookMonthModel(): UiBookDayModel {
             totalOutcome = it.money
         }
     }
+
+    val carryOverValue = carryOverInfo.carryOverMoney
+    val adjustedIncome = totalIncome + maxOf(carryOverValue, 0.0)
+    val adjustedOutcome = totalOutcome + maxOf(-carryOverValue, 0.0)
+
+    val numberFormatter = NumberFormat.getNumberInstance()
+
     return UiBookDayModel(
-        dayMoneyList, ExtData(
-            "${NumberFormat.getNumberInstance().format(totalIncome)}${CurrencyUtil.currency}",
-            "${NumberFormat.getNumberInstance().format(totalOutcome)}${CurrencyUtil.currency}"
-        ), CarryOverInfo(
-            carryOverInfo.carryOverStatus, NumberFormat.getNumberInstance()
-                .format(carryOverInfo.carryOverMoney)
+        dayMoneyList,
+        ExtData(
+            "${numberFormatter.format(adjustedIncome)}${CurrencyUtil.currency}",
+            "${numberFormatter.format(adjustedOutcome)}${CurrencyUtil.currency}"
+        ),
+        CarryOverInfo(
+            carryOverInfo.carryOverStatus,
+            numberFormatter.format(carryOverValue)
         )
     )
+
 }
 
 fun GetBookInfoEntity.toUiBookInfoModel(): UiBookInfoModel {
