@@ -187,65 +187,34 @@ fun GetBookMonthEntity.toUiBookMonthModel(): UiBookMonthModel {
     }
     list.addAll(listData)
 
-    return if (carryOverInfo.carryOverStatus) {
-        if (carryOverInfo.carryOverMoney >= 0) {
-            // 총 수입에 포함
-            UiBookMonthModel(
-                list, ExtData(
-                    totalIncome ="${
-                        NumberFormat.getNumberInstance()
-                            .format(totalIncome + carryOverInfo.carryOverMoney)
-                    }${CurrencyUtil.currency}",
-                    totalOutcome ="${
-                        NumberFormat.getNumberInstance().format(totalOutcome)
-                    }${CurrencyUtil.currency}",
-                    totalBalance = "${
-                        NumberFormat.getNumberInstance().format(totalIncome - totalOutcome)
-                    }${CurrencyUtil.currency}"
-                ), CarryOverInfo(
-                    carryOverInfo.carryOverStatus, NumberFormat.getNumberInstance()
-                        .format(carryOverInfo.carryOverMoney)
-                )
-            )
-        } else {
-            // 총 지출에 포함
-            UiBookMonthModel(
-                list, ExtData(
-                    totalIncome = "${
-                        NumberFormat.getNumberInstance().format(totalIncome)
-                    }${CurrencyUtil.currency}",
-                    totalOutcome = "${
-                        NumberFormat.getNumberInstance()
-                            .format(totalOutcome + kotlin.math.abs(carryOverInfo.carryOverMoney))
-                    }${CurrencyUtil.currency}",
-                    totalBalance = "${
-                        NumberFormat.getNumberInstance().format(totalIncome - totalOutcome)
-                    }${CurrencyUtil.currency}"
-                ), CarryOverInfo(
-                    carryOverInfo.carryOverStatus, NumberFormat.getNumberInstance()
-                        .format(carryOverInfo.carryOverMoney)
-                )
-            )
-        }
+    val carryOverValue = carryOverInfo.carryOverMoney
+    val adjustedIncome = if (carryOverInfo.carryOverStatus && carryOverValue >= 0) {
+        totalIncome + carryOverValue
     } else {
-        // 이월 내역 없을 경우
-        UiBookMonthModel(
-            list, ExtData(
-                totalIncome = "${
-                    NumberFormat.getNumberInstance().format(totalIncome)
-                }${CurrencyUtil.currency}",
-                totalOutcome = "${
-                    NumberFormat.getNumberInstance().format(totalOutcome)
-                }${CurrencyUtil.currency}",
-                totalBalance = "${
-                    NumberFormat.getNumberInstance().format(totalIncome - totalOutcome)
-                }${CurrencyUtil.currency}"
-            ), CarryOverInfo(
-                carryOverInfo.carryOverStatus, NumberFormat.getNumberInstance()
-                    .format(carryOverInfo.carryOverMoney)
-            )
-        )
+        totalIncome
     }
+
+    val adjustedOutcome = if (carryOverInfo.carryOverStatus && carryOverValue < 0) {
+        totalOutcome + carryOverValue.absoluteValue
+    } else {
+        totalOutcome
+    }
+
+    val adjustedBalance = adjustedIncome - adjustedOutcome
+    val formatter = NumberFormat.getNumberInstance()
+
+    return UiBookMonthModel(
+        list,
+        ExtData(
+            totalIncome = "${formatter.format(adjustedIncome)}${CurrencyUtil.currency}",
+            totalOutcome = "${formatter.format(adjustedOutcome)}${CurrencyUtil.currency}",
+            totalBalance = "${formatter.format(adjustedBalance)}${CurrencyUtil.currency}"
+        ),
+        CarryOverInfo(
+            carryOverInfo.carryOverStatus,
+            formatter.format(carryOverValue)
+        )
+    )
 }
 
 // 일별 조회
@@ -303,8 +272,9 @@ fun GetBookDaysEntity.toUiBookMonthModel(): UiBookDayModel {
     return UiBookDayModel(
         dayMoneyList,
         ExtData(
-            "${numberFormatter.format(adjustedIncome)}${CurrencyUtil.currency}",
-            "${numberFormatter.format(adjustedOutcome)}${CurrencyUtil.currency}"
+            totalIncome ="${numberFormatter.format(adjustedIncome)}${CurrencyUtil.currency}",
+            totalOutcome = "${numberFormatter.format(adjustedOutcome)}${CurrencyUtil.currency}",
+            totalBalance = "${numberFormatter.format(adjustedIncome-adjustedOutcome)}${CurrencyUtil.currency}"
         ),
         CarryOverInfo(
             carryOverInfo.carryOverStatus,
