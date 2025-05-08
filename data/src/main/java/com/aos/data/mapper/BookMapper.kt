@@ -210,7 +210,7 @@ fun calculateFormattedAmount(
 }
 
 // 일별 조회
-fun GetBookDaysEntity.toUiBookMonthModel(): UiBookDayModel {
+fun GetBookDaysEntity.toUiBookMonthModel(date: String): UiBookDayModel {
     val dayMoneyList: List<DayMoney> = this.dayLinesResponse.map {
         DayMoney(
             id = it.id,
@@ -255,25 +255,30 @@ fun GetBookDaysEntity.toUiBookMonthModel(): UiBookDayModel {
         }
     }
 
+
     val carryOverValue = carryOverInfo.carryOverMoney
-    val adjustedIncome = totalIncome + maxOf(carryOverValue, 0.0)
-    val adjustedOutcome = totalOutcome + maxOf(-carryOverValue, 0.0)
+    val day = date.split("-")[2].toInt()
+
+    // 1일 일 경우, 이월 설정 값이 있을 때, 수입/지출 값 보정
+    if (carryOverInfo.carryOverStatus && day == 1){
+        totalIncome += maxOf(carryOverValue, 0.0)
+        totalOutcome += maxOf(-carryOverValue, 0.0)
+    }
 
     val numberFormatter = NumberFormat.getNumberInstance()
 
     return UiBookDayModel(
         dayMoneyList,
         ExtData(
-            totalIncome ="${numberFormatter.format(adjustedIncome)}${CurrencyUtil.currency}",
-            totalOutcome = "${numberFormatter.format(adjustedOutcome)}${CurrencyUtil.currency}",
-            totalBalance = "${numberFormatter.format(adjustedIncome-adjustedOutcome)}${CurrencyUtil.currency}"
+            totalIncome ="${numberFormatter.format(totalIncome)}${CurrencyUtil.currency}",
+            totalOutcome = "${numberFormatter.format(totalOutcome)}${CurrencyUtil.currency}",
+            totalBalance = "${numberFormatter.format(totalIncome-totalOutcome)}${CurrencyUtil.currency}"
         ),
         CarryOverInfo(
             carryOverInfo.carryOverStatus,
             numberFormatter.format(carryOverValue)
         )
     )
-
 }
 
 fun GetBookInfoEntity.toUiBookInfoModel(): UiBookInfoModel {
