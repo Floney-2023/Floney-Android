@@ -81,95 +81,53 @@ fun GetCheckUserBookEntity.toGetCheckUserBookModel(): GetCheckUserBookModel {
 // 캘린더 조회
 fun GetBookMonthEntity.toUiBookMonthModel(): UiBookMonthModel {
     val listData = arrayListOf<MonthMoney>()
-    var tempDay = ""
-    var tempExpenses: Expenses? = null
     var tempDate = ""
-    var tempOutcome = ""
 
     val calendar = Calendar.getInstance()
     val todayDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.time)
 
-    this.expenses.forEach {
+    // 날짜에 따라 지출, 수입으로 묶어 설정한다.
+    expenses.groupBy { it.date }.forEach { (date, items) ->
+        val (year, month, dayStr) = date.split("-")
+        val day = dayStr.toInt()
+        tempDate = date
 
-        if (it.date == tempDate) {
-            tempExpenses?.outcome = tempOutcome
-            listData.add(
-                MonthMoney(
-                    "${it.date.split("-")[0].toInt()}",
-                    "${it.date.split("-")[1].toInt()}",
-                    "${it.date.split("-")[2].toInt()}",
-                    Expenses(
-                        date = it.date,
-                        outcome = when {
-                            // 첫 번째 조건: money가 0.0이고 날짜가 1일이 아닌 경우
-                            it.money.toString() == "0.0" && it.date.split("-")[2].toInt() != 1 -> ""
+        val incomeItem = items.getOrNull(0)
+        val outcomeItem = items.getOrNull(1)
 
-                            // 두 번째 조건: 날짜가 1일인 경우
-                            it.date.split("-")[2].toInt() == 1 -> {
-                                when {
-                                    // 이월 상태가 없는 경우
-                                    !carryOverInfo.carryOverStatus -> {
-                                        if (it.money.toString() == "0.0") ""
-                                        else "-${NumberFormat.getNumberInstance().format(it.money)}"
-                                    }
-                                    // 이월 상태가 있는 경우
-                                    else -> {
-                                        val totalMoney =
-                                            it.money + kotlin.math.abs(carryOverInfo.carryOverMoney)
-                                        if (kotlin.math.abs(totalMoney) >= 1e-9 && carryOverInfo.carryOverMoney < 0) {
-                                            "-${
-                                                NumberFormat.getNumberInstance().format(totalMoney)
-                                            }"
-                                        } else {
-                                            ""
-                                        }
-                                    }
-                                }
-                            }
-                            // 기본 조건: 위 조건에 해당하지 않는 경우
-                            else -> "-${NumberFormat.getNumberInstance().format(it.money)}"
-                        },
-                        income = tempExpenses!!.income
-                    ),
-                    todayDate == it.date
-                )
+        val income = incomeItem?.let {
+            calculateFormattedAmount(
+                money = it.money,
+                day = day,
+                carryOverStatus = carryOverInfo.carryOverStatus,
+                carryOverMoney = carryOverInfo.carryOverMoney,
+                isIncome = true
             )
-        } else {
-            tempDate = it.date
-            tempOutcome = "-${NumberFormat.getNumberInstance().format(it.money)}"
-            tempDay = it.date.split("-")[2].toInt().toString()
-            tempExpenses = Expenses(
-                date = it.date,
-                outcome = tempOutcome,
-                income = when {
-                    // 첫 번째 조건: money가 0.0이고 날짜가 1일이 아닌 경우
-                    it.money.toString() == "0.0" && it.date.split("-")[2].toInt() != 1 -> ""
+        } ?: ""
 
-                    // 두 번째 조건: 날짜가 1일인 경우
-                    it.date.split("-")[2].toInt() == 1 -> {
-                        when {
-                            // 이월 상태가 없는 경우
-                            !carryOverInfo.carryOverStatus -> {
-                                if (it.money.toString() == "0.0") ""
-                                else "+${NumberFormat.getNumberInstance().format(it.money)}"
-                            }
-                            // 이월 상태가 있는 경우
-                            else -> {
-                                val totalMoney =
-                                    it.money + kotlin.math.abs(carryOverInfo.carryOverMoney)
-                                if (kotlin.math.abs(totalMoney) >= 1e-9 && carryOverInfo.carryOverMoney > 0) {
-                                    "+${NumberFormat.getNumberInstance().format(totalMoney)}"
-                                } else {
-                                    ""
-                                }
-                            }
-                        }
-                    }
-                    // 기본 조건: 위 조건에 해당하지 않는 경우
-                    else -> "+${NumberFormat.getNumberInstance().format(it.money)}"
-                }
+        val outcome = outcomeItem?.let {
+            calculateFormattedAmount(
+                money = it.money,
+                day = day,
+                carryOverStatus = carryOverInfo.carryOverStatus,
+                carryOverMoney = carryOverInfo.carryOverMoney,
+                isIncome = false
             )
-        }
+        } ?: ""
+
+        listData.add(
+            MonthMoney(
+                year,
+                month.toInt().toString(),
+                day.toString(),
+                Expenses(
+                    date = date,
+                    income = income,
+                    outcome = outcome
+                ),
+                todayDate == date
+            )
+        )
     }
 
     // 날짜 앞 빈공백 추가
@@ -187,6 +145,7 @@ fun GetBookMonthEntity.toUiBookMonthModel(): UiBookMonthModel {
     }
     list.addAll(listData)
 
+    // 이월 설정 데이터
     val carryOverValue = carryOverInfo.carryOverMoney
     val adjustedIncome = if (carryOverInfo.carryOverStatus && carryOverValue >= 0) {
         totalIncome + carryOverValue
@@ -215,6 +174,39 @@ fun GetBookMonthEntity.toUiBookMonthModel(): UiBookMonthModel {
             formatter.format(carryOverValue)
         )
     )
+}
+
+fun calculateFormattedAmount(
+    money: Double,
+    day: Int,
+    carryOverStatus: Boolean,
+    carryOverMoney: Double,
+    isIncome: Boolean
+): String {
+    val symbol = if (isIncome) "+" else "-"
+    val isCarryPositive = carryOverMoney > 0
+    val isCarryNegative = carryOverMoney < 0
+
+    if (money == 0.0 && day != 1) return ""
+
+    // 1일의 경우, 이월 설정 데이터 여부에 따라 수입, 지출 값 설정
+    return if (day == 1) {
+        if (!carryOverStatus ||
+            (isIncome && !isCarryPositive) ||
+            (!isIncome && !isCarryNegative)
+        ) {
+            if (money == 0.0) "" else "$symbol${NumberFormat.getNumberInstance().format(money)}"
+        } else {
+            val total = money + kotlin.math.abs(carryOverMoney)
+            if (total.absoluteValue >= 1e-9) {
+                "$symbol${NumberFormat.getNumberInstance().format(total)}"
+            } else {
+                ""
+            }
+        }
+    } else {
+        "$symbol${NumberFormat.getNumberInstance().format(money)}"
+    }
 }
 
 // 일별 조회
