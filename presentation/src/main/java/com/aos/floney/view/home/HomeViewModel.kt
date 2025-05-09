@@ -208,13 +208,10 @@ class HomeViewModel @Inject constructor(
                 // 반복 내역 유무에 따른 정렬된 데이터 목록 생성
                 val sortedData = sortData(updatedData)
 
-                // 수입/지출 조정된 ExtData 생성
-                val updatedExtData = adjustIncomeOrOutcome(data.extData, carryInfoData)
-
                 // 최종 데이터 : 이월 설정, 반복 내역 O, 반복 내역 X 순서
                 val updatedList = buildUpdatedList(carryInfoData, sortedData)
 
-                _getMoneyDayData.emit(UiBookDayModel(updatedList, updatedExtData, data.carryOverData))
+                _getMoneyDayData.emit(UiBookDayModel(updatedList, data.extData, data.carryOverData))
                 _getMoneyDayList.postValue(updatedList)
             }.onFailure {
                 baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@HomeViewModel)))
@@ -255,27 +252,6 @@ class HomeViewModel @Inject constructor(
 
     private fun sortData(data: List<DayMoney>): List<DayMoney> {
         return data.sortedBy { it.repeatDuration != "없음" }
-    }
-
-    private fun adjustIncomeOrOutcome(extData: ExtData, carryInfoData: DayMoney?): ExtData {
-        val carryOverMoney = carryInfoData?.money?.replace(",", "")?.toDoubleOrNull() ?: 0.0
-
-        val newTotalIncome = if (carryOverMoney > 0) {
-            extData.totalIncome + carryOverMoney
-        } else {
-            extData.totalIncome
-        }
-
-        val newTotalOutcome = if (carryOverMoney < 0) {
-            extData.totalOutcome + kotlin.math.abs(carryOverMoney)
-        } else {
-            extData.totalOutcome
-        }
-
-        return extData.copy(
-            totalIncome = newTotalIncome,
-            totalOutcome = newTotalOutcome
-        )
     }
 
     private fun buildUpdatedList(carryInfoData: DayMoney?, sortedData: List<DayMoney>): List<DayMoney> {

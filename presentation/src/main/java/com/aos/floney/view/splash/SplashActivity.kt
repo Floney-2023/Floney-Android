@@ -100,7 +100,7 @@ class SplashActivity :
                 } else {
                     overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
                 }
-            } else if(sharedPreferenceUtil.getString("accessToken", "") != "") {
+            } else if(sharedPreferenceUtil.getString("accessToken", "") != "" && !viewModel.getSessionExpiredFlag()) {
                 handleIntent(intent)
             }  else {
                 val intent = Intent(this@SplashActivity, LoginActivity::class.java)

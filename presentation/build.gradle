@@ -21,8 +21,8 @@ android {
         applicationId "com.aos.floney"
         minSdk 24
         targetSdk 35
-        versionCode 46
-        versionName "2.0.1"
+        versionCode 48
+        versionName "2.0.2"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField "String", "KAKAO_NATIVE_APP_KEY", properties['kakao_native_app_key']

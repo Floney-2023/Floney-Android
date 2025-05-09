@@ -5,6 +5,9 @@ import android.content.Intent
 import android.credentials.GetCredentialException
 import android.os.Build
 import android.os.Bundle
+import android.view.View
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import androidx.activity.result.ActivityResultLauncher
 import androidx.annotation.RequiresApi
 import androidx.credentials.CustomCredential
@@ -88,9 +91,31 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginViewModel>(R.layou
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mAuth = FirebaseAuth.getInstance()
-
+        setActionListener()
         setUpViewModelObserver()
+    }
 
+    private fun hideKeyboard() {
+        val imm = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        val view = currentFocus ?: View(this)
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+
+    private fun setActionListener() {
+        binding.etEmail.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_NEXT) {
+                binding.pwText.requestFocus()
+                true
+            } else false
+        }
+
+        binding.pwText.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                hideKeyboard()
+                viewModel.onClickLogin()
+                true
+            } else false
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
@@ -194,7 +219,6 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginViewModel>(R.layou
         }
     }
 
-    // 카카오 로그인
     private fun onClickedKakaoLogin() {
         if (NetworkUtils.isNetworkConnected(applicationContext)) {
             val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->

@@ -100,7 +100,8 @@ class SubscribePlanActivity : BaseActivity<ActivitySubscribePlanBinding, Subscri
             // 서비스 이용 내역 화면
             viewModel.servicePage.collect {
                 if(it) {
-                    finish()
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://m.cafe.naver.com/floney/2"))
+                    startActivity(intent)
                 }
             }
         }

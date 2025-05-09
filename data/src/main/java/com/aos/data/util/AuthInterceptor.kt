@@ -185,4 +185,8 @@ class AuthInterceptor @Inject constructor(
     fun resetSessionExpiredFlag() {
         sessionExpired = false
     }
+
+    fun getSessionExpiredFlag(): Boolean {
+        return sessionExpired
+    }
 }
