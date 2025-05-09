@@ -42,9 +42,13 @@ jobs:
       - name: Build Debug APK
         run: ./gradlew :presentation:assembleDebug
 
-      - name: Extract versionName from build.gradle
+      - name: Extract version info
         id: version
-        run: echo "version_name=$(grep versionName app/build.gradle | head -1 | awk -F\\\" '{print $2}')" >> $GITHUB_OUTPUT
+        run: |
+          version_name=$(grep versionName presentation/build.gradle | head -1 | awk -F\\\" '{print $2}')
+          version_code=$(grep versionCode presentation/build.gradle | head -1 | awk '{print $2}')
+          echo "version_name=$version_name" >> $GITHUB_OUTPUT
+          echo "version_code=$version_code" >> $GITHUB_OUTPUT
 
       - name: Read release notes
         id: notes
@@ -72,8 +76,27 @@ jobs:
 
       - name: Notify Slack
         run: |
+          version_name="${{ steps.version.outputs.version_name }}"
+          version_code="${{ steps.version.outputs.version_code }}"
+          release_notes=$(cat releasenotes.txt | sed ':a;N;$!ba;s/\n/\\n/g')
+
           curl -X POST -H 'Content-type: application/json' \
             --data "{
-              \"text\": \"🚀 *Floney Debug v${{ steps.version.outputs.version_name }} 배포 완료!*\n📝 *Release Notes:*\n${{ steps.notes.outputs.release_notes }}\"
+              \"attachments\": [
+                {
+                  \"color\": \"#31C690\",
+                  \"title\": \"📦 Floney-Dev ${version_name} (${version_code}) 업로드 완료\",
+                  \"text\": \"${release_notes}\",
+                  \"fields\": [
+                    {
+                      \"title\": \"Version\",
+                      \"value\": \"${version_name} (${version_code})\",
+                      \"short\": true
+                    }
+                  ],
+                  \"footer\": \"Firebase App Distribution\",
+                  \"ts\": $(date +%s)
+                }
+              ]
             }" \
             ${{ secrets.SLACK_WEBHOOK_URL }}
