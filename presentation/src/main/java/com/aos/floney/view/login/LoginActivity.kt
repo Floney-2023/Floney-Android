@@ -328,15 +328,26 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginViewModel>(R.layou
                     request = request,
                     context = this@LoginActivity,
                 )
-                Timber.e("result ${result}")
+                Timber.e("result $result")
                 handleSignIn(result)
-            } catch (e: GetCredentialException) {
-//                handleFailure(e)
-                Timber.e("failure ${e.printStackTrace()}")
-                viewModel.baseEvent(BaseViewModel.Event.ShowToast("구글 로그인에 실패하였습니다."))
+
+            } catch (e: androidx.credentials.exceptions.GetCredentialCancellationException) {
+                Timber.e("Google login cancelled by user")
                 viewModel.baseEvent(BaseViewModel.Event.HideLoading)
+                viewModel.baseEvent(BaseViewModel.Event.ShowToast("구글 로그인을 취소하였습니다."))
+
+            } catch (e: GetCredentialException) {
+                Timber.e("Google login failed: ${e.message}")
+                viewModel.baseEvent(BaseViewModel.Event.HideLoading)
+                viewModel.baseEvent(BaseViewModel.Event.ShowToast("구글 로그인에 실패하였습니다."))
+
+            } catch (e: Exception) {
+                Timber.e("Unknown error: ${e.message}")
+                viewModel.baseEvent(BaseViewModel.Event.HideLoading)
+                viewModel.baseEvent(BaseViewModel.Event.ShowToast("알 수 없는 오류가 발생했습니다."))
             }
         }
+
     }
 
     private fun handleSignIn(result: androidx.credentials.GetCredentialResponse) {
@@ -368,7 +379,7 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginViewModel>(R.layou
                                 )
                                 viewModel.isAuthTokenCheck("google", idToken)
                             } else {
-                                Timber.e("failure ${task.exception}")
+                                // Timber.e("failure ${task.exception}")
                                 viewModel.baseEvent(BaseViewModel.Event.ShowToast("구글 로그인에 실패하였습니다."))
                                 viewModel.baseEvent(BaseViewModel.Event.HideLoading)
                             }
