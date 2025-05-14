@@ -30,6 +30,7 @@ import com.aos.floney.view.common.WarningPopupDialog
 import com.aos.floney.view.history.memo.InsertMemoActivity
 import com.aos.floney.view.history.picture.InsertPictureActivity
 import com.aos.floney.view.home.HomeActivity
+import com.aos.floney.view.subscribe.SubscribePlanActivity
 import com.aos.model.book.UiBookCategory
 import com.aos.model.home.DayMoneyFavoriteItem
 import com.aos.model.home.DayMoneyModifyItem
@@ -341,7 +342,7 @@ class HistoryActivity :
                     ) {  checked ->
                         if (!checked) // 구독 플랜 보기로 이동
                         {
-                            startActivity(Intent(this@HistoryActivity, HomeActivity::class.java))
+                            startActivity(Intent(this@HistoryActivity, SubscribePlanActivity::class.java))
 
                         }
                     }
