@@ -743,25 +743,23 @@ class HistoryViewModel @Inject constructor(
             }
 
             baseEvent(Event.ShowLoading)
-            val categories = listOf("수입", "이체", "지출")
 
-            for (category in categories) {
-                val result = getBookFavoriteUseCase(
-                    prefs.getString("bookKey", ""),
-                    category.toCategoryCode()
-                )
-                if (result.isFailure) {
-                    baseEvent(Event.HideLoading)
-                    baseEvent(Event.ShowToast(result.exceptionOrNull()?.message.parseErrorMsg(this@HistoryViewModel)))
-                    return@launch
-                }
+            val result = getBookFavoriteUseCase(
+                prefs.getString("bookKey", ""),
+                flow.value!!.toCategoryCode()
+            )
 
-                val count = result.getOrNull()?.size ?: 0
-                if (count >= 5) {
-                    baseEvent(Event.HideLoading)
-                    onResult(false) // 하나라도 5 초과 → false
-                    return@launch
-                }
+            if (result.isFailure) {
+                baseEvent(Event.HideLoading)
+                baseEvent(Event.ShowToast(result.exceptionOrNull()?.message.parseErrorMsg(this@HistoryViewModel)))
+                return@launch
+            }
+
+            val count = result.getOrNull()?.size ?: 0
+            if (count >= 5) {
+                baseEvent(Event.HideLoading)
+                onResult(false) // 하나라도 5 초과 → false
+                return@launch
             }
 
             baseEvent(Event.HideLoading)
