@@ -244,7 +244,7 @@ enum class SortType(val serverValue: String, val displayName: String) {
     LATEST("LATEST", "최신 순"),
     OLDEST("OLDEST", "오래된 순"),
     LINE_SUBCATEGORY_NAME("LINE_SUBCATEGORY_NAME", "분류 가나다 순"),
-    USER_NICKNAME("USER_NICKNAME", "사용자 닉네임 가나다 순");
+    USER_NICKNAME("USER_NICKNAME", "사용자 가나다 순");
 
     companion object {
         // 서버에서 받은 값으로 Enum 찾기
