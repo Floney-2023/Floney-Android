@@ -56,7 +56,7 @@ class AnalyzeViewModel @Inject constructor(
     // 구독 만료됨 & 혜택 적용 여부
     var subscribeExpired = false
 
-    // 구독 유도 팝업 표시 여부
+    // 구독 만료 팝업 표시 여부
     var subscribePopupShow = MutableLiveData<Boolean>(false)
 
     init {

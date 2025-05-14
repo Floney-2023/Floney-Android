@@ -154,7 +154,7 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(R.layout.a
 
         repeatOnStarted {
             viewModel.clickedAddHistory.collect {
-                if (viewModel.subscribeExpired.value!!) // 구독 만료일 경우, 구독 유도 팝업 표시
+                if (viewModel.subscribeExpired.value!!) // 구독 만료일 경우, 구독 만료 팝업 표시
                 {
                     viewModel.changeSubscribePopupShow(true) // 팝업 표시
                     viewModel.subscribePopupEnter.value = false // 진입 시 표시되는 팝업이 아님
