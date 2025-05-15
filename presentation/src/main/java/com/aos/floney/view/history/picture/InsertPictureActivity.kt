@@ -16,6 +16,7 @@ import androidx.fragment.app.FragmentManager
 import com.aos.floney.R
 import com.aos.floney.base.BaseActivity
 import com.aos.floney.base.BaseViewModel
+import com.aos.floney.base.BaseViewModel.Event
 import com.aos.floney.databinding.ActivityInsertPictureBinding
 import com.aos.floney.ext.intentSerializable
 import com.aos.floney.ext.intentSerializableList
@@ -88,6 +89,8 @@ class InsertPictureActivity :
                         viewModel.setIsModify(true)
                         viewModel.deletePictureFile(it)
                     }
+
+                viewModel.baseEvent(Event.ShowSuccessToast("사진 삭제가 완료되었습니다."))
             }
         }
 
