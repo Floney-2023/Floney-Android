@@ -31,6 +31,7 @@ class BillingManager(
     interface BillingCallback {
         fun onPurchaseTokenReceived(token: String, purchase: Purchase)
         fun onPurchaseSuccess(checking: Boolean)
+        fun onBillingError(errorMsg: String)
     }
 
     private var billingClient: BillingClient
@@ -50,6 +51,7 @@ class BillingManager(
                 } else {
                     // 결제 실패 처리
                     Timber.e("Purchase failed: ${billingResult.debugMessage}")
+                    billingCallback.onBillingError("결제가 취소되었습니다.")
                 }
             }
             .build()
@@ -148,6 +150,7 @@ class BillingManager(
             } else {
                 // 오류 처리
                 Timber.e("checking 4 : Error code: ${billingResult.responseCode}, message: ${productDetailsList}")
+                billingCallback.onBillingError("거래 정보를 불러오는 데에 오류가 발생하였습니다.")
             }
         }
     }
@@ -171,6 +174,7 @@ class BillingManager(
                 ).build()
 
             val billingResult = billingClient.launchBillingFlow(activity, billingFlowParams)
+
             if (billingResult.responseCode != BillingClient.BillingResponseCode.OK) {
                 Timber.e("Failed to launch billing flow: ${billingResult.debugMessage}")
                 billingCallback.onPurchaseSuccess(false)
