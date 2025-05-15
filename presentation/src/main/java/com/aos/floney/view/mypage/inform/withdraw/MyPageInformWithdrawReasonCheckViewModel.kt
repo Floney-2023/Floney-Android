@@ -10,6 +10,7 @@ import com.aos.floney.base.BaseViewModel
 import com.aos.floney.ext.parseErrorMsg
 import com.aos.floney.util.EventFlow
 import com.aos.floney.util.MutableEventFlow
+import com.aos.usecase.subscribe.SubscribeAndroidInfoUseCase
 import com.aos.usecase.subscribe.SubscribeCheckUseCase
 import com.aos.usecase.withdraw.WithdrawUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,7 +24,7 @@ class MyPageInformWithdrawReasonCheckViewModel @Inject constructor(
     private val prefs: SharedPreferenceUtil,
     private val subscriptionDataStoreUtil: SubscriptionDataStoreUtil,
     private val withdrawUseCase: WithdrawUseCase,
-    private val subscribeCheckUseCase: SubscribeCheckUseCase
+    private val subscribeAndroidInfoUseCase: SubscribeAndroidInfoUseCase
 ) : BaseViewModel() {
 
     // 뒤로가기
@@ -234,8 +235,8 @@ class MyPageInformWithdrawReasonCheckViewModel @Inject constructor(
     // 구독 여부 가져오기
     fun getSubscribeChecking(){
         viewModelScope.launch(Dispatchers.IO) {
-            subscribeCheckUseCase().onSuccess {
-                subscribeCheck.postValue(it.isValid)
+            subscribeAndroidInfoUseCase().onSuccess {
+                subscribeCheck.postValue(it.autoRenewing)
             }.onFailure {
                 baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
             }
