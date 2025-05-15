@@ -92,7 +92,9 @@ class AnalyzeLineSubcategoryViewModel @Inject constructor(
                 val updatedList = it.booksUsers.map { user ->
                     user.copy(isCheck = true)
                 }
-                _booksUsersList.postValue(it.copy(booksUsers = updatedList))
+                // 닉네임 기준으로 가나다순 정렬
+                val sortedList = updatedList.sortedBy { it.nickname }
+                _booksUsersList.postValue(it.copy(booksUsers = sortedList))
                 _booksUsersFilterCount.postValue(it.booksUsers.size)
             }.onFailure {
                 baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@AnalyzeLineSubcategoryViewModel)))
