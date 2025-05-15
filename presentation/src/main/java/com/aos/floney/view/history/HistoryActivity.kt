@@ -16,6 +16,7 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.aos.floney.R
 import com.aos.floney.base.BaseActivity
+import com.aos.floney.base.BaseViewModel
 import com.aos.floney.base.BaseViewModel.Event
 import com.aos.floney.databinding.ActivityHistoryBinding
 import com.aos.floney.ext.applyHistoryCloseTransition
@@ -61,6 +62,7 @@ class HistoryActivity :
                 // SecondActivity에서 전달한 데이터를 받음
                 val receivedValue = result.data?.getStringExtra("memo") ?: ""
                 viewModel.setMemo(receivedValue)
+                viewModel.baseEvent(Event.ShowSuccessToast("메모 작성을 완료하였습니다."))
             }
         }
 
