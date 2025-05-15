@@ -1,8 +1,10 @@
 package com.aos.floney.view.history.memo
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.text.method.ScrollingMovementMethod
 import androidx.activity.OnBackPressedCallback
 import androidx.databinding.library.baseAdapters.BR
 import com.aos.floney.R
@@ -21,8 +23,14 @@ class InsertMemoActivity : BaseActivity<ActivityInsertMemoBinding, InsertMemoVie
         setUpBackPressHandler()
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun setUpUi() {
         binding.setVariable(BR.vm, viewModel)
+
+        binding.etInsertMemo.setOnTouchListener { v, event ->
+            v.parent.requestDisallowInterceptTouchEvent(true) // NestedScrollView가 터치 뺏지 못하게
+            false // EditText가 원래대로 터치 이벤트 받게
+        }
 
         val receivedData = intent.getStringExtra("memo")
         receivedData?.let { viewModel.initMemo(receivedData) }
