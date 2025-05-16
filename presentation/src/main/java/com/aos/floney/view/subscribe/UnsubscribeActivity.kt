@@ -31,6 +31,7 @@ import com.appsflyer.deeplink.DeepLinkResult
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import javax.inject.Inject
+import com.aos.floney.ext.applyOpenTransition
 
 @AndroidEntryPoint
 class UnsubscribeActivity : BaseActivity<ActivityUnsubscribeBinding, UnsubscribeViewModel>(R.layout.activity_unsubscribe) {
@@ -54,7 +55,10 @@ class UnsubscribeActivity : BaseActivity<ActivityUnsubscribeBinding, Unsubscribe
             // 구독 유지하기
             viewModel.resubscribe.collect {
                 if(it) {
-                    finish()
+                    val intent = Intent(this@UnsubscribeActivity, MyPageActivity::class.java)
+                    startActivity(intent)
+                    applyOpenTransition()
+                    finishAffinity()
                 }
             }
         }
