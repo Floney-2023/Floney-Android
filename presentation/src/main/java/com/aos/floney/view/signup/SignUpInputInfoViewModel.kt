@@ -144,4 +144,7 @@ class SignUpInputInfoViewModel @Inject constructor(
         }
     }
 
+    fun isSocial(): Boolean {
+        return !socialToken.isNullOrEmpty()
+    }
 }
