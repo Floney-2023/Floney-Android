@@ -57,7 +57,7 @@ class SignUpInputInfoFragment : BaseFragment<FragmentSignUpInputInfoBinding, Sig
         }
 
         repeatOnStarted {
-            // 이전 페이지 이동
+            // 이전 이메일 값 셋팅
             viewModel.socialEmail.collect {
                 if(it.isNotEmpty()) {
                     binding.etEmail.text = it
