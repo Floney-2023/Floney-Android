@@ -97,6 +97,7 @@ class MyPageAlarmActivity : BaseActivity<ActivityMyPageAlarmBinding, MyPageAlarm
             if (binding.tabLayout.tabCount == 2) {
                 // 2개일 때는 반반씩 나누기
                 layoutParams.width = 0
+                binding.viewpagerAlarmView.isUserInputEnabled = false
                 (layoutParams as LinearLayout.LayoutParams).weight = 1f
             } else if (binding.tabLayout.tabCount >= 3) {
                 // 3개 이상일 때는 각 탭당 129dp로 고정
