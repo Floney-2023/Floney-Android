@@ -106,6 +106,13 @@ class SettleUpViewModel @Inject constructor(
         }
     }
 
+    // 구독 만료 팝업 보이기 (화면 이동 막기)
+    fun showSubscribePopupIfNeeded() {
+        // 로직이 생길 수 있다면 여기서 처리
+        subscribePopupShow.value = true
+        subscribePopupEnter.value = false
+    }
+
     fun convertBookCodeToKey(settlementId: Long, bookCode: String) {
         viewModelScope.launch {
             booksEntranceUseCase(bookCode).onSuccess {

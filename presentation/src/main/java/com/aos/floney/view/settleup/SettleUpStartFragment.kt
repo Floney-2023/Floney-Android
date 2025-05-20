@@ -39,8 +39,7 @@ class SettleUpStartFragment :
             viewModel.settleUpStartPage.collect {
                 // 구독 만료 시, 적용 팝업 표시
                 if (activityViewModel.subscribeExpired.value!!) {
-                    activityViewModel.subscribePopupShow.value = true
-                    activityViewModel.subscribePopupEnter.value = false
+                    activityViewModel.showSubscribePopupIfNeeded()
                 } else { // 정산 시작하기 이동
                     val action =
                         SettleUpStartFragmentDirections.actionSettleUpStartFragmentToSettleUpMemberSelectFragment()

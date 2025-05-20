@@ -38,23 +38,26 @@ import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class AnalyzeActivity : BaseActivity<ActivityAnalyzeBinding, AnalyzeViewModel>(R.layout.activity_analyze), BookSettingBudgetFragment.OnFragmentInteractionListener{
+class AnalyzeActivity :
+    BaseActivity<ActivityAnalyzeBinding, AnalyzeViewModel>(R.layout.activity_analyze),
+    BookSettingBudgetFragment.OnFragmentInteractionListener {
 
     @Inject
     lateinit var sharedPreferenceUtil: SharedPreferenceUtil
 
-    private val launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            val isSaved = result.data?.getBooleanExtra("isSave", false) ?: false
-            if (isSaved) {
-                viewModel.baseEvent(BaseViewModel.Event.ShowSuccessToast("저장이 완료되었습니다."))
-                result.data?.removeExtra("isSave")
+    private val launcher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val isSaved = result.data?.getBooleanExtra("isSave", false) ?: false
+                if (isSaved) {
+                    viewModel.baseEvent(BaseViewModel.Event.ShowSuccessToast("저장이 완료되었습니다."))
+                    result.data?.removeExtra("isSave")
 
-                // 데이터를 다시 불러온다.
-                viewModel.onClickFlow(viewModel.flow.value!!)
+                    // 데이터를 다시 불러온다.
+                    viewModel.onClickFlow(viewModel.flow.value!!)
+                }
             }
         }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,12 +82,14 @@ class AnalyzeActivity : BaseActivity<ActivityAnalyzeBinding, AnalyzeViewModel>(R
                     finish()
                     false
                 }
+
                 R.id.settleUpFragment -> {
                     startActivity(Intent(this, SettleUpActivity::class.java))
                     applyOpenTransition()
                     finish()
                     false
                 }
+
                 R.id.mypageFragment -> {
                     startActivity(Intent(this, MyPageActivity::class.java))
                     applyOpenTransition()
@@ -106,41 +111,60 @@ class AnalyzeActivity : BaseActivity<ActivityAnalyzeBinding, AnalyzeViewModel>(R
         }
     }
 
-    fun goToSubscribePlanActivity(){
+    fun goToSubscribePlanActivity() {
         startActivity(Intent(this, SubscribePlanActivity::class.java))
         applyOpenTransition()
     }
+
     private fun setUpViewModelObserver() {
         viewModel.flow.observe(this) {
-            when(it) {
+            when (it) {
                 "지출" -> {
                     supportFragmentManager.beginTransaction()
-                        .setCustomAnimations(androidx.appcompat.R.anim.abc_fade_in, androidx.appcompat.R.anim.abc_fade_out)
+                        .setCustomAnimations(
+                            androidx.appcompat.R.anim.abc_fade_in,
+                            androidx.appcompat.R.anim.abc_fade_out
+                        )
                         .replace(R.id.fl_container, AnalyzeOutComeFragment()).commit()
                 }
+
                 "수입" -> {
                     supportFragmentManager.beginTransaction()
-                        .setCustomAnimations(androidx.appcompat.R.anim.abc_fade_in, androidx.appcompat.R.anim.abc_fade_out)
+                        .setCustomAnimations(
+                            androidx.appcompat.R.anim.abc_fade_in,
+                            androidx.appcompat.R.anim.abc_fade_out
+                        )
                         .replace(R.id.fl_container, AnalyzeIncomeFragment()).commit()
                 }
+
                 "예산" -> {
                     supportFragmentManager.beginTransaction()
-                        .setCustomAnimations(androidx.appcompat.R.anim.abc_fade_in, androidx.appcompat.R.anim.abc_fade_out)
+                        .setCustomAnimations(
+                            androidx.appcompat.R.anim.abc_fade_in,
+                            androidx.appcompat.R.anim.abc_fade_out
+                        )
                         .replace(R.id.fl_container, AnalyzePlanFragment()).commit()
                 }
+
                 "자산" -> {
                     supportFragmentManager.beginTransaction()
-                        .setCustomAnimations(androidx.appcompat.R.anim.abc_fade_in, androidx.appcompat.R.anim.abc_fade_out)
+                        .setCustomAnimations(
+                            androidx.appcompat.R.anim.abc_fade_in,
+                            androidx.appcompat.R.anim.abc_fade_out
+                        )
                         .replace(R.id.fl_container, AnalyzeAssetFragment()).commit()
                 }
             }
         }
 
         viewModel.onClickSetBudget.observe(this) {
-            if(it) {
+            if (it) {
                 binding.flContainer2.isVisible = true
                 supportFragmentManager.beginTransaction()
-                    .setCustomAnimations(androidx.appcompat.R.anim.abc_fade_in, androidx.appcompat.R.anim.abc_fade_out)
+                    .setCustomAnimations(
+                        androidx.appcompat.R.anim.abc_fade_in,
+                        androidx.appcompat.R.anim.abc_fade_out
+                    )
                     .replace(R.id.fl_container2, BookSettingBudgetFragment()).commit()
             } else {
                 binding.flContainer2.isVisible = false
@@ -164,12 +188,16 @@ class AnalyzeActivity : BaseActivity<ActivityAnalyzeBinding, AnalyzeViewModel>(R
         repeatOnStarted {
             // 내역추가
             viewModel.clickedAddHistory.collect {
-                val intent = Intent(this@AnalyzeActivity, HistoryActivity::class.java).apply {
-                    putExtra("date", it)
-                    putExtra("nickname", userNickname)
+                if (viewModel.subscribeExpired) {
+                    viewModel.showSubscribePopupIfNeeded()
+                } else {
+                    val intent = Intent(this@AnalyzeActivity, HistoryActivity::class.java).apply {
+                        putExtra("date", it)
+                        putExtra("nickname", userNickname)
+                    }
+                    launcher.launch(intent)
+                    applyHistoryOpenTransition()
                 }
-                launcher.launch(intent)
-                applyHistoryOpenTransition()
             }
         }
     }
@@ -180,7 +208,10 @@ class AnalyzeActivity : BaseActivity<ActivityAnalyzeBinding, AnalyzeViewModel>(R
 
     fun setSubscribePopup() {
         binding.includePopupSubscribe.ivExit.setOnClickListener {
-            sharedPreferenceUtil.setString("subscribeCheckTenMinutes", getCurrentDateTimeString())
+            // 진입 시 표시된 팝업 닫기만 시간 체크
+            if (viewModel.subscribePopupEnter.value == true)
+                sharedPreferenceUtil.setString("subscribeCheckTenMinutes", getCurrentDateTimeString())
+
             binding.includePopupSubscribe.root.visibility = View.GONE
             binding.dimBackground.visibility = View.GONE
         }

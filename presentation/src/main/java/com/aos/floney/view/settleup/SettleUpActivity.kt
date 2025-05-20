@@ -64,12 +64,16 @@ class SettleUpActivity : BaseActivity<ActivitySettleUpBinding, SettleUpViewModel
         repeatOnStarted {
             // 내역추가
             viewModel.clickedAddHistory.collect {
-                val intent = Intent(this@SettleUpActivity, HistoryActivity::class.java).apply {
-                    putExtra("date", it)
-                    putExtra("nickname", userNickname)
+                if (viewModel.subscribeExpired.value == true) {
+                    viewModel.showSubscribePopupIfNeeded()
+                } else {
+                    val intent = Intent(this@SettleUpActivity, HistoryActivity::class.java).apply {
+                        putExtra("date", it)
+                        putExtra("nickname", userNickname)
+                    }
+                    launcher.launch(intent)
+                    applyHistoryOpenTransition()
                 }
-                launcher.launch(intent)
-                applyHistoryOpenTransition()
             }
         }
     }

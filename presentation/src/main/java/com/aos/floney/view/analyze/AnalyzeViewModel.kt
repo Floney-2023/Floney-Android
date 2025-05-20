@@ -59,6 +59,9 @@ class AnalyzeViewModel @Inject constructor(
     // 구독 만료 팝업 표시 여부
     var subscribePopupShow = MutableLiveData<Boolean>(false)
 
+    // 진입 시 표시되는 팝업인 지
+    var subscribePopupEnter = MutableLiveData<Boolean>(true)
+
     init {
         getFormatDateMonth()
         getSubscribeChecking()
@@ -144,8 +147,8 @@ class AnalyzeViewModel @Inject constructor(
     fun showSubscribePopupIfNeeded() {
         // 로직이 생길 수 있다면 여기서 처리
         subscribePopupShow.value = true
+        subscribePopupEnter.value = false
     }
-
 
     // 가계부 구독 여부 가져오기
     fun getSubscribeChecking(){
