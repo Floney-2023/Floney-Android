@@ -53,6 +53,7 @@ class MyPageActivity : BaseActivity<ActivityMyPageBinding, MyPageViewModel>(R.la
         setUpUi()
         setUpBottomNavigation()
         setUpViewModelObserver()
+        setSubscribePopup()
     }
     private fun setUpViewModelObserver() {
         repeatOnStarted {
@@ -193,6 +194,12 @@ class MyPageActivity : BaseActivity<ActivityMyPageBinding, MyPageViewModel>(R.la
                 R.id.settleUpFragment -> {}
                 R.id.mypageFragment -> {}
             }
+        }
+    }
+    
+    private fun setSubscribePopup() {
+        binding.includePopupSubscribe.ivExit.setOnClickListener {
+            viewModel.showSubscribePopupIfNeeded(false)
         }
     }
 }
