@@ -238,7 +238,7 @@ class MyPageInformWithdrawReasonCheckViewModel @Inject constructor(
             subscribeAndroidInfoUseCase().onSuccess {
                 subscribeCheck.postValue(it.autoRenewing)
             }.onFailure {
-                baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
+                // baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
             }
         }
     }
