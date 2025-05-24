@@ -173,6 +173,8 @@ class HistoryViewModel @Inject constructor(
     // 구독 만료 여부
     var subscribeExpired = MutableLiveData<Boolean>(false)
 
+    // 메모/사진 존재 여부
+    var memoOrImageExist = MutableLiveData<Boolean>(false)
 
     // 구독 유도 팝업
     private var _subscribePrompt = MutableEventFlow<Boolean>()
@@ -261,6 +263,8 @@ class HistoryViewModel @Inject constructor(
         modifyItem = item
         modifyItem!!.money =item.money.formatMoneyWithCurrency()
         modifyItem!!.lineCategory = item.lineCategory.toCategoryName()
+
+        memoOrImageExist.value = memo.isNotBlank() || cloudUrlList.isNotEmpty()
     }
 
     // 즐겨찾기 내역 불러오기
@@ -307,6 +311,7 @@ class HistoryViewModel @Inject constructor(
     private fun getSubscribeBook() {
         viewModelScope.launch {
             Timber.d("checking history ${subscriptionDataStoreUtil.getBookSubscribe().first()}")
+
             _getBookIsSubscribe.postValue(subscriptionDataStoreUtil.getBookSubscribe().first())
         }
     }
