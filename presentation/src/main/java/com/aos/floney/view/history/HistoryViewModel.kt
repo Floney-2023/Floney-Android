@@ -174,7 +174,8 @@ class HistoryViewModel @Inject constructor(
     var subscribeExpired = MutableLiveData<Boolean>(false)
 
     // 메모/사진 존재 여부
-    var memoOrImageExist = MutableLiveData<Boolean>(false)
+    private val _memoOrImageExist = MutableLiveData<Boolean>()
+    val memoOrImageExist: LiveData<Boolean> get() = _memoOrImageExist
 
     // 구독 유도 팝업
     private var _subscribePrompt = MutableEventFlow<Boolean>()
@@ -264,7 +265,7 @@ class HistoryViewModel @Inject constructor(
         modifyItem!!.money =item.money.formatMoneyWithCurrency()
         modifyItem!!.lineCategory = item.lineCategory.toCategoryName()
 
-        memoOrImageExist.value = memo.isNotBlank() || cloudUrlList.isNotEmpty()
+        _memoOrImageExist.postValue(memo.isNotBlank() || cloudUrlList.isNotEmpty())
     }
 
     // 즐겨찾기 내역 불러오기
@@ -396,10 +397,8 @@ class HistoryViewModel @Inject constructor(
     // 내역 수정
     private fun postModifyHistory() {
         viewModelScope.launch {
-            // 가계부, 유저 둘 다 혜택 적용 중이라면 적용 여부 확인 없이 수정한다.
-            if (subscriptionDataStoreUtil.getBookSubscribe()
-                    .first() && subscriptionDataStoreUtil.getUserSubscribe().first()
-            )
+            // 가계부 구독 중이라면 적용 여부 확인 없이 수정한다.
+            if (subscriptionDataStoreUtil.getBookSubscribe().first())
                 handleImageBeforeModify()
             else // 구독 중이 아닌 경우, 구독 혜택 적용 여부 확인
                 getSubscribeBenefitChecking()
@@ -776,8 +775,9 @@ class HistoryViewModel @Inject constructor(
     // 구독 혜택 받고 있는 지 여부 가져오기
     fun getSubscribeBenefitChecking() {
         viewModelScope.launch(Dispatchers.IO) {
-            val expiredCheck = subscriptionDataStoreUtil.getSubscribeExpired().first()
-            // 구독 만료 여부 업데이트 -> true면 만료 팝업 표시
+            // 구독 만료 팝업 표시 여부 확인 (구독 만료 되었거나, 사진/메모 값이 남아 있을 때)
+            val expiredCheck = subscriptionDataStoreUtil.getSubscribeExpired().first() || memoOrImageExist.value ?: false
+
             subscribeExpired.postValue(expiredCheck)
 
             if (!expiredCheck) { // 만료되지 않음
