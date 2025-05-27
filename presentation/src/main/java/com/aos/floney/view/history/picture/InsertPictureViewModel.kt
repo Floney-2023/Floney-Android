@@ -136,15 +136,53 @@ class InsertPictureViewModel @Inject constructor(
     // 회전 각도를 맞춘 이미지 파일 생성
     fun createBitmapFile(uri: Uri?): Bitmap? {
         return if (uri != null) {
-            val bitmap = createBitmapFromUri(context, uri)
-            val angle = RotateTransform.getRotationAngleFromExif(context, uri)
-            val rotated =
-                bitmap?.let { RotateTransform.rotateImage(context, it, angle.toFloat(), uri) }
+            try {
+                val bitmap = if (uri.toString().startsWith("content://media/picker")) {
+                    // PhotoPicker URI인 경우 직접 회전 처리된 비트맵 생성
+                    RotateTransform.createRotatedBitmapFromUri(context, uri)
+                } else {
+                    // 기존 방식으로 처리
+                    val path = ImgFileMaker.getFullPathFromUri(context, uri)
+                    if (path != null) {
+                        val angle = RotateTransform.getRotationAngle(path)
+                        RotateTransform.rotateImage(
+                            context,
+                            BitmapFactory.decodeFile(path),
+                            angle.toFloat(),
+                            uri
+                        )
+                    } else {
+                        // 경로를 얻지 못한 경우 URI에서 직접 비트맵 생성
+                        RotateTransform.createRotatedBitmapFromUri(context, uri)
+                    }
+                }
 
-            if (rotated != null) {
-                setImageBitmap(rotated)
-                rotated
-            } else {
+                if (bitmap != null) {
+                    val imageFile =
+                        File(context.cacheDir, "image_${System.currentTimeMillis()}.jpg")
+
+                    try {
+                        val fos = FileOutputStream(imageFile)
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)
+                        fos.flush()
+                        fos.close()
+                        localImageList.add(imageFile)
+                        isModify = true
+                        viewModelScope.launch {
+                            updateImageList()
+                        }
+                        bitmap
+                    } catch (e: Exception) {
+                        Timber.e(e, "Error saving bitmap to file")
+                        baseEvent(Event.ShowToast("이미지 파일 생성에 실패하였습니다."))
+                        null
+                    }
+                } else {
+                    baseEvent(Event.ShowToast("이미지 파일 생성에 실패하였습니다."))
+                    null
+                }
+            } catch (e: Exception) {
+                Timber.e(e, "Error in createBitmapFile")
                 baseEvent(Event.ShowToast("이미지 파일 생성에 실패하였습니다."))
                 null
             }

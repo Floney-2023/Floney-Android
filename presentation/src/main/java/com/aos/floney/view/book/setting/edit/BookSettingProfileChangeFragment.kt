@@ -7,12 +7,12 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
-import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
@@ -34,7 +34,7 @@ import timber.log.Timber
 class BookSettingProfileChangeFragment :
     BaseFragment<FragmentBookSettingEditProfilechangeBinding, BookSettingProfileChangeViewModel>(R.layout.fragment_book_setting_edit_profilechange) {
 
-        // 사진 찍기 결과
+    // 사진 찍기 결과
     private val takePhoto = registerForActivityResult(ActivityResultContracts.TakePicture()) {
         if(it) {
             viewModel.createBitmapFile(viewModel.getTakeCaptureUri())
@@ -47,12 +47,13 @@ class BookSettingProfileChangeFragment :
         }
     }
 
+    // 갤러리 사진 불러오기
     private val imageResult = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
+        ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        uri?.let {
             lifecycleScope.launch {
-                viewModel.createBitmapFile(result.data?.data)
+                viewModel.createBitmapFile(uri)
 
                 Glide.with(requireContext())
                     .load(viewModel.getImageBitmap())
@@ -62,12 +63,14 @@ class BookSettingProfileChangeFragment :
             }
         }
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         setUpViewModelObserver()
         setUpBackPressHandler()
     }
+
     private fun setUpBackPressHandler() {
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -148,60 +151,45 @@ class BookSettingProfileChangeFragment :
     }
 
     private fun onClickChoiceImage() {
-        PermissionUtil.checkAndRequestGalleryPermission(
-            activity = requireActivity(),
-            fragmentManager = parentFragmentManager,
-            onGranted = {
-                ChoiceImageDialog(requireContext(), {
-                    // 사진 촬영하기
-                    viewModel.setTakeCaptureUri(viewModel.createTempImageFile())
-                    takePhoto.launch(viewModel.getTakeCaptureUri())
-                }, {
-                    // 앨범에서 사진 선택
-                    selectGallery()
-                }, {
-                    // 랜덤 이미지
-                    val bitmap = BitmapFactory.decodeResource(
-                        requireContext().resources,
-                        viewModel.getRandomProfileDrawable()
-                    )
+        ChoiceImageDialog(requireContext(), {
+            // 사진 촬영하기
+            viewModel.setTakeCaptureUri(viewModel.createTempImageFile())
+            takePhoto.launch(viewModel.getTakeCaptureUri())
+        }, {
+            // 앨범에서 사진 선택
+            launchPhotoPicker()
+        }, {
+            // 랜덤 이미지
+            val bitmap = BitmapFactory.decodeResource(
+                requireContext().resources,
+                viewModel.getRandomProfileDrawable()
+            )
 
-                    viewModel.setImageBitmap(bitmap)
+            viewModel.setImageBitmap(bitmap)
 
-                    Glide.with(requireContext())
-                        .load(bitmap)
-                        .fitCenter()
-                        .centerCrop()
-                        .into(binding.ivProfileCardView)
-                }).show()
-            }
-        )
+            Glide.with(requireContext())
+                .load(bitmap)
+                .fitCenter()
+                .centerCrop()
+                .into(binding.ivProfileCardView)
+        }).show()
+    }
+
+    private fun launchPhotoPicker() {
+        imageResult.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
     }
 
     private fun selectGallery() {
-        // 권한이 있는 경우 갤러리 실행
-        val intent = Intent(Intent.ACTION_PICK)
-        // intent와 data와 type을 동시에 설정하는 메서드
-        intent.setDataAndType(
-            MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*"
-        )
-
-        imageResult.launch(intent)
+        launchPhotoPicker()
     }
 
+    // No longer needed as PhotoPicker doesn't require permissions
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == PermissionUtil.REQUEST_GALLERY_PERMISSION) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                onClickChoiceImage()
-            } else {
-                viewModel.baseEvent(BaseViewModel.Event.ShowToast("이미지 접근 권한이 허용되지 않았습니다."))
-            }
-        }
     }
 
     private fun getBitmapFromVectorDrawable(context: Context, drawableId: Int): Bitmap {

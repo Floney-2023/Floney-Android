@@ -3,12 +3,11 @@ package com.aos.floney.view.history.picture
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
-import android.provider.Settings
 import android.widget.ImageView
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import androidx.databinding.library.baseAdapters.BR
@@ -16,12 +15,10 @@ import androidx.fragment.app.FragmentManager
 import com.aos.floney.R
 import com.aos.floney.base.BaseActivity
 import com.aos.floney.base.BaseViewModel
-import com.aos.floney.base.BaseViewModel.Event
 import com.aos.floney.databinding.ActivityInsertPictureBinding
 import com.aos.floney.ext.intentSerializable
 import com.aos.floney.ext.intentSerializableList
 import com.aos.floney.ext.repeatOnStarted
-import com.aos.floney.util.PermissionUtil
 import com.aos.floney.view.common.BaseAlertDialog
 import com.aos.floney.view.common.ChoicePictureDialog
 import com.aos.floney.view.common.EditNotSaveDialog
@@ -46,35 +43,18 @@ class InsertPictureActivity :
 
     // 갤러리 사진 불러오기
     private val imageResult = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            val clipData = result.data?.clipData
-            val uriList = mutableListOf<Uri>()
-
+        ActivityResultContracts.PickMultipleVisualMedia(4)
+    ) { uris ->
+        if (uris.isNotEmpty()) {
             val currentImageCount = viewModel.getCloudPictureList().size + viewModel.getLocalPictureList().size
             val remainingCount = 4 - currentImageCount
 
-            val selectPhotoCount = when {
-                clipData?.itemCount != null -> clipData.itemCount
-                result.data?.data != null -> 1
-                else -> 0
-            }
-
-            if (selectPhotoCount > remainingCount) {
+            if (uris.size > remainingCount) {
                 viewModel.baseEvent(BaseViewModel.Event.ShowToast("사진은 최대 4장까지 추가할 수 있어요."))
                 return@registerForActivityResult
             }
 
-            if (clipData != null) { // 여러 장일 때
-                for (i in 0 until clipData.itemCount) {
-                    uriList.add(clipData.getItemAt(i).uri)
-                }
-            } else { // 한 장 업로드 했을 때
-                result.data?.data?.let { uriList.add(it) }
-            }
-
-            uriList.forEach { uri ->
+            uris.forEach { uri ->
                 handleImageResult(uri)
             }
         }
@@ -90,7 +70,7 @@ class InsertPictureActivity :
                         viewModel.deletePictureFile(it)
                     }
 
-                viewModel.baseEvent(Event.ShowSuccessToast("사진 삭제가 완료되었습니다."))
+                viewModel.baseEvent(BaseViewModel.Event.ShowSuccessToast("사진 삭제가 완료되었습니다."))
             }
         }
 
@@ -142,8 +122,8 @@ class InsertPictureActivity :
                         viewModel.baseEvent(BaseViewModel.Event.ShowToast("이미지 파일을 만들 수 없습니다."))
                     }
                 }, {
-                    // 앨범에서 사진 선택
-                    selectGallery()
+                    // 앨범에서 사진 선택 (PhotoPicker 사용)
+                    launchPhotoPicker()
                 }).show()
             }
         }
@@ -312,33 +292,7 @@ class InsertPictureActivity :
         })
     }
 
-    private fun selectGallery() {
-        PermissionUtil.checkAndRequestGalleryPermission(
-            activity = this,
-            fragmentManager = supportFragmentManager,
-            onGranted = {
-                val intent = Intent(Intent.ACTION_GET_CONTENT)
-                intent.type = "image/*"
-                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
-                intent.addCategory(Intent.CATEGORY_OPENABLE)
-                imageResult.launch(Intent.createChooser(intent, "사진을 선택하세요"))
-            }
-        )
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == PermissionUtil.REQUEST_GALLERY_PERMISSION) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                selectGallery()
-            } else {
-
-                viewModel.baseEvent(BaseViewModel.Event.ShowToast("이미지 접근 권한이 허용되지 않았습니다."))
-            }
-        }
+    private fun launchPhotoPicker() {
+        imageResult.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
     }
 }
