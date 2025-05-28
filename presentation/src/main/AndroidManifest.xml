@@ -33,6 +33,7 @@
             android:exported="false" />
         <activity
             android:name=".view.home.HomeActivity"
+            android:theme="@style/Theme.Floney.StatusBarDark"
             android:exported="false" />
         <activity
             android:name=".view.password.find.PasswordFindActivity"

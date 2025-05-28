@@ -8,7 +8,7 @@
         <item name="android:checkboxStyle">@style/customCheckboxFontStyle</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:windowBackground">@color/white</item>
-        <item name="android:statusBarColor">#FAFAFA</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
     </style>

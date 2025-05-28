@@ -434,6 +434,12 @@
         <item name="android:fontFamily">@font/pretendard_semibold</item>
     </style>
 
+    <!-- 상태바 색상 설정 -->
+    <style name="Theme.Floney.StatusBarDark" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:statusBarColor">@color/background3</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+
     <!-- 달력에 사용하는 스타일 -->
     <style name="CustomTextAppearance" parent="TextAppearance.AppCompat.Medium">
         <item name="android:textSize">22sp</item>
