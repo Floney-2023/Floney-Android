@@ -68,6 +68,25 @@ class BookAddSettingProfileFragment : BaseFragment<FragmentBookAddSettingProfile
         }
     }
 
+    // Android 11 이하용 갤러리 선택
+    private val legacyImageResult = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            result.data?.data?.let { uri ->
+                lifecycleScope.launch {
+                    viewModel.createBitmapFile(uri)
+
+                    Glide.with(requireContext())
+                        .load(viewModel.getImageBitmap())
+                        .fitCenter()
+                        .centerCrop()
+                        .into(binding.ivProfileCardView)
+                }
+            }
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -163,7 +182,21 @@ class BookAddSettingProfileFragment : BaseFragment<FragmentBookAddSettingProfile
     }
 
     private fun launchPhotoPicker() {
-        imageResult.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            // Android 13 이상: PhotoPicker 사용
+            imageResult.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+        } else {
+            // Android 12 이하: 기존 Intent 방식 사용
+            launchLegacyImagePicker()
+        }
+    }
+
+    private fun launchLegacyImagePicker() {
+        val intent =
+            Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI).apply {
+                type = "image/*"
+            }
+        legacyImageResult.launch(intent)
     }
 
     private fun selectGallery() {

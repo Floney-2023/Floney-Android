@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.widget.ImageView
 import androidx.activity.OnBackPressedCallback
@@ -56,6 +57,45 @@ class InsertPictureActivity :
 
             uris.forEach { uri ->
                 handleImageResult(uri)
+            }
+        }
+    }
+
+    // Android 12 이하용 갤러리 선택 (단일 이미지)
+    private val legacyImageResult = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            result.data?.let { data ->
+                val currentImageCount =
+                    viewModel.getCloudPictureList().size + viewModel.getLocalPictureList().size
+
+                // 다중 선택인 경우
+                val clipData = data.clipData
+                if (clipData != null) {
+                    val remainingCount = 4 - currentImageCount
+                    val itemCount = clipData.itemCount
+
+                    if (itemCount > remainingCount) {
+                        viewModel.baseEvent(BaseViewModel.Event.ShowToast("사진은 최대 4장까지 추가할 수 있어요."))
+                        return@registerForActivityResult
+                    }
+
+                    for (i in 0 until itemCount) {
+                        val uri = clipData.getItemAt(i).uri
+                        handleImageResult(uri)
+                    }
+                } else {
+                    // 단일 선택인 경우
+                    data.data?.let { uri ->
+                        if (currentImageCount >= 4) {
+                            viewModel.baseEvent(BaseViewModel.Event.ShowToast("사진은 최대 4장까지 추가할 수 있어요."))
+                            return@registerForActivityResult
+                        }
+
+                        handleImageResult(uri)
+                    }
+                }
             }
         }
     }
@@ -293,6 +333,20 @@ class InsertPictureActivity :
     }
 
     private fun launchPhotoPicker() {
-        imageResult.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            // Android 13 이상: PhotoPicker 사용 (다중 선택 가능)
+            imageResult.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+        } else {
+            // Android 12 이하: 기존 Intent 방식 사용 (단일 선택)
+            launchLegacyImagePicker()
+        }
+    }
+
+    private fun launchLegacyImagePicker() {
+        val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
+            type = "image/*"
+            putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true) // 다중 선택 시도
+        }
+        legacyImageResult.launch(intent)
     }
 }
