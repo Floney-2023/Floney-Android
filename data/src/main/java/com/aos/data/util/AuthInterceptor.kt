@@ -42,6 +42,7 @@ class AuthInterceptor @Inject constructor(
     @Volatile private var sessionExpired = false
 
     override fun authenticate(route: Route?, response: Response): Request? {
+        Timber.d("sessionExpired: $sessionExpired")
         if (sessionExpired) return null
 
         val originRequest = response.request
