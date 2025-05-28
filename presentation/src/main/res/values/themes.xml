@@ -8,7 +8,7 @@
         <item name="android:checkboxStyle">@style/customCheckboxFontStyle</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:windowBackground">@color/white</item>
-        <item name="android:statusBarColor">@color/white</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
     </style>
@@ -418,8 +418,7 @@
     <style name="AppBottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/AppModalStyle</item>
         <item name="android:windowIsFloating">false</item>
-        <item name="android:statusBarColor">@color/white
-        </item> <!-- And then this will be needed -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
     </style>
 

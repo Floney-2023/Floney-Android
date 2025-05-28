@@ -123,8 +123,6 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(R.layout.a
     private fun setUpUi() {
         binding.setVariable(BR.eventHolder, this)
 
-        setStatusBarColor(ContextCompat.getColor(this, R.color.background3))
-
         if (isDarkMode()) {
             binding.root.setBackgroundColor(
                 ContextCompat.getColor(
@@ -214,15 +212,7 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(R.layout.a
         }
 
         viewModel.showOverlay.observe(this) { show ->
-            changeStatusBarColor(show)
-        }
-    }
-
-    private fun changeStatusBarColor(isShow :Boolean){
-        if (isShow) {
-            setStatusBarColor(ContextCompat.getColor(this@HomeActivity, R.color.background_dim))
-        } else {
-            setStatusBarColor(ContextCompat.getColor(this@HomeActivity, R.color.background3))
+            // changeStatusBarColor(show)
         }
     }
 

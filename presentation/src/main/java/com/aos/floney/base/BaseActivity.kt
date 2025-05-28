@@ -108,7 +108,6 @@ abstract class BaseActivity<B : ViewDataBinding, VM : BaseViewModel>(
         if (isDarkMode() && this !is SplashActivity) {
             binding.root.setBackgroundColor(Color.WHITE)  // 다크 모드일 때 흰색 배경 (스플래시일 때는 X)
         }
-        setStatusBarColor(ContextCompat.getColor(this, R.color.white))
     }
 
     private fun setupObserve() {
@@ -243,12 +242,6 @@ abstract class BaseActivity<B : ViewDataBinding, VM : BaseViewModel>(
         }
     }
 
-    // 상태바 색상 설정 함수
-    protected fun setStatusBarColor(color: Int) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            window.statusBarColor = color
-        }
-    }
     // 다크 모드인지 확인하는 함수
     protected fun isDarkMode(): Boolean {
         val currentNightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
