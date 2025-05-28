@@ -24,6 +24,8 @@ import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDialog
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.ViewModelLazy
@@ -72,6 +74,7 @@ abstract class BaseActivity<B : ViewDataBinding, VM : BaseViewModel>(
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        setUpEdgeToEdge()
         setupUi()
         setupObserve()
     }
@@ -79,6 +82,21 @@ abstract class BaseActivity<B : ViewDataBinding, VM : BaseViewModel>(
     override fun onStart() {
         super.onStart()
         setupUI(binding.root)
+    }
+
+    private fun setUpEdgeToEdge(){
+        val contentView = findViewById<android.view.View>(android.R.id.content)
+        if (contentView != null) {
+            ViewCompat.setOnApplyWindowInsetsListener(contentView) { view, windowInsets ->
+                val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+
+                // 시스템 바 크기만큼 루트 뷰의 자식 뷰(실제 콘텐츠)에 패딩 적용
+                val firstChild = (view as? android.view.ViewGroup)?.getChildAt(0)
+                firstChild?.setPadding(insets.left, insets.top, insets.right, insets.bottom)
+
+                WindowInsetsCompat.CONSUMED
+            }
+        }
     }
 
     private fun setupUi() {
