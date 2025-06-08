@@ -14,6 +14,7 @@ import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.QueryProductDetailsParams
 import com.aos.floney.BuildConfig
 import com.aos.floney.base.BaseViewModel
+import com.aos.floney.base.BaseViewModel.Event
 import com.aos.floney.ext.parseErrorMsg
 import com.aos.floney.view.common.ErrorToastDialog
 import com.aos.usecase.bookadd.BooksJoinUseCase

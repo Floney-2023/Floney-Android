@@ -93,6 +93,7 @@ class SubscribePlanViewModel @Inject constructor(
 
     override fun onPurchaseSuccess(checking: Boolean) {
         viewModelScope.launch {
+            baseEvent(Event.HideCircleLoading)
             if (checking) {
                 subscriptionDataStoreUtil.setUserSubscribe(true)
             }
@@ -113,9 +114,12 @@ class SubscribePlanViewModel @Inject constructor(
 
     private fun sendTokenToServer(purchaseToken: String) {
         viewModelScope.launch(Dispatchers.IO) {
+            baseEvent(Event.ShowCircleLoading)
             subscribeAndroidUseCase(purchaseToken).onSuccess {
+                Timber.d("subscribeAndroidUseCase onSuccess")
                 pendingPurchase?.let { billingManager.acknowledgePurchase(it) } // acknowledgePurchase 호출
             }.onFailure {
+                baseEvent(Event.HideCircleLoading)
                 baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@SubscribePlanViewModel)))
             }
         }
