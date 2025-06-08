@@ -21,7 +21,7 @@ class HeaderInterceptor @Inject constructor(
             runBlocking {
                 token = "Bearer " + prefs.getString("accessToken", "")
             }
-            Timber.e("token $token")
+            Timber.d("token $token")
             builder.addHeader("Authorization", token)
         }
 
