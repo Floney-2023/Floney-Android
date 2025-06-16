@@ -94,7 +94,7 @@
                 android:textColor="@color/black"
                 android:textSize="13dp"
                 android:text="@{vm.sortType}"
-                tools:text="최신 순"
+                tools:text="최신순"
                 app:layout_constraintBottom_toBottomOf="@+id/tv_select_year"
                 app:layout_constraintStart_toEndOf="@+id/tv_select_year"
                 app:layout_constraintTop_toTopOf="@+id/tv_select_year" />

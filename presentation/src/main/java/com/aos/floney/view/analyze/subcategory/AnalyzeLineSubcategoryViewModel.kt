@@ -159,7 +159,7 @@ class AnalyzeLineSubcategoryViewModel @Inject constructor(
 
             Timber.i("flowState :${flow.value}")
             Timber.i("bookUser :${booksUsersList.value?.booksUsers}")
-            val sortType = flow.value?.let { fromIntToDisplayName(it) } ?: "최신 순"
+            val sortType = flow.value?.let { fromIntToDisplayName(it) } ?: "최신순"
 
             postAnalyzeLineSubCategoryUseCase(
                 bookKey = prefs.getString("bookKey",""),
@@ -243,7 +243,7 @@ class AnalyzeLineSubcategoryViewModel @Inject constructor(
 }
 
 enum class SortType(val serverValue: String, val displayName: String) {
-    LATEST("LATEST", "최신 순"),
+    LATEST("LATEST", "최신순"),
     OLDEST("OLDEST", "오래된 순"),
     LINE_SUBCATEGORY_NAME("LINE_SUBCATEGORY_NAME", "분류 가나다 순"),
     USER_NICKNAME("USER_NICKNAME", "사용자 가나다 순");
