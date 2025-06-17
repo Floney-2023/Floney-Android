@@ -5,12 +5,21 @@ import android.content.ActivityNotFoundException
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Intent
+import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.TextPaint
+import android.text.method.LinkMovementMethod
+import android.text.style.ClickableSpan
 import android.util.Log
+import android.view.View
+import androidx.core.content.ContextCompat
+import androidx.core.text.HtmlCompat
 import androidx.databinding.library.baseAdapters.BR
 import com.aos.data.util.SharedPreferenceUtil
 import com.aos.floney.BuildConfig
@@ -48,6 +57,8 @@ class SubscribePlanActivity : BaseActivity<ActivitySubscribePlanBinding, Subscri
 
         setUpUi()
         setUpViewModelObserver()
+        setUpClickableServiceText()
+        setUpClickableRestoreText()
         viewModel.initBillingManager(this@SubscribePlanActivity)
     }
 
@@ -59,6 +70,67 @@ class SubscribePlanActivity : BaseActivity<ActivitySubscribePlanBinding, Subscri
     private fun setUpUi() {
         binding.setVariable(BR.eventHolder, this)
     }
+
+    private fun setUpClickableServiceText() {
+        val textView = binding.tvSubscribePlanInfromService
+        val rawText = getString(R.string.subscribe_plan_infrom_service)
+        val spanned = HtmlCompat.fromHtml(rawText, HtmlCompat.FROM_HTML_MODE_LEGACY)
+        val spannable = SpannableString(spanned)
+
+        val clickableText = "서비스 이용 약관"
+        val start = spannable.indexOf(clickableText)
+        val end = start + clickableText.length
+
+        if (start >= 0) {
+            val clickableSpan = object : ClickableSpan() {
+                 override fun onClick(widget: View) {
+                    viewModel.onClickService()
+                }
+
+                override fun updateDrawState(ds: TextPaint) {
+                    super.updateDrawState(ds)
+                    ds.isUnderlineText = true
+                    ds.color = ContextCompat.getColor(this@SubscribePlanActivity, R.color.grayscale2) // 색상은 원하는 대로
+                }
+            }
+
+            spannable.setSpan(clickableSpan, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            textView.text = spannable
+            textView.movementMethod = LinkMovementMethod.getInstance()
+            textView.highlightColor = Color.TRANSPARENT
+        }
+    }
+
+    private fun setUpClickableRestoreText() {
+        val textView = binding.tvSubscribePlanInfromNotice
+        val rawText = getString(R.string.subscribe_plan_infrom_notice)
+        val spanned = HtmlCompat.fromHtml(rawText, HtmlCompat.FROM_HTML_MODE_LEGACY)
+        val spannable = SpannableString(spanned)
+
+        val clickableText = "구매내역 복원하기"
+        val start = spannable.indexOf(clickableText)
+        val end = start + clickableText.length
+
+        if (start >= 0) {
+            val clickableSpan = object : ClickableSpan() {
+                override fun onClick(widget: View) {
+                    viewModel.onClickPlanRestore()
+                }
+
+                override fun updateDrawState(ds: TextPaint) {
+                    super.updateDrawState(ds)
+                    ds.isUnderlineText = true
+                    ds.color = ContextCompat.getColor(this@SubscribePlanActivity, R.color.grayscale2)
+                }
+            }
+
+            spannable.setSpan(clickableSpan, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            textView.text = spannable
+            textView.movementMethod = LinkMovementMethod.getInstance()
+            textView.highlightColor = Color.TRANSPARENT
+        }
+    }
+
 
     private fun setUpViewModelObserver() {
         repeatOnStarted {
