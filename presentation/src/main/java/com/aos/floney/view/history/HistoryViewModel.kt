@@ -140,7 +140,7 @@ class HistoryViewModel @Inject constructor(
     // 내용
     var content = MutableLiveData<String>("")
 
-    // 내용
+    // 반복
     var repeat = MutableLiveData<String>("")
 
     // 카테고리 종류
@@ -468,7 +468,7 @@ class HistoryViewModel @Inject constructor(
 
     // 수정된 내용이 있는지 체크
     private fun isExistEdit(): Boolean {
-        return date.value != modifyItem!!.lineDate || cost.value != modifyItem!!.money || asset.value != modifyItem!!.assetSubCategory || line.value != modifyItem!!.lineSubCategory || content.value != modifyItem!!.description || isImageUrlChange()
+        return date.value != modifyItem!!.lineDate || cost.value != modifyItem!!.money || asset.value != modifyItem!!.assetSubCategory || line.value != modifyItem!!.lineSubCategory || content.value != modifyItem!!.description || memo != modifyItem!!.memo || isImageUrlChange()
     }
 
     // 추가한 내용이 있는지 체크
@@ -480,7 +480,7 @@ class HistoryViewModel @Inject constructor(
     private fun isImageUrlChange(): Boolean {
         val originalIds = modifyItem?.imageUrls?.map { it.id }?.toSet() ?: emptySet()
         val newIds = cloudUrlList.map { it.id }.toSet()
-        return originalIds != newIds
+        return originalIds != newIds || localUrlList.isNotEmpty()
     }
 
     // 닫기 버튼 클릭
