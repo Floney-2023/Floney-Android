@@ -9,18 +9,10 @@ import androidx.core.view.WindowCompat
 import com.aos.floney.R
 
 fun Activity.applyHistoryOpenTransition() {
-    if (Build.VERSION.SDK_INT >= 34) {
-        overrideActivityTransition(
-            Activity.OVERRIDE_TRANSITION_OPEN,
-            R.anim.slide_in,         // 아래에서 위로
-            R.anim.none
-        )
-    } else {
-        overridePendingTransition(
-            R.anim.slide_in,
-            R.anim.none
-        )
-    }
+    overridePendingTransition(
+        R.anim.slide_in,
+        R.anim.none
+    )
 }
 
 fun Activity.applyHistoryCloseTransition() {
@@ -39,18 +31,10 @@ fun Activity.applyHistoryCloseTransition() {
 }
 
 fun Activity.applyOpenTransition() {
-    if (Build.VERSION.SDK_INT >= 34) {
-        overrideActivityTransition(
-            Activity.OVERRIDE_TRANSITION_OPEN,
-            android.R.anim.fade_in,
-            android.R.anim.fade_out
-        )
-    } else {
-        overridePendingTransition(
-            android.R.anim.fade_in,
-            android.R.anim.fade_out
-        )
-    }
+    overridePendingTransition(
+        android.R.anim.fade_in,
+        android.R.anim.fade_out
+    )
 }
 
 fun Activity.applyCloseTransition() {

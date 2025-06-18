@@ -16,6 +16,7 @@ import com.aos.floney.base.BaseActivity
 import com.aos.floney.base.BaseViewModel
 import com.aos.floney.databinding.ActivitySettleUpBinding
 import com.aos.floney.ext.applyHistoryOpenTransition
+import com.aos.floney.ext.applyOpenTransition
 import com.aos.floney.ext.repeatOnStarted
 import com.aos.floney.util.getCurrentDateTimeString
 import com.aos.floney.view.analyze.AnalyzeActivity
@@ -87,11 +88,7 @@ class SettleUpActivity : BaseActivity<ActivitySettleUpBinding, SettleUpViewModel
 
     fun startSettleUpActivity() {
         startActivity(Intent(this, SettleUpActivity::class.java))
-        if (Build.VERSION.SDK_INT >= 34) {
-            overrideActivityTransition(Activity.OVERRIDE_TRANSITION_OPEN, android.R.anim.fade_in, android.R.anim.fade_out)
-        } else {
-            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
-        }
+        applyOpenTransition()
         finishAffinity()
     }
     fun startHomeActivity() {
@@ -101,11 +98,7 @@ class SettleUpActivity : BaseActivity<ActivitySettleUpBinding, SettleUpViewModel
                 HomeActivity::class.java
             ).putExtra("accessCheck", true)
         )
-        if (Build.VERSION.SDK_INT >= 34) {
-            overrideActivityTransition(Activity.OVERRIDE_TRANSITION_OPEN, android.R.anim.fade_in, android.R.anim.fade_out)
-        } else {
-            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
-        }
+        applyOpenTransition()
     }
 
     private fun setUpBottomNavigation() {
@@ -119,31 +112,19 @@ class SettleUpActivity : BaseActivity<ActivitySettleUpBinding, SettleUpViewModel
             when (it.itemId) {
                 R.id.homeFragment -> {
                     startActivity(Intent(this, HomeActivity::class.java))
-                    if (Build.VERSION.SDK_INT >= 34) {
-                        overrideActivityTransition(Activity.OVERRIDE_TRANSITION_OPEN, android.R.anim.fade_in, android.R.anim.fade_out)
-                    } else {
-                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
-                    }
+                    applyOpenTransition()
                     finish()
                     false
                 }
                 R.id.analysisFragment -> {
                     startActivity(Intent(this, AnalyzeActivity::class.java))
-                    if (Build.VERSION.SDK_INT >= 34) {
-                        overrideActivityTransition(Activity.OVERRIDE_TRANSITION_OPEN, android.R.anim.fade_in, android.R.anim.fade_out)
-                    } else {
-                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
-                    }
+                    applyOpenTransition()
                     finish()
                     false
                 }
                 R.id.mypageFragment -> {
                     startActivity(Intent(this, MyPageActivity::class.java))
-                    if (Build.VERSION.SDK_INT >= 34) {
-                        overrideActivityTransition(Activity.OVERRIDE_TRANSITION_OPEN, android.R.anim.fade_in, android.R.anim.fade_out)
-                    } else {
-                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
-                    }
+                    applyOpenTransition()
                     finish()
                     false
                 }
@@ -175,11 +156,7 @@ class SettleUpActivity : BaseActivity<ActivitySettleUpBinding, SettleUpViewModel
                             val intent = Intent(this@SettleUpActivity, LoginActivity::class.java)
 
                             startActivity(intent)
-                            if (Build.VERSION.SDK_INT >= 34) {
-                                overrideActivityTransition(Activity.OVERRIDE_TRANSITION_OPEN, android.R.anim.fade_in, android.R.anim.fade_out)
-                            } else {
-                                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
-                            }
+                            applyOpenTransition()
                             finishAffinity()
                         }
                         else{

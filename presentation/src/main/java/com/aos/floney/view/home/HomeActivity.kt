@@ -218,15 +218,7 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(R.layout.a
 
     fun goToBookSettingActivity() {
         startActivity(Intent(this@HomeActivity, BookSettingActivity::class.java))
-        if (Build.VERSION.SDK_INT >= 34) {
-            overrideActivityTransition(
-                Activity.OVERRIDE_TRANSITION_OPEN,
-                android.R.anim.fade_in,
-                android.R.anim.fade_out
-            )
-        } else {
-            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
-        }
+        applyOpenTransition()
     }
 
     // 캘린더 아이템이 표시됨
@@ -263,7 +255,7 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(R.layout.a
     }
 
     private fun setUpBottomNavigation() {
-        // 가운데 메뉴(제보하기)에 대한 터치 이벤트를 막기 위한 로직
+        // 가운데 메뉴(내역추가)에 대한 터치 이벤트를 막기 위한 로직
         binding.bottomNavigationView.apply {
             menu.getItem(2).isEnabled = false
             selectedItemId = R.id.homeFragment
@@ -273,46 +265,21 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(R.layout.a
             when (it.itemId) {
                 R.id.analysisFragment -> {
                     startActivity(Intent(this, AnalyzeActivity::class.java))
-                    if (Build.VERSION.SDK_INT >= 34) {
-                        overrideActivityTransition(
-                            Activity.OVERRIDE_TRANSITION_OPEN,
-                            android.R.anim.fade_in,
-                            android.R.anim.fade_out
-                        )
-                    } else {
-                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
-                    }
+                    applyOpenTransition()
                     finish()
                     false
                 }
 
                 R.id.settleUpFragment -> {
                     startActivity(Intent(this, SettleUpActivity::class.java))
-                    if (Build.VERSION.SDK_INT >= 34) {
-                        overrideActivityTransition(
-                            Activity.OVERRIDE_TRANSITION_OPEN,
-                            android.R.anim.fade_in,
-                            android.R.anim.fade_out
-                        )
-                    } else {
-                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
-                    }
+                    applyOpenTransition()
                     finish()
                     false
                 }
 
                 R.id.mypageFragment -> {
                     startActivity(Intent(this, MyPageActivity::class.java))
-                    if (Build.VERSION.SDK_INT >= 34) {
-                        overrideActivityTransition(
-                            Activity.OVERRIDE_TRANSITION_OPEN,
-                            android.R.anim.fade_in,
-                            android.R.anim.fade_out
-                        )
-                    } else {
-                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
-                    }
-                    finish()
+                    applyOpenTransition()
                     false
                 }
 
