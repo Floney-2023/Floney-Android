@@ -354,14 +354,31 @@ val expenseOrder = listOf(
 val incomeOrder = listOf("급여", "부수입", "용돈", "금융소득", "사업소득", "상여금", "기타", "미분류")
 val transferOrder = listOf("이체", "저축", "현금", "투자", "보험", "카드대금", "대출", "기타", "미분류")
 
-fun List<GetBookCategoryEntity>.toUiBookCategory(): List<UiBookCategory> {
-    val allOrders = assetOrder + expenseOrder + incomeOrder + transferOrder
+fun List<GetBookCategoryEntity>.toUiBookCategory(parent: String): List<UiBookCategory> {
+    val order = when (parent) {
+        "자산" -> assetOrder
+        "지출" -> expenseOrder
+        "수입" -> incomeOrder
+        "이체" -> transferOrder
+        else -> return this.mapIndexed { idx, it ->
+            UiBookCategory(
+                idx = idx,
+                checked = false,
+                name = it.name,
+                default = it.default
+            )
+        }
+    }
+
     return this.sortedWith(compareBy({
-        allOrders.indexOf(it.name).takeIf { it >= 0 } ?: Int.MAX_VALUE
+        order.indexOf(it.name).takeIf { idx -> idx >= 0 } ?: Int.MAX_VALUE
     }, { it.name }))
         .mapIndexed { idx, it ->
             UiBookCategory(
-                idx, false, it.name, it.default
+                idx = idx,
+                checked = false,
+                name = it.name,
+                default = it.default
             )
         }
 }

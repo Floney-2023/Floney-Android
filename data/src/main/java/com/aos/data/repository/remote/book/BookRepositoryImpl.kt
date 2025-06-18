@@ -168,7 +168,7 @@ class BookRepositoryImpl @Inject constructor(private val bookDataSource: BookRem
         parent: String,
     ): Result<List<UiBookCategory>> {
         when (val data = bookDataSource.getBookCategory(bookKey, parent)) {
-            is NetworkState.Success -> return Result.success(data.body.toUiBookCategory())
+            is NetworkState.Success -> return Result.success(data.body.toUiBookCategory(parent))
             is NetworkState.Failure -> return Result.failure(
                 RetrofitFailureStateException(data.error, data.code)
             )
