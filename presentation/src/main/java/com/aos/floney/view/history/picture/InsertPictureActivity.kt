@@ -156,6 +156,7 @@ class InsertPictureActivity :
                 // 다이얼로그 표시
                 ChoicePictureDialog(this@InsertPictureActivity, {
                     // 사진 촬영
+                    viewModel.setTakeCaptureUri(viewModel.createTempImageFile())
                     viewModel.getTakeCaptureUri()?.let { uri ->
                         takePhoto.launch(uri)
                     } ?: run {
