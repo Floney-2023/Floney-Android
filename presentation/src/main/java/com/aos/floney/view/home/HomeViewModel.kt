@@ -149,7 +149,6 @@ class HomeViewModel @Inject constructor(
     // 가계부 정보 가져오기
     fun getBookInfoData() {
         viewModelScope.launch {
-            baseEvent(Event.ShowLoading)
             getBookInfoUseCase(prefs.getString("bookKey","")).onSuccess {
 
                 // 프로필 보기 여부 저장
@@ -167,7 +166,6 @@ class HomeViewModel @Inject constructor(
                 // 화폐 단위 가져오기
                 searchCurrency()
             }.onFailure {
-                baseEvent(Event.HideLoading)
                 baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@HomeViewModel)))
             }
         }
@@ -178,18 +176,15 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             booksCurrencySearchUseCase(prefs.getString("bookKey", "")).onSuccess {
                 if(it.myBookCurrency != "") {
-                    baseEvent(Event.HideLoading)
                     // 화폐 단위 저장
                     prefs.setString("symbol", getCurrencySymbolByCode(it.myBookCurrency))
                     CurrencyUtil.currency = getCurrencySymbolByCode(it.myBookCurrency)
 
                 } else {
-                    baseEvent(Event.HideLoading)
                     baseEvent(Event.ShowToastRes(R.string.currency_error))
                 }
             }.onFailure {
                 _accessCheck.emit(true)
-                baseEvent(Event.HideLoading)
                 baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@HomeViewModel)))
             }
         }
