@@ -21,6 +21,7 @@ import com.aos.floney.view.mypage.MyPageActivity
 import com.aos.model.user.MyBooks
 import com.aos.model.user.UiMypageSearchModel
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DecodeFormat
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.FullScreenContentCallback
@@ -298,6 +299,7 @@ class MyPageMainFragment : BaseFragment<FragmentMyPageMainBinding, MyPageMainVie
                 .load(viewModel.getUserProfile())
                 .fitCenter()
                 .centerCrop()
+                .format(DecodeFormat.PREFER_RGB_565)
                 .into(binding.ivProfile)
         }
     }

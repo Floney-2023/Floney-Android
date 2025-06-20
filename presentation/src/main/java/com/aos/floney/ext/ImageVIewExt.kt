@@ -11,6 +11,7 @@ import com.aos.floney.view.home.HomeActivity
 import com.aos.model.analyze.UiAnalyzeAssetModel
 import com.aos.model.analyze.UiAnalyzePlanModel
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DecodeFormat
 import timber.log.Timber
 import java.io.File
 
@@ -36,6 +37,7 @@ fun ImageView.setImageToUrl(url: String?) {
         } else {
             Glide.with(this)
                 .load(url)
+                .format(DecodeFormat.PREFER_RGB_565)
                 .into(this)
         }
     }
@@ -54,6 +56,7 @@ fun ImageView.setBookImageToUrl(url: String?) {
         // URL로부터 이미지 로드
         Glide.with(this)
             .load(url)
+            .format(DecodeFormat.PREFER_RGB_565)
             .error(R.drawable.icon_book_profile)
             .into(this)
     }
@@ -85,6 +88,7 @@ fun ImageView.setUserImageToUrl(url: String?) {
             Glide.with(this)
                 .load(url)
                 .error(R.drawable.icon_default_profile)
+                .format(DecodeFormat.PREFER_RGB_565)
                 .into(this)
         }
     }
