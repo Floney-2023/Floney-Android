@@ -5,85 +5,97 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        
-        <LinearLayout
+
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="300dp"
-            android:layout_height="166dp"
-            android:gravity="center|top"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            android:layout_height="wrap_content"
+            android:minHeight="166dp"
+            android:background="@drawable/custom_solid_fff_radius_20"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:orientation="vertical"
-            android:background="@drawable/custom_solid_fff_radius_20">
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <TextView
+                android:id="@+id/tv_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:fontFamily="@font/floney_pretendard_bold"
                 android:text="잠깐!"
                 android:textColor="@color/grayscale1"
-                android:textSize="16sp"
-                android:fontFamily="@font/floney_pretendard_bold"
-                android:layout_marginTop="28dp"
-                android:id="@+id/tv_title"/>
+                android:textSize="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
+                android:id="@+id/tv_content"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="수정한 내용이 저장되지 않았습니다.\n그대로 나가시겠습니까?"
-                android:textColor="@color/grayscale1"
-                android:textSize="13sp"
-                android:gravity="center"
                 android:layout_marginTop="14dp"
                 android:fontFamily="@font/floney_pretendard_regular"
-                android:id="@+id/tv_content"/>
+                android:gravity="center"
+                android:text="수정한 내용이 저장되지 않았습니다.\n그대로 나가시겠습니까?"
+                android:textColor="@color/grayscale1"
+                android:textSize="13dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_title" />
             
             <View
-                android:layout_width="match_parent"
+                android:id="@+id/v_line"
+                android:layout_width="0dp"
                 android:layout_height="1dp"
-                android:background="@color/grayscale10"
                 android:layout_marginTop="23dp"
-                android:id="@+id/v_line"/>
+                android:background="@color/grayscale10"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_content" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <View
+                android:id="@+id/middle_divider"
+                android:layout_width="1dp"
                 android:layout_height="0dp"
+                android:background="@color/grayscale10"
+                app:layout_constraintBottom_toBottomOf="@+id/btn_no"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/btn_yes" />
+
+            <TextView
+                android:id="@+id/btn_yes"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:paddingVertical="16dp"
+                android:fontFamily="@font/floney_pretendard_semibold"
                 android:gravity="center"
-                android:layout_weight="1"
-                android:weightSum="2"
-                android:orientation="horizontal">
+                android:text="네"
+                android:textSize="16dp"
+                android:textColor="@color/grayscale2"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/middle_divider"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/v_line" />
 
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="네"
-                    android:id="@+id/btn_yes"
-                    android:gravity="center"
-                    android:textColor="@color/grayscale2"
-                    android:fontFamily="@font/floney_pretendard_semibold"/>
+            <TextView
+                android:id="@+id/btn_no"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:paddingVertical="16dp"
+                android:fontFamily="@font/floney_pretendard_semibold"
+                android:gravity="center"
+                android:text="아니요"
+                android:textSize="16dp"
+                android:textColor="@color/grayscale2"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/middle_divider"
+                app:layout_constraintTop_toBottomOf="@+id/v_line" />
 
-                <View
-                    android:layout_width="1dp"
-                    android:background="@color/grayscale10"
-                    android:layout_height="match_parent"/>
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:id="@+id/btn_no"
-                    android:gravity="center"
-                    android:text="아니요"
-                    android:textColor="@color/grayscale2"
-                    android:fontFamily="@font/floney_pretendard_semibold"/>
-
-
-            </LinearLayout>
-                
-                
-
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
         
     </androidx.constraintlayout.widget.ConstraintLayout>
 

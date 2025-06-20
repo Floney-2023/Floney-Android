@@ -49,20 +49,35 @@ class BaseAlertDialog(
         binding.apply {
             tvPopupTitle.text = title
             tvPopupInfo.text = info
-            btnLeft.apply {
-                // '초대 코드 복사'가 맞으면 weight를 2로 설정, OK로 변경
-                if (title == "초대 코드 복사" || title.contains("알림")) {
-                    btnLeft.text = "OK"
-                    middleView.visibility = View.GONE
-                    val params = layoutParams as LinearLayout.LayoutParams
-                    params.weight = 2f
-                    layoutParams = params
-                }
-                // 'check' 값에 따라 버튼의 글씨색 변경
-                setTextColor(
-                    if (check) Color.RED else ContextCompat.getColor(requireContext(), R.color.grayscale2)
-                )
+
+            // 단일 버튼 모드 체크 (초대 코드 복사 또는 알림)
+            val isSingleButtonMode = title == "초대 코드 복사" || title.contains("알림")
+
+            if (isSingleButtonMode) {
+                // 단일 버튼 모드: 왼쪽 버튼만 사용, 전체 너비
+                btnLeft.text = "OK"
+                btnRight.visibility = View.GONE
+                middleView.visibility = View.GONE
+
+                // ConstraintLayout으로 왼쪽 버튼을 전체 너비로 설정
+                val params =
+                    btnLeft.layoutParams as androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
+                params.endToEnd =
+                    androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.PARENT_ID
+                btnLeft.layoutParams = params
+            } else {
+                // 두 버튼 모드: 기본 설정 유지
+                btnRight.visibility = View.VISIBLE
+                middleView.visibility = View.VISIBLE
             }
+
+            // check 값에 따라 왼쪽 버튼의 글씨색 변경
+            btnLeft.setTextColor(
+                if (check) Color.RED else ContextCompat.getColor(
+                    requireContext(),
+                    R.color.grayscale2
+                )
+            )
         }
     }
 
