@@ -76,7 +76,7 @@ class BookSettingFavoriteAddFragment :
             viewModel.onClickCloseBtn.collect {
                 if(it) {
                     // 수정 내역 있음
-                    BaseAlertDialog(title = "잠깐", info = "수정한 내용이 저장되지 않았습니다.\n그대로 나가시겠습니까?", false) {
+                    BaseAlertDialog(title = "잠깐!", info = "수정한 내용이 저장되지 않았습니다.\n그대로 나가시겠습니까?", false) {
                         if(it) {
                             findNavController().popBackStack()
                         }

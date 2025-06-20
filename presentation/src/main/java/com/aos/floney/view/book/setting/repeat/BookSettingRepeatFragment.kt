@@ -77,7 +77,7 @@ class BookSettingRepeatFragment : BaseFragment<FragmentBookSettingRepeatBinding,
                 if(it) {
                     findNavController().popBackStack()
                 }else{ // 편집 모드일 경우
-                    BaseAlertDialog(title = "잠깐", info = "수정한 내용이 저장되지 않았습니다.\n그대로 나가시겠습니까?", false) {
+                    BaseAlertDialog(title = "잠깐!", info = "수정한 내용이 저장되지 않았습니다.\n그대로 나가시겠습니까?", false) {
                         if(it) {
                             findNavController().popBackStack()
                         }
