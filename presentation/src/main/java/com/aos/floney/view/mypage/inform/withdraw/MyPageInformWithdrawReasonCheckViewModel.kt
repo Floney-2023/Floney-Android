@@ -15,6 +15,7 @@ import com.aos.usecase.subscribe.SubscribeCheckUseCase
 import com.aos.usecase.withdraw.WithdrawUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -236,7 +237,8 @@ class MyPageInformWithdrawReasonCheckViewModel @Inject constructor(
     fun getSubscribeChecking(){
         viewModelScope.launch(Dispatchers.IO) {
             subscribeAndroidInfoUseCase().onSuccess {
-                subscribeCheck.postValue(it.autoRenewing)
+                // 구독 중인데, 정기 결제가 갱신되어있는 경우
+                subscribeCheck.postValue(subscriptionDataStoreUtil.getUserSubscribe().first() && it.autoRenewing)
             }.onFailure {
                 // baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
             }
