@@ -140,6 +140,17 @@ class InsertPictureActivity :
         repeatOnStarted {
             // 뒤로 가기 버튼 클릭
             viewModel.onClickedBack.collect {
+
+                val intent = Intent()
+                intent.putExtra("updateCloudPhotoUrl", ArrayList(viewModel.getCloudPictureList()))
+                intent.putExtra("updateLocalPhotoUrl", ArrayList(viewModel.getLocalPictureList()))
+
+                setResult(Activity.RESULT_OK, intent)
+                Timber.i("getCloudPictureList ${ ArrayList(viewModel.getCloudPictureList())}")
+                Timber.i("getLocalPictureList ${ ArrayList(viewModel.getLocalPictureList())}")
+
+                finish()
+                /*
                 if (viewModel.getIsModify()) {
                     // 다이얼로그 표시
                     EditNotSaveDialog(this@InsertPictureActivity) {
@@ -147,7 +158,7 @@ class InsertPictureActivity :
                     }.show()
                 } else {
                     finish()
-                }
+                }*/
             }
         }
         repeatOnStarted {
@@ -200,7 +211,7 @@ class InsertPictureActivity :
                 val totalImageCount = cloudImageCount + localImageCount
 
                 if (totalImageCount < index) { // 이미지가 없는 뷰 클릭 시 return
-                    viewModel.onClickedAddPicture()
+                    // viewModel.onClickedAddPicture()
                     return@collect
                 }
                 // 상세 이미지 Urls
@@ -228,10 +239,10 @@ class InsertPictureActivity :
             // 사진 소팅 후 정렬
             viewModel.sortPictures.collect { files ->
                 Timber.i("files ${files}")
-                Timber.i("files = $files, size = ${files?.size ?: "null or empty"}")
+                Timber.i("files = $files, size = ${files?.size}")
                 when (files.size) {
                     0 -> {
-                        binding.ivAddPicture.isVisible = true
+                        binding.ivEmptyView.isVisible = true
                         resetPictureImage(binding.ivPicture1)
                         resetPictureImage(binding.ivPicture2)
                         resetPictureImage(binding.ivPicture3)
@@ -239,31 +250,31 @@ class InsertPictureActivity :
                     }
 
                     1 -> {
-                        setPictureImage(binding.ivPicture2, files[0])
+                        setPictureImage(binding.ivPicture1, files[0])
+                        resetPictureImage(binding.ivPicture2)
                         resetPictureImage(binding.ivPicture3)
                         resetPictureImage(binding.ivPicture4)
                     }
 
                     2 -> {
-                        setPictureImage(binding.ivPicture2, files[0])
-                        setPictureImage(binding.ivPicture3, files[1])
+                        setPictureImage(binding.ivPicture1, files[0])
+                        setPictureImage(binding.ivPicture2, files[1])
+                        resetPictureImage(binding.ivPicture3)
                         resetPictureImage(binding.ivPicture4)
                     }
 
                     3 -> {
-                        binding.ivAddPicture.isVisible = true
-                        resetPictureImage(binding.ivPicture1)
-                        setPictureImage(binding.ivPicture2, files[0])
-                        setPictureImage(binding.ivPicture3, files[1])
-                        setPictureImage(binding.ivPicture4, files[2])
+                        setPictureImage(binding.ivPicture1, files[0])
+                        setPictureImage(binding.ivPicture2, files[1])
+                        setPictureImage(binding.ivPicture3, files[2])
+                        resetPictureImage(binding.ivPicture4)
                     }
 
                     4 -> {
-                        binding.ivAddPicture.isVisible = false
-                        setPictureImage(binding.ivPicture1, files[3])
-                        setPictureImage(binding.ivPicture2, files[0])
-                        setPictureImage(binding.ivPicture3, files[1])
-                        setPictureImage(binding.ivPicture4, files[2])
+                        setPictureImage(binding.ivPicture1, files[0])
+                        setPictureImage(binding.ivPicture2, files[1])
+                        setPictureImage(binding.ivPicture3, files[2])
+                        setPictureImage(binding.ivPicture4, files[3])
                     }
                     else -> {
                         viewModel.baseEvent(BaseViewModel.Event.ShowToast("이미지 불러오는데 문제가 생겼습니다."))
@@ -275,7 +286,7 @@ class InsertPictureActivity :
 
     private fun resetPictureImage(imageView: ImageView) {
         Glide.with(imageView.context).clear(imageView)
-        imageView.setBackgroundResource(R.drawable.input_picture_blank)
+        imageView.setImageDrawable(null)
     }
 
     private fun setPictureImageFromUrl(imageView: ImageView, url: String) {
@@ -321,14 +332,15 @@ class InsertPictureActivity :
     private fun setUpBackPressHandler() {
         this.onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                if (viewModel.getIsModify()) {
-                    // 다이얼로그 표시
-                    EditNotSaveDialog(this@InsertPictureActivity) {
-                        finish()
-                    }.show()
-                } else {
-                    finish()
-                }
+                val intent = Intent()
+                intent.putExtra("updateCloudPhotoUrl", ArrayList(viewModel.getCloudPictureList()))
+                intent.putExtra("updateLocalPhotoUrl", ArrayList(viewModel.getLocalPictureList()))
+
+                setResult(Activity.RESULT_OK, intent)
+                Timber.i("getCloudPictureList ${ ArrayList(viewModel.getCloudPictureList())}")
+                Timber.i("getLocalPictureList ${ ArrayList(viewModel.getLocalPictureList())}")
+
+                finish()
             }
         })
     }

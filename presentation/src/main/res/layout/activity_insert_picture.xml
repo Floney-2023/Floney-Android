@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+        <import type="android.view.View" />
 
         <variable
             name="vm"
@@ -26,6 +27,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
+            android:id="@+id/textView10"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/floney_pretendard_semibold"
@@ -37,38 +39,37 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/iv_back" />
 
+        <ImageView
+            android:id="@+id/iv_empty_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_photo_empty"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/appCompatButton8"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/textView10" />
+
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/iv_picture_1"
             android:layout_width="154dp"
             android:layout_height="154dp"
             android:layout_marginStart="20dp"
             android:layout_marginTop="32dp"
-            android:onClick="@{() -> vm.onClickedPictureDetail(4)}"
-            android:src="@drawable/input_picture_blank"
+            android:onClick="@{() -> vm.onClickedPictureDetail(1)}"
+            android:background="@android:color/transparent"
             app:layout_constraintEnd_toStartOf="@id/iv_picture_2"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/iv_back"
             app:shapeAppearanceOverlay="@style/RoundedImage" />
-
-        <ImageView
-            android:id="@+id/iv_add_picture"
-            android:layout_width="154dp"
-            android:layout_height="154dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="32dp"
-            android:onClick="@{() -> vm.onClickedAddPicture()}"
-            android:src="@drawable/input_picture"
-            app:layout_constraintEnd_toStartOf="@id/iv_picture_2"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/iv_back" />
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/iv_picture_2"
             android:layout_width="154dp"
             android:layout_height="154dp"
             android:layout_marginEnd="20dp"
-            android:onClick="@{() -> vm.onClickedPictureDetail(1)}"
-            android:src="@drawable/input_picture_blank"
+            android:onClick="@{() -> vm.onClickedPictureDetail(2)}"
+            android:background="@android:color/transparent"
             app:shapeAppearanceOverlay="@style/RoundedImage"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/iv_picture_1"
@@ -81,8 +82,8 @@
             android:layout_height="154dp"
             android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
-            android:onClick="@{() -> vm.onClickedPictureDetail(2)}"
-            android:src="@drawable/input_picture_blank"
+            android:onClick="@{() -> vm.onClickedPictureDetail(3)}"
+            android:background="@android:color/transparent"
             app:layout_constraintEnd_toStartOf="@id/iv_picture_4"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/iv_picture_1"
@@ -93,8 +94,8 @@
             android:layout_width="154dp"
             android:layout_height="154dp"
             android:layout_marginEnd="20dp"
-            android:onClick="@{() -> vm.onClickedPictureDetail(3)}"
-            android:src="@drawable/input_picture_blank"
+            android:onClick="@{() -> vm.onClickedPictureDetail(4)}"
+            android:background="@android:color/transparent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/iv_picture_3"
             app:layout_constraintTop_toBottomOf="@id/iv_back"
@@ -102,12 +103,13 @@
             app:shapeAppearanceOverlay="@style/RoundedImage" />
 
         <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/appCompatButton8"
             android:layout_width="match_parent"
             android:layout_height="66dp"
             android:background="@color/black"
             android:fontFamily="@font/pretendard_bold"
-            android:onClick="@{() -> vm.onClickedSaveWriting()}"
-            android:text="첨부 저장하기"
+            android:onClick="@{() -> vm.onClickedAddPicture()}"
+            android:text="사진 추가하기"
             android:textColor="@color/white"
             android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="parent"

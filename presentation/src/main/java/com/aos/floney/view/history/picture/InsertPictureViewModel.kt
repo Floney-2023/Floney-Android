@@ -242,23 +242,6 @@ class InsertPictureViewModel @Inject constructor(
         return takeCaptureUri
     }
 
-    // 임시 촬영 파일 저장
-    private fun setImageBitmap(bitmap: Bitmap?) {
-        bitmap?.let {
-            val resized = resizeBitmapMaintainingRatio(it, 720) // 가로 기준 720px 리사이즈
-            saveBitmapToTempFile(context, resized)?.let { file ->
-                localImageList.add(file)
-                updateImageList()
-            }
-        }
-    }
-
-    private fun resizeBitmapMaintainingRatio(bitmap: Bitmap, targetWidth: Int): Bitmap {
-        val ratio: Float = targetWidth.toFloat() / bitmap.width
-        val targetHeight: Int = (bitmap.height * ratio).toInt()
-        return Bitmap.createScaledBitmap(bitmap, targetWidth, targetHeight, true)
-    }
-
     fun getCloudPictureList(): List<ImageUrls> {
         return cloudImageList
     }
