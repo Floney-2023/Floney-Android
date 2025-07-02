@@ -24,7 +24,8 @@ data class UiPictureSelectModel(
 
 data class SelectablePicture(
     val picture: PictureItem,
-    val isSelected: Boolean = false
+    val isSelected: Boolean = false,
+    val isDeleteMode: Boolean = false
 )
 
 sealed class PictureItem {

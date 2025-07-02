@@ -3,12 +3,15 @@
     xmlns:bind="http://schemas.android.com/apk/res-auto">
 
     <data>
+
         <variable
             name="item"
             type="com.aos.model.subscribe.SelectablePicture" />
+
         <variable
             name="eventHolder"
             type="com.aos.model.subscribe.UiPictureSelectModel.OnItemClickListener" />
+
         <import type="android.view.View" />
     </data>
 
@@ -21,16 +24,28 @@
             android:id="@+id/imageView"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:scaleType="centerCrop"
-            bind:setSortedImage="@{item.picture}"
-            android:onClick="@{() -> eventHolder.onItemClick(item)}"
             android:background="@android:color/transparent"
-            app:shapeAppearanceOverlay="@style/RoundedImage"
-            app:layout_constraintTop_toTopOf="parent"
+            android:onClick="@{() -> eventHolder.onItemClick(item)}"
+            android:scaleType="centerCrop"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintDimensionRatio="1:1" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:shapeAppearanceOverlay="@style/RoundedImage"
+            bind:setSortedImage="@{item.picture}" />
+
+        <!-- 반투명 -->
+        <View
+            android:id="@+id/view_dim"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/dim_background"
+            android:visibility="@{item.isDeleteMode ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <!-- 체크 아이콘 -->
         <ImageView
@@ -38,8 +53,9 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_margin="6dp"
+            android:visibility="@{item.isDeleteMode ? View.VISIBLE : View.GONE}"
             android:src="@{item.isSelected ? @drawable/icon_check_circle_activated : @drawable/icon_check_circle_inactivated}"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

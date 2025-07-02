@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.provider.MediaStore
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.aos.data.util.SharedPreferenceUtil
@@ -55,9 +56,6 @@ class InsertPictureViewModel @Inject constructor(
     private var _onClickPictureDetail = MutableEventFlow<String>()
     val onClickPictureDetail: EventFlow<String> get() = _onClickPictureDetail
 
-    private var _onClickPictureDetailNum = MutableEventFlow<Int>()
-    val onClickPictureDetailNum: EventFlow<Int> get() = _onClickPictureDetailNum
-
     private var _sortPictures = MutableLiveData<UiPictureSelectModel>()
     val sortPictures: LiveData<UiPictureSelectModel> get() = _sortPictures
 
@@ -73,12 +71,40 @@ class InsertPictureViewModel @Inject constructor(
     // 몇번째 이미지 인지
     private var isModify = false
 
-    val mode = MutableLiveData<String>("add") // add or delete
+    // 삭제 모드면 true, 보기 모드면 false
+    val isDeleteMode = MutableLiveData<Boolean>(false)
 
-    val selectedPictures = mutableSetOf<PictureItem>() // 체크된 사진들
+    // 모든 토글이 선택된 여부 확인
+    val isAllSelected = MediatorLiveData<Boolean>().apply {
+        addSource(sortPictures) { model ->
+            value = model.selectablePictures.all { it.isSelected }
+        }
+    }
 
-    val allPictures = MutableLiveData<List<PictureItem>>() // 현재 표시 중인 사진들
+    fun toggleSelectAll(isSelectAll: Boolean) {
+        val current = _sortPictures.value ?: return
+        val updated = current.selectablePictures.map {
+            it.copy(isSelected = isSelectAll)
+        }
+        _sortPictures.postValue(current.copy(selectablePictures = updated))
+    }
 
+    fun deleteSelectedPictures() {
+        val selected = _sortPictures.value?.selectablePictures?.filter { it.isSelected } ?: return
+
+        // 클라우드/로컬 나누기
+        val selectedCloud = selected.mapNotNull { it.picture as? PictureItem.CloudImage }
+        val selectedLocal = selected.mapNotNull { it.picture as? PictureItem.LocalImage }
+
+        cloudImageList.removeAll { cloud -> selectedCloud.any { it.imageUrls == cloud } }
+        localImageList.removeAll { local -> selectedLocal.any { it.file == local } }
+
+        // 삭제 완료 후 삭제 모드 OFF
+        isDeleteMode.value = false
+        baseEvent(Event.ShowSuccessToast("사진 삭제가 완료되었습니다."))
+
+        updateImageList()
+    }
 
     // 클라우드 이미지 리스트 세팅 (내용 수정 시)
     fun initPhotoList(cloudUrls: List<ImageUrls>?, localUrls: ArrayList<File>?) {
@@ -98,21 +124,6 @@ class InsertPictureViewModel @Inject constructor(
         }
     }
 
-    // 사진 상세보기 클릭
-    fun onClickedPictureDetail(num: Int) {
-
-        // num 번째 파일의 url를 읽어온다.
-        // 클라우드 이미지 리스트 -> 로컬 이미지 리스트 순서대로 접근한다.
-        // 몇 번쨰 이미지 값인 지 보낸다.
-        viewModelScope.launch {
-            _onClickPictureDetailNum.emit(num)
-                /*
-            getImageFile(num)?.let {
-                _onClickPictureDetail.emit(it.absolutePath)
-            }*/
-        }
-    }
-
     fun onClickedBack() {
         viewModelScope.launch {
             _onClickedBack.emit(true)
@@ -123,6 +134,25 @@ class InsertPictureViewModel @Inject constructor(
         viewModelScope.launch {
             _onClickedAddPicture.emit(true)
         }
+    }
+
+    fun onClickedBottomButton() {
+        // 삭제 모드면 이미지 삭제
+        if (isDeleteMode.value!!){
+            deleteSelectedPictures()
+        } else {
+            // 삭제 모드가 아니면 이미지 추가
+            onClickedAddPicture()
+        }
+    }
+
+    fun onSetDeleteMode(delete: Boolean) {
+        isDeleteMode.value = delete
+        _sortPictures.value = _sortPictures.value?.copy(
+            selectablePictures = _sortPictures.value?.selectablePictures?.map {
+                it.copy(isDeleteMode = delete)
+            } ?: emptyList()
+        )
     }
 
     fun setIsModify(checkModify: Boolean) {
@@ -256,7 +286,9 @@ class InsertPictureViewModel @Inject constructor(
                     localImageList.map { PictureItem.LocalImage(it) }        // 로컬 파일 리스트 변환
 
             // ✅ isSelected는 기본값 false로 초기화
-            val selectableList = sortedList.map { SelectablePicture(it, isSelected = false) }
+            val selectableList = sortedList.map {
+                SelectablePicture(it)
+            }
             _sortPictures.postValue(UiPictureSelectModel(selectableList))
         }
     }

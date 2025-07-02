@@ -25,6 +25,7 @@ import com.aos.floney.view.common.BaseAlertDialog
 import com.aos.floney.view.common.ChoicePictureDialog
 import com.aos.floney.view.common.EditNotSaveDialog
 import com.aos.model.home.ImageUrls
+import com.aos.model.subscribe.PictureItem
 import com.aos.model.subscribe.SelectablePicture
 import com.aos.model.subscribe.UiPictureSelectModel
 import com.bumptech.glide.Glide
@@ -210,39 +211,6 @@ class InsertPictureActivity :
                 getResult.launch(intent)
             }
         }
-        repeatOnStarted {
-            // 사진 상세 버튼 클릭 (인덱스 값 감지)
-            viewModel.onClickPictureDetailNum.collect { index ->
-                // 현재 이미지 개수
-                val cloudImageCount = viewModel.getCloudFileList().size
-                val localImageCount = viewModel.getImageFileList().size
-                val totalImageCount = cloudImageCount + localImageCount
-
-                if (totalImageCount < index) { // 이미지가 없는 뷰 클릭 시 return
-                    // viewModel.onClickedAddPicture()
-                    return@collect
-                }
-                // 상세 이미지 Urls
-                val detailUrls: ImageUrls? = if (index <= cloudImageCount) {
-                    // 클라우드 이미지인 경우, 그냥 index로 가져옴
-                    viewModel.getCloudFileList()[index - 1]
-                } else {
-                    // 로컬 이미지인 경우, 클라우드 개수만큼 빼줘야 올바른 index가 됨
-                    val localIndex = index - cloudImageCount - 1 // ★ 여기서 인덱스 보정
-                    viewModel.getImageFileList().getOrNull(localIndex)?.let {
-                        ImageUrls(-1, it.absolutePath)
-                    }
-                }
-
-                Timber.i("detailUrls ${detailUrls}")
-                detailUrls?.let {
-                    val intent =
-                        Intent(this@InsertPictureActivity, InsertPictureDetailActivity::class.java)
-                    intent.putExtra("url", detailUrls)
-                    getResult.launch(intent)
-                }
-            }
-        }
     }
 
     private fun handleImageResult(uri: Uri?) {
@@ -288,6 +256,22 @@ class InsertPictureActivity :
     }
 
     override fun onItemClick(item: SelectablePicture) {
-        viewModel.settingSelectPicture(item)
+        // 보기 모드면 이미지 자세히 보기
+        // 삭제 모드면 이미지 삭제 토글 ON/OFF
+        if (viewModel.isDeleteMode.value!!)
+            viewModel.settingSelectPicture(item)
+        else {
+            // PictureItem에 따라 처리
+            val detailUrl: ImageUrls? = when (val picture = item.picture) {
+                is PictureItem.CloudImage -> picture.imageUrls
+                is PictureItem.LocalImage -> ImageUrls(-1, picture.file.absolutePath)
+            }
+
+            detailUrl?.let {
+                val intent = Intent(this, InsertPictureDetailActivity::class.java)
+                intent.putExtra("url", it)
+                getResult.launch(intent)
+            }
+        }
     }
 }

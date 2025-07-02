@@ -40,16 +40,46 @@
             android:fontFamily="@font/floney_pretendard_semibold"
             android:text="사진"
             android:textColor="@color/grayscale1"
-            android:textSize="16dp"
+            android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="@id/iv_back"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/iv_back" />
 
-        <ImageView
-            android:id="@+id/iv_empty_view"
+        <TextView
+            android:id="@+id/tv_edit_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:fontFamily="@font/floney_pretendard_regular"
+            android:visibility="@{vm.isDeleteMode ? View.GONE : View.VISIBLE}"
+            android:onClick="@{() -> vm.onSetDeleteMode(true)}"
+            android:text="삭제"
+            android:textColor="@color/grayscale2"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="@id/iv_back"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/iv_back" />
+
+        <TextView
+            android:id="@+id/tv_delete_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:fontFamily="@font/floney_pretendard_regular"
+            android:visibility="@{vm.isDeleteMode ? View.VISIBLE : View.GONE}"
+            android:text="@{vm.isAllSelected ? `선택 취소` : `전체 삭제` }"
+            android:onClick="@{() -> vm.toggleSelectAll(!vm.isAllSelected)}"
+            android:textColor="@color/grayscale2"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="@id/iv_back"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/iv_back" />
+
+        <ImageView
+            android:id="@+id/iv_empty_view"
+            android:layout_width="80dp"
+            android:layout_height="86dp"
             android:src="@drawable/ic_photo_empty"
             android:visibility="@{vm.sortPictures.selectablePictures.size == 0 ? View.VISIBLE : View.GONE }"
             app:layout_constraintBottom_toTopOf="@+id/appCompatButton8"
@@ -82,8 +112,8 @@
             android:layout_height="66dp"
             android:background="@color/black"
             android:fontFamily="@font/pretendard_bold"
-            android:onClick="@{() -> vm.onClickedAddPicture()}"
-            android:text="사진 추가하기"
+            android:onClick="@{() -> vm.onClickedBottomButton()}"
+            android:text="@{vm.isDeleteMode ? `삭제하기` : `사진 추가하기` }"
             android:textColor="@color/white"
             android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="parent"
