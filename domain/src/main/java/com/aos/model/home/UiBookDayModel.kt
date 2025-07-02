@@ -78,7 +78,3 @@ data class DayMoneyFavoriteItem(
     val exceptStatus : Boolean
 ): Serializable
 
-sealed class PictureItem {
-    data class CloudImage(val imageUrls: ImageUrls) : PictureItem() // S3 이미지 URL
-    data class LocalImage(val file: File) : PictureItem()  // 로컬 이미지 파일
-}

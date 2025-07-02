@@ -6,6 +6,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.view.View
 import android.widget.ImageView
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.PickVisualMediaRequest
@@ -24,7 +25,8 @@ import com.aos.floney.view.common.BaseAlertDialog
 import com.aos.floney.view.common.ChoicePictureDialog
 import com.aos.floney.view.common.EditNotSaveDialog
 import com.aos.model.home.ImageUrls
-import com.aos.model.home.PictureItem
+import com.aos.model.subscribe.SelectablePicture
+import com.aos.model.subscribe.UiPictureSelectModel
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import dagger.hilt.android.AndroidEntryPoint
@@ -33,7 +35,7 @@ import java.io.File
 
 @AndroidEntryPoint
 class InsertPictureActivity :
-    BaseActivity<ActivityInsertPictureBinding, InsertPictureViewModel>(R.layout.activity_insert_picture) {
+    BaseActivity<ActivityInsertPictureBinding, InsertPictureViewModel>(R.layout.activity_insert_picture), UiPictureSelectModel.OnItemClickListener {
 
     // 사진 찍기 결과
     private val takePhoto = registerForActivityResult(ActivityResultContracts.TakePicture()) {
@@ -124,6 +126,12 @@ class InsertPictureActivity :
 
     private fun setUpUi() {
         binding.setVariable(BR.vm, viewModel)
+        binding.setVariable(BR.eventHolder, this@InsertPictureActivity)
+
+        val spacingInPixels = resources.getDimensionPixelSize(R.dimen.image_item_spacing) // 예: 12dp
+        val itemDecoration = GridSpacingItemDecoration(spanCount = 2, spacing = spacingInPixels, includeEdge = true)
+        binding.rvImageList.addItemDecoration(itemDecoration)
+        binding.rvImageList.itemAnimator = null
 
         // 초기 url 이미지 세팅 (이미 저장했던 이미지가 있는 경우)
         val cloudUrls = intent.intentSerializableList<ImageUrls>("cloudPhotoUrl")
@@ -235,90 +243,6 @@ class InsertPictureActivity :
                 }
             }
         }
-        repeatOnStarted {
-            // 사진 소팅 후 정렬
-            viewModel.sortPictures.collect { files ->
-                Timber.i("files ${files}")
-                Timber.i("files = $files, size = ${files?.size}")
-                when (files.size) {
-                    0 -> {
-                        binding.ivEmptyView.isVisible = true
-                        resetPictureImage(binding.ivPicture1)
-                        resetPictureImage(binding.ivPicture2)
-                        resetPictureImage(binding.ivPicture3)
-                        resetPictureImage(binding.ivPicture4)
-                    }
-
-                    1 -> {
-                        setPictureImage(binding.ivPicture1, files[0])
-                        resetPictureImage(binding.ivPicture2)
-                        resetPictureImage(binding.ivPicture3)
-                        resetPictureImage(binding.ivPicture4)
-                    }
-
-                    2 -> {
-                        setPictureImage(binding.ivPicture1, files[0])
-                        setPictureImage(binding.ivPicture2, files[1])
-                        resetPictureImage(binding.ivPicture3)
-                        resetPictureImage(binding.ivPicture4)
-                    }
-
-                    3 -> {
-                        setPictureImage(binding.ivPicture1, files[0])
-                        setPictureImage(binding.ivPicture2, files[1])
-                        setPictureImage(binding.ivPicture3, files[2])
-                        resetPictureImage(binding.ivPicture4)
-                    }
-
-                    4 -> {
-                        setPictureImage(binding.ivPicture1, files[0])
-                        setPictureImage(binding.ivPicture2, files[1])
-                        setPictureImage(binding.ivPicture3, files[2])
-                        setPictureImage(binding.ivPicture4, files[3])
-                    }
-                    else -> {
-                        viewModel.baseEvent(BaseViewModel.Event.ShowToast("이미지 불러오는데 문제가 생겼습니다."))
-                    }
-                }
-            }
-        }
-    }
-
-    private fun resetPictureImage(imageView: ImageView) {
-        Glide.with(imageView.context).clear(imageView)
-        imageView.setImageDrawable(null)
-    }
-
-    private fun setPictureImageFromUrl(imageView: ImageView, url: String) {
-        Timber.i("url ${url}")
-        Glide.with(this)
-            .load(url)
-            .fitCenter()
-            .centerCrop()
-            .diskCacheStrategy(DiskCacheStrategy.NONE)
-            .skipMemoryCache(true)
-            .into(imageView)
-    }
-
-    private fun setPictureImage(imageView: ImageView, file: File) {
-        Glide.with(this)
-            .load(file)
-            .fitCenter()
-            .centerCrop()
-            .diskCacheStrategy(DiskCacheStrategy.NONE)
-            .skipMemoryCache(true)
-            .into(imageView)
-    }
-
-    fun setPictureImage(imageView: ImageView, picture: PictureItem) {
-        when (picture) {
-            is PictureItem.CloudImage -> {
-                setPictureImageFromUrl(imageView, picture.imageUrls.url)
-            }
-            is PictureItem.LocalImage -> {
-                setPictureImage(imageView, picture.file)
-            }
-        }
     }
 
     private fun handleImageResult(uri: Uri?) {
@@ -361,5 +285,9 @@ class InsertPictureActivity :
             putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true) // 다중 선택 시도
         }
         legacyImageResult.launch(intent)
+    }
+
+    override fun onItemClick(item: SelectablePicture) {
+        viewModel.settingSelectPicture(item)
     }
 }

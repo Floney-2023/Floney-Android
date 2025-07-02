@@ -1,0 +1,45 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:bind="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="item"
+            type="com.aos.model.subscribe.SelectablePicture" />
+        <variable
+            name="eventHolder"
+            type="com.aos.model.subscribe.UiPictureSelectModel.OnItemClickListener" />
+        <import type="android.view.View" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- 이미지 -->
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/imageView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:scaleType="centerCrop"
+            bind:setSortedImage="@{item.picture}"
+            android:onClick="@{() -> eventHolder.onItemClick(item)}"
+            android:background="@android:color/transparent"
+            app:shapeAppearanceOverlay="@style/RoundedImage"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintDimensionRatio="1:1" />
+
+        <!-- 체크 아이콘 -->
+        <ImageView
+            android:id="@+id/iv_bool_activated"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_margin="6dp"
+            android:src="@{item.isSelected ? @drawable/icon_check_circle_activated : @drawable/icon_check_circle_inactivated}"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

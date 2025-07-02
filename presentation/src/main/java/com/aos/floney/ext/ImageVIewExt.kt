@@ -10,8 +10,10 @@ import com.aos.floney.R
 import com.aos.floney.view.home.HomeActivity
 import com.aos.model.analyze.UiAnalyzeAssetModel
 import com.aos.model.analyze.UiAnalyzePlanModel
+import com.aos.model.subscribe.PictureItem
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DecodeFormat
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import timber.log.Timber
 import java.io.File
 
@@ -199,4 +201,49 @@ fun ImageView.setPictureImage(files: List<File>, num: Int) {
         .fitCenter()
         .centerCrop()
         .into(this)
+}
+
+@BindingAdapter("setSortedImage")
+fun ImageView.setSortedImage(picture: PictureItem?) {
+    if (picture == null) {
+        resetPictureImage(this)
+        return
+    }
+
+    when (picture) {
+        is PictureItem.CloudImage -> {
+            setPictureImageFromUrl(this, picture.imageUrls.url)
+        }
+        is PictureItem.LocalImage -> {
+            setPictureImage(this, picture.file)
+        }
+    }
+}
+
+private fun resetPictureImage(imageView: ImageView) {
+    Glide.with(imageView.context).clear(imageView)
+    imageView.setImageDrawable(null)
+}
+
+private fun setPictureImageFromUrl(imageView: ImageView, url: String) {
+    Timber.i("url ${url}")
+    Glide.with(imageView)
+        .load(url)
+        .thumbnail(Glide.with(imageView).load(url))
+        .fitCenter()
+        .centerCrop()
+        .diskCacheStrategy(DiskCacheStrategy.NONE)
+        .skipMemoryCache(true)
+        .into(imageView)
+}
+
+private fun setPictureImage(imageView: ImageView, file: File) {
+    Glide.with(imageView)
+        .load(file)
+        .thumbnail(Glide.with(imageView).load(file))
+        .fitCenter()
+        .centerCrop()
+        .diskCacheStrategy(DiskCacheStrategy.NONE)
+        .skipMemoryCache(true)
+        .into(imageView)
 }

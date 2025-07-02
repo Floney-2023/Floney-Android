@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:bind="http://schemas.android.com/apk/res-auto">
 
     <data>
         <import type="android.view.View" />
@@ -8,6 +9,12 @@
         <variable
             name="vm"
             type="com.aos.floney.view.history.picture.InsertPictureViewModel" />
+
+        <import type="com.aos.model.subscribe.UiPictureSelectModel" />
+
+        <variable
+            name="eventHolder"
+            type="com.aos.model.subscribe.UiPictureSelectModel.OnItemClickListener" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -44,63 +51,30 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_photo_empty"
-            android:visibility="gone"
+            android:visibility="@{vm.sortPictures.selectablePictures.size == 0 ? View.VISIBLE : View.GONE }"
             app:layout_constraintBottom_toTopOf="@+id/appCompatButton8"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/textView10" />
 
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/iv_picture_1"
-            android:layout_width="154dp"
-            android:layout_height="154dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="32dp"
-            android:onClick="@{() -> vm.onClickedPictureDetail(1)}"
-            android:background="@android:color/transparent"
-            app:layout_constraintEnd_toStartOf="@id/iv_picture_2"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/iv_back"
-            app:shapeAppearanceOverlay="@style/RoundedImage" />
 
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/iv_picture_2"
-            android:layout_width="154dp"
-            android:layout_height="154dp"
-            android:layout_marginEnd="20dp"
-            android:onClick="@{() -> vm.onClickedPictureDetail(2)}"
-            android:background="@android:color/transparent"
-            app:shapeAppearanceOverlay="@style/RoundedImage"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/iv_picture_1"
-            app:layout_constraintTop_toBottomOf="@id/iv_back"
-            app:layout_constraintTop_toTopOf="@id/iv_picture_1" />
-
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/iv_picture_3"
-            android:layout_width="154dp"
-            android:layout_height="154dp"
-            android:layout_marginStart="20dp"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_imageList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:onClick="@{() -> vm.onClickedPictureDetail(3)}"
-            android:background="@android:color/transparent"
-            app:layout_constraintEnd_toStartOf="@id/iv_picture_4"
+            android:layout_marginHorizontal="8dp"
+            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/iv_picture_1"
-            app:shapeAppearanceOverlay="@style/RoundedImage" />
-
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/iv_picture_4"
-            android:layout_width="154dp"
-            android:layout_height="154dp"
-            android:layout_marginEnd="20dp"
-            android:onClick="@{() -> vm.onClickedPictureDetail(4)}"
-            android:background="@android:color/transparent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/iv_picture_3"
-            app:layout_constraintTop_toBottomOf="@id/iv_back"
-            app:layout_constraintTop_toTopOf="@id/iv_picture_3"
-            app:shapeAppearanceOverlay="@style/RoundedImage" />
+            app:layout_constraintTop_toBottomOf="@+id/textView10"
+            app:spanCount="2"
+            bind:diffCallback="@{(Object)UiPictureSelectModel.Companion}"
+            bind:eventHolder="@{eventHolder}"
+            bind:itemLayout="@{@layout/item_insert_picture}"
+            bind:items="@{vm.sortPictures.selectablePictures}"
+            bind:viewModel="@{vm}" />
+
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/appCompatButton8"

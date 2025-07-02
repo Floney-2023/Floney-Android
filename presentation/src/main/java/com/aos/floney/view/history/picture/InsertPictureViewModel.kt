@@ -6,16 +6,21 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.provider.MediaStore
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.aos.data.util.SharedPreferenceUtil
 import com.aos.floney.base.BaseViewModel
 import com.aos.floney.util.EventFlow
 import com.aos.floney.util.MutableEventFlow
 import com.aos.model.home.ImageUrls
-import com.aos.model.home.PictureItem
 import com.aos.usecase.subscribe.SubscribePresignedUrlUseCase
 import com.aos.floney.util.ImgFileMaker
 import com.aos.floney.util.ImgFileMaker.createBitmapFromUri
+import com.aos.model.settlement.BookUsers
+import com.aos.model.subscribe.PictureItem
+import com.aos.model.subscribe.SelectablePicture
+import com.aos.model.subscribe.UiPictureSelectModel
 import com.letspl.oceankeeper.util.RotateTransform
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -53,8 +58,8 @@ class InsertPictureViewModel @Inject constructor(
     private var _onClickPictureDetailNum = MutableEventFlow<Int>()
     val onClickPictureDetailNum: EventFlow<Int> get() = _onClickPictureDetailNum
 
-    private var _sortPictures = MutableEventFlow<List<PictureItem>>()
-    val sortPictures: EventFlow<List<PictureItem>> get() = _sortPictures
+    private var _sortPictures = MutableLiveData<UiPictureSelectModel>()
+    val sortPictures: LiveData<UiPictureSelectModel> get() = _sortPictures
 
     // 사진 촬영 uri
     private var takeCaptureUri: Uri? = null
@@ -67,6 +72,13 @@ class InsertPictureViewModel @Inject constructor(
 
     // 몇번째 이미지 인지
     private var isModify = false
+
+    val mode = MutableLiveData<String>("add") // add or delete
+
+    val selectedPictures = mutableSetOf<PictureItem>() // 체크된 사진들
+
+    val allPictures = MutableLiveData<List<PictureItem>>() // 현재 표시 중인 사진들
+
 
     // 클라우드 이미지 리스트 세팅 (내용 수정 시)
     fun initPhotoList(cloudUrls: List<ImageUrls>?, localUrls: ArrayList<File>?) {
@@ -88,6 +100,7 @@ class InsertPictureViewModel @Inject constructor(
 
     // 사진 상세보기 클릭
     fun onClickedPictureDetail(num: Int) {
+
         // num 번째 파일의 url를 읽어온다.
         // 클라우드 이미지 리스트 -> 로컬 이미지 리스트 순서대로 접근한다.
         // 몇 번쨰 이미지 값인 지 보낸다.
@@ -206,6 +219,21 @@ class InsertPictureViewModel @Inject constructor(
         }
     }
 
+    // 선택한 이미지 설정
+    fun settingSelectPicture(selectPicture: SelectablePicture)
+    {
+        viewModelScope.launch(Dispatchers.IO) {
+            val updatedList = _sortPictures.value?.selectablePictures?.map { checkPicture ->
+                if (checkPicture.picture == selectPicture.picture) {
+                    checkPicture.copy(isSelected = !selectPicture.isSelected) // 선택된 멤버의 isCheck를 true로 설정
+                } else {
+                    checkPicture
+                }
+            }
+            _sortPictures.postValue(_sortPictures.value?.copy(selectablePictures = updatedList!!))
+        }
+    }
+
     fun deletePictureFile(imageUrls: ImageUrls) {
         viewModelScope.launch {
             withContext(Dispatchers.Default) {
@@ -227,8 +255,9 @@ class InsertPictureViewModel @Inject constructor(
             val sortedList: List<PictureItem> =  cloudImageList.map { PictureItem.CloudImage(ImageUrls(it.id, it.url)) } +  // S3 URL 리스트 변환
                     localImageList.map { PictureItem.LocalImage(it) }        // 로컬 파일 리스트 변환
 
-            Timber.i("sortedPictures : ${sortedList}")
-            _sortPictures.emit(sortedList)
+            // ✅ isSelected는 기본값 false로 초기화
+            val selectableList = sortedList.map { SelectablePicture(it, isSelected = false) }
+            _sortPictures.postValue(UiPictureSelectModel(selectableList))
         }
     }
 
