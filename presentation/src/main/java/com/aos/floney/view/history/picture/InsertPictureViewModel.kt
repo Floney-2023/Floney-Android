@@ -201,12 +201,15 @@ class InsertPictureViewModel @Inject constructor(
                 }
 
                 if (bitmap != null) {
+                    // 3:4 비율로 크롭
+                    val croppedBitmap = cropToAspectRatio(bitmap, 3f, 4f)
+
                     val imageFile =
                         File(context.cacheDir, "image_${System.currentTimeMillis()}.jpg")
 
                     try {
                         val fos = FileOutputStream(imageFile)
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)
+                        croppedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)
                         fos.flush()
                         fos.close()
                         localImageList.add(imageFile)
@@ -214,7 +217,7 @@ class InsertPictureViewModel @Inject constructor(
                         viewModelScope.launch {
                             updateImageList()
                         }
-                        bitmap
+                        croppedBitmap
                     } catch (e: Exception) {
                         Timber.e(e, "Error saving bitmap to file")
                         baseEvent(Event.ShowToast("이미지 파일 생성에 실패하였습니다."))
@@ -233,6 +236,37 @@ class InsertPictureViewModel @Inject constructor(
             baseEvent(Event.ShowToast("이미지 파일 설정에 실패하였습니다."))
             null
         }
+    }
+
+    // 이미지를 지정된 비율로 중앙 크롭하는 함수
+    private fun cropToAspectRatio(bitmap: Bitmap, targetWidth: Float, targetHeight: Float): Bitmap {
+        val originalWidth = bitmap.width
+        val originalHeight = bitmap.height
+        val targetRatio = targetWidth / targetHeight
+        val originalRatio = originalWidth.toFloat() / originalHeight.toFloat()
+
+        // 이미 3:4 비율에 가까우면 그대로 반환
+        if (Math.abs(originalRatio - targetRatio) < 0.01f) {
+            return bitmap
+        }
+
+        val newWidth: Int
+        val newHeight: Int
+
+        if (originalRatio > targetRatio) {
+            // 원본이 더 넓은 경우 - 높이를 기준으로 크롭
+            newHeight = originalHeight
+            newWidth = (originalHeight * targetRatio).toInt()
+        } else {
+            // 원본이 더 높은 경우 - 너비를 기준으로 크롭
+            newWidth = originalWidth
+            newHeight = (originalWidth / targetRatio).toInt()
+        }
+
+        val x = (originalWidth - newWidth) / 2
+        val y = (originalHeight - newHeight) / 2
+
+        return Bitmap.createBitmap(bitmap, x, y, newWidth, newHeight)
     }
 
     private fun saveBitmapToTempFile(context: Context, bitmap: Bitmap): File? {
@@ -281,11 +315,11 @@ class InsertPictureViewModel @Inject constructor(
 
     fun updateImageList() {
         viewModelScope.launch {
-            // ✅ 클라우드 리스트를 PictureItem.CloudImage로 변환 + 로컬 리스트를 PictureItem.LocalImage로 변환
+            // 클라우드 리스트를 PictureItem.CloudImage로 변환 + 로컬 리스트를 PictureItem.LocalImage로 변환
             val sortedList: List<PictureItem> =  cloudImageList.map { PictureItem.CloudImage(ImageUrls(it.id, it.url)) } +  // S3 URL 리스트 변환
                     localImageList.map { PictureItem.LocalImage(it) }        // 로컬 파일 리스트 변환
 
-            // ✅ isSelected는 기본값 false로 초기화
+            // isSelected는 기본값 false로 초기화
             val selectableList = sortedList.map {
                 SelectablePicture(it)
             }
