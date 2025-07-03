@@ -109,6 +109,8 @@
         <activity
             android:name=".view.history.picture.InsertPictureDetailActivity"
             android:exported="false" />
+        <activity android:name=".view.history.picture.UploadPreviewActivity"
+            android:exported="false" />
         <activity
             android:name=".view.book.entrance.BookEntranceActivity"
             android:exported="true">

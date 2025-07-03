@@ -41,7 +41,13 @@ class InsertPictureActivity :
     // 사진 찍기 결과
     private val takePhoto = registerForActivityResult(ActivityResultContracts.TakePicture()) {
         if (it) {
-            handleImageResult(viewModel.getTakeCaptureUri())
+
+            val uri = viewModel.getTakeCaptureUri()
+            val intent = Intent(this, UploadPreviewActivity::class.java)
+            intent.putExtra("uploadedUris", arrayListOf(uri)) // ← 리스트로 감싸서 넘김
+            getUploadResult.launch(intent)
+
+            /*handleImageResult(viewModel.getTakeCaptureUri())*/
         }
     }
 
@@ -58,9 +64,14 @@ class InsertPictureActivity :
                 return@registerForActivityResult
             }
 
+            val intent = Intent(this, UploadPreviewActivity::class.java)
+            intent.putParcelableArrayListExtra("uploadedUris", ArrayList(uris)) // ← 이 형식만 허용됨
+            getUploadResult.launch(intent)
+
+/*
             uris.forEach { uri ->
                 handleImageResult(uri)
-            }
+            }*/
         }
     }
 
@@ -116,6 +127,21 @@ class InsertPictureActivity :
                 viewModel.baseEvent(BaseViewModel.Event.ShowSuccessToast("사진 삭제가 완료되었습니다."))
             }
         }
+
+    private val getUploadResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val uris = result.data?.getParcelableArrayListExtra<Uri>("uploadFilePath") ?: return@registerForActivityResult
+
+                uris.forEach {
+                    Timber.e("업로드 받은 uri: $it")
+                    handleImageResult(it) // Uri 기반 처리
+                }
+
+                viewModel.baseEvent(BaseViewModel.Event.ShowSuccessToast("사진 업로드가 완료되었습니다."))
+            }
+        }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -3,42 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-
         <variable
             name="vm"
-            type="com.aos.floney.view.history.picture.InsertPictureDetailViewModel" />
+            type="com.aos.floney.view.history.picture.UploadPreviewViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/white">
-
-        <!-- ScrollView로 스크롤 가능하게 수정 -->
-        <ScrollView
-            android:id="@+id/scrollView2"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView3">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <!-- 이미지가 세로로 긴 경우 스크롤 가능 -->
-                <ImageView
-                    android:id="@+id/iv_detail"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:adjustViewBounds="true"
-                    android:scaleType="fitCenter" />
-
-            </LinearLayout>
-        </ScrollView>
+        android:layout_height="match_parent">
 
         <!-- 상단 뒤로가기 버튼 -->
         <ImageView
@@ -54,10 +26,11 @@
 
         <!-- 상단 제목 -->
         <TextView
+            android:id="@+id/textView12"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/pretendard_semibold"
-            android:text="사진 상세"
+            android:text="사진 확인"
             android:textColor="@color/grayscale1"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="@id/iv_back"
@@ -71,14 +44,40 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/floney_pretendard_regular"
-            android:onClick="@{() -> vm.onClickedDelete()}"
+            android:onClick="@{() -> vm.onClickedUpload()}"
             android:paddingHorizontal="20dp"
             android:paddingVertical="19dp"
-            android:text="삭제"
+            android:text="업로드"
             android:textColor="@color/grayscale2"
             android:textSize="14sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/viewPager"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="32dp"
+            app:layout_constraintBottom_toTopOf="@id/dotIndicator"
+            app:layout_constraintTop_toBottomOf="@+id/textView12" />
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/dotIndicator"
+            android:layout_width="wrap_content"
+            android:layout_height="24dp"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:tabBackground="@drawable/dot_selector"
+            app:tabGravity="center"
+            app:tabIndicatorColor="@android:color/transparent"
+            app:tabIndicatorHeight="0dp"
+            app:tabMaxWidth="14dp"
+            app:tabMinWidth="14dp"
+            app:tabMode="fixed"
+            app:tabPaddingEnd="4dp"
+            app:tabPaddingStart="4dp"
+            app:tabRippleColor="@android:color/transparent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
