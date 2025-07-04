@@ -55,29 +55,31 @@
 
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/viewPager"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginTop="32dp"
-            app:layout_constraintBottom_toTopOf="@id/dotIndicator"
-            app:layout_constraintTop_toBottomOf="@+id/textView12" />
-
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/dotIndicator"
-            android:layout_width="wrap_content"
-            android:layout_height="24dp"
-            android:layout_marginBottom="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintDimensionRatio="3:4"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:tabBackground="@drawable/dot_selector"
-            app:tabGravity="center"
-            app:tabIndicatorColor="@android:color/transparent"
-            app:tabIndicatorHeight="0dp"
-            app:tabMaxWidth="14dp"
-            app:tabMinWidth="14dp"
-            app:tabMode="fixed"
-            app:tabPaddingEnd="4dp"
-            app:tabPaddingStart="4dp"
-            app:tabRippleColor="@android:color/transparent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.5" />
+
+
+        <com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator
+            android:id="@+id/dotIndicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            app:dampingRatio="0.8"
+            app:dotsColor="@color/grayscale2"
+            app:dotsCornerRadius="8dp"
+            app:dotsSize="6dp"
+            app:dotsSpacing="8dp"
+            app:dotsStrokeColor="@color/grayscale9"
+            app:dotsStrokeWidth="3dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/viewPager"
+            app:stiffness="800" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

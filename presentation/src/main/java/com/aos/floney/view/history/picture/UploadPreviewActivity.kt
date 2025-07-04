@@ -4,14 +4,21 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.view.View
+import androidx.activity.OnBackPressedCallback
+import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
 import com.aos.floney.BR
 import com.aos.floney.R
 import com.aos.floney.base.BaseActivity
 import com.aos.floney.databinding.ActivityUploadPreviewBinding
 import com.aos.floney.ext.repeatOnStarted
 import com.aos.floney.view.common.DeletePictureDialog
+import com.aos.floney.view.common.EditNotSaveDialog
+import com.aos.floney.view.onboard.OnBoardViewPaperAdapter
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 
 @AndroidEntryPoint
 class UploadPreviewActivity :
@@ -19,24 +26,50 @@ class UploadPreviewActivity :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         binding.setVariable(BR.vm, viewModel)
 
+        setUpBackPressHandler()
+        setImageAdapter()
+        setupViewModelObserver()
+    }
+
+    private fun setUpBackPressHandler() {
+        this.onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                EditNotSaveDialog(this@UploadPreviewActivity) {
+                    finish()
+                }.show()
+            }
+        })
+    }
+
+    private fun setImageAdapter() {
         val uris = intent.getParcelableArrayListExtra<Uri>("uploadedUris") ?: emptyList()
         viewModel.setImages(uris)
 
         val adapter = UploadImagePagerAdapter(this, uris)
         binding.viewPager.adapter = adapter
 
-        TabLayoutMediator(binding.dotIndicator, binding.viewPager) { _, _ -> }.attach()
-
-        setupViewModelObserver()
+        when (uris.size) {
+            1 -> {
+                binding.dotIndicator.visibility = View.GONE
+                binding.viewPager.adapter = UploadImagePagerAdapter(this, uris)
+                binding.viewPager.isUserInputEnabled = false
+            }
+            else -> {
+                binding.viewPager.adapter = UploadImagePagerAdapter(this, uris)
+                binding.dotIndicator.attachTo(binding.viewPager)
+                binding.viewPager.isUserInputEnabled = true
+            }
+        }
     }
 
     private fun setupViewModelObserver() {
         repeatOnStarted {
             viewModel.onClickedBack.collect {
-                finish()
+                EditNotSaveDialog(this@UploadPreviewActivity) {
+                    finish()
+                }.show()
             }
         }
         repeatOnStarted {

@@ -68,7 +68,7 @@
             android:layout_marginEnd="20dp"
             android:fontFamily="@font/floney_pretendard_regular"
             android:visibility="@{vm.isDeleteMode ? View.VISIBLE : View.GONE}"
-            android:text="@{vm.isAllSelected ? `선택 취소` : `전체 삭제` }"
+            android:text="@{vm.isAllSelected ? `선택 취소` : `전체 선택` }"
             android:onClick="@{() -> vm.toggleSelectAll(!vm.isAllSelected)}"
             android:textColor="@color/grayscale2"
             android:textSize="14sp"
