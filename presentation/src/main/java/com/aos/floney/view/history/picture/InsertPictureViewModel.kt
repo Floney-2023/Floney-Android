@@ -18,6 +18,7 @@ import com.aos.model.home.ImageUrls
 import com.aos.usecase.subscribe.SubscribePresignedUrlUseCase
 import com.aos.floney.util.ImgFileMaker
 import com.aos.floney.util.ImgFileMaker.createBitmapFromUri
+import com.aos.floney.view.common.DeletePictureDialog
 import com.aos.model.settlement.BookUsers
 import com.aos.model.subscribe.PictureItem
 import com.aos.model.subscribe.SelectablePicture
@@ -41,8 +42,8 @@ class InsertPictureViewModel @Inject constructor(
     @ApplicationContext private val context: Context
 ) : BaseViewModel() {
 
-    private var _onClickedSaveWriting = MutableEventFlow<Boolean>()
-    val onClickedSaveWriting: EventFlow<Boolean> get() = _onClickedSaveWriting
+    private var _showDeleteDialog = MutableEventFlow<Boolean>()
+    val showDeleteDialog: EventFlow<Boolean> get() = _showDeleteDialog
 
     private var _onClickedBack = MutableEventFlow<Boolean>()
     val onClickedBack: EventFlow<Boolean> get() = _onClickedBack
@@ -132,17 +133,22 @@ class InsertPictureViewModel @Inject constructor(
 
     fun onClickedAddPicture() {
         viewModelScope.launch {
+            if ((sortPictures.value?.selectablePictures?.size ?: 0) >= 4){
+                baseEvent(Event.ShowToast("최대 4장까지 첨부할 수 있습니다."))
+                return@launch
+            }
             _onClickedAddPicture.emit(true)
         }
     }
 
     fun onClickedBottomButton() {
-        // 삭제 모드면 이미지 삭제
-        if (isDeleteMode.value!!){
-            deleteSelectedPictures()
-        } else {
-            // 삭제 모드가 아니면 이미지 추가
-            onClickedAddPicture()
+        viewModelScope.launch {
+            if (isDeleteMode.value!!){
+                _showDeleteDialog.emit(true)
+            } else {
+                // 삭제 모드가 아니면 이미지 추가
+                onClickedAddPicture()
+            }
         }
     }
 

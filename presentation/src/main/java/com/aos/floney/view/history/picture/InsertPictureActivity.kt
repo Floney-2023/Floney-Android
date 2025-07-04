@@ -23,6 +23,7 @@ import com.aos.floney.ext.intentSerializableList
 import com.aos.floney.ext.repeatOnStarted
 import com.aos.floney.view.common.BaseAlertDialog
 import com.aos.floney.view.common.ChoicePictureDialog
+import com.aos.floney.view.common.DeletePictureDialog
 import com.aos.floney.view.common.EditNotSaveDialog
 import com.aos.model.home.ImageUrls
 import com.aos.model.subscribe.PictureItem
@@ -235,6 +236,15 @@ class InsertPictureActivity :
                     Intent(this@InsertPictureActivity, InsertPictureDetailActivity::class.java)
                 intent.putExtra("url", url)
                 getResult.launch(intent)
+            }
+        }
+        repeatOnStarted {
+            // <Alert 삭제> 팝업 표시
+            viewModel.showDeleteDialog.collect {
+                DeletePictureDialog(this@InsertPictureActivity) {
+                    // 예 클릭 시 삭제하기
+                    viewModel.deleteSelectedPictures()
+                }.show()
             }
         }
     }
