@@ -11,7 +11,6 @@ properties.load(project.rootProject.file('local.properties').newDataInputStream(
 android {
     namespace 'com.aos.data'
     compileSdk 35
-    compileSdkVersion 34
 
     defaultConfig {
         minSdk 24
