@@ -78,7 +78,7 @@ class HistoryActivity :
 
 
                 viewModel.processUpdatedPictureData(cloudList, localList)
-                viewModel.baseEvent(Event.ShowSuccessToast("사진 첨부를 완료하였습니다."))
+                // viewModel.baseEvent(Event.ShowSuccessToast("사진 첨부를 완료하였습니다."))
 
                 }
             }
@@ -173,6 +173,8 @@ class HistoryActivity :
                 val intent = Intent(this@HistoryActivity, InsertPictureActivity::class.java)
                 intent.putExtra("cloudPhotoUrl",viewModel.getCloudUrlList())
                 intent.putExtra("localPhotoUrl",viewModel.getLocalUrlList())
+
+                Timber.d("cloudPhotoUrl ${viewModel.getCloudUrlList()} localPhotoUrl ${viewModel.getLocalUrlList()}")
                 imageResult.launch(intent)
             }
         }
