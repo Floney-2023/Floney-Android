@@ -96,10 +96,19 @@ class InsertPictureActivity :
                         return@registerForActivityResult
                     }
 
+
+                    val uriList = ArrayList<Uri>()
                     for (i in 0 until itemCount) {
-                        val uri = clipData.getItemAt(i).uri
-                        handleImageResult(uri)
+                        uriList.add(clipData.getItemAt(i).uri)
                     }
+
+                    val intent = Intent(this, UploadPreviewActivity::class.java)
+                    intent.putParcelableArrayListExtra("uploadedUris", uriList)
+                    getUploadResult.launch(intent)
+                    /*                    for (i in 0 until itemCount) {
+                                            val uri = clipData.getItemAt(i).uri
+                                            handleImageResult(uri)
+                                        }*/
                 } else {
                     // 단일 선택인 경우
                     data.data?.let { uri ->
@@ -108,7 +117,11 @@ class InsertPictureActivity :
                             return@registerForActivityResult
                         }
 
-                        handleImageResult(uri)
+                        val intent = Intent(this, UploadPreviewActivity::class.java)
+                        intent.putExtra("uploadedUris", arrayListOf(uri)) // ← 리스트로 감싸서 넘김
+                        getUploadResult.launch(intent)
+                        /*
+                                                handleImageResult(uri)*/
                     }
                 }
             }
