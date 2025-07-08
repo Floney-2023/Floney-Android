@@ -367,6 +367,14 @@ class HistoryViewModel @Inject constructor(
 
     // 내역 추가
     private fun postAddHistory() {
+        // 선택된 로컬 이미지가 있다면 로컬 > 서버 이미지로 변경 후 내역 추가하도록 설정
+        when(localUrlList.isNotEmpty()){
+            true -> setLocalToCloud()
+            false -> goToAddHistory()
+        }
+    }
+
+    private fun goToAddHistory(){
         viewModelScope.launch(Dispatchers.IO) {
             postBooksLinesUseCase(
                 bookKey = prefs.getString("bookKey", ""),
@@ -387,6 +395,7 @@ class HistoryViewModel @Inject constructor(
                 memo = memo,
                 imageUrl = cloudUrlList.map { it.url }
             ).onSuccess {
+                baseEvent(Event.HideLoading)
                 _postBooksLines.emit(true)
             }.onFailure {
                 baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@HistoryViewModel)))
@@ -832,6 +841,47 @@ class HistoryViewModel @Inject constructor(
                 // 모든 작업이 성공적으로 완료된 경우에만 수정 진행
                 if (allOperationsSuccessful) {
                     goModifyHistory()
+                } else {
+                    baseEvent(Event.ShowToast("이미지 처리 중 오류가 발생했습니다."))
+                }
+            } finally {
+                baseEvent(Event.HideLoading)
+            }
+        }
+    }
+
+    private fun setLocalToCloud() {
+        viewModelScope.launch(Dispatchers.IO) {
+            baseEvent(Event.ShowLoading)
+            try {
+                // 플래그 변수로 모든 작업의 성공 여부 추적
+                var allOperationsSuccessful = true
+
+                Timber.i("this.localUrlList isNotEmpty : $localUrlList}")
+                // 추가할 로컬 이미지가 있는 경우
+                if (localUrlList.isNotEmpty()) {
+                    Timber.d("this.localUrlList isNotEmpty?? : $localUrlList}")
+                    for (file in localUrlList) {
+                        // presigned URL 가져오기
+                        val urlResult = subscribePresignedUrlUseCase(prefs.getString("bookKey", ""))
+                        urlResult.onSuccess { presignedData ->
+                            val url = presignedData.url
+                            // 파일 업로드 시도
+                            val uploadSuccess =
+                                uploadFileToPresignedUrl(url, file, presignedData.viewUrl)
+                            if (!uploadSuccess) {
+                                allOperationsSuccessful = false
+                            }
+                        }.onFailure {
+                            baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@HistoryViewModel)))
+                            allOperationsSuccessful = false
+                        }
+                    }
+                }
+
+                // 모든 작업이 성공적으로 완료된 경우에만 추가 진행
+                if (allOperationsSuccessful) {
+                    goToAddHistory()
                 } else {
                     baseEvent(Event.ShowToast("이미지 처리 중 오류가 발생했습니다."))
                 }
