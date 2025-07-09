@@ -37,6 +37,13 @@ class BaseAlertDialog(
         setUpListener()
         return view
     }
+    override fun onResume() {
+        super.onResume()
+        dialog?.window?.setLayout(
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+    }
     private fun setUpUi() {
         dialog?.window?.apply {
             setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -60,10 +67,8 @@ class BaseAlertDialog(
                 middleView.visibility = View.GONE
 
                 // ConstraintLayout으로 왼쪽 버튼을 전체 너비로 설정
-                val params =
-                    btnLeft.layoutParams as androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
-                params.endToEnd =
-                    androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.PARENT_ID
+                val params = btnLeft.layoutParams as LinearLayout.LayoutParams
+                params.width = LinearLayout.LayoutParams.MATCH_PARENT
                 btnLeft.layoutParams = params
             } else {
                 // 두 버튼 모드: 기본 설정 유지
