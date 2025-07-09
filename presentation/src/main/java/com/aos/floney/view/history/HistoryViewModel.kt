@@ -482,7 +482,7 @@ class HistoryViewModel @Inject constructor(
 
     // 추가한 내용이 있는지 체크
     private fun isExistAdd(): Boolean {
-        return cost.value != "" || asset.value != "자산을 선택하세요" || line.value != "분류를 선택하세요" || content.value != ""
+        return cost.value != "" || asset.value != "자산을 선택하세요" || line.value != "분류를 선택하세요" || content.value != "" || localUrlList.isNotEmpty()
     }
 
     // 사진 이미지 변경된 내용 있는 지 체크한 후, 최종 수정
