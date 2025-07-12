@@ -12,6 +12,7 @@ import com.android.billingclient.api.PendingPurchasesParams
 import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.QueryProductDetailsParams
+import com.aos.data.util.CommonUtil
 import com.aos.floney.BuildConfig
 import com.aos.floney.base.BaseViewModel
 import com.aos.floney.base.BaseViewModel.Event
@@ -23,6 +24,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.security.MessageDigest
 
 class BillingManager(
     private val activity: Activity,
@@ -172,8 +174,10 @@ class BillingManager(
                             .setOfferToken(productDetails.subscriptionOfferDetails?.get(0)?.offerToken!!)
                             .build()
                     )
-                ).build()
-
+                )
+                .setObfuscatedAccountId(CommonUtil.userEmail.reversed())
+                .build()
+            
             val billingResult = billingClient.launchBillingFlow(activity, billingFlowParams)
 
             if (billingResult.responseCode != BillingClient.BillingResponseCode.OK) {
