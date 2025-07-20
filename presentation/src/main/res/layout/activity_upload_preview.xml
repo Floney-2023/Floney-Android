@@ -65,7 +65,7 @@
             app:layout_constraintVertical_bias="0.5" />
 
 
-        <com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator
+        <com.tbuonomo.viewpagerdotsindicator.SpringDotsIndicator
             android:id="@+id/dotIndicator"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
