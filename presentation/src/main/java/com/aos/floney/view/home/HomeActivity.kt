@@ -338,6 +338,7 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(R.layout.a
     }
 
     private fun resetUpAdMob() {
+        showLoadingDialog()
         MobileAds.initialize(this)
 
         val adRequest = AdRequest.Builder().build()
