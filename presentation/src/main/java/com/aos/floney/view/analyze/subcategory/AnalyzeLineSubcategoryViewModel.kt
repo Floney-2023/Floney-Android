@@ -244,9 +244,9 @@ class AnalyzeLineSubcategoryViewModel @Inject constructor(
 
 enum class SortType(val serverValue: String, val displayName: String) {
     LATEST("LATEST", "최신순"),
-    OLDEST("OLDEST", "오래된 순"),
-    LINE_SUBCATEGORY_NAME("LINE_SUBCATEGORY_NAME", "분류 가나다 순"),
-    USER_NICKNAME("USER_NICKNAME", "사용자 가나다 순");
+    OLDEST("OLDEST", "오래된순"),
+    LINE_SUBCATEGORY_NAME("LINE_SUBCATEGORY_NAME", "분류 가나다순"),
+    USER_NICKNAME("USER_NICKNAME", "사용자 가나다순");
 
     companion object {
         // 서버에서 받은 값으로 Enum 찾기
