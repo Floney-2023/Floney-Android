@@ -78,19 +78,21 @@ class SubscribePlanActivity : BaseActivity<ActivitySubscribePlanBinding, Subscri
         val spannable = SpannableString(spanned)
 
         val clickableText = "서비스 이용 약관"
-        val start = spannable.indexOf(clickableText)
+
+        // 마지막 등장 위치 찾기
+        val start = spannable.lastIndexOf(clickableText)
         val end = start + clickableText.length
 
         if (start >= 0) {
             val clickableSpan = object : ClickableSpan() {
-                 override fun onClick(widget: View) {
+                override fun onClick(widget: View) {
                     viewModel.onClickService()
                 }
 
                 override fun updateDrawState(ds: TextPaint) {
                     super.updateDrawState(ds)
                     ds.isUnderlineText = true
-                    ds.color = ContextCompat.getColor(this@SubscribePlanActivity, R.color.grayscale2) // 색상은 원하는 대로
+                    ds.color = ContextCompat.getColor(this@SubscribePlanActivity, R.color.grayscale2)
                 }
             }
 
@@ -100,6 +102,7 @@ class SubscribePlanActivity : BaseActivity<ActivitySubscribePlanBinding, Subscri
             textView.highlightColor = Color.TRANSPARENT
         }
     }
+
 
     private fun setUpClickableRestoreText() {
         val textView = binding.tvSubscribePlanInfromNotice
