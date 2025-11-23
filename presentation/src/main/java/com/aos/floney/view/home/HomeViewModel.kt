@@ -50,8 +50,7 @@ class HomeViewModel @Inject constructor(
     private val getBookInfoUseCase: GetBookInfoUseCase,
     private val subscribeUserUseCase: SubscribeCheckUseCase,
     private val subscribeBookUseCase: SubscribeBookUseCase,
-    private val subscribeBenefitUseCase: SubscribeBenefitUseCase,
-    private val subscribeUserBenefitUseCase: SubscribeUserBenefitUseCase
+    private val subscribeBenefitUseCase: SubscribeBenefitUseCase
 ) : BaseViewModel() {
 
     // 날짜 데이터
@@ -505,44 +504,28 @@ class HomeViewModel @Inject constructor(
                     baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
                     return@launch // 실패 시 작업 종료
                 }
-
-                // 유저 혜택 확인
-                val userBenefitResult = subscribeUserBenefitUseCase()
-                userBenefitResult.onFailure {
-                    baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
-                    return@launch // 실패 시 작업 종료
-                }
-
                 // 두 작업이 모두 성공한 경우 처리
                 benefitResult.onSuccess { bookBenefit ->
-                    userBenefitResult.onSuccess { userBenefit ->
-                        // 10분 타이머 남은 시간
-                        val remainTime = prefs.getString("subscribeCheckTenMinutes", "")
+                    // 10분 타이머 남은 시간
+                    val remainTime = prefs.getString("subscribeCheckTenMinutes", "")
 
-                        // 구독 만료 여부 확인
-                        // 유저 관점에서
-                        val expiredUser = !subscriptionDataStoreUtil.getUserSubscribe().first() && userBenefit.maxBook
+                    // 가계부 관점에서 구독 만료 여부 확인
+                    val expiredBook = !subscriptionDataStoreUtil.getBookSubscribe().first() && (bookBenefit.maxFavorite || bookBenefit.overBookUser)
 
-                        // 가계부 관점에서
-                        val expiredBook = !subscriptionDataStoreUtil.getBookSubscribe().first() && (bookBenefit.maxFavorite || bookBenefit.overBookUser)
+                    Timber.i("book : ${expiredBook} remainTime : ${remainTime}")
 
-                        Timber.i("book : ${expiredBook} user : ${expiredUser} remainTime : ${remainTime}")
+                    // 구독 혜택 적용 여부 캐싱
+                    subscriptionDataStoreUtil.setSubscribeExpired(expiredBook)
 
-                        val expiredCheck = expiredUser || expiredBook
+                    // 10분 지났을 경우 리셋
+                    if (getAdvertiseTenMinutesCheck(remainTime) < 0)
+                        prefs.setString("subscribeCheckTenMinutes", "")
 
-                        // 구독 혜택 적용 여부 캐싱
-                        subscriptionDataStoreUtil.setSubscribeExpired(expiredCheck)
+                    // 구독 만료 여부 업데이트
+                    subscribeExpired.postValue(expiredBook)
 
-                        // 10분 지났을 경우 리셋
-                        if (getAdvertiseTenMinutesCheck(remainTime) < 0)
-                            prefs.setString("subscribeCheckTenMinutes", "")
-
-                        // 구독 만료 여부 업데이트
-                        subscribeExpired.postValue(expiredCheck)
-
-                        // 구독 팝업 표시 여부 업데이트 (구독 만료 O && 타이머 시간이 유효하지 않을 경우)
-                        changeSubscribePopupShow(getAdvertiseTenMinutesCheck(remainTime) <= 0 && expiredCheck)
-                    }
+                    // 구독 팝업 표시 여부 업데이트 (구독 만료 O && 타이머 시간이 유효하지 않을 경우)
+                    changeSubscribePopupShow(getAdvertiseTenMinutesCheck(remainTime) <= 0 && expiredBook)
                 }
             } catch (e: Exception) {
                 // 코루틴 실행 중 발생한 예외 처리

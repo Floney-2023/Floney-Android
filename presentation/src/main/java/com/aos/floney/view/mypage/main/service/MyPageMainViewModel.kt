@@ -49,7 +49,6 @@ class MyPageMainViewModel @Inject constructor(
     private val subscribeUserUseCase: SubscribeCheckUseCase,
     private val subscribeBookUseCase: SubscribeBookUseCase,
     private val subscribeBenefitUseCase: SubscribeBenefitUseCase,
-    private val subscribeUserBenefitUseCase: SubscribeUserBenefitUseCase,
     private val subscriptionDataStoreUtil: SubscriptionDataStoreUtil
 ) : BaseViewModel() {
 
@@ -187,31 +186,14 @@ class MyPageMainViewModel @Inject constructor(
                     return@launch // 실패 시 작업 종료
                 }
 
-                // 유저 혜택 확인
-                val userBenefitResult = subscribeUserBenefitUseCase()
-                userBenefitResult.onFailure {
-                    baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
-                    return@launch // 실패 시 작업 종료
-                }
-
-                // 두 작업이 모두 성공한 경우 처리
                 benefitResult.onSuccess { bookBenefit ->
-                    userBenefitResult.onSuccess { userBenefit ->
+                    // 가계부 관점 만료 여부 확인
+                    val expiredBook = !subscriptionDataStoreUtil.getBookSubscribe().first() && (bookBenefit.maxFavorite || bookBenefit.overBookUser)
 
-                        // 구독 만료 여부 확인
-                        // 유저 관점에서
-                        val expiredUser = !subscriptionDataStoreUtil.getUserSubscribe().first() && userBenefit.maxBook
+                    // 구독 혜택 적용 여부 캐싱
+                    subscriptionDataStoreUtil.setSubscribeExpired(expiredBook)
 
-                        // 가계부 관점에서
-                        val expiredBook = !subscriptionDataStoreUtil.getBookSubscribe().first() && (bookBenefit.maxFavorite || bookBenefit.overBookUser)
-
-                        Timber.i("book : ${expiredBook} user : ${expiredUser}")
-                        val expiredCheck = expiredUser || expiredBook
-                        // 구독 혜택 적용 여부 캐싱
-                        subscriptionDataStoreUtil.setSubscribeExpired(expiredCheck)
-
-                        _loadCheck.emit(true)
-                    }
+                    _loadCheck.emit(true)
                 }
             } catch (e: Exception) {
                 // 코루틴 실행 중 발생한 예외 처리
