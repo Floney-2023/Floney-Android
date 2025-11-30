@@ -25,11 +25,9 @@ import com.aos.model.home.ImageUrls
 import com.aos.usecase.history.DeleteBookLineUseCase
 import com.aos.usecase.history.DeleteBooksLinesAllUseCase
 import com.aos.usecase.history.GetBookCategoryUseCase
-import com.aos.usecase.history.GetBookFavoriteUseCase
 import com.aos.usecase.history.PostBooksFavoritesUseCase
 import com.aos.usecase.history.PostBooksLinesChangeUseCase
 import com.aos.usecase.history.PostBooksLinesUseCase
-import com.aos.usecase.subscribe.SubscribeBenefitUseCase
 import com.aos.usecase.subscribe.SubscribeDeleteCloudImageUseCase
 import com.aos.usecase.subscribe.SubscribePresignedUrlUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -187,10 +185,6 @@ class HistoryViewModel @Inject constructor(
     private var cloudUrlList = mutableListOf<ImageUrls>()
     private var localUrlList = mutableListOf<File>()
     private var deletedCloudImageList = mutableListOf<ImageUrls>()
-
-
-    // 이미지 업로드 정상 여부
-    private var isSuccessImageUpload: Boolean = true
 
     init {
         // 구독 여부 조회
@@ -407,13 +401,7 @@ class HistoryViewModel @Inject constructor(
 
     // 내역 수정
     private fun postModifyHistory() {
-        viewModelScope.launch {
-            // 가계부 구독 중이라면 적용 여부 확인 없이 수정한다.
-            if (subscriptionDataStoreUtil.getBookSubscribe().first())
-                handleImageBeforeModify()
-            else // 구독 중이 아닌 경우, 구독 혜택 적용 여부 확인
-                getSubscribeBenefitChecking()
-        }
+        handleImageBeforeModify()
     }
 
     // 내역 삭제
@@ -735,25 +723,13 @@ class HistoryViewModel @Inject constructor(
                 _postBooksFavorites.emit(true)
                 baseEvent(Event.ShowSuccessToast("즐겨찾기에 추가되었습니다."))
             }.onFailure {
-                if (it.message.parseErrorCode() == "B014"){
+                if (subscriptionDataStoreUtil.getSubscribeExpired().first()) {
+                    subscribeExpired.value = true
+                } else if (it.message.parseErrorCode() == "B014"){
                     _subscribePrompt.emit(true)
                 } else {
                     baseEvent(Event.ShowToast("${flow.value!!} ${it.message.parseErrorMsg(this@HistoryViewModel)}"))
                 }
-            }
-        }
-    }
-
-    // 구독 혜택 받고 있는 지 여부 가져오기
-    fun getSubscribeBenefitChecking() {
-        viewModelScope.launch(Dispatchers.IO) {
-            // 구독 만료 팝업 표시 여부 확인 (구독 만료 되었거나, 사진/메모 값이 남아 있을 때)
-            val expiredCheck = subscriptionDataStoreUtil.getSubscribeExpired().first() || memoOrImageExist.value ?: false
-
-            subscribeExpired.postValue(expiredCheck)
-
-            if (!expiredCheck) { // 만료되지 않음
-                handleImageBeforeModify()
             }
         }
     }
