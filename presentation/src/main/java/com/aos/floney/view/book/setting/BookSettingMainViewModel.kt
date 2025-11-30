@@ -1,5 +1,6 @@
 package com.aos.floney.view.book.setting
 
+import androidx.core.content.ContextCompat.getString
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -14,6 +15,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.aos.data.util.SharedPreferenceUtil
 import com.aos.data.util.SubscriptionDataStoreUtil
+import com.aos.floney.R
 import com.aos.floney.util.getCurrentDateTimeString
 import com.aos.model.book.UiBookSettingModel
 import com.aos.model.user.MyBooks
@@ -117,6 +119,14 @@ class BookSettingMainViewModel @Inject constructor(
     val isFold: LiveData<Boolean> get() = _isFold
 
 
+    init {
+        viewModelScope.launch {
+            withContext(Dispatchers.Default) {
+                _isFold.postValue(prefs.getBoolean("isFold", true))
+            }
+        }
+    }
+    
     private fun getSubscribeBook() {
         viewModelScope.launch {
             val isBookSubscribe = subscriptionDataStoreUtil.getBookSubscribe().first()
@@ -138,6 +148,7 @@ class BookSettingMainViewModel @Inject constructor(
         viewModelScope.launch {
             withContext(Dispatchers.Default) {
                 _isFold.postValue(!_isFold.value!!)
+                prefs.setBoolean("isFold", !_isFold.value!!)
             }
         }
     }
