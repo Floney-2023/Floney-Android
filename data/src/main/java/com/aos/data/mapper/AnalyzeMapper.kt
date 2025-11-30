@@ -281,12 +281,12 @@ fun PostAnalyzeAssetEntity.toUiAnalyzeAssetModel(): UiAnalyzeAssetModel {
 
 // 상세 분석-지출/수입
 
-fun PostAnalyzeLineSubCategoryEntity.toUiLineSubCategoryModel(): UiAnalyzeLineSubCategoryModel {
+fun PostAnalyzeLineSubCategoryEntity.toUiLineSubCategoryModel(category: String): UiAnalyzeLineSubCategoryModel {
     return UiAnalyzeLineSubCategoryModel(
         subcategoryName = this.subcategoryName,
         bookLines = this.bookLines.map {
             BookSubData(
-                money = "${NumberFormat.getNumberInstance().format(it.money)}",
+                money = "${if (category == "수입") "+" else "-"}${NumberFormat.getNumberInstance().format(it.money)}",
                 descriptionDetail = "${it.asset} ‧ ${it.lineDate.replace("-",".")}", // yyyy-mm-dd -> yyyy.mm.dd 형식으로 파싱
                 description = it.description,
                 userProfileImg = it.userProfileImg ?: ""

@@ -130,7 +130,7 @@ class AnalyzeRepositoryImpl @Inject constructor(private val analyzeDataSourceImp
                 yearMonth = yearMonth
             )
         )) {
-            is NetworkState.Success -> return Result.success(data.body.toUiLineSubCategoryModel())
+            is NetworkState.Success -> return Result.success(data.body.toUiLineSubCategoryModel(category))
             is NetworkState.Failure -> return Result.failure(
                 RetrofitFailureStateException(data.error, data.code)
             )
