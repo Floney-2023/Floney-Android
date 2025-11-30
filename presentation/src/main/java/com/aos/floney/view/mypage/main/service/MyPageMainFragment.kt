@@ -14,6 +14,7 @@ import com.aos.floney.base.BaseFragment
 import com.aos.floney.databinding.FragmentMyPageMainBinding
 import com.aos.floney.ext.repeatOnStarted
 import com.aos.floney.ext.setViewTouchEffect
+import com.aos.floney.view.book.setting.favorite.BookFavoriteActivity
 import com.aos.floney.view.common.BaseAlertDialog
 import com.aos.floney.view.common.ErrorToastDialog
 import com.aos.floney.view.common.WarningPopupDialog
@@ -114,6 +115,22 @@ class MyPageMainFragment : BaseFragment<FragmentMyPageMainBinding, MyPageMainVie
 
                     val activity = requireActivity() as MyPageActivity
                     activity.startBottomSheet()
+                } else {
+                    // 구독 안한 유저의 경우 2개 초과 시 구독 유도 팝업
+                    val exitDialogFragment = WarningPopupDialog(
+                        getString(R.string.subscribe_prompt_title),
+                        getString(R.string.subscribe_prompt_inform),
+                        getString(R.string.already_pick_button),
+                        getString(R.string.subscribe_plan_btn),
+                        true
+                    ) {  checked ->
+                        if (!checked) // 구독 플랜 보기로 이동
+                        {
+                            val activity = requireActivity() as BookFavoriteActivity
+                            activity.goToSubscribePlanActivity()
+                        }
+                    }
+                    exitDialogFragment.show(parentFragmentManager, "exitDialog")
                 }
             }
         }

@@ -1,6 +1,5 @@
 package com.aos.floney.view.mypage.main.service
 
-import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -20,25 +19,18 @@ import javax.inject.Inject
 
 import com.aos.data.util.SharedPreferenceUtil
 import com.aos.data.util.SubscriptionDataStoreUtil
-import com.aos.floney.util.convertStringToDate
 import com.aos.floney.util.getAdvertiseCheck
-import com.aos.floney.util.getAdvertiseTenMinutesCheck
 import com.aos.floney.util.getCurrentDateTimeString
 import com.aos.model.book.getCurrencySymbolByCode
-import com.aos.model.user.MyBooks
 import com.aos.usecase.booksetting.BooksCurrencySearchUseCase
 import com.aos.usecase.mypage.RecentBookkeySaveUseCase
 import com.aos.usecase.subscribe.SubscribeBenefitUseCase
 import com.aos.usecase.subscribe.SubscribeBookUseCase
 import com.aos.usecase.subscribe.SubscribeCheckUseCase
-import com.aos.usecase.subscribe.SubscribeUserBenefitUseCase
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import timber.log.Timber
-import kotlin.math.abs
-import kotlin.properties.Delegates
 
 @HiltViewModel
 class MyPageMainViewModel @Inject constructor(
@@ -59,10 +51,6 @@ class MyPageMainViewModel @Inject constructor(
     // 회원 정보
     private var _mypageInfo = MutableLiveData<UiMypageSearchModel>()
     val mypageInfo: LiveData<UiMypageSearchModel> get() = _mypageInfo
-
-    // 가계부 리스트
-    private var _mypageList = MutableLiveData<List<MyBooks>>()
-    val mypageList: LiveData<List<MyBooks>> get() = _mypageList
 
     // 알람 페이지
     private var _alarmPage = MutableEventFlow<Boolean>()
@@ -129,7 +117,7 @@ class MyPageMainViewModel @Inject constructor(
     val unsubscribePopup: EventFlow<Boolean> get() = _unsubscribePopup
 
     // 가계부 추가 가능 여부
-    var walletAddCheck = MutableLiveData<Boolean>(false)
+    var walletAddCheckVisible = MutableLiveData<Boolean>(false)
 
     // 광고 남은 시간 설정
     fun settingAdvertiseTime() {
@@ -206,10 +194,7 @@ class MyPageMainViewModel @Inject constructor(
     fun getSubscribeStatus(bookSize: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             subscribeUserUseCase().onSuccess {
-                walletAddCheck.postValue(when {
-                    it.isValid -> bookSize < 4
-                    else -> bookSize < 2
-                })
+                walletAddCheckVisible.postValue(bookSize < 4)
 
                 Timber.e("기존 구독 상태 : ${subscribeCheck.value ?: "null"} 현재 구독 상태 : ${it.isValid}")
                 _subscribeCheck.postValue(it.isValid)
@@ -388,7 +373,8 @@ class MyPageMainViewModel @Inject constructor(
     // 가계부 추가
     fun onClickBookAdd() {
         viewModelScope.launch {
-            _bookAddBottomSheet.emit(true)
+            val isBookAddPossible = subscriptionDataStoreUtil.getUserSubscribe().first() || mypageInfo.value!!.myBooks.size < 2
+            _bookAddBottomSheet.emit(isBookAddPossible)
         }
     }
 
