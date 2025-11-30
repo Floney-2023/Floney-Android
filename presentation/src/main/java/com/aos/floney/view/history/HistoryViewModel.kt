@@ -11,11 +11,13 @@ import com.aos.data.util.checkDecimalPoint
 import com.aos.floney.base.BaseViewModel
 import com.aos.floney.ext.formatMoneyWithCurrency
 import com.aos.floney.ext.formatNumber
+import com.aos.floney.ext.parseErrorCode
 import com.aos.floney.ext.parseErrorMsg
 import com.aos.floney.ext.toCategoryCode
 import com.aos.floney.ext.toCategoryName
 import com.aos.floney.util.EventFlow
 import com.aos.floney.util.MutableEventFlow
+import com.aos.floney.util.getAdvertiseTenMinutesCheck
 import com.aos.model.book.UiBookCategory
 import com.aos.model.home.DayMoneyFavoriteItem
 import com.aos.model.home.DayMoneyModifyItem
@@ -27,6 +29,7 @@ import com.aos.usecase.history.GetBookFavoriteUseCase
 import com.aos.usecase.history.PostBooksFavoritesUseCase
 import com.aos.usecase.history.PostBooksLinesChangeUseCase
 import com.aos.usecase.history.PostBooksLinesUseCase
+import com.aos.usecase.subscribe.SubscribeBenefitUseCase
 import com.aos.usecase.subscribe.SubscribeDeleteCloudImageUseCase
 import com.aos.usecase.subscribe.SubscribePresignedUrlUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -52,9 +55,8 @@ class HistoryViewModel @Inject constructor(
     private val deleteBookLineUseCase: DeleteBookLineUseCase,
     private val deleteBooksLinesAllUseCase: DeleteBooksLinesAllUseCase,
     private val postBooksFavoritesUseCase: PostBooksFavoritesUseCase,
-    private val getBookFavoriteUseCase: GetBookFavoriteUseCase,
     private val subscribeDeleteCloudImageUseCase: SubscribeDeleteCloudImageUseCase,
-    private val subscribePresignedUrlUseCase: SubscribePresignedUrlUseCase
+    private val subscribePresignedUrlUseCase: SubscribePresignedUrlUseCase,
 ) : BaseViewModel() {
 
     val onCheckedChangeListener: (Boolean) -> Unit = { isChecked ->
@@ -714,15 +716,7 @@ class HistoryViewModel @Inject constructor(
     fun postAddFavorite() {
         // 다 입력이 되었는 지 확인
         if (isAllInputData()) {
-            isFavoriteMaxData { isMax ->
-                if (isMax) {
-                    applyAddFavorite()
-                } else {
-                    viewModelScope.launch {
-                        _subscribePrompt.emit(true)
-                    }
-                }
-            }
+            applyAddFavorite()
         }
     }
 
@@ -741,45 +735,14 @@ class HistoryViewModel @Inject constructor(
                 _postBooksFavorites.emit(true)
                 baseEvent(Event.ShowSuccessToast("즐겨찾기에 추가되었습니다."))
             }.onFailure {
-                baseEvent(Event.ShowToast("${flow.value!!} ${it.message.parseErrorMsg(this@HistoryViewModel)}"))
+                if (it.message.parseErrorCode() == "B014"){
+                    _subscribePrompt.emit(true)
+                } else {
+                    baseEvent(Event.ShowToast("${flow.value!!} ${it.message.parseErrorMsg(this@HistoryViewModel)}"))
+                }
             }
         }
     }
-
-    fun isFavoriteMaxData(onResult: (Boolean) -> Unit) {
-        viewModelScope.launch {
-
-            // 구독을 한 상태라면, 별도의 즐겨찾기 여부 확인 없이 즐겨찾기를 추가한다.
-            if (getIsSubscribe.value == true) {
-                onResult(true)
-                return@launch
-            }
-
-            baseEvent(Event.ShowLoading)
-
-            val result = getBookFavoriteUseCase(
-                prefs.getString("bookKey", ""),
-                flow.value!!.toCategoryCode()
-            )
-
-            if (result.isFailure) {
-                baseEvent(Event.HideLoading)
-                baseEvent(Event.ShowToast(result.exceptionOrNull()?.message.parseErrorMsg(this@HistoryViewModel)))
-                return@launch
-            }
-
-            val count = result.getOrNull()?.size ?: 0
-            if (count >= 5) {
-                baseEvent(Event.HideLoading)
-                onResult(false) // 하나라도 5 초과 → false
-                return@launch
-            }
-
-            baseEvent(Event.HideLoading)
-            onResult(true) // 전부 5 미만이면 가능
-        }
-    }
-
 
     // 구독 혜택 받고 있는 지 여부 가져오기
     fun getSubscribeBenefitChecking() {

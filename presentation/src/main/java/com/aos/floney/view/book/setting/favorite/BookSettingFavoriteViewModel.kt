@@ -10,13 +10,16 @@ import com.aos.floney.ext.parseErrorMsg
 import com.aos.floney.ext.toCategoryCode
 import com.aos.floney.util.EventFlow
 import com.aos.floney.util.MutableEventFlow
+import com.aos.floney.util.getAdvertiseTenMinutesCheck
 import com.aos.model.book.UiBookFavoriteModel
 import com.aos.usecase.booksetting.BooksFavoriteDeleteUseCase
 import com.aos.usecase.history.GetBookFavoriteUseCase
+import com.aos.usecase.subscribe.SubscribeBenefitUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,6 +27,7 @@ class BookSettingFavoriteViewModel @Inject constructor(
     private val prefs: SharedPreferenceUtil,
     private val getBookFavoriteUseCase: GetBookFavoriteUseCase,
     private val booksFavoriteDeleteUseCase: BooksFavoriteDeleteUseCase,
+    private val subscribeBenefitUseCase: SubscribeBenefitUseCase,
     private val subscriptionDataStoreUtil: SubscriptionDataStoreUtil
 ) : BaseViewModel() {
 
@@ -83,34 +87,37 @@ class BookSettingFavoriteViewModel @Inject constructor(
 
     // 추가하기 버튼 클릭
     fun onClickAddBtn() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             // 구독자면 그냥 패스
             if (subscriptionDataStoreUtil.getBookSubscribe().first()) {
                 _addPage.emit(true)
                 return@launch
             }
+            
+            try {
+                val bookKey = prefs.getString("bookKey", "")
 
-            baseEvent(Event.ShowLoading)
-
-            val categories = listOf("수입", "이체", "지출")
-            val overLimit = categories.any { category ->
-                val result = getBookFavoriteUseCase(prefs.getString("bookKey", ""), category.toCategoryCode())
-                val count = result.getOrNull()?.size ?: 0
-
-                if (result.isFailure) {
-                    baseEvent(Event.HideLoading)
-                    baseEvent(Event.ShowToast(result.exceptionOrNull()?.message.parseErrorMsg(this@BookSettingFavoriteViewModel)))
-                    return@any false // 중단
+                // 가계부 혜택 확인
+                val benefitResult = subscribeBenefitUseCase(bookKey)
+                benefitResult.onFailure {
+                    baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
+                    return@launch // 실패 시 작업 종료
                 }
 
-                count >= 5 // 하나라도 5개 이상이면 true
-            }
+                benefitResult.onSuccess { bookBenefit ->
 
-            baseEvent(Event.HideLoading)
-            if (overLimit) {
-                _subscribePrompt.emit(true)
-            } else {
-                _addPage.emit(true)
+                    // 가계부 만료 & 구독 즐찾 개수 초과 여부 확인
+                    val expiredBookFavorite = !subscriptionDataStoreUtil.getBookSubscribe().first() && (bookBenefit.maxFavorite || bookBenefit.overBookUser)
+
+                    if (expiredBookFavorite) {
+                        _subscribePrompt.emit(true)
+                    } else {
+                        _addPage.emit(true)
+                    }
+                }
+            } catch (e: Exception) {
+                // 코루틴 실행 중 발생한 예외 처리
+                baseEvent(Event.ShowToast(e.message.parseErrorMsg()))
             }
         }
     }
