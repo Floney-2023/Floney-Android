@@ -27,7 +27,6 @@ class BookSettingFavoriteViewModel @Inject constructor(
     private val prefs: SharedPreferenceUtil,
     private val getBookFavoriteUseCase: GetBookFavoriteUseCase,
     private val booksFavoriteDeleteUseCase: BooksFavoriteDeleteUseCase,
-    private val subscribeBenefitUseCase: SubscribeBenefitUseCase,
     private val subscriptionDataStoreUtil: SubscriptionDataStoreUtil
 ) : BaseViewModel() {
 
@@ -85,38 +84,46 @@ class BookSettingFavoriteViewModel @Inject constructor(
         }
     }
 
-    // 추가하기 버튼 클릭
+    // 추가 버튼 클릭
     fun onClickAddBtn() {
         viewModelScope.launch(Dispatchers.IO) {
-            // 구독자면 그냥 패스
+            // 구독자면 바로 패스
             if (subscriptionDataStoreUtil.getBookSubscribe().first()) {
                 _addPage.emit(true)
                 return@launch
             }
-            
+
             try {
                 val bookKey = prefs.getString("bookKey", "")
 
-                // 가계부 혜택 확인
-                val benefitResult = subscribeBenefitUseCase(bookKey)
-                benefitResult.onFailure {
-                    baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
-                    return@launch // 실패 시 작업 종료
-                }
+                val categories = listOf("지출", "수입", "이체")
+                var totalCount = 0
 
-                benefitResult.onSuccess { bookBenefit ->
+                for (category in categories) {
+                    val result = getBookFavoriteUseCase(
+                        bookKey,
+                        category.toCategoryCode()
+                    )
 
-                    // 가계부 만료 & 구독 즐찾 개수 초과 여부 확인
-                    val expiredBookFavorite = !subscriptionDataStoreUtil.getBookSubscribe().first() && (bookBenefit.maxFavorite || bookBenefit.overBookUser)
+                    if (result.isFailure) {
+                        baseEvent(Event.ShowToast(result.exceptionOrNull()?.message.parseErrorMsg()))
+                        return@launch
+                    }
 
-                    if (expiredBookFavorite) {
+                    val count = result.getOrNull()?.size ?: 0
+                    totalCount += count
+
+                    // 누적합 15 초과 시 즉시 종료
+                    if (totalCount >= 15) {
                         _subscribePrompt.emit(true)
-                    } else {
-                        _addPage.emit(true)
+                        return@launch
                     }
                 }
+
+                // 여기까지 왔으면 15 미만 → 추가 페이지 이동
+                _addPage.emit(true)
+
             } catch (e: Exception) {
-                // 코루틴 실행 중 발생한 예외 처리
                 baseEvent(Event.ShowToast(e.message.parseErrorMsg()))
             }
         }
