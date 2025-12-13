@@ -229,7 +229,7 @@ fun GetBookDaysEntity.toUiBookMonthModel(date: String): UiBookDayModel {
             writerNickName = it.writerNickname,
             writerProfileImg = it.writerProfileImg,
             repeatDuration = getConvertReceiveRepeatValue(it.repeatDuration),
-            memo = it.memo,
+            memo = it.memo ?: "",
             imageUrls = it.imageUrls.map { image ->
                 ImageUrls(
                     image.id,

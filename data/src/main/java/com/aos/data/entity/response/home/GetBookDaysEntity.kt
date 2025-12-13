@@ -24,7 +24,7 @@ data class DayLiensResponse(
     val writerNickname: String,
     val writerProfileImg: String,
     val repeatDuration: String,
-    val memo: String,
+    val memo: String? = "",
     val imageUrls: List<ImageUrls>,
 )
 
