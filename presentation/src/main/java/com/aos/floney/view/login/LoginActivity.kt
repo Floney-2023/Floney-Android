@@ -39,6 +39,7 @@ import com.google.firebase.ktx.Firebase
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
+import com.kakao.sdk.common.util.Utility
 import com.kakao.sdk.user.UserApiClient
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -225,6 +226,7 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginViewModel>(R.layou
                 if (error != null) {
                     Timber.e("error? ${error}")
                     viewModel.baseEvent(BaseViewModel.Event.HideLoading)
+                    viewModel.baseEvent(BaseViewModel.Event.ShowToast("카카오 로그인에 실패하였습니다."))
                 } else if (token != null) {
                     UserApiClient.instance.me { user, error ->
                         if (error != null) {
