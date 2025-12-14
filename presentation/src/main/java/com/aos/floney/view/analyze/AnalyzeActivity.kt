@@ -39,9 +39,8 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.MobileAds
-import com.google.android.gms.ads.rewarded.RewardItem
-import com.google.android.gms.ads.rewarded.RewardedAd
-import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import javax.inject.Inject
@@ -56,7 +55,7 @@ class AnalyzeActivity :
 
     @Inject
     lateinit var sharedPreferenceUtil: SharedPreferenceUtil
-    private var mRewardAd: RewardedAd? = null
+    private var mInterstitialAd: InterstitialAd? = null
     
     private val launcher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -245,21 +244,21 @@ class AnalyzeActivity :
         MobileAds.initialize(this)
         val adRequest = AdRequest.Builder().build()
 
-        RewardedAd.load(
+        InterstitialAd.load(
             this,
-            BuildConfig.GOOGLE_APP_REWARD_KEY,
+            BuildConfig.GOOGLE_APP_INTERSTITIAL_KEY,
             adRequest,
-            object : RewardedAdLoadCallback() {
+            object : InterstitialAdLoadCallback() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
                     dismissLoadingDialog()
-                    mRewardAd = null
+                    mInterstitialAd = null
                     Timber.e("광고 로드 실패")
                     // 광고 로드 실패 시에도 화면 초기화
                     initializeScreen()
                 }
 
-                override fun onAdLoaded(ad: RewardedAd) {
-                    mRewardAd = ad
+                override fun onAdLoaded(ad: InterstitialAd) {
+                    mInterstitialAd = ad
                     showAdMob()
                     Timber.e("광고가 로드됨")
                 }
@@ -267,12 +266,12 @@ class AnalyzeActivity :
     }
 
     fun showAdMob() {
-        mRewardAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
+        mInterstitialAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
             override fun onAdDismissedFullScreenContent() {
                 dismissLoadingDialog()
 
                 sharedPreferenceUtil.setString("advertiseAnalyzeTenMinutes", getCurrentDateTimeString())
-                mRewardAd = null
+                mInterstitialAd = null
                 Timber.e("광고 닫힘")
 
                 // 광고가 닫힌 후에 화면 초기화
@@ -281,14 +280,14 @@ class AnalyzeActivity :
 
             override fun onAdFailedToShowFullScreenContent(p0: AdError) {
                 dismissLoadingDialog()
-                mRewardAd = null
+                mInterstitialAd = null
                 Timber.e("광고 표시 실패")
 
                 // 광고 표시 실패 시에도 화면 초기화
                 initializeScreen()
             }
         }
-        mRewardAd?.show(this@AnalyzeActivity) {}
+        mInterstitialAd?.show(this@AnalyzeActivity)
     }
 
     private fun shouldShowAd(): Boolean {
@@ -300,6 +299,7 @@ class AnalyzeActivity :
                     getAdvertiseTenMinutesCheck(tenMinutes) > 0 ||
                     viewModel.subscribeUserActive
 
+        Timber.d("subscribeUserActive ${viewModel.subscribeUserActive}")
         if (getAdvertiseCheck(advertiseTime) <= 0) {
             sharedPreferenceUtil.setString("advertiseTime", "")
         }

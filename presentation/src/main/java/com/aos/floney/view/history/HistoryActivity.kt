@@ -46,8 +46,8 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.MobileAds
-import com.google.android.gms.ads.rewarded.RewardedAd
-import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.DayViewDecorator
@@ -68,7 +68,7 @@ class HistoryActivity :
     @Inject
     lateinit var sharedPreferenceUtil: SharedPreferenceUtil
 
-    private var mRewardAd: RewardedAd? = null
+    private var mInterstitialAd: InterstitialAd? = null
     private lateinit var calendarBottomSheetDialog: CalendarBottomSheetDialog
     private lateinit var categoryBottomSheetDialog: CategoryBottomSheetDialog
     private lateinit var launcher: ActivityResultLauncher<Intent>
@@ -450,21 +450,21 @@ class HistoryActivity :
         MobileAds.initialize(this)
         val adRequest = AdRequest.Builder().build()
 
-        RewardedAd.load(
+        InterstitialAd.load(
             this,
-            BuildConfig.GOOGLE_APP_REWARD_KEY,
+            BuildConfig.GOOGLE_APP_INTERSTITIAL_KEY,
             adRequest,
-            object : RewardedAdLoadCallback() {
+            object : InterstitialAdLoadCallback() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
                     dismissLoadingDialog()
-                    mRewardAd = null
+                    mInterstitialAd = null
                     Timber.e("광고 로드 실패")
                     // 광고 로드 실패 시에도 finish 진행
                     onAdFinished()
                 }
 
-                override fun onAdLoaded(ad: RewardedAd) {
-                    mRewardAd = ad
+                override fun onAdLoaded(ad: InterstitialAd) {
+                    mInterstitialAd = ad
                     showAdMob(onAdFinished)
                     Timber.e("광고가 로드됨")
                 }
@@ -472,12 +472,12 @@ class HistoryActivity :
     }
 
     private fun showAdMob(onAdFinished: () -> Unit) {
-        mRewardAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
+        mInterstitialAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
             override fun onAdDismissedFullScreenContent() {
                 dismissLoadingDialog()
 
                 sharedPreferenceUtil.setString("advertiseHistoryTenMinutes", getCurrentDateTimeString())
-                mRewardAd = null
+                mInterstitialAd = null
                 Timber.e("광고 닫힘")
 
                 // 광고가 닫힌 후 finish
@@ -486,13 +486,13 @@ class HistoryActivity :
 
             override fun onAdFailedToShowFullScreenContent(p0: AdError) {
                 dismissLoadingDialog()
-                mRewardAd = null
+                mInterstitialAd = null
                 Timber.e("광고 표시 실패")
 
                 // 광고 표시 실패 시에도 finish
                 onAdFinished()
             }
         }
-        mRewardAd?.show(this@HistoryActivity) {}
+        mInterstitialAd?.show(this@HistoryActivity)
     }
 }
