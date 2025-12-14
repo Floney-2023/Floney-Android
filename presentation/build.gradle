@@ -21,8 +21,8 @@ android {
         applicationId "com.aos.floney"
         minSdk 24
         targetSdk 35
-        versionCode 63
-        versionName "2.0.11"
+        versionCode 65
+        versionName "2.0.13"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField "String", "KAKAO_NATIVE_APP_KEY", properties['kakao_native_app_key']
@@ -36,12 +36,14 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             buildConfigField "String", "BASE_URL", properties['base.server.url']
             buildConfigField "String", "GOOGLE_APP_BANNER_KEY", "${properties['google_app_banner_release_key']}"
+            buildConfigField "String", "GOOGLE_APP_INTERSTITIAL_KEY", "${properties['google_app_interstitial_release_key']}"
             buildConfigField "String", "GOOGLE_APP_REWARD_KEY", "${properties['google_app_reward_release_key']}"
         }
         debug {
 
             buildConfigField "String", "BASE_URL", properties['base.dev.url']
             buildConfigField "String", "GOOGLE_APP_BANNER_KEY", "${properties['google_app_banner_debug_key']}"
+            buildConfigField "String", "GOOGLE_APP_INTERSTITIAL_KEY", "${properties['google_app_interstitial_debug_key']}"
             buildConfigField "String", "GOOGLE_APP_REWARD_KEY", "${properties['google_app_reward_debug_key']}"
         }
         applicationVariants.all { variant ->
