@@ -14,6 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -66,6 +67,9 @@ class AnalyzeViewModel @Inject constructor(
     var subscribePopupEnter = MutableLiveData<Boolean>(true)
 
     init {
+        subscribeUserActive = runBlocking(Dispatchers.IO) {
+            subscriptionDataStoreUtil.getUserSubscribe().first()
+        }
         getFormatDateMonth()
         getSubscribeChecking()
     }
@@ -157,7 +161,6 @@ class AnalyzeViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
 
             subscribeBookActive = subscriptionDataStoreUtil.getBookSubscribe().first()
-            subscribeUserActive = subscriptionDataStoreUtil.getUserSubscribe().first()
 
             // 둘 다 적용 중인 상태라면 확인하지 않는다.
             if (subscribeBookActive && subscribeUserActive)
