@@ -50,8 +50,11 @@ class AnalyzeViewModel @Inject constructor(
     private var _clickedAddHistory = MutableEventFlow<String>()
     val clickedAddHistory: EventFlow<String> get() = _clickedAddHistory
 
-    // 구독 적용 여부
-    var subscribeActive = false
+    // 가계부 구독 적용 여부
+    var subscribeBookActive = false
+
+    // 유저 구독 적용 여부
+    var subscribeUserActive = false
 
     // 구독 만료됨 & 혜택 적용 여부
     var subscribeExpired = false
@@ -65,7 +68,6 @@ class AnalyzeViewModel @Inject constructor(
     init {
         getFormatDateMonth()
         getSubscribeChecking()
-        getSubscribeBenefitChecking()
     }
 
     // 지출, 수입, 이체 클릭
@@ -150,18 +152,15 @@ class AnalyzeViewModel @Inject constructor(
         subscribePopupEnter.value = false
     }
 
-    // 가계부 구독 여부 가져오기
+    // 구독 여부, 만료 여부 가져오기
     fun getSubscribeChecking(){
-        viewModelScope.launch {
-            subscribeActive = subscriptionDataStoreUtil.getBookSubscribe().first()
-        }
-    }
-
-    // 구독 만료 여부 가져오기
-    fun getSubscribeBenefitChecking(){
         viewModelScope.launch(Dispatchers.IO) {
+
+            subscribeBookActive = subscriptionDataStoreUtil.getBookSubscribe().first()
+            subscribeUserActive = subscriptionDataStoreUtil.getUserSubscribe().first()
+
             // 둘 다 적용 중인 상태라면 확인하지 않는다.
-            if (subscriptionDataStoreUtil.getBookSubscribe().first() && subscriptionDataStoreUtil.getUserSubscribe().first())
+            if (subscribeBookActive && subscribeUserActive)
                 return@launch
 
             // 10분 타이머 남은 시간

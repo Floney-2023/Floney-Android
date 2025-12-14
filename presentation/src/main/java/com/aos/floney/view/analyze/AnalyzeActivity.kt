@@ -17,6 +17,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.aos.data.util.SharedPreferenceUtil
+import com.aos.floney.BuildConfig
 import com.aos.floney.R
 import com.aos.floney.base.BaseActivity
 import com.aos.floney.base.BaseViewModel
@@ -33,9 +34,20 @@ import com.aos.floney.view.mypage.MyPageActivity
 import com.aos.floney.view.settleup.SettleUpActivity
 import com.aos.floney.view.subscribe.SubscribePlanActivity
 import com.aos.model.user.UserModel.userNickname
+import com.google.android.gms.ads.AdError
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.FullScreenContentCallback
+import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.rewarded.RewardItem
+import com.google.android.gms.ads.rewarded.RewardedAd
+import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import javax.inject.Inject
+import androidx.core.view.get
+import com.aos.floney.util.getAdvertiseCheck
+import com.aos.floney.util.getAdvertiseTenMinutesCheck
 
 @AndroidEntryPoint
 class AnalyzeActivity :
@@ -44,7 +56,8 @@ class AnalyzeActivity :
 
     @Inject
     lateinit var sharedPreferenceUtil: SharedPreferenceUtil
-
+    private var mRewardAd: RewardedAd? = null
+    
     private val launcher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
@@ -62,15 +75,24 @@ class AnalyzeActivity :
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        if(shouldShowAd()) {
+            // 광고를 보여줘야 하는 경우, 광고부터 로드
+            setAdMob()
+        } else {
+            // 광고를 보여주지 않는 경우, 바로 초기화
+            initializeScreen()
+        }
+    }
+
+    private fun initializeScreen() {
         setUpBottomNavigation()
         setUpViewModelObserver()
         setSubscribePopup()
     }
 
     private fun setUpBottomNavigation() {
-        // 가운데 메뉴(제보하기)에 대한 터치 이벤트를 막기 위한 로직
         binding.bottomNavigationView.apply {
-            menu.getItem(2).isEnabled = false
+            menu[2].isEnabled = false
             selectedItemId = R.id.analysisFragment
         }
 
@@ -206,7 +228,7 @@ class AnalyzeActivity :
         viewModel.onClickSetBudget(false)
     }
 
-    fun setSubscribePopup() {
+    private fun setSubscribePopup() {
         binding.includePopupSubscribe.ivExit.setOnClickListener {
             // 진입 시 표시된 팝업 닫기만 시간 체크
             if (viewModel.subscribePopupEnter.value == true)
@@ -215,5 +237,76 @@ class AnalyzeActivity :
             binding.includePopupSubscribe.root.visibility = View.GONE
             binding.dimBackground.visibility = View.GONE
         }
+    }
+    
+    private fun setAdMob() {
+        showLoadingDialog()
+
+        MobileAds.initialize(this)
+        val adRequest = AdRequest.Builder().build()
+
+        RewardedAd.load(
+            this,
+            BuildConfig.GOOGLE_APP_REWARD_KEY,
+            adRequest,
+            object : RewardedAdLoadCallback() {
+                override fun onAdFailedToLoad(adError: LoadAdError) {
+                    dismissLoadingDialog()
+                    mRewardAd = null
+                    Timber.e("광고 로드 실패")
+                    // 광고 로드 실패 시에도 화면 초기화
+                    initializeScreen()
+                }
+
+                override fun onAdLoaded(ad: RewardedAd) {
+                    mRewardAd = ad
+                    showAdMob()
+                    Timber.e("광고가 로드됨")
+                }
+            })
+    }
+
+    fun showAdMob() {
+        mRewardAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
+            override fun onAdDismissedFullScreenContent() {
+                dismissLoadingDialog()
+
+                sharedPreferenceUtil.setString("advertiseAnalyzeTenMinutes", getCurrentDateTimeString())
+                mRewardAd = null
+                Timber.e("광고 닫힘")
+
+                // 광고가 닫힌 후에 화면 초기화
+                initializeScreen()
+            }
+
+            override fun onAdFailedToShowFullScreenContent(p0: AdError) {
+                dismissLoadingDialog()
+                mRewardAd = null
+                Timber.e("광고 표시 실패")
+
+                // 광고 표시 실패 시에도 화면 초기화
+                initializeScreen()
+            }
+        }
+        mRewardAd?.show(this@AnalyzeActivity) {}
+    }
+
+    private fun shouldShowAd(): Boolean {
+        val advertiseTime = sharedPreferenceUtil.getString("advertiseTime", "")
+        val tenMinutes = sharedPreferenceUtil.getString("advertiseAnalyzeTenMinutes", "")
+
+        val hasAdFreeBenefit =
+            getAdvertiseCheck(advertiseTime) > 0 ||
+                    getAdvertiseTenMinutesCheck(tenMinutes) > 0 ||
+                    viewModel.subscribeUserActive
+
+        if (getAdvertiseCheck(advertiseTime) <= 0) {
+            sharedPreferenceUtil.setString("advertiseTime", "")
+        }
+        if (getAdvertiseTenMinutesCheck(tenMinutes) <= 0) {
+            sharedPreferenceUtil.setString("advertiseAnalyzeTenMinutes", "")
+        }
+
+        return !hasAdFreeBenefit
     }
 }

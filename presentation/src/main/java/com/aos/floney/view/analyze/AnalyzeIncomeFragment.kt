@@ -62,7 +62,7 @@ class AnalyzeIncomeFragment :
 
     override fun onItemClick(item: AnalyzeResult) {
         // 구독 중일 때 분석 상세 bottomSheet 표시
-        if(activityViewModel.subscribeActive){
+        if(activityViewModel.subscribeBookActive){
             // 상세 지출 bottomSheet로 이동 (선택된 달이 있는 경우만)
             viewModel.selectMonth.value?.let {
                 val bottomSheetFragment = BottomSheetAnaylzeLineSubcategory(

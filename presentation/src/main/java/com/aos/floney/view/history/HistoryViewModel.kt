@@ -173,6 +173,9 @@ class HistoryViewModel @Inject constructor(
     // 구독 만료 여부
     var subscribeExpired = MutableLiveData<Boolean>(false)
 
+    // 유저 구독 적용 여부
+    var subscribeUserActive = false
+
     // 메모/사진 존재 여부
     private val _memoOrImageExist = MutableLiveData<Boolean>()
     val memoOrImageExist: LiveData<Boolean> get() = _memoOrImageExist
@@ -189,6 +192,7 @@ class HistoryViewModel @Inject constructor(
     init {
         // 구독 여부 조회
         getSubscribeBook()
+        getSubscribeUser()
 
         // 데이터 세팅
         val array = arrayListOf<UiBookCategory>(
@@ -313,6 +317,12 @@ class HistoryViewModel @Inject constructor(
         }
     }
 
+    private fun getSubscribeUser() {
+        viewModelScope.launch(Dispatchers.IO) {
+            subscribeUserActive = subscriptionDataStoreUtil.getUserSubscribe().first()
+        }
+    }
+
     // 자산/분류 카테고리 항목 가져오기
     private fun getBookCategory() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -391,7 +401,6 @@ class HistoryViewModel @Inject constructor(
                 memo = memo,
                 imageUrl = cloudUrlList.map { it.url }
             ).onSuccess {
-                baseEvent(Event.HideLoading)
                 _postBooksLines.emit(true)
             }.onFailure {
                 baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@HistoryViewModel)))

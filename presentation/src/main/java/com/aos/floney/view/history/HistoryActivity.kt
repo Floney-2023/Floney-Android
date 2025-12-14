@@ -14,6 +14,8 @@ import androidx.core.view.isVisible
 import androidx.databinding.library.baseAdapters.BR
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
+import com.aos.data.util.SharedPreferenceUtil
+import com.aos.floney.BuildConfig
 import com.aos.floney.R
 import com.aos.floney.base.BaseActivity
 import com.aos.floney.base.BaseViewModel
@@ -23,6 +25,9 @@ import com.aos.floney.ext.applyHistoryCloseTransition
 import com.aos.floney.ext.intentSerializable
 import com.aos.floney.ext.intentSerializableList
 import com.aos.floney.ext.repeatOnStarted
+import com.aos.floney.util.getAdvertiseCheck
+import com.aos.floney.util.getAdvertiseTenMinutesCheck
+import com.aos.floney.util.getCurrentDateTimeString
 import com.aos.floney.view.book.setting.category.BookCategoryActivity
 import com.aos.floney.view.book.setting.favorite.BookFavoriteActivity
 import com.aos.floney.view.common.BaseAlertDialog
@@ -36,6 +41,13 @@ import com.aos.model.book.UiBookCategory
 import com.aos.model.home.DayMoneyFavoriteItem
 import com.aos.model.home.DayMoneyModifyItem
 import com.aos.model.home.ImageUrls
+import com.google.android.gms.ads.AdError
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.FullScreenContentCallback
+import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.rewarded.RewardedAd
+import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.DayViewDecorator
@@ -45,12 +57,18 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.File
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
 class HistoryActivity :
     BaseActivity<ActivityHistoryBinding, HistoryViewModel>(R.layout.activity_history),
     UiBookCategory.OnItemClickListener {
+
+    @Inject
+    lateinit var sharedPreferenceUtil: SharedPreferenceUtil
+
+    private var mRewardAd: RewardedAd? = null
     private lateinit var calendarBottomSheetDialog: CalendarBottomSheetDialog
     private lateinit var categoryBottomSheetDialog: CategoryBottomSheetDialog
     private lateinit var launcher: ActivityResultLauncher<Intent>
@@ -264,11 +282,15 @@ class HistoryActivity :
         repeatOnStarted {
             viewModel.postBooksLines.collect {
                 if (it) {
-                    val resultIntent = Intent().apply {
-                        putExtra("isSave", true)
+                    if (shouldShowAd()) {
+                        // 광고를 보여준 후 finish
+                        loadAndShowAd {
+                            finishWithSaveResult()
+                        }
+                    } else {
+                        // 광고 없이 바로 finish
+                        finishWithSaveResult()
                     }
-                    setResult(Activity.RESULT_OK, resultIntent)
-                    finish()
                 }
             }
         }
@@ -296,12 +318,17 @@ class HistoryActivity :
         repeatOnStarted {
             viewModel.postModifyBooksLines.collect {
                 if (it) {
-                    val resultIntent = Intent().apply {
-                        putExtra("isSave", true)
+                    if (shouldShowAd()) {
+                        // 광고를 보여준 후 finish
+                        loadAndShowAd {
+                            finishWithSaveResult()
+                            applyHistoryCloseTransition()
+                        }
+                    } else {
+                        // 광고 없이 바로 finish
+                        finishWithSaveResult()
+                        applyHistoryCloseTransition()
                     }
-                    setResult(Activity.RESULT_OK, resultIntent)
-                    finish()
-                    applyHistoryCloseTransition()
                 }
             }
         }
@@ -388,5 +415,84 @@ class HistoryActivity :
 
     override fun onItemClick(item: UiBookCategory) {
         Timber.e("item $item")
+    }
+
+    private fun finishWithSaveResult() {
+        val resultIntent = Intent().apply {
+            putExtra("isSave", true)
+        }
+        setResult(Activity.RESULT_OK, resultIntent)
+        finish()
+    }
+
+    private fun shouldShowAd(): Boolean {
+        val advertiseTime = sharedPreferenceUtil.getString("advertiseTime", "")
+        val tenMinutes = sharedPreferenceUtil.getString("advertiseHistoryTenMinutes", "")
+
+        val hasAdFreeBenefit =
+            getAdvertiseCheck(advertiseTime) > 0 ||
+                    getAdvertiseTenMinutesCheck(tenMinutes) > 0 ||
+                    viewModel.subscribeUserActive
+
+        if (getAdvertiseCheck(advertiseTime) <= 0) {
+            sharedPreferenceUtil.setString("advertiseTime", "")
+        }
+        if (getAdvertiseTenMinutesCheck(tenMinutes) <= 0) {
+            sharedPreferenceUtil.setString("advertiseHistoryTenMinutes", "")
+        }
+
+        return !hasAdFreeBenefit
+    }
+
+    private fun loadAndShowAd(onAdFinished: () -> Unit) {
+        showLoadingDialog()
+
+        MobileAds.initialize(this)
+        val adRequest = AdRequest.Builder().build()
+
+        RewardedAd.load(
+            this,
+            BuildConfig.GOOGLE_APP_REWARD_KEY,
+            adRequest,
+            object : RewardedAdLoadCallback() {
+                override fun onAdFailedToLoad(adError: LoadAdError) {
+                    dismissLoadingDialog()
+                    mRewardAd = null
+                    Timber.e("광고 로드 실패")
+                    // 광고 로드 실패 시에도 finish 진행
+                    onAdFinished()
+                }
+
+                override fun onAdLoaded(ad: RewardedAd) {
+                    mRewardAd = ad
+                    showAdMob(onAdFinished)
+                    Timber.e("광고가 로드됨")
+                }
+            })
+    }
+
+    private fun showAdMob(onAdFinished: () -> Unit) {
+        mRewardAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
+            override fun onAdDismissedFullScreenContent() {
+                dismissLoadingDialog()
+
+                sharedPreferenceUtil.setString("advertiseHistoryTenMinutes", getCurrentDateTimeString())
+                mRewardAd = null
+                Timber.e("광고 닫힘")
+
+                // 광고가 닫힌 후 finish
+                onAdFinished()
+            }
+
+            override fun onAdFailedToShowFullScreenContent(p0: AdError) {
+                dismissLoadingDialog()
+                mRewardAd = null
+                Timber.e("광고 표시 실패")
+
+                // 광고 표시 실패 시에도 finish
+                onAdFinished()
+            }
+        }
+        mRewardAd?.show(this@HistoryActivity) {}
     }
 }

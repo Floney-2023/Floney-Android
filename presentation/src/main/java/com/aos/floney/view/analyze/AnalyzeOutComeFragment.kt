@@ -11,7 +11,6 @@ import com.aos.floney.base.BaseFragment
 import com.aos.floney.databinding.FragmentAnalyzeOutComeBinding
 import com.aos.floney.view.analyze.subcategory.BottomSheetAnaylzeLineSubcategory
 import com.aos.floney.view.common.WarningPopupDialog
-import com.aos.floney.view.mypage.MyPageActivity
 import com.aos.model.analyze.AnalyzeResult
 import com.aos.model.analyze.UiAnalyzeCategoryOutComeModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -62,7 +61,7 @@ class AnalyzeOutComeFragment :
 
     override fun onItemClick(item: AnalyzeResult) {
         // 구독 중일 때 분석 상세 bottomSheet 표시
-        if(activityViewModel.subscribeActive){
+        if(activityViewModel.subscribeBookActive){
             // 상세 지출 bottomSheet로 이동 (선택된 달이 있는 경우만)
             viewModel.selectMonth.value?.let {
                 val bottomSheetFragment = BottomSheetAnaylzeLineSubcategory(
