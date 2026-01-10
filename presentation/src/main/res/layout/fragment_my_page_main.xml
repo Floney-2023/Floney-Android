@@ -109,8 +109,8 @@
                                 android:id="@+id/iv_profile"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                android:scaleType="centerCrop"
-                                android:background="@drawable/background_circle_image" />
+                                android:background="@drawable/background_circle_image"
+                                android:scaleType="centerCrop" />
                         </androidx.cardview.widget.CardView>
 
                         <LinearLayout
@@ -160,7 +160,7 @@
                         android:textColor="@color/grayscale6"
                         android:textSize="12dp"
                         android:lineSpacingExtra="-2sp"
-                        android:visibility="@{vm.subscribeCheck ? View.GONE : View.VISIBLE}"
+                        android:visibility="@{vm.subscribeCheck == null || vm.subscribeCheck ? View.GONE : View.VISIBLE}"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/li_user_inform_view" />
@@ -171,6 +171,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:paddingVertical="16dp"
+                        android:visibility="@{vm.subscribeCheck == null ? View.INVISIBLE : View.VISIBLE}"
                         android:background="@{vm.subscribeCheck ? @drawable/custom_radius_12_solid_g_white : @drawable/custom_radius_12_solid_grayscale_2}"
                         android:fontFamily="@font/pretendard_semibold"
                         android:onClick="@{() -> vm.onClickSubscribe()}"
@@ -201,7 +202,7 @@
                             android:layout_width="0dp"
                             android:layout_height="0dp"
                             android:background="@drawable/custom_radius_12_solid_grayscale_12"
-                            android:onClick="@{() -> vm.onClickAdMob()}"
+                            android:onClick="@{() -> vm.onClickAdMobOrReview()}"
                             android:orientation="vertical"
                             android:padding="20dp"
                             app:layout_constraintBottom_toBottomOf="parent"
@@ -223,9 +224,24 @@
                                 android:text="광고 제거하기"
                                 android:textAppearance="@style/mypage_card_view_1"
                                 android:textSize="15sp"
+                                android:visibility="@{vm.subscribeCheck == null || vm.subscribeCheck ? View.GONE : View.VISIBLE}"
                                 app:layout_constraintBottom_toBottomOf="@id/guideline_start"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
+
+                            <TextView
+                                android:id="@+id/store_review"
+                                android:layout_width="wrap_content"
+                                android:layout_height="0dp"
+                                android:fontFamily="@font/floney_pretendard_bold"
+                                android:text="플레이스토어에서\n별점을 남겨주세요"
+                                android:lineSpacingMultiplier="1.3"
+                                android:visibility="@{vm.subscribeCheck ? View.VISIBLE : View.GONE}"
+                                android:textAppearance="@style/mypage_card_view_1"
+                                android:textSize="15dp"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
 
                             <androidx.constraintlayout.widget.Guideline
                                 android:id="@+id/guideline_start"
@@ -242,7 +258,6 @@
                                 app:layout_constraintGuide_percent="0.27" />
 
                             <TextView
-                                android:id="@+id/textView12"
                                 android:layout_width="wrap_content"
                                 android:layout_height="0dp"
                                 android:layout_gravity="center"
@@ -252,6 +267,7 @@
                                 android:autoSizeTextType="uniform"
                                 android:fontFamily="@font/pretendard_medium"
                                 android:text="남은 시간"
+                                android:visibility="@{vm.subscribeCheck == null || vm.subscribeCheck ? View.GONE : View.VISIBLE}"
                                 android:textColor="@color/grayscale7"
                                 android:textSize="12sp"
                                 app:layout_constraintBottom_toTopOf="@+id/guideline_middle"
@@ -280,6 +296,7 @@
                                 android:text="@{vm.advertiseTime}"
                                 android:textColor="@color/grayscale3"
                                 android:textSize="24sp"
+                                android:visibility="@{vm.subscribeCheck == null || vm.subscribeCheck ? View.GONE : View.VISIBLE}"
                                 app:layout_constraintBottom_toTopOf="@id/guideline_bottom"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toBottomOf="@+id/guideline_middle" />
@@ -300,7 +317,7 @@
                                 android:autoSizeStepGranularity="1sp"
                                 android:fontFamily="@font/pretendard_regular"
                                 android:gravity="center"
-                                android:text="광고 보기"
+                                android:text='@{vm.subscribeCheck? "리뷰쓰기" : "광고보기" }'
                                 android:textColor="@color/grayscale3"
                                 android:textSize="12sp"
                                 app:layout_constraintBottom_toBottomOf="parent"
@@ -427,13 +444,12 @@
                             android:id="@+id/wallet_empty_view"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
                             android:background="@drawable/item_dashed_border"
                             android:gravity="center|center_vertical"
                             android:onClick="@{() -> vm.onClickBookAdd()}"
                             android:orientation="horizontal"
                             android:padding="20dp"
-                            android:visibility="@{vm.mypageInfo.myBooks.size() == 1 ? View.VISIBLE : View.GONE}">
+                            android:visibility="@{vm.walletAddCheckVisible ? View.VISIBLE : View.GONE}">
 
                             <ImageView
                                 android:layout_width="wrap_content"
@@ -631,7 +647,7 @@
                     </LinearLayout>
 
                     <TextView
-                        android:id="@+id/textView3"
+                        android:id="@+id/tv_unsubscribe_btn"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="24dp"
@@ -642,6 +658,7 @@
                         android:visibility="@{vm.subscribeCheck ? View.VISIBLE : View.GONE}"
                         android:textColor="@color/grayscale6"
                         android:textSize="12dp"
+                        android:onClick="@{() -> vm.onClickUnsubscribePage()}"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/li_usage_right" />

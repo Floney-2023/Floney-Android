@@ -47,7 +47,8 @@ fun CurrencyInform(): List<Currency> {
         Currency("zł", "PLN", false),
         Currency("Kč", "CZK", false),
         Currency("kr", "DKK", false),
-        Currency("₦", "NGN", false)
+        Currency("₦", "NGN", false),
+        Currency("₴", "UAH", false),
     )
 }
 

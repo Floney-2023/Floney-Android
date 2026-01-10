@@ -5,10 +5,14 @@ import android.content.Intent
 import android.credentials.GetCredentialException
 import android.os.Build
 import android.os.Bundle
+import android.view.View
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import androidx.activity.result.ActivityResultLauncher
 import androidx.annotation.RequiresApi
 import androidx.credentials.CustomCredential
 import androidx.lifecycle.lifecycleScope
+import com.aos.data.util.AuthInterceptor
 import com.aos.data.util.SharedPreferenceUtil
 import com.aos.floney.BuildConfig
 import com.aos.floney.R
@@ -35,6 +39,7 @@ import com.google.firebase.ktx.Firebase
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
+import com.kakao.sdk.common.util.Utility
 import com.kakao.sdk.user.UserApiClient
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -87,8 +92,31 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginViewModel>(R.layou
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mAuth = FirebaseAuth.getInstance()
-
+        setActionListener()
         setUpViewModelObserver()
+    }
+
+    private fun hideKeyboard() {
+        val imm = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        val view = currentFocus ?: View(this)
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+
+    private fun setActionListener() {
+        binding.etEmail.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_NEXT) {
+                binding.pwText.requestFocus()
+                true
+            } else false
+        }
+
+        binding.pwText.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                hideKeyboard()
+                viewModel.onClickLogin()
+                true
+            } else false
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
@@ -192,13 +220,13 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginViewModel>(R.layou
         }
     }
 
-    // 카카오 로그인
     private fun onClickedKakaoLogin() {
         if (NetworkUtils.isNetworkConnected(applicationContext)) {
             val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
                 if (error != null) {
                     Timber.e("error? ${error}")
                     viewModel.baseEvent(BaseViewModel.Event.HideLoading)
+                    viewModel.baseEvent(BaseViewModel.Event.ShowToast("카카오 로그인에 실패하였습니다."))
                 } else if (token != null) {
                     UserApiClient.instance.me { user, error ->
                         if (error != null) {
@@ -302,15 +330,26 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginViewModel>(R.layou
                     request = request,
                     context = this@LoginActivity,
                 )
-                Timber.e("result ${result}")
+                Timber.e("result $result")
                 handleSignIn(result)
-            } catch (e: GetCredentialException) {
-//                handleFailure(e)
-                Timber.e("failure ${e.printStackTrace()}")
-                viewModel.baseEvent(BaseViewModel.Event.ShowToast("구글 로그인에 실패하였습니다."))
+
+            } catch (e: androidx.credentials.exceptions.GetCredentialCancellationException) {
+                Timber.e("Google login cancelled by user")
                 viewModel.baseEvent(BaseViewModel.Event.HideLoading)
+                viewModel.baseEvent(BaseViewModel.Event.ShowToast("구글 로그인을 취소하였습니다."))
+
+            } catch (e: GetCredentialException) {
+                Timber.e("Google login failed: ${e.message}")
+                viewModel.baseEvent(BaseViewModel.Event.HideLoading)
+                viewModel.baseEvent(BaseViewModel.Event.ShowToast("구글 로그인에 실패하였습니다."))
+
+            } catch (e: Exception) {
+                Timber.e("Unknown error: ${e.message}")
+                viewModel.baseEvent(BaseViewModel.Event.HideLoading)
+                viewModel.baseEvent(BaseViewModel.Event.ShowToast("알 수 없는 오류가 발생했습니다."))
             }
         }
+
     }
 
     private fun handleSignIn(result: androidx.credentials.GetCredentialResponse) {
@@ -342,7 +381,7 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginViewModel>(R.layou
                                 )
                                 viewModel.isAuthTokenCheck("google", idToken)
                             } else {
-                                Timber.e("failure ${task.exception}")
+                                // Timber.e("failure ${task.exception}")
                                 viewModel.baseEvent(BaseViewModel.Event.ShowToast("구글 로그인에 실패하였습니다."))
                                 viewModel.baseEvent(BaseViewModel.Event.HideLoading)
                             }

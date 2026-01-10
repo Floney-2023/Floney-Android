@@ -2,6 +2,7 @@ package com.aos.floney.view.splash
 
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.pm.PackageManager.*
 import android.net.Uri
 import android.os.Build
@@ -24,9 +25,10 @@ import com.aos.floney.view.login.LoginActivity
 import com.aos.floney.view.onboard.OnBoardActivity
 import com.aos.data.util.CurrencyUtil
 import com.aos.floney.BuildConfig
+import com.aos.floney.ext.setStatusBarTransparent
+import com.aos.floney.util.NetworkUtils
 import com.aos.floney.util.RemoteConfigWrapper
 import com.aos.floney.view.book.entrance.BookEntranceActivity
-import com.aos.floney.view.book.setting.category.BookCategoryActivity
 import com.aos.floney.view.common.BaseAlertDialog
 import com.aos.floney.view.common.WarningPopupDialog
 import com.aos.floney.view.home.HomeActivity
@@ -52,17 +54,20 @@ class SplashActivity :
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        getAppKeyHash()
         setupSplashAnimation()
         setStatusBarTransparent()
-        CurrencyUtil.currency = sharedPreferenceUtil.getString("symbol", "원")
+        setPreferenceUtil()
     }
 
-    private fun checkPauseUpdate() { // 서버 변경으로 인한 임시 중단 팝업
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun checkPauseUpdate(maintenanceStart: LocalDateTime, maintenanceEnd: LocalDateTime) {
+        val formattedStart = maintenanceStart.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))
+        val formattedEnd = maintenanceEnd.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))
+
         BaseAlertDialog(title = "앱 중단 알림", info = "원활한 앱 사용을 위해 \n" +
-                "2024.11.14 22:00 - 2024.11.15 09:00\n" +
-                "앱 점검을 진행합니다. \n" +
-                "위 시간 동안 앱 사용이 불가하니 양해 부탁드립니다.\n", false) {
+                "${formattedStart} - ${formattedEnd}\n" +
+                "위 기간 동안 앱 점검을 진행합니다. \n" +
+                "앱 사용이 불가하니 양해 부탁드립니다.\n", false) {
             finishAffinity()
         }.show(supportFragmentManager, "PauseUpdateDialog")
     }
@@ -95,7 +100,7 @@ class SplashActivity :
                 } else {
                     overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
                 }
-            } else if(sharedPreferenceUtil.getString("accessToken", "") != "") {
+            } else if(sharedPreferenceUtil.getString("accessToken", "") != "" && !viewModel.getSessionExpiredFlag()) {
                 handleIntent(intent)
             }  else {
                 val intent = Intent(this@SplashActivity, LoginActivity::class.java)
@@ -111,9 +116,12 @@ class SplashActivity :
     }
 
     private fun getCurrentAppVersion(): String {
-        return packageManager.getPackageInfo(packageName, 0).versionName
+        return try {
+            packageManager.getPackageInfo(packageName, 0)?.versionName ?: "0.0.0"
+        } catch (e: PackageManager.NameNotFoundException) {
+            "0.0.0"
+        }
     }
-
     fun isUpdateRequired(latestVersion: String?, currentVersion: String): Boolean {
         if (latestVersion == null) return false
 
@@ -149,18 +157,32 @@ class SplashActivity :
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun checkServerStatusAndUpdate() {
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+        if (!NetworkUtils.isNetworkConnected(this)) {
+
+            val exitDialogFragment = WarningPopupDialog(
+                title = "네트워크 연결 오류",
+                info = "인터넷 연결을 확인한 후 다시 시도해주세요.\n앱을 종료합니다.",
+                leftButton = "",
+                rightButton = getString(R.string.already_pick_button),
+                check = true
+            ) { finishAffinity() }
+
+            exitDialogFragment.show(supportFragmentManager, "initDialog")
+            return
+        }
+
+        // RemoteConfigWrapper에서 점검 시작 및 종료 시간 가져오기
+        val (maintenanceStart, maintenanceEnd) = remoteConfigWrapper.fetchMaintenanceTimes()
         val currentDateTime = LocalDateTime.now()
-        val maintenanceStart = LocalDateTime.parse("2024-11-14 22:00", formatter)
-        val maintenanceEnd = LocalDateTime.parse("2024-11-15 09:00", formatter)
 
         if (currentDateTime.isAfter(maintenanceStart) && currentDateTime.isBefore(maintenanceEnd)) {
-            checkPauseUpdate()
+            checkPauseUpdate(maintenanceStart, maintenanceEnd) // 일시 중지 팝업
         }
         else {
-            checkForMandatoryUpdate()
+            checkForMandatoryUpdate() // 버전 업데이트 판단 여부
         }
     }
+
 
     private fun checkForMandatoryUpdate() { // 강제 업데이트 팝업
         val minSupportedVersion = remoteConfigWrapper.fetchAndActivateConfig()
@@ -168,8 +190,7 @@ class SplashActivity :
 
         Timber.e("minSupportVersion : ${minSupportedVersion} currentVersion : ${currentVersion}")
         if (isUpdateRequired(minSupportedVersion, currentVersion)) {
-//            showUpdateDialog() // 강제 업데이트 팝업
-            navigateToScreen()
+            showUpdateDialog() // 강제 업데이트 팝업
         } else {
             navigateToScreen() // 업데이트가 필요하지 않으면 다음 화면으로 이동
         }
@@ -219,7 +240,6 @@ class SplashActivity :
                         }
                     }
                     else {
-                        val inviteCode = it.getQueryParameter("inviteCode")
                         val intent = Intent(this@SplashActivity, BookEntranceActivity::class.java)
 
                         // 데이터를 Intent에 추가
@@ -236,7 +256,6 @@ class SplashActivity :
                 }
                 "floney_settlement_share" -> {
                     if(sharedPreferenceUtil.getString("accessToken", "") == "") { // accessToken 유효 X
-                        val inviteCode = it.getQueryParameter("inviteCode")
                         val intent = Intent(this@SplashActivity, LoginActivity::class.java)
 
                         // 데이터를 Intent에 추가
@@ -254,7 +273,7 @@ class SplashActivity :
 
                         // 데이터를 Intent에 추가
                         intent.putExtra("settlementId", it.getQueryParameter("settlementId"))
-                        intent.putExtra("bookKey", it.getQueryParameter("bookKey"))
+                        intent.putExtra("bookCode", it.getQueryParameter("bookCode"))
 
                         startActivity(intent)
                         if (Build.VERSION.SDK_INT >= 34) {
@@ -268,38 +287,9 @@ class SplashActivity :
             }
         }
     }
-    private fun getAppKeyHash() {
-        try {
-            val info = packageManager.getPackageInfo(packageName, GET_SIGNATURES)
-            for (signature in info.signatures) {
-                var md: MessageDigest
-                md = MessageDigest.getInstance("SHA")
-                md.update(signature.toByteArray())
-                val something = String(Base64.encode(md.digest(), 0))
-                Timber.e("Hashkey ${something}")
-            }
-        } catch (e: Exception) {
-            // TODO Auto-generated catch block
-            Log.e("name not found", e.toString())
-        }
-    }
-    private fun AppCompatActivity.setStatusBarTransparent() {
 
-        window.apply {
-            setFlags(
-                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
-            )
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                insetsController?.setSystemBarsAppearance(
-                    WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS,
-                    WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
-                )
-            }
-        }
-
-        if (Build.VERSION.SDK_INT >= 30) {    // API 30 에 적용
-            WindowCompat.setDecorFitsSystemWindows(window, false)
-        }
+    private fun setPreferenceUtil(){
+        CurrencyUtil.currency = sharedPreferenceUtil.getString("symbol", "원")
+        sharedPreferenceUtil.setString("subscribeCheckTenMinutes", "")
     }
 }

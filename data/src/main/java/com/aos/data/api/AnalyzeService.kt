@@ -3,10 +3,12 @@ package com.aos.data.api
 import com.aos.data.entity.request.analyze.PostAnalyzeAssetBody
 import com.aos.data.entity.request.analyze.PostAnalyzeBudgetBody
 import com.aos.data.entity.request.analyze.PostAnalyzeCategoryBody
+import com.aos.data.entity.request.analyze.PostAnalyzeLineSubCategoryBody
 import com.aos.data.entity.response.analyze.PostAnalyzeAssetEntity
 import com.aos.data.entity.response.analyze.PostAnalyzeBudgetEntity
 import com.aos.data.entity.response.analyze.PostAnalyzeCategoryInComeEntity
 import com.aos.data.entity.response.analyze.PostAnalyzeCategoryOutComeEntity
+import com.aos.data.entity.response.analyze.PostAnalyzeLineSubCategoryEntity
 import com.aos.util.NetworkState
 import retrofit2.http.Body
 import retrofit2.http.POST
@@ -37,4 +39,9 @@ interface AnalyzeService {
         @Body postAnalyzeAssetBody: PostAnalyzeAssetBody
     ): NetworkState<PostAnalyzeAssetEntity>
 
+    // 분석 - 상세 지출/수입
+    @POST("analyze/line-subcategory")
+    suspend fun postAnalyzeLineSubCategory(
+        @Body postAnalyzeLineSubCategoryBody: PostAnalyzeLineSubCategoryBody
+    ): NetworkState<PostAnalyzeLineSubCategoryEntity>
 }

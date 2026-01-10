@@ -33,6 +33,9 @@
         <action
             android:id="@+id/action_bookSettingCategoryAddFragment_to_bookSettingCategoryFragment"
             app:destination="@id/bookSettingCategoryFragment" />
+        <argument
+            android:name="flow"
+            app:argType="string" />
     </fragment>
 
 

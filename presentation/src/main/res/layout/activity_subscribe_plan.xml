@@ -131,7 +131,6 @@
                     android:layout_marginTop="1dp"
                     android:lineSpacingExtra="4sp"
                     android:translationY="-1.84sp"
-                    android:onClick="@{() -> vm.onClickPlanRestore()}"
                     android:text="@string/subscribe_plan_infrom_notice"
                     app:layout_constraintTop_toBottomOf="@+id/tv_subscribe_plan_infrom_detail"/>
 
@@ -147,7 +146,6 @@
                     android:text="@string/subscribe_plan_infrom_service"
                     android:textColor="@color/grayscale2"
                     android:textSize="12dp"
-                    android:onClick="@{() -> vm.onClickService()}"
                     android:translationY="-1.84sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tv_subscribe_plan_infrom_notice"

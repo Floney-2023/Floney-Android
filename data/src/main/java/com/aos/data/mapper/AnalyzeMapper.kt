@@ -5,37 +5,38 @@ import com.aos.data.entity.response.analyze.PostAnalyzeAssetEntity
 import com.aos.data.entity.response.analyze.PostAnalyzeBudgetEntity
 import com.aos.data.entity.response.analyze.PostAnalyzeCategoryInComeEntity
 import com.aos.data.entity.response.analyze.PostAnalyzeCategoryOutComeEntity
+import com.aos.data.entity.response.analyze.PostAnalyzeLineSubCategoryEntity
 import com.aos.data.util.CurrencyUtil
 import com.aos.model.analyze.AnalyzeResult
 import com.aos.model.analyze.Asset
 import com.aos.model.analyze.UiAnalyzeAssetModel
 import com.aos.model.analyze.UiAnalyzeCategoryInComeModel
 import com.aos.model.analyze.UiAnalyzeCategoryOutComeModel
+import com.aos.model.analyze.UiAnalyzeLineSubCategoryModel
 import com.aos.model.analyze.UiAnalyzePlanModel
+import com.aos.model.analyze.BookSubData
 import timber.log.Timber
 import java.text.NumberFormat
 import java.util.Calendar
 import kotlin.math.pow
 import kotlin.math.roundToInt
 import kotlin.random.Random
+import androidx.core.graphics.toColorInt
 
 private val colorUsedArr = arrayListOf<Int>()
 private val colorArr = listOf<Int>(
-    Color.parseColor("#AD1F25"),
-    Color.parseColor("#EFA9AB"),
-    Color.parseColor("#FF5C00"),
-    Color.parseColor("#FFBE99"),
-    Color.parseColor("#E4BF00"),
-    Color.parseColor("#FFEE97"),
-    Color.parseColor("#0060E5"),
-    Color.parseColor("#4C97FF"),
-    Color.parseColor("#99C4FF"),
-    Color.parseColor("#35347F"),
-    Color.parseColor("#4A48B0"),
-    Color.parseColor("#706EC4"),
-    Color.parseColor("#654CFF"),
-    Color.parseColor("#9B8BFF"),
-    Color.parseColor("#D3CCFF")
+    "#AD1F25".toColorInt(), // red1
+    "#EFA9AB".toColorInt(), // red3
+    "#FF5C00".toColorInt(), // orange2
+    "#FFBE99".toColorInt(), // orange4
+    "#E4BF00".toColorInt(), // yellow1
+    "#FFEE97".toColorInt(), // yellow3
+    "#0060E5".toColorInt(), // blue1
+    "#99C4FF".toColorInt(), // blue4
+    "#4A48B0".toColorInt(), // indigo2
+    "#706EC4".toColorInt(), // indigo3
+    "#654CFF".toColorInt(), // purple1
+    "#D3CCFF".toColorInt() // purple3
 )
 
 private val randomColorArr = arrayListOf<Int>()
@@ -47,34 +48,32 @@ fun PostAnalyzeCategoryOutComeEntity.toUiAnalyzeModel(): UiAnalyzeCategoryOutCom
     stepIdx = 0
     colorUsedArr.clear()
     randomColorArr.clear()
-    getRandomColor(this.analyzeResult.size)
+    randomColorArr.addAll(getRandomColor(this.analyzeResult.size))
 
     return UiAnalyzeCategoryOutComeModel(total = "총 ${
         NumberFormat.getNumberInstance().format(this.total)
     }${CurrencyUtil.currency}을\n소비했어요",
-        differance = "${
-            if (differance < 0 && total == 0.0) {
-                "저번달 대비 ${
-                    NumberFormat.getNumberInstance().format(this.differance * -1.0)
-                }${CurrencyUtil.currency}을\n덜 사용했어요"
-            } else if (this.differance == this.total) {
-                "저번달 대비 ${
-                    NumberFormat.getNumberInstance().format(differance)
-                }${CurrencyUtil.currency}을\n더 사용했어요"
-            } else if (this.differance > this.total) {
-                "저번달 대비 ${
-                    NumberFormat.getNumberInstance().format(this.differance - total)
-                }${CurrencyUtil.currency}을\n더 사용했어요"
-            } else if (total > differance) {
-                "저번달 대비 ${
-                    NumberFormat.getNumberInstance().format(differance)
-                }${CurrencyUtil.currency}을\n더 사용했어요"
-            } else {
-                "저번달 대비 ${
-                    NumberFormat.getNumberInstance().format(differance)
-                }${CurrencyUtil.currency}을\n덜 사용했어요"
-            }
-        }",
+        differance = if (differance < 0) {
+            "저번달 대비 ${
+                NumberFormat.getNumberInstance().format(this.differance * -1.0)
+            }${CurrencyUtil.currency}을\n덜 사용했어요"
+        } else if (this.differance == this.total) {
+            "저번달 대비 ${
+                NumberFormat.getNumberInstance().format(differance)
+            }${CurrencyUtil.currency}을\n더 사용했어요"
+        } else if (this.differance > this.total) {
+            "저번달 대비 ${
+                NumberFormat.getNumberInstance().format(this.differance - total)
+            }${CurrencyUtil.currency}을\n더 사용했어요"
+        } else if (total > differance) {
+            "저번달 대비 ${
+                NumberFormat.getNumberInstance().format(differance)
+            }${CurrencyUtil.currency}을\n더 사용했어요"
+        } else {
+            "저번달 대비 ${
+                NumberFormat.getNumberInstance().format(differance)
+            }${CurrencyUtil.currency}을\n덜 사용했어요"
+        },
         size = this.analyzeResult.size,
         analyzeResult = this.analyzeResult.map {
             AnalyzeResult(
@@ -88,17 +87,17 @@ fun PostAnalyzeCategoryOutComeEntity.toUiAnalyzeModel(): UiAnalyzeCategoryOutCom
                 color = when (stepIdx) {
                     0 -> {
                         stepIdx++
-                        Color.parseColor("#FFDE31")
+                        "#FFDE31".toColorInt() // yellow#2
                     }
 
                     1 -> {
                         stepIdx++
-                        Color.parseColor("#FF965B")
+                        "#FF965B".toColorInt() // orange#3
                     }
 
                     2 -> {
                         stepIdx++
-                        Color.parseColor("#E56E73")
+                        "#E56E73".toColorInt() // red#2
                     }
 
                     else -> {
@@ -119,7 +118,7 @@ fun PostAnalyzeCategoryInComeEntity.toUiAnalyzeModel(): UiAnalyzeCategoryInComeM
     stepIdx = 0
     colorUsedArr.clear()
     randomColorArr.clear()
-    getRandomColor(this.analyzeResult.size)
+    randomColorArr.addAll(getRandomColor(this.analyzeResult.size))
 
     Timber.e("different $differance")
     Timber.e("total $total")
@@ -127,29 +126,27 @@ fun PostAnalyzeCategoryInComeEntity.toUiAnalyzeModel(): UiAnalyzeCategoryInComeM
     return UiAnalyzeCategoryInComeModel(total = "총 ${
         NumberFormat.getNumberInstance().format(this.total)
     }${CurrencyUtil.currency}을\n벌었어요",
-        differance = "${
-            if (differance < 0 && total == 0.0) {
-                "저번달 대비 ${
-                    NumberFormat.getNumberInstance().format(this.differance * -1.0)
-                }${CurrencyUtil.currency}을\n덜 벌었어요"
-            } else if (this.differance == this.total) {
-                "저번달 대비 ${
-                    NumberFormat.getNumberInstance().format(differance)
-                }${CurrencyUtil.currency}을\n더 벌었어요"
-            } else if (this.differance > this.total) {
-                "저번달 대비 ${
-                    NumberFormat.getNumberInstance().format(this.differance - total)
-                }${CurrencyUtil.currency}을\n더 벌었어요"
-            } else if (differance < 0 && total > differance) {
-                "저번달 대비 ${
-                    NumberFormat.getNumberInstance().format(differance * -1.0)
-                }${CurrencyUtil.currency}을\n더 벌었어요"
-            } else {
-                "저번달 대비 ${
-                    NumberFormat.getNumberInstance().format(differance)
-                }${CurrencyUtil.currency}을\n더 벌었어요"
-            }
-        }",
+        differance = if (differance < 0 && total == 0.0) {
+            "저번달 대비 ${
+                NumberFormat.getNumberInstance().format(this.differance * -1.0)
+            }${CurrencyUtil.currency}을\n덜 벌었어요"
+        } else if (this.differance == this.total) {
+            "저번달 대비 ${
+                NumberFormat.getNumberInstance().format(differance)
+            }${CurrencyUtil.currency}을\n더 벌었어요"
+        } else if (this.differance > this.total) {
+            "저번달 대비 ${
+                NumberFormat.getNumberInstance().format(this.differance - total)
+            }${CurrencyUtil.currency}을\n더 벌었어요"
+        } else if (differance < 0 && total > differance) {
+            "저번달 대비 ${
+                NumberFormat.getNumberInstance().format(differance * -1.0)
+            }${CurrencyUtil.currency}을\n더 벌었어요"
+        } else {
+            "저번달 대비 ${
+                NumberFormat.getNumberInstance().format(differance)
+            }${CurrencyUtil.currency}을\n더 벌었어요"
+        },
         size = this.analyzeResult.size,
         analyzeResult = this.analyzeResult.map {
             AnalyzeResult(
@@ -163,17 +160,17 @@ fun PostAnalyzeCategoryInComeEntity.toUiAnalyzeModel(): UiAnalyzeCategoryInComeM
                 color = when (stepIdx) {
                     0 -> {
                         stepIdx++
-                        Color.parseColor("#4C97FF")
+                        "#4C97FF".toColorInt() // blue#3
                     }
 
                     1 -> {
                         stepIdx++
-                        Color.parseColor("#35347F")
+                        "#35347F".toColorInt() // indigo#1
                     }
 
                     2 -> {
                         stepIdx++
-                        Color.parseColor("#9B8BFF")
+                        "#9B8BFF".toColorInt() // purple#2
                     }
 
                     else -> {
@@ -282,22 +279,42 @@ fun PostAnalyzeAssetEntity.toUiAnalyzeAssetModel(): UiAnalyzeAssetModel {
     )
 }
 
+// 상세 분석-지출/수입
+
+fun PostAnalyzeLineSubCategoryEntity.toUiLineSubCategoryModel(category: String): UiAnalyzeLineSubCategoryModel {
+    return UiAnalyzeLineSubCategoryModel(
+        subcategoryName = this.subcategoryName,
+        bookLines = this.bookLines.map {
+            BookSubData(
+                money = "${if (category == "수입") "+" else "-"}${NumberFormat.getNumberInstance().format(it.money)}",
+                descriptionDetail = "${it.asset} ‧ ${it.lineDate.replace("-",".")}", // yyyy-mm-dd -> yyyy.mm.dd 형식으로 파싱
+                description = it.description,
+                userProfileImg = it.userProfileImg ?: ""
+            )
+        }
+    )
+}
+
+
 // 랜덤 색상 가져오기 그래프는 3개까지는 색상 고정 그 이후는 랜덤 색상임
 fun getRandomColor(repeat: Int): List<Int> {
-    if (repeat > 0) {
-        var random = 0
-        for (i in 0..repeat) {
-            random = Random.nextInt(0, 14)
-            if (!colorUsedArr.contains(random)) {
-                colorUsedArr.add(random)
-                randomColorArr.add(colorArr[random])
-            }
-        }
-    }
-    return randomColorArr
+    val colorCount = colorArr.size
+    val indices = (0 until colorCount).shuffled().take(repeat)
+    return indices.map { colorArr[it] }
 }
 
 fun Double.round(decimals: Int): Double {
     val factor = 10.0.pow(decimals)
     return (this * factor).roundToInt() / factor
+}
+
+private fun getConvertReceiveRepeatValue(value: String): String {
+    Timber.e("value $value")
+    return when(value) {
+        "LATEST" -> "최신순"
+        "OLDEST" -> "오래된 순"
+        "USER_NICKNAME" -> "사용자 닉네임 순"
+        "LINE_SUBCATEGORY_NAME" -> "분류 가나다 순"
+        else -> ""
+    }
 }

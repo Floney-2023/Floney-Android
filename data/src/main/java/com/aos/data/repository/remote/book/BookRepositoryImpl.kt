@@ -109,7 +109,7 @@ class BookRepositoryImpl @Inject constructor(private val bookDataSource: BookRem
 
     override suspend fun getBooksDays(bookKey: String, date: String): Result<UiBookDayModel> {
         when (val data = bookDataSource.getBooksDays(bookKey, date)) {
-            is NetworkState.Success -> return Result.success(data.body.toUiBookMonthModel())
+            is NetworkState.Success -> return Result.success(data.body.toUiBookMonthModel(date))
             is NetworkState.Failure -> return Result.failure(
                 RetrofitFailureStateException(data.error, data.code)
             )
@@ -168,7 +168,7 @@ class BookRepositoryImpl @Inject constructor(private val bookDataSource: BookRem
         parent: String,
     ): Result<List<UiBookCategory>> {
         when (val data = bookDataSource.getBookCategory(bookKey, parent)) {
-            is NetworkState.Success -> return Result.success(data.body.toUiBookCategory())
+            is NetworkState.Success -> return Result.success(data.body.toUiBookCategory(parent))
             is NetworkState.Failure -> return Result.failure(
                 RetrofitFailureStateException(data.error, data.code)
             )
@@ -188,7 +188,9 @@ class BookRepositoryImpl @Inject constructor(private val bookDataSource: BookRem
         description: String,
         except: Boolean,
         nickname: String,
-        repeatDuration: String
+        repeatDuration: String,
+        memo: String,
+        imageUrl: List<String>,
     ): Result<PostBooksLinesModel> {
         when (val data = bookDataSource.postBooksLines(
             PostBooksLinesBody(
@@ -201,7 +203,9 @@ class BookRepositoryImpl @Inject constructor(private val bookDataSource: BookRem
                 description,
                 except,
                 nickname,
-                repeatDuration
+                repeatDuration,
+                memo,
+                imageUrl
             )
         )) {
             is NetworkState.Success -> return Result.success(data.body.toPostBooksLinesModel())
@@ -224,11 +228,13 @@ class BookRepositoryImpl @Inject constructor(private val bookDataSource: BookRem
         lineDate: String,
         description: String,
         except: Boolean,
-        nickname: String
+        nickname: String,
+        memo : String,
+        imageUrls: List<String>
     ): Result<PostBooksChangeModel> {
         when (val data = bookDataSource.postBooksLinesChange(
             PostBooksChangeBody(
-                lineId, bookKey, money, flow, asset, line, lineDate, description, except, nickname
+                lineId, bookKey, money, flow, asset, line, lineDate, description, except, nickname, memo, imageUrls
             )
         )) {
             is NetworkState.Success -> return Result.success(data.body.toPostBooksLinesChangeModel())

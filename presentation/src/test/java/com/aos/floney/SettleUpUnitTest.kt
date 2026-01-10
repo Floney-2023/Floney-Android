@@ -7,6 +7,7 @@ import com.aos.data.util.SharedPreferenceUtil
 import com.aos.floney.view.settleup.SettleUpCompleteViewModel
 import com.aos.model.settlement.UiSettlementAddModel
 import com.aos.model.settlement.settleOutcomes
+import com.aos.usecase.booksetting.BooksCodeCheckUseCase
 import com.aos.usecase.booksetting.BooksSettingGetUseCase
 import com.aos.usecase.mypage.AlarmSaveGetUseCase
 import com.aos.usecase.settlement.SettlementAddUseCase
@@ -38,6 +39,9 @@ class SettleUpUnitTest {
     @Mock
     private lateinit var alarmSaveGetUseCase: AlarmSaveGetUseCase
 
+    @Mock
+    private lateinit var booksCodeCheckUseCase: BooksCodeCheckUseCase
+
     private lateinit var viewModel: SettleUpCompleteViewModel
 
     @Before
@@ -48,7 +52,8 @@ class SettleUpUnitTest {
             prefs = prefs,
             settlementAddUseCase = settlementAddUseCase,
             booksSettingGetUseCase = booksSettingGetUseCase,
-            alarmSaveGetUseCase = alarmSaveGetUseCase
+            alarmSaveGetUseCase = alarmSaveGetUseCase,
+            booksCodeCheckUseCase = booksCodeCheckUseCase
         )
     }
 }

@@ -21,14 +21,8 @@ class HeaderInterceptor @Inject constructor(
             runBlocking {
                 token = "Bearer " + prefs.getString("accessToken", "")
             }
-            Timber.e("token $token")
+            Timber.d("token $token")
             builder.addHeader("Authorization", token)
-        }
-
-        // 구독 API 요청인지 확인하여 ostype 추가
-        val url = originalRequest.url.toString()
-        if (url.contains("/subscribe")) {  // "subscribe" 경로가 포함된 경우만 처리
-            builder.addHeader("device", "android")
         }
 
         val newRequest = builder.build()

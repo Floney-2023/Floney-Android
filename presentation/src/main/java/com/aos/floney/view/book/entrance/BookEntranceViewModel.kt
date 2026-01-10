@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.aos.data.util.CommonUtil
 import com.aos.data.util.SharedPreferenceUtil
+import com.aos.data.util.SubscriptionDataStoreUtil
 import com.aos.floney.R
 import com.aos.floney.base.BaseViewModel
 import com.aos.floney.ext.parseErrorCode
@@ -21,12 +22,14 @@ import com.aos.usecase.mypage.MypageSearchUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class BookEntranceViewModel @Inject constructor(
     private val prefs: SharedPreferenceUtil,
+    private val subscriptionDataStoreUtil: SubscriptionDataStoreUtil,
     private val booksJoinUseCase: BooksJoinUseCase,
     private val mypageSearchUseCase: MypageSearchUseCase,
     private val booksEntranceUseCase : BooksEntranceUseCase,
@@ -61,6 +64,7 @@ class BookEntranceViewModel @Inject constructor(
             booksEntranceUseCase(code).onSuccess {
                 inviteCode.postValue(code)
                 _bookInfo.postValue(it)
+
             }.onFailure {
                 baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@BookEntranceViewModel)))
             }
@@ -72,20 +76,16 @@ class BookEntranceViewModel @Inject constructor(
         }
     }
 
-    fun onClickEntrance(){
-        // 가입된 가계부 수 읽어오기
+    fun onClickEntrance() {
         viewModelScope.launch(Dispatchers.IO) {
-            mypageSearchUseCase().onSuccess {
-                if (it.myBooks.size < 2)
-                    bookEntrance()
-                else {
-                    _newBookCreatePage.emit(false)
-                }
-            }.onFailure {
-                baseEvent(Event.ShowToast("이미 가계부 2개를 사용하고 있습니다."))
+            if (canCreateMoreBooks()) {
+                bookEntrance()
+            } else {
+                baseEvent(Event.ShowToastRes(R.string.book_entrance_over_alert))
             }
         }
     }
+
     fun bookEntrance()
     {
         if(inviteCode.value!!.isNotEmpty()) {
@@ -130,9 +130,19 @@ class BookEntranceViewModel @Inject constructor(
         }
     }
 
-    fun onClickCodeInput(){
+    fun onClickCodeInput() {
         viewModelScope.launch(Dispatchers.IO) {
-            _codeInputPage.emit(true)
+            if (canCreateMoreBooks()) {
+                _codeInputPage.emit(true)
+            } else {
+                baseEvent(Event.ShowToastRes(R.string.book_entrance_over_alert))
+            }
         }
+    }
+
+    private suspend fun canCreateMoreBooks(): Boolean {
+        val bookLimit = if (subscriptionDataStoreUtil.getUserSubscribe().first()) 4 else 2
+        val result = mypageSearchUseCase()
+        return result.getOrNull()?.myBooks?.size?.let { it < bookLimit } ?: false
     }
 }

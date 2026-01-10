@@ -40,6 +40,7 @@ class SettleUpMemberSelectFragment : BaseFragment<FragmentSettleUpMemberSelectBi
         setUpUi()
         setUpViewModelObserver()
     }
+
     private fun setUpUi() {
         activityViewModel.bottomSee(false)
         binding.setVariable(BR.eventHolder, this@SettleUpMemberSelectFragment)

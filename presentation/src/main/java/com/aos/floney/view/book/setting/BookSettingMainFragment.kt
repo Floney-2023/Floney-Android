@@ -15,12 +15,9 @@ import com.aos.floney.view.book.setting.asset.BookSettingAssetBottomSheetFragmen
 import com.aos.floney.view.book.setting.carryinfo.BookSettingCarryInfoSheetFragment
 import com.aos.floney.view.book.setting.excel.BookSettingExcelBottomSheetFragment
 import com.aos.floney.view.common.BaseAlertDialog
-import com.aos.floney.view.common.WarningPopupDialog
 import com.aos.model.book.MyBookUsers
 import com.aos.model.book.UiBookSettingModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
-import timber.log.Timber
 
 @AndroidEntryPoint
 class BookSettingMainFragment :
@@ -42,6 +39,7 @@ class BookSettingMainFragment :
 
     private fun setUpUi() {
         binding.setVariable(BR.eventHolder, this@BookSettingMainFragment)
+        binding.setVariable(BR.vm, viewModel)
     }
     private fun setUpViewModelObserver() {
         repeatOnStarted {

@@ -33,7 +33,26 @@
                 android:layout_height="match_parent"
                 app:defaultNavHost="true"
                 app:navGraph="@navigation/my_page_main_nav" />
+            <View
+                android:id="@+id/dim_background"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/black"
+                android:visibility="@{ vm.subscribePopupShow ? View.VISIBLE : View.GONE}"
+                android:alpha="0.7" />
         </FrameLayout>
+        <include
+            android:id="@+id/include_popup_subscribe"
+            layout="@layout/item_popup_subscribe_use"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="16dp"
+            android:visibility="@{ vm.subscribePopupShow ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="@+id/fl_mypage_container"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
         <LinearLayout
             android:id="@+id/ll_bottom_navigation"
             android:layout_width="wrap_content"

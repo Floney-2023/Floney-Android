@@ -11,10 +11,19 @@
     <style name="SplashTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowIsTranslucent">true</item>
     </style>
-
+    <style name="TabLayoutTextStyle">
+        <item name="android:textSize">14dp</item>
+        <item name="android:textStyle">normal</item>
+    </style>
     <declare-styleable name="CustomArcProgressBar">
         <attr name="cornerRadius" format="dimension"/>
         <attr name="radius" format="dimension"/>
         <attr name="angles" format="reference"/>
     </declare-styleable>
+    <style name="RoundedImage">
+        <item name="cornerSize">12dp</item>
+    </style>
+    <style name="RoundedImage_64dp">
+        <item name="cornerSize">64dp</item>
+    </style>
 </resources>

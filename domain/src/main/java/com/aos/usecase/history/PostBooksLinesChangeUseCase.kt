@@ -15,8 +15,10 @@ class PostBooksLinesChangeUseCase(private val bookRepository: BookRepository) {
        lineDate: String,
        description: String,
        except: Boolean,
-       nickname: String
+       nickname: String,
+       memo : String,
+       imageUrls : List<String>
     ): Result<PostBooksChangeModel> {
-        return bookRepository.postBooksLinesChange(lineId, bookKey, money, flow, asset, line, lineDate, description, except, nickname)
+        return bookRepository.postBooksLinesChange(lineId, bookKey, money, flow, asset, line, lineDate, description, except, nickname, memo, imageUrls)
     }
 }

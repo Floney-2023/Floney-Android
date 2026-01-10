@@ -1,6 +1,8 @@
 package com.aos.floney.ext
 
 import android.provider.Settings.Global.getString
+import com.aos.data.util.CurrencyUtil
+import com.aos.floney.BuildConfig.appsflyer_settlement_url
 import com.aos.floney.R
 import com.aos.floney.base.BaseViewModel
 import org.json.JSONObject
@@ -46,6 +48,37 @@ fun String?.parseErrorCode(event: BaseViewModel? = null): String {
         } else {
             val msg = jsonObject.getString("code")
             msg
+        }
+    }
+}
+
+fun String.bookCodeToSettlementUrl(settlementId : Long): String {
+    return "https://floney.onelink.me$appsflyer_settlement_url?settlementId=${settlementId}&bookCode=${this}"
+}
+
+fun String.toCategoryCode(): String = when (this) {
+    "수입" -> "INCOME"
+    "지출" -> "OUTCOME"
+    "이체" -> "TRANSFER"
+    else -> ""
+}
+
+fun String.toCategoryName(): String = when (this) {
+    "INCOME" -> "수입"
+    "OUTCOME" -> "지출"
+    "TRANSFER" -> "이체"
+    else -> ""
+}
+
+fun String?.formatMoneyWithCurrency(): String {
+    if (this.isNullOrBlank()) return "0" + CurrencyUtil.currency
+
+    return when {
+        this.startsWith("+") || this.startsWith("-") -> {
+            this.substring(1).trim() + CurrencyUtil.currency
+        }
+        else -> {
+            this.trim() + CurrencyUtil.currency
         }
     }
 }

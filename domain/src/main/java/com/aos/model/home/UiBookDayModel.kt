@@ -1,7 +1,11 @@
 package com.aos.model.home
 
+import android.os.Parcelable
 import androidx.recyclerview.widget.DiffUtil
+import kotlinx.parcelize.Parcelize
 import timber.log.Timber
+import java.io.File
+import java.io.Serial
 import java.io.Serializable
 
 
@@ -37,8 +41,16 @@ data class DayMoney(
     val writerNickName: String,
     val writerProfileImg: String,
     val repeatDuration: String,
+    val memo: String,
+    val imageUrls: List<ImageUrls>,
     val seeProfileStatus: Boolean
 )
+
+
+data class ImageUrls(
+    val id: Int,
+    val url: String,
+) : Serializable
 
 // 내역 수정 전달 아이템
 data class DayMoneyModifyItem(
@@ -51,7 +63,9 @@ data class DayMoneyModifyItem(
     val assetSubCategory: String,
     val exceptStatus: Boolean,
     val writerNickName: String,
-    val repeatDuration: String
+    val repeatDuration: String,
+    val memo: String,
+    val imageUrls: List<ImageUrls>
 ): Serializable
 
 // 즐겨찾기 전달 아이템
@@ -63,3 +77,4 @@ data class DayMoneyFavoriteItem(
     val assetSubcategoryName: String,
     val exceptStatus : Boolean
 ): Serializable
+

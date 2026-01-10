@@ -23,16 +23,14 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.MobileAds
-import com.google.android.gms.ads.OnUserEarnedRewardListener
-import com.google.android.gms.ads.rewarded.RewardItem
-import com.google.android.gms.ads.rewarded.RewardedAd
-import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
 @AndroidEntryPoint
 class SettleUpOutcomesSelectFragment : BaseFragment<FragmentSettleUpOutcomesSelectBinding, SettleUpOutcomesSelectViewModel>(R.layout.fragment_settle_up_outcomes_select) , UiOutcomesSelectModel.OnItemClickListener {
-    private var mRewardAd: RewardedAd? = null
+    private var mInterstitialAd: InterstitialAd? = null
 
     override fun onItemClick(item: Outcomes) {
         viewModel.settingSettlementOutcomes(item)
@@ -63,26 +61,21 @@ class SettleUpOutcomesSelectFragment : BaseFragment<FragmentSettleUpOutcomesSele
             // 다음 페이지 이동
             viewModel.nextPage.collect {
                 if(it) {
-                    if (mRewardAd != null) {
-                        mRewardAd?.show(requireActivity(), OnUserEarnedRewardListener {
-                            fun onUserEarnedReward(rewardItem: RewardItem) {
-                                val rewardAmount = rewardItem.amount
-                                var rewardType = rewardItem.type
-
-                            }
-                        })
-                        mRewardAd?.fullScreenContentCallback = object: FullScreenContentCallback() {
+                    if (mInterstitialAd != null) {
+                        mInterstitialAd?.fullScreenContentCallback = object: FullScreenContentCallback() {
                             override fun onAdDismissedFullScreenContent() {
                                 viewModel.updateAdvertiseTenMinutes()
                                 goToSettlementCompleteFragment()
-                                mRewardAd = null
+                                mInterstitialAd = null
                                 setUpAdMob()
                             }
 
                             override fun onAdFailedToShowFullScreenContent(p0: AdError) {
-                                mRewardAd = null
+                                mInterstitialAd = null
+                                goToSettlementCompleteFragment()
                             }
                         }
+                        mInterstitialAd?.show(requireActivity())
                     } else {
                         goToSettlementCompleteFragment()
                     }
@@ -120,14 +113,14 @@ class SettleUpOutcomesSelectFragment : BaseFragment<FragmentSettleUpOutcomesSele
 
         val adRequest = AdRequest.Builder().build()
 
-        RewardedAd.load(requireContext(),
-            BuildConfig.GOOGLE_APP_REWARD_KEY, adRequest, object : RewardedAdLoadCallback() {
+        InterstitialAd.load(requireContext(),
+            BuildConfig.GOOGLE_APP_INTERSTITIAL_KEY, adRequest, object : InterstitialAdLoadCallback() {
             override fun onAdFailedToLoad(adError: LoadAdError) {
-                mRewardAd = null
+                mInterstitialAd = null
             }
 
-            override fun onAdLoaded(ad: RewardedAd) {
-                mRewardAd = ad
+            override fun onAdLoaded(ad: InterstitialAd) {
+                mInterstitialAd = ad
             }
         })
     }

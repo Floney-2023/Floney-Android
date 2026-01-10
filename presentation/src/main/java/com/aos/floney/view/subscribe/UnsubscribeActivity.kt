@@ -31,6 +31,7 @@ import com.appsflyer.deeplink.DeepLinkResult
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import javax.inject.Inject
+import com.aos.floney.ext.applyOpenTransition
 
 @AndroidEntryPoint
 class UnsubscribeActivity : BaseActivity<ActivityUnsubscribeBinding, UnsubscribeViewModel>(R.layout.activity_unsubscribe) {
@@ -54,7 +55,10 @@ class UnsubscribeActivity : BaseActivity<ActivityUnsubscribeBinding, Unsubscribe
             // 구독 유지하기
             viewModel.resubscribe.collect {
                 if(it) {
-                    finish()
+                    val intent = Intent(this@UnsubscribeActivity, MyPageActivity::class.java)
+                    startActivity(intent)
+                    applyOpenTransition()
+                    finishAffinity()
                 }
             }
         }
@@ -65,7 +69,22 @@ class UnsubscribeActivity : BaseActivity<ActivityUnsubscribeBinding, Unsubscribe
                     // 구독 해지 여부 확인 팝업
                     BaseAlertDialog(title = getString(R.string.unsubscribe_notice_pop_title), info = getString(R.string.unsubscribe_notice_pop_info), true) {
                         if(it) {
-                            showUnsubscribeComplete()
+
+                            val packageName = this@UnsubscribeActivity.packageName // 현재 앱의 패키지 이름
+                            val uri = Uri.parse("https://play.google.com/store/account/subscriptions?package=$packageName")
+
+                            val intent = Intent(Intent.ACTION_VIEW, uri).apply {
+                                setPackage("com.android.vending") // Play Store 앱으로만 열리도록 설정
+                            }
+
+                            // Play Store 앱이 설치되어 있는지 확인
+                            if (intent.resolveActivity(this@UnsubscribeActivity.packageManager) != null) {
+                                this@UnsubscribeActivity.startActivity(intent)
+                            } else {
+                                // Play Store 앱이 없는 경우 처리
+                                Timber.e("Playstore 필요")
+                            }
+
                         }
                     }.show(supportFragmentManager, "baseAlertDialog")
                 }
@@ -79,13 +98,29 @@ class UnsubscribeActivity : BaseActivity<ActivityUnsubscribeBinding, Unsubscribe
                 }
             }
         }
+
+        repeatOnStarted {
+            viewModel.subscribePage.collect {
+                if(!it) { // 구독 해지 완료(구독 정기결제 여부가 false인 상태)면, 팝업
+                    showUnsubscribeComplete()
+                }
+            }
+        }
     }
+
+    override fun onResume() {
+        super.onResume()
+
+        // 구독 상태를 다시 확인하는 코드 필요
+        viewModel.getSubscribeStatus()
+    }
+
     fun showUnsubscribeComplete(){
         // 구독 해지 완료 팝업
         val exitDialogFragment = WarningPopupDialog(
             getString(R.string.unsubscribe_popup_title),
             getString(R.string.unsubscribe_popup_info),
-            getString(R.string.already_pick_button),getString(R.string.already_pick_button),
+            "",getString(R.string.already_pick_button),
             true
         ) { checked ->
             if (!checked){

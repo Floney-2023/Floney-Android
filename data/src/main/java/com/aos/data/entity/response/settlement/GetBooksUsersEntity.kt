@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 data class GetBooksUsersEntity(
     val email: String,
     val nickname: String,
-    val profileImg: String
+    val profileImg: String? = "user_default"
 )

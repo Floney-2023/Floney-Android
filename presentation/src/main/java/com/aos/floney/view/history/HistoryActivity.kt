@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import androidx.activity.addCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
@@ -13,32 +14,61 @@ import androidx.core.view.isVisible
 import androidx.databinding.library.baseAdapters.BR
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
+import com.aos.data.util.SharedPreferenceUtil
+import com.aos.floney.BuildConfig
 import com.aos.floney.R
 import com.aos.floney.base.BaseActivity
+import com.aos.floney.base.BaseViewModel
+import com.aos.floney.base.BaseViewModel.Event
 import com.aos.floney.databinding.ActivityHistoryBinding
+import com.aos.floney.ext.applyHistoryCloseTransition
 import com.aos.floney.ext.intentSerializable
+import com.aos.floney.ext.intentSerializableList
 import com.aos.floney.ext.repeatOnStarted
+import com.aos.floney.util.getAdvertiseCheck
+import com.aos.floney.util.getAdvertiseTenMinutesCheck
+import com.aos.floney.util.getCurrentDateTimeString
 import com.aos.floney.view.book.setting.category.BookCategoryActivity
 import com.aos.floney.view.book.setting.favorite.BookFavoriteActivity
 import com.aos.floney.view.common.BaseAlertDialog
 import com.aos.floney.view.common.BaseChoiceAlertDialog
+import com.aos.floney.view.common.WarningPopupDialog
 import com.aos.floney.view.history.memo.InsertMemoActivity
+import com.aos.floney.view.history.picture.InsertPictureActivity
 import com.aos.floney.view.home.HomeActivity
+import com.aos.floney.view.subscribe.SubscribePlanActivity
 import com.aos.model.book.UiBookCategory
 import com.aos.model.home.DayMoneyFavoriteItem
 import com.aos.model.home.DayMoneyModifyItem
+import com.aos.model.home.ImageUrls
+import com.google.android.gms.ads.AdError
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.FullScreenContentCallback
+import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.DayViewDecorator
 import com.prolificinteractive.materialcalendarview.DayViewFacade
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import timber.log.Timber
+import java.io.File
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
 class HistoryActivity :
     BaseActivity<ActivityHistoryBinding, HistoryViewModel>(R.layout.activity_history),
     UiBookCategory.OnItemClickListener {
+
+    @Inject
+    lateinit var sharedPreferenceUtil: SharedPreferenceUtil
+
+    private var mInterstitialAd: InterstitialAd? = null
     private lateinit var calendarBottomSheetDialog: CalendarBottomSheetDialog
     private lateinit var categoryBottomSheetDialog: CategoryBottomSheetDialog
     private lateinit var launcher: ActivityResultLauncher<Intent>
@@ -49,13 +79,32 @@ class HistoryActivity :
             if (result.resultCode == Activity.RESULT_OK) {
                 // SecondActivity에서 전달한 데이터를 받음
                 val receivedValue = result.data?.getStringExtra("memo") ?: ""
-                viewModel.setMemoValue(receivedValue)
+                viewModel.setMemo(receivedValue)
+                viewModel.baseEvent(Event.ShowSuccessToast("메모 작성을 완료하였습니다."))
             }
         }
+
+    private val imageResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+
+                val cloudList = result.data?.intentSerializableList<ImageUrls>("updateCloudPhotoUrl")
+                val localList = result.data?.intentSerializableList<File>("updateLocalPhotoUrl")
+
+                Timber.i("cloudUrlList: $cloudList")
+                Timber.i("localUrlList: $localList")
+
+
+                viewModel.processUpdatedPictureData(cloudList, localList)
+                // viewModel.baseEvent(Event.ShowSuccessToast("사진 첨부를 완료하였습니다."))
+
+                }
+            }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        setUpBackPressedCallBack()
         setUpUi()
         setUpViewModelObserver()
         setUpCalendarBottomSheet()
@@ -63,6 +112,12 @@ class HistoryActivity :
         setSubscribePopup()
     }
 
+    private fun setUpBackPressedCallBack()
+    {
+        onBackPressedDispatcher.addCallback(this) {
+            viewModel.onClickCloseBtn()
+        }
+    }
     private fun setUpFavoriteItem() {
         launcher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -127,22 +182,28 @@ class HistoryActivity :
         repeatOnStarted {
             viewModel.onClickMemo.collect {
                 val intent = Intent(this@HistoryActivity, InsertMemoActivity::class.java)
+                intent.putExtra("memo", viewModel.getMemo())
                 getResult.launch(intent)
             }
         }
         repeatOnStarted {
+            viewModel.onClickPicture.collect {
+                val intent = Intent(this@HistoryActivity, InsertPictureActivity::class.java)
+                intent.putExtra("cloudPhotoUrl",viewModel.getCloudUrlList())
+                intent.putExtra("localPhotoUrl",viewModel.getLocalUrlList())
+
+                Timber.d("cloudPhotoUrl ${viewModel.getCloudUrlList()} localPhotoUrl ${viewModel.getLocalUrlList()}")
+                imageResult.launch(intent)
+            }
+        }
+        repeatOnStarted {
             viewModel.deleteBookLines.collect {
-                startActivity(Intent(this@HistoryActivity, HomeActivity::class.java))
-                if (Build.VERSION.SDK_INT >= 34) {
-                    overrideActivityTransition(
-                        Activity.OVERRIDE_TRANSITION_OPEN,
-                        android.R.anim.fade_in,
-                        android.R.anim.fade_out
-                    )
-                } else {
-                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+                val resultIntent = Intent().apply {
+                    putExtra("isDelete", true)
                 }
+                setResult(Activity.RESULT_OK, resultIntent)
                 finish()
+                applyHistoryCloseTransition()
             }
         }
         repeatOnStarted {
@@ -221,62 +282,53 @@ class HistoryActivity :
         repeatOnStarted {
             viewModel.postBooksLines.collect {
                 if (it) {
-                    startActivity(
-                        Intent(
-                            this@HistoryActivity, HomeActivity::class.java
-                        ).putExtra("isSave", "exist")
-                    )
-                    if (Build.VERSION.SDK_INT >= 34) {
-                        overrideActivityTransition(
-                            Activity.OVERRIDE_TRANSITION_OPEN,
-                            android.R.anim.fade_in,
-                            android.R.anim.fade_out
-                        )
+                    if (shouldShowAd()) {
+                        // 광고를 보여준 후 finish
+                        loadAndShowAd {
+                            finishWithSaveResult()
+                        }
                     } else {
-                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+                        // 광고 없이 바로 finish
+                        finishWithSaveResult()
                     }
-                    finishAffinity()
                 }
             }
         }
 
         repeatOnStarted {
             viewModel.onClickCloseBtn.collect {
+                Timber.i("onClickCloseBtn $it")
                 if (it) {
                     // 수정 내역 있음
                     BaseAlertDialog(
-                        title = "잠깐", info = "수정한 내용이 저장되지 않았습니다.\n그대로 나가시겠습니까?", false
+                        title = "잠깐!", info = "수정한 내용이 저장되지 않았습니다.\n그대로 나가시겠습니까?", false
                     ) {
                         if (it) {
                             finish()
+                            applyHistoryCloseTransition()
                         }
                     }.show(supportFragmentManager, "baseAlertDialog")
                 } else {
                     // 수정 내역 없음
                     finish()
+                    applyHistoryCloseTransition()
                 }
             }
         }
         repeatOnStarted {
             viewModel.postModifyBooksLines.collect {
                 if (it) {
-                    startActivity(
-                        Intent(
-                            this@HistoryActivity, HomeActivity::class.java
-                        ).putExtra("isSave", "exist")
-                    )
-                    if (Build.VERSION.SDK_INT >= 34) {
-                        overrideActivityTransition(
-                            Activity.OVERRIDE_TRANSITION_OPEN,
-                            android.R.anim.fade_in,
-                            android.R.anim.fade_out
-                        )
+                    if (shouldShowAd()) {
+                        // 광고를 보여준 후 finish
+                        loadAndShowAd {
+                            finishWithSaveResult()
+                            applyHistoryCloseTransition()
+                        }
                     } else {
-                        overridePendingTransition(
-                            android.R.anim.fade_in, android.R.anim.fade_out
-                        )
+                        // 광고 없이 바로 finish
+                        finishWithSaveResult()
+                        applyHistoryCloseTransition()
                     }
-                    finish()
                 }
             }
         }
@@ -292,33 +344,51 @@ class HistoryActivity :
                             // 즐겨찾기에 추가
                             viewModel.postAddFavorite()
                         } else {
-
                             val intent = Intent(
                                 this@HistoryActivity, BookFavoriteActivity::class.java
                             ).putExtra("entryPoint", "history")
                             launcher.launch(intent)
-
-//                            // 즐겨찾기 내역 보기
-//                            startActivity(Intent(this@HistoryActivity, BookFavoriteActivity::class.java))
-//                            if (Build.VERSION.SDK_INT >= 34) {
-//                                overrideActivityTransition(Activity.OVERRIDE_TRANSITION_OPEN, android.R.anim.fade_in, android.R.anim.fade_out)
-//                            } else {
-//                                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
-//                            }
-
                         }
                     }.show(supportFragmentManager, "baseChoiceDialog")
                 }
             }
         }
+
+        repeatOnStarted {
+            viewModel.onDeleteComplete.collect {
+                if(it){
+                    viewModel.goModifyHistory()
+                }
+            }
+        }
+        repeatOnStarted {
+            // 구독 유도 팝업
+            viewModel.subscribePrompt.collect {
+                if(it) {
+                    val exitDialogFragment = WarningPopupDialog(
+                        getString(R.string.subscribe_prompt_title),
+                        getString(R.string.subscribe_prompt_inform),
+                        getString(R.string.already_pick_button),
+                        getString(R.string.subscribe_plan_btn),
+                        true
+                    ) {  checked ->
+                        if (!checked) // 구독 플랜 보기로 이동
+                        {
+                            startActivity(Intent(this@HistoryActivity, SubscribePlanActivity::class.java))
+
+                        }
+                    }
+                    exitDialogFragment.show(supportFragmentManager, "exitDialog")
+                }
+            }
+        }
     }
 
-    private fun setSubscribePopup() {
-        if (true) {
-            binding.includePopupSubscribe.ivExit.setOnClickListener {
-                binding.includePopupSubscribe.root.visibility = View.GONE
-                binding.dimBackground.visibility = View.GONE
-            }
+    private fun setSubscribePopup() 
+    {
+        binding.includePopupSubscribe.ivExit.setOnClickListener {
+        binding.includePopupSubscribe.root.visibility = View.GONE
+        binding.dimBackground.visibility = View.GONE
         }
     }
 
@@ -345,5 +415,84 @@ class HistoryActivity :
 
     override fun onItemClick(item: UiBookCategory) {
         Timber.e("item $item")
+    }
+
+    private fun finishWithSaveResult() {
+        val resultIntent = Intent().apply {
+            putExtra("isSave", true)
+        }
+        setResult(Activity.RESULT_OK, resultIntent)
+        finish()
+    }
+
+    private fun shouldShowAd(): Boolean {
+        val advertiseTime = sharedPreferenceUtil.getString("advertiseTime", "")
+        val tenMinutes = sharedPreferenceUtil.getString("advertiseHistoryTenMinutes", "")
+
+        val hasAdFreeBenefit =
+            getAdvertiseCheck(advertiseTime) > 0 ||
+                    getAdvertiseTenMinutesCheck(tenMinutes) > 0 ||
+                    viewModel.subscribeUserActive
+
+        if (getAdvertiseCheck(advertiseTime) <= 0) {
+            sharedPreferenceUtil.setString("advertiseTime", "")
+        }
+        if (getAdvertiseTenMinutesCheck(tenMinutes) <= 0) {
+            sharedPreferenceUtil.setString("advertiseHistoryTenMinutes", "")
+        }
+
+        return !hasAdFreeBenefit
+    }
+
+    private fun loadAndShowAd(onAdFinished: () -> Unit) {
+        showLoadingDialog()
+
+        MobileAds.initialize(this)
+        val adRequest = AdRequest.Builder().build()
+
+        InterstitialAd.load(
+            this,
+            BuildConfig.GOOGLE_APP_INTERSTITIAL_KEY,
+            adRequest,
+            object : InterstitialAdLoadCallback() {
+                override fun onAdFailedToLoad(adError: LoadAdError) {
+                    dismissLoadingDialog()
+                    mInterstitialAd = null
+                    Timber.e("광고 로드 실패")
+                    // 광고 로드 실패 시에도 finish 진행
+                    onAdFinished()
+                }
+
+                override fun onAdLoaded(ad: InterstitialAd) {
+                    mInterstitialAd = ad
+                    showAdMob(onAdFinished)
+                    Timber.e("광고가 로드됨")
+                }
+            })
+    }
+
+    private fun showAdMob(onAdFinished: () -> Unit) {
+        mInterstitialAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
+            override fun onAdDismissedFullScreenContent() {
+                dismissLoadingDialog()
+
+                sharedPreferenceUtil.setString("advertiseHistoryTenMinutes", getCurrentDateTimeString())
+                mInterstitialAd = null
+                Timber.e("광고 닫힘")
+
+                // 광고가 닫힌 후 finish
+                onAdFinished()
+            }
+
+            override fun onAdFailedToShowFullScreenContent(p0: AdError) {
+                dismissLoadingDialog()
+                mInterstitialAd = null
+                Timber.e("광고 표시 실패")
+
+                // 광고 표시 실패 시에도 finish
+                onAdFinished()
+            }
+        }
+        mInterstitialAd?.show(this@HistoryActivity)
     }
 }

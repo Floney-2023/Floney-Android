@@ -1,10 +1,12 @@
 package com.aos.floney.view.home
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.aos.data.util.CurrencyUtil
 import com.aos.data.util.SharedPreferenceUtil
+import com.aos.data.util.SubscriptionDataStoreUtil
 import com.aos.floney.R
 import com.aos.floney.base.BaseViewModel
 import com.aos.floney.ext.parseErrorMsg
@@ -23,9 +25,16 @@ import com.aos.model.user.UserModel.userNickname
 import com.aos.usecase.booksetting.BooksCurrencySearchUseCase
 import com.aos.usecase.home.GetBookInfoUseCase
 import com.aos.usecase.home.GetMoneyHistoryDaysUseCase
+import com.aos.usecase.subscribe.SubscribeBenefitUseCase
+import com.aos.usecase.subscribe.SubscribeBookUseCase
+import com.aos.usecase.subscribe.SubscribeCheckUseCase
+import com.aos.usecase.subscribe.SubscribeUserBenefitUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -35,9 +44,13 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val prefs: SharedPreferenceUtil,
+    private val subscriptionDataStoreUtil: SubscriptionDataStoreUtil,
     private val getMoneyHistoryDaysUseCase: GetMoneyHistoryDaysUseCase,
     private val booksCurrencySearchUseCase : BooksCurrencySearchUseCase,
     private val getBookInfoUseCase: GetBookInfoUseCase,
+    private val subscribeUserUseCase: SubscribeCheckUseCase,
+    private val subscribeBookUseCase: SubscribeBookUseCase,
+    private val subscribeBenefitUseCase: SubscribeBenefitUseCase
 ) : BaseViewModel() {
 
     // 날짜 데이터
@@ -79,7 +92,7 @@ class HomeViewModel @Inject constructor(
     private var _onClickedShowDetail = MutableLiveData<MonthMoney?>(null)
     val onClickedShowDetail: LiveData<MonthMoney?> get() = _onClickedShowDetail
 
-    private lateinit var myNickname: String
+    private var myNickname: String = ""
 
     // 설정 페이지
     private var _settingPage = MutableEventFlow<Boolean>()
@@ -94,8 +107,28 @@ class HomeViewModel @Inject constructor(
     private var _accessCheck = MutableEventFlow<Boolean>()
     val accessCheck: EventFlow<Boolean> get() = _accessCheck
 
-    // 구독 만료 내역
+    // 유저 구독 여부
+    var subscribeCheck = MutableLiveData<Boolean>(false)
+
+    // 구독 만료 여부 (구독 안 한 경우만 확인, 구독 적용 팝업을 보여주기 위해서)
     var subscribeExpired = MutableLiveData<Boolean>(false)
+
+    // 구독 팝업 표시 여부 (구독 만료 여부 & 10분 타이머 체크)
+    private var _subscribePopupShow = MutableLiveData<Boolean>()
+    val subscribePopupShow: LiveData<Boolean> get() = _subscribePopupShow
+
+    // 진입 시 표시되는 팝업인 지
+    var subscribePopupEnter = MutableLiveData<Boolean>(true)
+
+    // dim 처리 여부 값 합쳐진 LiveData 선언
+    val showOverlay = MediatorLiveData<Boolean>().apply {
+        addSource(_onClickedShowDetail) { value = shouldShowOverlay() }
+        addSource(_subscribePopupShow) { value = shouldShowOverlay() }
+    }
+
+    private fun shouldShowOverlay(): Boolean {
+        return _onClickedShowDetail.value != null || _subscribePopupShow.value == true
+    }
 
     init {
         getFormatDateMonth()
@@ -113,10 +146,9 @@ class HomeViewModel @Inject constructor(
     }
 
     // 가계부 정보 가져오기
-    fun getBookInfo(code: String) {
+    fun getBookInfoData() {
         viewModelScope.launch {
-            baseEvent(Event.ShowLoading)
-            getBookInfoUseCase(code).onSuccess {
+            getBookInfoUseCase(prefs.getString("bookKey","")).onSuccess {
 
                 // 프로필 보기 여부 저장
                 prefs.setBoolean("seeProfileStatus", it.seeProfileStatus)
@@ -133,7 +165,6 @@ class HomeViewModel @Inject constructor(
                 // 화폐 단위 가져오기
                 searchCurrency()
             }.onFailure {
-                baseEvent(Event.HideLoading)
                 baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@HomeViewModel)))
             }
         }
@@ -144,18 +175,15 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             booksCurrencySearchUseCase(prefs.getString("bookKey", "")).onSuccess {
                 if(it.myBookCurrency != "") {
-                    baseEvent(Event.HideLoading)
                     // 화폐 단위 저장
                     prefs.setString("symbol", getCurrencySymbolByCode(it.myBookCurrency))
                     CurrencyUtil.currency = getCurrencySymbolByCode(it.myBookCurrency)
 
                 } else {
-                    baseEvent(Event.HideLoading)
                     baseEvent(Event.ShowToastRes(R.string.currency_error))
                 }
             }.onFailure {
                 _accessCheck.emit(true)
-                baseEvent(Event.HideLoading)
                 baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@HomeViewModel)))
             }
         }
@@ -174,13 +202,10 @@ class HomeViewModel @Inject constructor(
                 // 반복 내역 유무에 따른 정렬된 데이터 목록 생성
                 val sortedData = sortData(updatedData)
 
-                // 수입/지출 조정된 ExtData 생성
-                val updatedExtData = adjustIncomeOrOutcome(data.extData, carryInfoData)
-
                 // 최종 데이터 : 이월 설정, 반복 내역 O, 반복 내역 X 순서
                 val updatedList = buildUpdatedList(carryInfoData, sortedData)
 
-                _getMoneyDayData.emit(UiBookDayModel(updatedList, updatedExtData, data.carryOverData))
+                _getMoneyDayData.emit(UiBookDayModel(updatedList, data.extData, data.carryOverData))
                 _getMoneyDayList.postValue(updatedList)
             }.onFailure {
                 baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@HomeViewModel)))
@@ -204,6 +229,8 @@ class HomeViewModel @Inject constructor(
                 writerNickName = "",
                 writerProfileImg = "user_default",
                 repeatDuration = "없음",
+                memo = "",
+                imageUrls = listOf(),
                 seeProfileStatus = seeProfileStatus
             )
         } else {
@@ -219,27 +246,6 @@ class HomeViewModel @Inject constructor(
 
     private fun sortData(data: List<DayMoney>): List<DayMoney> {
         return data.sortedBy { it.repeatDuration != "없음" }
-    }
-
-    private fun adjustIncomeOrOutcome(extData: ExtData, carryInfoData: DayMoney?): ExtData {
-        val carryOverMoney = carryInfoData?.money?.replace(",", "")?.toDoubleOrNull() ?: 0.0
-
-        val newTotalIncome = if (carryOverMoney > 0) {
-            extData.totalIncome + carryOverMoney
-        } else {
-            extData.totalIncome
-        }
-
-        val newTotalOutcome = if (carryOverMoney < 0) {
-            extData.totalOutcome + kotlin.math.abs(carryOverMoney)
-        } else {
-            extData.totalOutcome
-        }
-
-        return extData.copy(
-            totalIncome = newTotalIncome,
-            totalOutcome = newTotalOutcome
-        )
     }
 
     private fun buildUpdatedList(carryInfoData: DayMoney?, sortedData: List<DayMoney>): List<DayMoney> {
@@ -412,7 +418,9 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             val advertiseTime = prefs.getString("advertiseTime", "")
             val advertiseTenMinutes = prefs.getString("advertiseBookSettingTenMinutes", "")
-            val showSettingPage = advertiseTime.isNotEmpty() || getAdvertiseTenMinutesCheck(advertiseTenMinutes) > 0
+
+            // true면 광고 없이 이동, false면 광고 후 이동
+            val showSettingPage = advertiseTime.isNotEmpty() || getAdvertiseTenMinutesCheck(advertiseTenMinutes) > 0 || subscribeCheck.value!!
 
             if (getAdvertiseTenMinutesCheck(advertiseTenMinutes) <= 0) {
                 prefs.setString("advertiseBookSettingTenMinutes", "")
@@ -440,6 +448,94 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             if(booleanExtra)
                 _accessCheck.emit(true)
+        }
+    }
+
+    // 구독 여부 세팅
+    fun setBookSubscribeChecking(){
+        viewModelScope.launch(Dispatchers.IO) {
+            subscribeBookUseCase(prefs.getString("bookKey","")).onSuccess {
+
+                // 가계부 구독 여부 캐싱
+                subscriptionDataStoreUtil.setBookSubscribe(it.isValid)
+
+                // 3. 혜택(가계부, 개인)이 적용되어있는 지 확인
+                getSubscribeBenefitChecking()
+
+            }.onFailure {
+                baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
+            }
+        }
+    }
+
+    fun setUserSubscribeChecking() {
+        // 1. 유저 구독 여부 확인
+        viewModelScope.launch(Dispatchers.IO) {
+            subscribeUserUseCase().onSuccess {
+                subscribeCheck.postValue(it.isValid)
+
+                // 유저 구독 여부 캐싱
+                subscriptionDataStoreUtil.setUserSubscribe(it.isValid)
+
+                if (it.isValid) { // 개인 구독이 되었다면 광고 시간 reset
+                    prefs.setString("advertiseTime", "")
+                    _showAdvertisement.postValue(false)
+                }
+
+                // 2. 가계부 구독 여부 확인
+                setBookSubscribeChecking()
+
+            }.onFailure {
+                baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
+            }
+        }
+    }
+
+
+    // 구독 혜택 받고 있는 지 여부 가져오기
+    fun getSubscribeBenefitChecking(){
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val bookKey = prefs.getString("bookKey", "")
+
+                // 가계부 혜택 확인
+                val benefitResult = subscribeBenefitUseCase(bookKey)
+                benefitResult.onFailure {
+                    baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
+                    return@launch // 실패 시 작업 종료
+                }
+                // 두 작업이 모두 성공한 경우 처리
+                benefitResult.onSuccess { bookBenefit ->
+                    // 10분 타이머 남은 시간
+                    val remainTime = prefs.getString("subscribeCheckTenMinutes", "")
+
+                    // 가계부 관점에서 구독 만료 여부 확인
+                    val expiredBook = !subscriptionDataStoreUtil.getBookSubscribe().first() && (bookBenefit.maxFavorite || bookBenefit.overBookUser)
+
+                    Timber.i("book : ${expiredBook} remainTime : ${remainTime}")
+
+                    // 구독 혜택 적용 여부 캐싱
+                    subscriptionDataStoreUtil.setSubscribeExpired(expiredBook)
+
+                    // 10분 지났을 경우 리셋
+                    if (getAdvertiseTenMinutesCheck(remainTime) < 0)
+                        prefs.setString("subscribeCheckTenMinutes", "")
+
+                    // 구독 만료 여부 업데이트
+                    subscribeExpired.postValue(expiredBook)
+
+                    // 구독 팝업 표시 여부 업데이트 (구독 만료 O && 타이머 시간이 유효하지 않을 경우)
+                    changeSubscribePopupShow(getAdvertiseTenMinutesCheck(remainTime) <= 0 && expiredBook)
+                }
+            } catch (e: Exception) {
+                // 코루틴 실행 중 발생한 예외 처리
+                baseEvent(Event.ShowToast(e.message.parseErrorMsg()))
+            }
+        }
+    }
+    fun changeSubscribePopupShow(isCheck : Boolean){
+        viewModelScope.launch(Dispatchers.IO) {
+            _subscribePopupShow.postValue(isCheck)
         }
     }
 }

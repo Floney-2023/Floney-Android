@@ -38,7 +38,6 @@ class HomeMonthTypeViewModel @Inject constructor(
                 _getExtData.postValue(it.extData)
 
             }.onFailure {
-                baseEvent(Event.HideLoading)
                 baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@HomeMonthTypeViewModel)))
             }
         }

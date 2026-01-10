@@ -23,6 +23,8 @@ abstract class BaseViewModel : ViewModel() {
         
         object ShowLoading: Event()
         object HideLoading: Event()
+        object ShowCircleLoading: Event()
+        object HideCircleLoading: Event()
         object ExpiredToken: Event()
     }
 }

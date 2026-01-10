@@ -62,7 +62,9 @@ interface BookRepository {
         description: String,
         except: Boolean,
         nickname: String,
-        repeatDuration: String
+        repeatDuration: String,
+        memo: String,
+        imageUrl: List<String>
     ): Result<PostBooksLinesModel>
 
     // 가계부 내역 수정
@@ -77,6 +79,8 @@ interface BookRepository {
         description: String,
         except: Boolean,
         nickname: String,
+        memo : String,
+        imageUrls : List<String>
     ): Result<PostBooksChangeModel>
 
     // 내역 삭제

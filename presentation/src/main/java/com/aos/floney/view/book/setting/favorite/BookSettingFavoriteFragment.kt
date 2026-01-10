@@ -5,14 +5,17 @@ import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.databinding.library.baseAdapters.BR
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.aos.floney.R
 import com.aos.floney.base.BaseFragment
 import com.aos.floney.databinding.FragmentBookSettingFavoriteBinding
 import com.aos.floney.ext.repeatOnStarted
+import com.aos.floney.view.analyze.AnalyzeActivity
 import com.aos.floney.view.book.setting.category.BookCategoryActivity
 import com.aos.floney.view.common.BaseAlertDialog
+import com.aos.floney.view.common.WarningPopupDialog
 import com.aos.floney.view.home.HomeViewModel
 import com.aos.model.book.UiBookFavoriteModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -22,10 +25,6 @@ import timber.log.Timber
 class BookSettingFavoriteFragment : BaseFragment<FragmentBookSettingFavoriteBinding, BookSettingFavoriteViewModel>(R.layout.fragment_book_setting_favorite) , UiBookFavoriteModel.OnItemClickListener {
     private val activityViewModel: BookFavoriteViewModel by activityViewModels()
 
-    override fun onResume() {
-        super.onResume()
-        viewModel.getBookCategory()
-    }
     override fun onItemClick(item: UiBookFavoriteModel) {
         if (viewModel.edit.value!!)
         {
@@ -61,7 +60,18 @@ class BookSettingFavoriteFragment : BaseFragment<FragmentBookSettingFavoriteBind
         setUpUi()
         setUpViewModelObserver()
         setUpBackButton()
+        setUpResultListener()
     }
+
+    private fun setUpResultListener(){
+        // 저장 콜백 등록
+        setFragmentResultListener("key") { key, bundle ->
+            val result = bundle.getString("flow")
+            viewModel.flow.value = result
+            viewModel.getBookCategory()
+        }
+    }
+
     fun setUpBackButton(){
         // 뒤로 가기 콜백 등록
         val callback = object : OnBackPressedCallback(true) {
@@ -89,7 +99,7 @@ class BookSettingFavoriteFragment : BaseFragment<FragmentBookSettingFavoriteBind
                     activity.startBookSettingActivity()
                 }
                 else{ // 편집 모드일 경우
-                    BaseAlertDialog(title = "잠깐", info = "수정한 내용이 저장되지 않았습니다.\n그대로 나가시겠습니까?", false) {
+                    BaseAlertDialog(title = "잠깐!", info = "수정한 내용이 저장되지 않았습니다.\n그대로 나가시겠습니까?", false) {
                         if(it) {
                             val activity = requireActivity() as BookFavoriteActivity
                             activity.startBookSettingActivity()
@@ -103,8 +113,29 @@ class BookSettingFavoriteFragment : BaseFragment<FragmentBookSettingFavoriteBind
 
             viewModel.addPage.collect {
                 if(it) {
-                    val addAction = BookSettingFavoriteFragmentDirections.actionBookSettingFavoriteFragmentToBookSettingFavoriteAddFragment()
+                    val addAction = BookSettingFavoriteFragmentDirections.actionBookSettingFavoriteFragmentToBookSettingFavoriteAddFragment(viewModel.flow.value!!)
                     findNavController().navigate(addAction)
+                }
+            }
+        }
+        repeatOnStarted {
+            // 구독 유도 팝업
+            viewModel.subscribePrompt.collect {
+                if(it) {
+                    val exitDialogFragment = WarningPopupDialog(
+                        getString(R.string.subscribe_prompt_title),
+                        getString(R.string.subscribe_prompt_inform),
+                        getString(R.string.already_pick_button),
+                        getString(R.string.subscribe_plan_btn),
+                        true
+                    ) {  checked ->
+                        if (!checked) // 구독 플랜 보기로 이동
+                        {
+                            val activity = requireActivity() as BookFavoriteActivity
+                            activity.goToSubscribePlanActivity()
+                        }
+                    }
+                    exitDialogFragment.show(parentFragmentManager, "exitDialog")
                 }
             }
         }

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <set xmlns:android="http://schemas.android.com/apk/res/android"
-    android:duration="270">
+    android:duration="270"
+    android:interpolator="@anim/easy_out_quart">
 
     <translate
         android:fromYDelta="100%"
-        android:interpolator="@android:anim/accelerate_interpolator"
         android:toYDelta="0" />
 </set>

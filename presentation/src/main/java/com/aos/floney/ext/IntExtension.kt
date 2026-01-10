@@ -2,6 +2,7 @@ package com.aos.floney.ext
 
 import android.content.ContentResolver
 import android.content.Context
+import android.content.res.Resources
 import android.net.Uri
 
 fun Int.getResourceUri(context: Context): String {
@@ -14,4 +15,8 @@ fun Int.getResourceUri(context: Context): String {
             .build()
             .toString()
     }
+}
+
+fun Int.DpToPx(): Int {
+    return (this * Resources.getSystem().displayMetrics.density).toInt()
 }

@@ -14,6 +14,7 @@ import javax.inject.Inject
 
 class InsertMemoViewModel @Inject constructor(): BaseViewModel() {
 
+    lateinit var originalMemoValue : String
     var insertMemoValue = MutableLiveData<String>()
 
     private var _onClickedSaveWriting = MutableEventFlow<String>()
@@ -21,6 +22,14 @@ class InsertMemoViewModel @Inject constructor(): BaseViewModel() {
 
     private var _onClickedBack = MutableEventFlow<Boolean>()
     val onClickedBack: EventFlow<Boolean> get() = _onClickedBack
+
+    // 작성했던 메모 내용 가져오기
+    fun initMemo(memo : String) {
+        viewModelScope.launch {
+            originalMemoValue = memo
+            insertMemoValue.postValue(memo)
+        }
+    }
 
     // 작성 저장하기 버튼 클릭
     fun onClickedSaveWriting() {

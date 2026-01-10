@@ -2,92 +2,169 @@ package com.aos.data.util
 
 import com.aos.data.BuildConfig
 import com.aos.data.entity.response.token.PostUserReissueEntity
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.Response
-import okhttp3.Route
 import timber.log.Timber
-import java.io.IOException
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class AuthInterceptor @Inject constructor(
     private val prefs: SharedPreferenceUtil
-) : okhttp3.Authenticator {
+) : Authenticator {
+
+    private val _sessionExpiredEvent = MutableSharedFlow<Boolean>()
+    val sessionExpiredEvent: SharedFlow<Boolean> = _sessionExpiredEvent
+
+    private val refreshTokenMutex = Mutex()
+    @Volatile private var sessionExpired = false
+    private var lastRefreshFailed = false
 
     override fun authenticate(route: Route?, response: Response): Request? {
-        val originRequest = response.request
-
-        if (originRequest.header("Authorization").isNullOrEmpty()) {
+        if (responseCount(response) >= 2) {
+            Timber.e("Too many token refresh attempts")
             return null
         }
 
+        if (sessionExpired) return null
 
-        // CoroutineScope 내에서 실행하여 비동기적으로 토큰 재발급
-        val refreshRequest = Request.Builder()
-            .url("${BuildConfig.BASE_URL}users/reissue")
-            .post(createTokenReissueRequestBody())
-            .build()
+        val originRequest = response.request
+        if (originRequest.header("Authorization").isNullOrEmpty()) return null
 
-        try {
-            val refreshedToken = executeRefreshTokenRequest(refreshRequest)
-            return refreshedToken?.let {
-                updateTokenInPrefs(it.accessToken, it.refreshToken)
-
-                originRequest.newBuilder().header("Authorization", "Bearer ${it.accessToken}").build()
-            }
-        } catch (e: IOException) {
-            Timber.e(e, "Failed to refresh token")
+        val refreshToken = prefs.getString("refreshToken", "")
+        if (refreshToken.isBlank()) {
+            Timber.e("Refresh token is empty")
+            triggerSessionExpiredOnce()
+            return null
         }
 
-        // 새로운 요청을 기다리지 않고 null 반환
-        return null
+        return runBlocking(Dispatchers.IO) {
+            refreshTokenMutex.withLock {
+                if (sessionExpired) return@runBlocking null
+
+                // 중복 호출 방지: 이전 refresh가 실패한 경우 바로 종료
+                if (lastRefreshFailed) {
+                    Timber.e("Previous refresh failed, skipping")
+                    return@withLock null
+                }
+
+                try {
+                    val refreshRequest = Request.Builder()
+                        .url("${BuildConfig.BASE_URL}users/reissue")
+                        .post(createTokenReissueRequestBody())
+                        .build()
+
+                    Timber.d("Sending refresh token request")
+                    val refreshedToken = executeRefreshTokenRequest(refreshRequest)
+
+                    if (refreshedToken != null) {
+                        updateTokenInPrefs(refreshedToken.accessToken, refreshedToken.refreshToken)
+                        lastRefreshFailed = false
+
+                        return@withLock originRequest.newBuilder()
+                            .header("Authorization", "Bearer ${refreshedToken.accessToken}")
+                            .build()
+                    } else {
+                        Timber.e("Token refresh failed - null response")
+                        lastRefreshFailed = true
+                        triggerSessionExpiredOnce()
+                        return@withLock null
+                    }
+                } catch (e: Exception) {
+                    Timber.e(e, "Error during token refresh")
+                    lastRefreshFailed = true
+                    triggerSessionExpiredOnce()
+                    return@withLock null
+                }
+            }
+        }
     }
 
-    private fun executeRefreshTokenRequest(refreshRequest: Request): PostUserReissueEntity? {
-        val response = OkHttpClient().newCall(refreshRequest).execute()
-        return response.use {
-            if (response.isSuccessful) {
-                val json = Json { ignoreUnknownKeys = true }
-                val responseBody = response.body?.string()
-                responseBody?.let {
-                    json.decodeFromString<PostUserReissueEntity>(it)
-                }
-            } else {
-                clearTokens()
-                null
+    private fun triggerSessionExpiredOnce() {
+        if (!sessionExpired) {
+            sessionExpired = true
+            CoroutineScope(Dispatchers.IO).launch {
+                _sessionExpiredEvent.emit(true)
             }
         }
     }
 
     private fun updateTokenInPrefs(accessToken: String, refreshToken: String) {
-        prefs.setString("accessToken", accessToken)
-        prefs.setString("refreshToken", refreshToken)
-    }
-
-    private fun clearTokens() {
-        prefs.setString("accessToken", "")
-        prefs.setString("refreshToken", "")
+        if (accessToken.isNotBlank() && refreshToken.isNotBlank()) {
+            prefs.setString("accessToken", accessToken)
+            prefs.setString("refreshToken", refreshToken)
+        } else {
+            Timber.e("Empty tokens received")
+        }
     }
 
     private fun createTokenReissueRequestBody(): RequestBody {
-        val requestBodyString = """
-        {
-            "accessToken": "${prefs.getString("accessToken", "")}",
-            "refreshToken": "${prefs.getString("refreshToken", "")}"
-        }
-    """.trimIndent()
-        Timber.e("requestBodyString $requestBodyString")
+        val body = """
+            {
+                "accessToken": "${prefs.getString("accessToken", "")}",
+                "refreshToken": "${prefs.getString("refreshToken", "")}"
+            }
+        """.trimIndent()
 
-        return requestBodyString.toRequestBody("application/json".toMediaTypeOrNull())
+        Timber.d("Refresh Body: $body")
+        return body.toRequestBody("application/json".toMediaTypeOrNull())
     }
+
+    private fun executeRefreshTokenRequest(request: Request): PostUserReissueEntity? {
+        val client = OkHttpClient.Builder()
+            .connectTimeout(10, TimeUnit.SECONDS)
+            .readTimeout(10, TimeUnit.SECONDS)
+            .writeTimeout(10, TimeUnit.SECONDS)
+            .authenticator(Authenticator.NONE)
+            .build()
+
+        return client.newCall(request).execute().use { response ->
+            if (response.isSuccessful) {
+                response.body?.string()?.let {
+                    try {
+                        Json { ignoreUnknownKeys = true }.decodeFromString(it)
+                    } catch (e: Exception) {
+                        Timber.e(e, "Token parsing failed")
+                        null
+                    }
+                }
+            } else {
+                Timber.e("Refresh failed: ${response.code}")
+                null
+            }
+        }
+    }
+
+    private fun responseCount(response: Response): Int {
+        var count = 1
+        var prior = response.priorResponse
+        while (prior != null) {
+            count++
+            prior = prior.priorResponse
+        }
+        return count
+    }
+
+    fun clearTokens() {
+        prefs.setString("accessToken", "")
+        prefs.setString("refreshToken", "")
+        sessionExpired = false
+        lastRefreshFailed = false
+    }
+
+    fun resetSessionExpiredFlag() {
+        sessionExpired = false
+        lastRefreshFailed = false
+    }
+
+    fun getSessionExpiredFlag(): Boolean = sessionExpired
 }

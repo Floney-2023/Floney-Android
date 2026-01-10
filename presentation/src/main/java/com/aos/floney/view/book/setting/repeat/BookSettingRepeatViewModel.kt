@@ -8,6 +8,7 @@ import com.aos.data.util.SharedPreferenceUtil
 import com.aos.floney.base.BaseViewModel
 import com.aos.floney.ext.formatNumber
 import com.aos.floney.ext.parseErrorMsg
+import com.aos.floney.ext.toCategoryCode
 import com.aos.floney.util.EventFlow
 import com.aos.floney.util.MutableEventFlow
 import com.aos.model.book.UiBookCategory
@@ -94,7 +95,7 @@ class BookSettingRepeatViewModel @Inject constructor(
     // 자산/분류 카테고리 항목 가져오기
     private fun getBookCategory() {
         viewModelScope.launch(Dispatchers.IO) {
-            booksRepeatGetUseCase(prefs.getString("bookKey", ""), getCategory(flow.value!!)).onSuccess { it ->
+            booksRepeatGetUseCase(prefs.getString("bookKey", ""), flow.value!!.toCategoryCode()).onSuccess { it ->
 
                 _repeatList.postValue(it)
 
@@ -137,22 +138,5 @@ class BookSettingRepeatViewModel @Inject constructor(
     fun onClickFlow(type: String) {
         flow.value = type
         getBookCategory()
-    }
-    private fun getCategory(category: String): String {
-        return when (category) {
-            "수입" -> {
-                "INCOME"
-            }
-
-            "지출" -> {
-                "OUTCOME"
-            }
-
-            "이체" -> {
-                "TRANSFER"
-            }
-
-            else -> ""
-        }
     }
 }

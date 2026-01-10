@@ -203,7 +203,7 @@
             android:layout_height="0dp"
             android:background="@android:color/black"
             android:alpha="0.7"
-            android:visibility="@{ vm.subscribeExpired ? View.VISIBLE : View.GONE}"
+            android:visibility="@{ vm.subscribePopupShow ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="@+id/fl_container"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -217,7 +217,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="16dp"
-            android:visibility="@{ vm.subscribeExpired ? View.VISIBLE : View.GONE}"
+            android:visibility="@{ vm.subscribePopupShow ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toTopOf="@+id/ll_bottom_navigation"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />

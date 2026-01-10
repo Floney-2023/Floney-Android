@@ -4,33 +4,27 @@ import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.drawable.Drawable
 import android.net.Uri
-import android.os.Handler
-import android.os.Looper
 import android.provider.MediaStore
 import androidx.lifecycle.viewModelScope
 import com.aos.data.util.CommonUtil
 import com.aos.floney.R
 import com.aos.floney.base.BaseViewModel
-import com.aos.floney.ext.getResourceUri
 import com.aos.floney.util.EventFlow
 import com.aos.floney.util.MutableEventFlow
 import com.aos.usecase.mypage.ChangeProfileUseCase
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
-import com.letspl.oceankeeper.util.ImgFileMaker
+import com.aos.floney.util.ImgFileMaker
 import com.letspl.oceankeeper.util.RotateTransform
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.ByteArrayOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
-import java.util.Random
 import javax.inject.Inject
 
 @HiltViewModel
@@ -133,19 +127,49 @@ class MyPageInformProfileChangeViewModel @Inject constructor(
     // 회전 각도를 맞춘 이미지 파일 생성
     fun createBitmapFile(uri: Uri?): Bitmap? {
         return if (uri != null) {
-            val path =
-                ImgFileMaker.getFullPathFromUri(context, uri)!!
-            val angle = RotateTransform.getRotationAngle(path)
-            val bitmap = RotateTransform.rotateImage(
-                context,
-                BitmapFactory.decodeFile(path),
-                angle.toFloat(),
-                uri
-            )
-            if (bitmap != null) {
-                setImageBitmap(bitmap)
-                bitmap
-            } else {
+            try {
+                // PhotoPicker URI인 경우 직접 회전 처리된 비트맵 생성
+                if (uri.toString().startsWith("content://media/picker")) {
+                    val bitmap = RotateTransform.createRotatedBitmapFromUri(context, uri)
+                    if (bitmap != null) {
+                        setImageBitmap(bitmap)
+                        bitmap
+                    } else {
+                        baseEvent(Event.ShowToast("이미지 파일 생성에 실패하였습니다."))
+                        null
+                    }
+                } else {
+                    // 기존 방식으로 처리
+                    val path = ImgFileMaker.getFullPathFromUri(context, uri)
+                    if (path != null) {
+                        val angle = RotateTransform.getRotationAngle(path)
+                        val bitmap = RotateTransform.rotateImage(
+                            context,
+                            BitmapFactory.decodeFile(path),
+                            angle.toFloat(),
+                            uri
+                        )
+                        if (bitmap != null) {
+                            setImageBitmap(bitmap)
+                            bitmap
+                        } else {
+                            baseEvent(Event.ShowToast("이미지 파일 생성에 실패하였습니다."))
+                            null
+                        }
+                    } else {
+                        // 경로를 얻지 못한 경우 URI에서 직접 비트맵 생성
+                        val bitmap = RotateTransform.createRotatedBitmapFromUri(context, uri)
+                        if (bitmap != null) {
+                            setImageBitmap(bitmap)
+                            bitmap
+                        } else {
+                            baseEvent(Event.ShowToast("이미지 파일 생성에 실패하였습니다."))
+                            null
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                Timber.e(e, "Error in createBitmapFile")
                 baseEvent(Event.ShowToast("이미지 파일 생성에 실패하였습니다."))
                 null
             }

@@ -2,22 +2,14 @@ package com.aos.floney.view.book.setting.category
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.os.bundleOf
 import androidx.databinding.library.baseAdapters.BR
-import androidx.navigation.NavOptions
+import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
 import com.aos.floney.R
 import com.aos.floney.base.BaseFragment
 import com.aos.floney.databinding.FragmentBookSettingCategoryAddBinding
-import com.aos.floney.databinding.FragmentBookSettingCategoryBinding
-import com.aos.floney.databinding.FragmentBookSettingCurrencyBinding
 import com.aos.floney.ext.repeatOnStarted
-import com.aos.floney.view.book.setting.BookSettingActivity
-import com.aos.floney.view.book.setting.BookSettingMainFragmentDirections
-import com.aos.floney.view.book.setting.currency.BookSettingCurrencyViewModel
-import com.aos.floney.view.common.WarningPopupDialog
-import com.aos.model.book.Currency
-import com.aos.model.book.UiBookCategory
-import com.aos.model.book.UiBookCurrencyModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -45,6 +37,7 @@ class BookSettingCategoryAddFragment() : BaseFragment<FragmentBookSettingCategor
             // 이전 페이지로 (저장 O)
             viewModel.completePage.collect {
                 if(it.isNotEmpty()) {
+                    setFragmentResult("key", bundleOf("flow" to viewModel.flow.value))
                     findNavController().popBackStack()
                 }
             }

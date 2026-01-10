@@ -3,6 +3,7 @@ package com.aos.floney.view.login
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.aos.data.util.AuthInterceptor
 import com.aos.data.util.CurrencyUtil
 import com.aos.data.util.SharedPreferenceUtil
 import com.aos.floney.R
@@ -35,6 +36,7 @@ class LoginViewModel @Inject constructor(
     private val checkUserBookUseCase: CheckUserBookUseCase,
     private val authTokenCheckUseCase: AuthTokenCheckUseCase,
     private val socialLoginUseCase: SocialLoginUseCase,
+    private val authInterceptor: AuthInterceptor
 ): BaseViewModel() {
 
     var email = MutableLiveData<String>("")
@@ -71,9 +73,12 @@ class LoginViewModel @Inject constructor(
                     baseEvent(Event.ShowLoading)
                     loginUseCase(email.value ?: "", password.value ?: "").onSuccess {
                         baseEvent(Event.HideLoading)
+
                         prefs.setString("accessToken", it.accessToken)
                         prefs.setString("refreshToken", it.refreshToken)
+                        prefs.setString("loginMethod", "normal")
 
+                        authInterceptor.resetSessionExpiredFlag()
                         checkUserBooks()
                     }.onFailure {
                         baseEvent(Event.HideLoading)
@@ -139,6 +144,9 @@ class LoginViewModel @Inject constructor(
             socialLoginUseCase(provider, token).onSuccess {
                 prefs.setString("accessToken", it.accessToken)
                 prefs.setString("refreshToken", it.refreshToken)
+                prefs.setString("loginMethod", provider)
+
+                authInterceptor.resetSessionExpiredFlag()
 
                 checkUserBooks()
             }.onFailure {

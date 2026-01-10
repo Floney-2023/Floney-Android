@@ -4,13 +4,18 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.aos.data.util.SharedPreferenceUtil
+import com.aos.data.util.SubscriptionDataStoreUtil
 import com.aos.floney.R
 import com.aos.floney.base.BaseViewModel
+import com.aos.floney.ext.parseErrorMsg
 import com.aos.floney.util.EventFlow
 import com.aos.floney.util.MutableEventFlow
+import com.aos.usecase.subscribe.SubscribeAndroidInfoUseCase
+import com.aos.usecase.subscribe.SubscribeCheckUseCase
 import com.aos.usecase.withdraw.WithdrawUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -18,7 +23,9 @@ import javax.inject.Inject
 @HiltViewModel
 class MyPageInformWithdrawReasonCheckViewModel @Inject constructor(
     private val prefs: SharedPreferenceUtil,
+    private val subscriptionDataStoreUtil: SubscriptionDataStoreUtil,
     private val withdrawUseCase: WithdrawUseCase,
+    private val subscribeAndroidInfoUseCase: SubscribeAndroidInfoUseCase
 ) : BaseViewModel() {
 
     // 뒤로가기
@@ -59,7 +66,13 @@ class MyPageInformWithdrawReasonCheckViewModel @Inject constructor(
     private var _withdrawPage = MutableEventFlow<Boolean>()
     val withdrawPage: EventFlow<Boolean> get() = _withdrawPage
 
+    // 구독 결제 여부
+    var subscribeCheck = MutableLiveData<Boolean>(false)
+
     init {
+        // 구독 여부를 가져옵니다.
+        getSubscribeChecking()
+
         // 각 체크박스의 상태를 변경할 때 다른 체크박스의 상태를 변경합니다.
         _howToUseTerms.observeForever {
             if (it) {
@@ -210,11 +223,24 @@ class MyPageInformWithdrawReasonCheckViewModel @Inject constructor(
 
                 prefs.setString("bookKey","")
                 prefs.setString("accessToken","")
+                subscriptionDataStoreUtil.initAllToFalse()
 
                 _withdrawPage.emit(true)
             }.onFailure {
                 baseEvent(Event.HideLoading)
                 baseEvent(Event.ShowToast("알 수 없는 오류입니다. 다시 시도해 주세요."))
+            }
+        }
+    }
+
+    // 구독 여부 가져오기
+    fun getSubscribeChecking(){
+        viewModelScope.launch(Dispatchers.IO) {
+            subscribeAndroidInfoUseCase().onSuccess {
+                // 구독 중인데, 정기 결제가 갱신되어있는 경우
+                subscribeCheck.postValue(subscriptionDataStoreUtil.getUserSubscribe().first() && it.autoRenewing)
+            }.onFailure {
+                // baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
             }
         }
     }

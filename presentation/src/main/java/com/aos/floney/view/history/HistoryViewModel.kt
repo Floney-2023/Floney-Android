@@ -2,45 +2,59 @@ package com.aos.floney.view.history
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.aos.data.util.CurrencyUtil
 import com.aos.data.util.SharedPreferenceUtil
+import com.aos.data.util.SubscriptionDataStoreUtil
 import com.aos.data.util.checkDecimalPoint
-import com.aos.data.util.getCurrencyCodeBySymbol
 import com.aos.floney.base.BaseViewModel
+import com.aos.floney.ext.formatMoneyWithCurrency
 import com.aos.floney.ext.formatNumber
+import com.aos.floney.ext.parseErrorCode
 import com.aos.floney.ext.parseErrorMsg
+import com.aos.floney.ext.toCategoryCode
+import com.aos.floney.ext.toCategoryName
 import com.aos.floney.util.EventFlow
 import com.aos.floney.util.MutableEventFlow
+import com.aos.floney.util.getAdvertiseTenMinutesCheck
 import com.aos.model.book.UiBookCategory
 import com.aos.model.home.DayMoneyFavoriteItem
 import com.aos.model.home.DayMoneyModifyItem
+import com.aos.model.home.ImageUrls
 import com.aos.usecase.history.DeleteBookLineUseCase
 import com.aos.usecase.history.DeleteBooksLinesAllUseCase
 import com.aos.usecase.history.GetBookCategoryUseCase
-import com.aos.usecase.history.GetBookFavoriteUseCase
 import com.aos.usecase.history.PostBooksFavoritesUseCase
 import com.aos.usecase.history.PostBooksLinesChangeUseCase
 import com.aos.usecase.history.PostBooksLinesUseCase
+import com.aos.usecase.subscribe.SubscribeDeleteCloudImageUseCase
+import com.aos.usecase.subscribe.SubscribePresignedUrlUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
+import java.io.File
+import java.net.HttpURLConnection
+import java.net.URL
 import java.text.NumberFormat
-import java.util.Calendar
 import javax.inject.Inject
 
 @HiltViewModel
 class HistoryViewModel @Inject constructor(
+    stateHandle: SavedStateHandle,
     private val prefs: SharedPreferenceUtil,
+    private val subscriptionDataStoreUtil: SubscriptionDataStoreUtil,
     private val getBookCategoryUseCase: GetBookCategoryUseCase,
     private val postBooksLinesUseCase: PostBooksLinesUseCase,
     private val postBooksLinesChangeUseCase: PostBooksLinesChangeUseCase,
     private val deleteBookLineUseCase: DeleteBookLineUseCase,
     private val deleteBooksLinesAllUseCase: DeleteBooksLinesAllUseCase,
-    private val postBooksFavoritesUseCase : PostBooksFavoritesUseCase,
-    private val getBookFavoriteUseCase: GetBookFavoriteUseCase
+    private val postBooksFavoritesUseCase: PostBooksFavoritesUseCase,
+    private val subscribeDeleteCloudImageUseCase: SubscribeDeleteCloudImageUseCase,
+    private val subscribePresignedUrlUseCase: SubscribePresignedUrlUseCase,
 ) : BaseViewModel() {
 
     val onCheckedChangeListener: (Boolean) -> Unit = { isChecked ->
@@ -83,6 +97,10 @@ class HistoryViewModel @Inject constructor(
     private var _onClickMemo = MutableEventFlow<Boolean>()
     val onClickMemo: EventFlow<Boolean> get() = _onClickMemo
 
+    // 사진 클릭
+    private var _onClickPicture = MutableEventFlow<Boolean>()
+    val onClickPicture: EventFlow<Boolean> get() = _onClickPicture
+
     // 즐겨찾기 클릭
     private var _onClickFavorite = MutableEventFlow<Boolean>()
     val onClickFavorite: EventFlow<Boolean> get() = _onClickFavorite
@@ -91,6 +109,8 @@ class HistoryViewModel @Inject constructor(
     private var _postBooksFavorites = MutableEventFlow<Boolean>()
     val postBooksFavorites: EventFlow<Boolean> get() = _postBooksFavorites
 
+    private var _getBookIsSubscribe = MutableLiveData<Boolean>(false)
+    val getIsSubscribe: LiveData<Boolean> get() = _getBookIsSubscribe
 
     // 날짜
     private var tempDate = ""
@@ -106,8 +126,10 @@ class HistoryViewModel @Inject constructor(
     // 금액
     var cost = MutableLiveData<String>("")
 
-    // 지출, 수입, 이체
-    var flow = MutableLiveData<String>("지출")
+    // 자산, 지출, 수입, 이체
+    private val _flow: MutableLiveData<String> = stateHandle.getLiveData("flow", "지출")
+    val flow: LiveData<String> get() = _flow
+
 
     // 자산
     var asset = MutableLiveData<String>("자산을 선택하세요")
@@ -118,7 +140,7 @@ class HistoryViewModel @Inject constructor(
     // 내용
     var content = MutableLiveData<String>("")
 
-    // 내용
+    // 반복
     var repeat = MutableLiveData<String>("")
 
     // 카테고리 종류
@@ -140,17 +162,39 @@ class HistoryViewModel @Inject constructor(
     // 예산/자산 제외 설정 여부
     val deleteChecked: MutableLiveData<Boolean> = MutableLiveData(false)
 
+    // 클라우드 이미지 삭제 여부
+    private var _onDeleteComplete = MutableEventFlow<Boolean>()
+    val onDeleteComplete: EventFlow<Boolean> get() = _onDeleteComplete
 
     // 내역 수정 시 해당 아이템 Id
     private var modifyId = 0
     private var modifyItem: DayMoneyModifyItem? = null
 
-    // 구독 만료 내역
+    // 구독 만료 여부
     var subscribeExpired = MutableLiveData<Boolean>(false)
 
-    var memo = MutableLiveData<String>()
+    // 유저 구독 적용 여부
+    var subscribeUserActive = false
+
+    // 메모/사진 존재 여부
+    private val _memoOrImageExist = MutableLiveData<Boolean>()
+    val memoOrImageExist: LiveData<Boolean> get() = _memoOrImageExist
+
+    // 구독 유도 팝업
+    private var _subscribePrompt = MutableEventFlow<Boolean>()
+    val subscribePrompt: EventFlow<Boolean> get() = _subscribePrompt
+
+    private var memo = ""
+    private var cloudUrlList = mutableListOf<ImageUrls>()
+    private var localUrlList = mutableListOf<File>()
+    private var deletedCloudImageList = mutableListOf<ImageUrls>()
 
     init {
+        // 구독 여부 조회
+        getSubscribeBook()
+        getSubscribeUser()
+
+        // 데이터 세팅
         val array = arrayListOf<UiBookCategory>(
             UiBookCategory(0, true, "없음", false),
             UiBookCategory(1, false, "매일", false),
@@ -162,9 +206,29 @@ class HistoryViewModel @Inject constructor(
         _repeatItem.postValue(array)
     }
 
-    fun setMemoValue(memo: String) {
-        Timber.e("[Debug] memo: $memo")
-        this.memo.value = memo
+    fun setMemo(memo: String) {
+        this.memo = memo
+    }
+
+    fun getMemo(): String {
+        return memo
+    }
+
+    fun setCloudUrlList(urlList: List<ImageUrls>) {
+        this.cloudUrlList = urlList.toMutableList()
+    }
+
+    fun getCloudUrlList(): ArrayList<ImageUrls> {
+        return ArrayList(cloudUrlList)
+    }
+
+    fun setLocalUrlList(urlList: List<File>) {
+        this.localUrlList = urlList.toMutableList()
+        Timber.i("this.localUrlList : ${this.localUrlList}")
+    }
+
+    fun getLocalUrlList(): ArrayList<File> {
+        return ArrayList(localUrlList)
     }
 
     // 내역 추가 시에는 날짜만 세팅함
@@ -176,14 +240,19 @@ class HistoryViewModel @Inject constructor(
     fun setIntentModifyData(item: DayMoneyModifyItem) {
         mode.value = "modify"
         modifyId = item.id
-        cost.value = item.money.substring(2, item.money.length).trim() + CurrencyUtil.currency
+        cost.value = item.money.formatMoneyWithCurrency()
         date.value = item.lineDate
-        flow.value = getCategory(item.lineCategory)
+        _flow.value = item.lineCategory.toCategoryName()
         asset.value = item.assetSubCategory
         line.value = item.lineSubCategory
         content.value = item.description
         _nickname.value = item.writerNickName
         deleteChecked.value = item.exceptStatus
+        memo = item.memo
+        cloudUrlList = item.imageUrls.toMutableList()
+
+        Timber.e("memo $memo")
+        Timber.e("url $cloudUrlList")
 
         _repeatClickItem.value = UiBookCategory(
             idx = 1,
@@ -193,54 +262,94 @@ class HistoryViewModel @Inject constructor(
         )
 
         modifyItem = item
-        modifyItem!!.money =
-            item.money.substring(2, item.money.length).trim() + CurrencyUtil.currency
-        modifyItem!!.lineCategory = getCategory(item.lineCategory)
+        modifyItem!!.money =item.money.formatMoneyWithCurrency()
+        modifyItem!!.lineCategory = item.lineCategory.toCategoryName()
+
+        _memoOrImageExist.postValue(memo.isNotBlank() || cloudUrlList.isNotEmpty())
     }
+
     // 즐겨찾기 내역 불러오기
     fun setIntentFavoriteData(item: DayMoneyFavoriteItem) {
         mode.value = "add"
-        cost.value = NumberFormat.getNumberInstance().format(if (checkDecimalPoint() && item.money.contains('.')) item.money.toDouble() else item.money.toInt()) + CurrencyUtil.currency
+        cost.value = NumberFormat.getNumberInstance()
+            .format(if (checkDecimalPoint() && item.money.contains('.')) item.money.toDouble() else item.money.toInt()) + CurrencyUtil.currency
         line.value = item.lineSubcategoryName
         asset.value = item.assetSubcategoryName
         content.value = item.description
-        flow.value = item.lineCategoryName
+        _flow.value = item.lineCategoryName
         deleteChecked.value = item.exceptStatus
     }
+
     // 즐겨찾기 추가 모드 설정
-    fun setFavoriteMode(){
+    fun setFavoriteMode() {
         mode.value = "favorite"
     }
+
+    // 받아온 클라우드/로컬 데이터 셋팅
+    fun processUpdatedPictureData(
+        newCloudList: ArrayList<ImageUrls>?,
+        newLocalList: ArrayList<File>?
+    ) {
+        newCloudList?.let { newCloud ->
+            val oldCloudList = getCloudUrlList()
+            val deleted = oldCloudList.filterNot { old ->
+                newCloud.any { it.id == old.id }
+            }
+
+            // 삭제할 값이 있다면, 삭제할 리스트에 넣어둔다.
+            deleted.takeIf { it.isNotEmpty() }?.let {
+                deletedCloudImageList.addAll(it)
+            }
+
+            setCloudUrlList(newCloud.toMutableList())
+        }
+
+        newLocalList?.let { localList ->
+            setLocalUrlList(localList.toMutableList())
+        }
+    }
+
+    private fun getSubscribeBook() {
+        viewModelScope.launch {
+            Timber.d("checking history ${subscriptionDataStoreUtil.getBookSubscribe().first()}")
+
+            _getBookIsSubscribe.postValue(subscriptionDataStoreUtil.getBookSubscribe().first())
+        }
+    }
+
+    private fun getSubscribeUser() {
+        viewModelScope.launch(Dispatchers.IO) {
+            subscribeUserActive = subscriptionDataStoreUtil.getUserSubscribe().first()
+        }
+    }
+
     // 자산/분류 카테고리 항목 가져오기
     private fun getBookCategory() {
         viewModelScope.launch(Dispatchers.IO) {
-            getBookCategoryUseCase(prefs.getString("bookKey", ""), parent).onSuccess { it ->
-                // 카테고리 선택 값 초기화
+            getBookCategoryUseCase(prefs.getString("bookKey", ""), parent).onSuccess { list ->
+
                 categoryClickItem = null
 
-                val tempValue = if (parent == "자산") {
-                    asset.value
-                } else {
-                    line.value
-                }
+                val tempValue = if (parent == "자산") asset.value else line.value
+                val isUnselected = tempValue == "자산을 선택하세요" || tempValue == "분류를 선택하세요"
 
-                val item = it.mapIndexed { index, innerItem ->
-
-                    if ((asset.value == "자산을 선택하세요" || line.value == "분류를 선택하세요") && index == 0) {
-                        categoryClickItem = innerItem
-                        UiBookCategory(
-                            innerItem.idx, true, innerItem.name, innerItem.default
-                        )
-                    } else if (innerItem.name == tempValue) {
-                        categoryClickItem = innerItem
-                        UiBookCategory(
-                            innerItem.idx, true, innerItem.name, innerItem.default
-                        )
+                val item = list.mapIndexed { index, innerItem ->
+                    val shouldSelect = if (isUnselected) {
+                        index == 0
                     } else {
-                        UiBookCategory(
-                            innerItem.idx, innerItem.checked, innerItem.name, innerItem.default
-                        )
+                        innerItem.name == tempValue
                     }
+
+                    if (shouldSelect) {
+                        categoryClickItem = innerItem
+                    }
+
+                    UiBookCategory(
+                        idx = innerItem.idx,
+                        checked = shouldSelect,
+                        name = innerItem.name,
+                        default = innerItem.default
+                    )
                 }
 
                 _categoryList.postValue(item.toMutableList())
@@ -257,29 +366,40 @@ class HistoryViewModel @Inject constructor(
             when (mode.value) {
                 "add" -> postAddHistory()
                 "modify" -> postModifyHistory()
+                "favorite" -> postAddFavorite()
             }
         }
     }
 
     // 내역 추가
     private fun postAddHistory() {
+        // 선택된 로컬 이미지가 있다면 로컬 > 서버 이미지로 변경 후 내역 추가하도록 설정
+        when(localUrlList.isNotEmpty()){
+            true -> setLocalToCloud()
+            false -> goToAddHistory()
+        }
+    }
+
+    private fun goToAddHistory(){
         viewModelScope.launch(Dispatchers.IO) {
             postBooksLinesUseCase(
                 bookKey = prefs.getString("bookKey", ""),
-                money = cost.value!!.replace(",", "").replace(CurrencyUtil.currency,"")
+                money = cost.value!!.replace(",", "").replace(CurrencyUtil.currency, "")
                     .toDouble(),
                 flow = flow.value!!,
                 asset = asset.value!!,
                 line = line.value!!,
                 lineDate = date.value!!.replace(".", "-"),
-                description = if(content.value!! == ""){
+                description = if (content.value!! == "") {
                     line.value!!.toString()
                 } else {
                     content.value!!
                 },
                 except = deleteChecked.value!!,
                 nickname = nickname.value!!,
-                repeatDuration = getConvertSendRepeatValue()
+                repeatDuration = getConvertSendRepeatValue(),
+                memo = memo,
+                imageUrl = cloudUrlList.map { it.url }
             ).onSuccess {
                 _postBooksLines.emit(true)
             }.onFailure {
@@ -290,29 +410,7 @@ class HistoryViewModel @Inject constructor(
 
     // 내역 수정
     private fun postModifyHistory() {
-        subscribeExpired.value = prefs.getBoolean("subscribe_expired", false)
-        if(!subscribeExpired.value!!){
-            viewModelScope.launch(Dispatchers.IO) {
-                val tempMoney = cost.value!!.replace(",", "")
-                postBooksLinesChangeUseCase(
-                    lineId = modifyId,
-                    bookKey = prefs.getString("bookKey", ""),
-                    money = tempMoney.replace(CurrencyUtil.currency, "")
-                        .toDouble(),
-                    flow = flow.value!!,
-                    asset = asset.value!!,
-                    line = line.value!!,
-                    lineDate = date.value!!.replace(".", "-"),
-                    description = content.value!!,
-                    except = deleteChecked.value!!,
-                    nickname = nickname.value!!,
-                ).onSuccess {
-                    _postModifyBooksLines.emit(true)
-                }.onFailure {
-                    baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@HistoryViewModel)))
-                }
-            }
-        }
+        handleImageBeforeModify()
     }
 
     // 내역 삭제
@@ -351,16 +449,13 @@ class HistoryViewModel @Inject constructor(
         return cost.value != "" && asset.value != "자산을 선택하세요" && line.value != "분류를 선택하세요"
     }
 
-    // 즐겨찾기 데이터 입력 되었는지 체크
-    fun isFavoriteInputData(): Boolean {
-        return cost.value != "" && asset.value != "자산을 선택하세요" && line.value != "분류를 선택하세요"
-    }
     fun isFavoriteAllData(): Boolean {
         return cost.value != "" || asset.value != "자산을 선택하세요" || line.value != "분류를 선택하세요"
     }
+
     // 에러 메세지 생성
     private fun createErrorMsg() {
-        if(cost.value == "") {
+        if (cost.value == "") {
             baseEvent(Event.ShowToast("금액을 입력해주세요"))
         } else if (asset.value == "자산을 선택하세요") {
             baseEvent(Event.ShowToast("자산을 선택해주세요"))
@@ -370,7 +465,7 @@ class HistoryViewModel @Inject constructor(
     }
 
     private fun createFavoriteErrorMsg() {
-        if(cost.value == "") {
+        if (cost.value == "") {
             baseEvent(Event.ShowToast("금액을 입력해주세요"))
         } else if (asset.value == "자산을 선택하세요") {
             baseEvent(Event.ShowToast("자산을 선택해주세요"))
@@ -381,12 +476,19 @@ class HistoryViewModel @Inject constructor(
 
     // 수정된 내용이 있는지 체크
     private fun isExistEdit(): Boolean {
-        return date.value != modifyItem!!.lineDate || cost.value != modifyItem!!.money || asset.value != modifyItem!!.assetSubCategory || line.value != modifyItem!!.lineSubCategory || content.value != modifyItem!!.description
+        return date.value != modifyItem!!.lineDate || cost.value != modifyItem!!.money || asset.value != modifyItem!!.assetSubCategory || line.value != modifyItem!!.lineSubCategory || content.value != modifyItem!!.description || memo != modifyItem!!.memo || isImageUrlChange()
     }
 
     // 추가한 내용이 있는지 체크
     private fun isExistAdd(): Boolean {
-        return date.value != "날짜를 선택하세요" || cost.value != "" || asset.value != "자산을 선택하세요" || line.value != "분류를 선택하세요" || content.value != ""
+        return cost.value != "" || asset.value != "자산을 선택하세요" || line.value != "분류를 선택하세요" || content.value != "" || localUrlList.isNotEmpty() || memo.isNotEmpty()
+    }
+
+    // 사진 이미지 변경된 내용 있는 지 체크한 후, 최종 수정
+    private fun isImageUrlChange(): Boolean {
+        val originalIds = modifyItem?.imageUrls?.map { it.id }?.toSet() ?: emptySet()
+        val newIds = cloudUrlList.map { it.id }.toSet()
+        return originalIds != newIds || localUrlList.isNotEmpty()
     }
 
     // 닫기 버튼 클릭
@@ -424,7 +526,12 @@ class HistoryViewModel @Inject constructor(
     // 삭제 버튼 클릭
     fun onClickDeleteBtn() {
         viewModelScope.launch {
-            _onClickDelete.emit(OnClickedDelete((!getConvertSendRepeatValue().equals("NONE")), modifyId))
+            _onClickDelete.emit(
+                OnClickedDelete(
+                    (!getConvertSendRepeatValue().equals("NONE")),
+                    modifyId
+                )
+            )
         }
     }
 
@@ -442,9 +549,9 @@ class HistoryViewModel @Inject constructor(
 
     // 지출, 수입, 이체 클릭
     fun onClickFlow(type: String) {
-        if (mode.value == "add") {
+        if (mode.value == "add" || mode.value == "favorite") {
             line.postValue("분류를 선택하세요")
-            flow.postValue(type)
+            _flow.postValue(type)
         }
     }
 
@@ -452,6 +559,13 @@ class HistoryViewModel @Inject constructor(
     fun onClickMemo() {
         viewModelScope.launch {
             _onClickMemo.emit(true)
+        }
+    }
+
+    // 사진 클릭
+    fun onClickPicture() {
+        viewModelScope.launch {
+            _onClickPicture.emit(true)
         }
     }
 
@@ -491,10 +605,10 @@ class HistoryViewModel @Inject constructor(
 
     // 반복내역 서버로 보내기 위한 값으로 변경
     private fun getConvertSendRepeatValue(): String {
-        return if(_repeatClickItem.value == null) {
+        return if (_repeatClickItem.value == null) {
             "NONE"
         } else {
-            when(_repeatClickItem.value!!.name) {
+            when (_repeatClickItem.value!!.name) {
                 "없음" -> "NONE"
                 "매일" -> "EVERYDAY"
                 "매주" -> "WEEK"
@@ -509,13 +623,13 @@ class HistoryViewModel @Inject constructor(
     // 반복내역 서버로부터 받은 값을 UI 로 변경
     private fun getConvertReceiveRepeatValue(value: String): String {
         Timber.e("value $value")
-        return when(value) {
-             "NONE" -> "없음"
-             "EVERYDAY" -> "매일"
-             "WEEK" -> "매주"
-             "MONTH" -> "매달"
-             "WEEKDAY" -> "주중"
-             "WEEKEND" -> "주말"
+        return when (value) {
+            "NONE" -> "없음"
+            "EVERYDAY" -> "매일"
+            "WEEK" -> "매주"
+            "MONTH" -> "매달"
+            "WEEKDAY" -> "주중"
+            "WEEKEND" -> "주말"
             else -> ""
         }
     }
@@ -588,27 +702,8 @@ class HistoryViewModel @Inject constructor(
         }
     }
 
-    // 카테고리 가져오기 영문 -> 한글
-    private fun getCategory(category: String): String {
-        return when (category) {
-            "INCOME" -> {
-                "수입"
-            }
-
-            "OUTCOME" -> {
-                "지출"
-            }
-
-            "TRANSFER" -> {
-                "이체"
-            }
-
-            else -> ""
-        }
-    }
-
     // 즐겨찾기 버튼 클릭
-    fun onClickFavorite(){
+    fun onClickFavorite() {
         viewModelScope.launch {
             _onClickFavorite.emit(true)
         }
@@ -616,61 +711,201 @@ class HistoryViewModel @Inject constructor(
 
     // 즐겨찾기 추가
     fun postAddFavorite() {
-        if (isFavoriteInputData()) {
-            isFavoriteMaxData { isMax ->
-                if (isMax) {
-                    viewModelScope.launch(Dispatchers.IO) {
-                        postBooksFavoritesUseCase(
-                            bookKey = prefs.getString("bookKey", ""),
-                            money = cost.value!!.replace(",", "").replace(CurrencyUtil.currency,"")
-                                .toDouble(),
-                            description = if (content.value=="") line.value!! else content.value!!,
-                            lineCategoryName = flow.value!!,
-                            lineSubcategoryName = line.value!!,
-                            assetSubcategoryName = asset.value!!,
-                            exceptStatus = deleteChecked.value!!
-                        ).onSuccess {
-                            _postBooksFavorites.emit(true)
-                            baseEvent(Event.ShowSuccessToast("즐겨찾기에 추가되었습니다."))
-                        }.onFailure {
-                            baseEvent(Event.ShowToast("${flow.value!!} ${it.message.parseErrorMsg(this@HistoryViewModel)}"))
-                        }
-                    }
-                } else {
-                    baseEvent(Event.ShowToast("즐겨찾기 개수가 초과 되었습니다."))
-                }
-            }
-        } else {
-            createFavoriteErrorMsg()
+        // 다 입력이 되었는 지 확인
+        if (isAllInputData()) {
+            applyAddFavorite()
         }
     }
-    fun isFavoriteMaxData(onResult: (Boolean) -> Unit) {
-        var sum = 0
-        viewModelScope.launch {
-            getBookFavoriteUseCase(prefs.getString("bookKey", ""),"INCOME").onSuccess { it ->
-                sum+=it.size
-                getBookFavoriteUseCase(prefs.getString("bookKey", ""), "OUTCOME").onSuccess { it ->
-                    sum+=it.size
-                    getBookFavoriteUseCase(prefs.getString("bookKey", ""), "TRANSFER").onSuccess { it ->
-                        sum+=it.size
 
-                        if (sum==15){
-                            onResult(false)
-                        }
-                        else {
-                            onResult(true)
-                        }
-
-                    }.onFailure {
-                        baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@HistoryViewModel)))
-                    }
-                }.onFailure {
-                    baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@HistoryViewModel)))
+    fun applyAddFavorite() {
+        viewModelScope.launch(Dispatchers.IO) {
+            postBooksFavoritesUseCase(
+                bookKey = prefs.getString("bookKey", ""),
+                money = cost.value!!.replace(",", "").replace(CurrencyUtil.currency, "")
+                    .toDouble(),
+                description = if (content.value == "") line.value!! else content.value!!,
+                lineCategoryName = flow.value!!,
+                lineSubcategoryName = line.value!!,
+                assetSubcategoryName = asset.value!!,
+                exceptStatus = deleteChecked.value!!
+            ).onSuccess {
+                _postBooksFavorites.emit(true)
+                baseEvent(Event.ShowSuccessToast("즐겨찾기에 추가되었습니다."))
+            }.onFailure {
+                if (subscriptionDataStoreUtil.getSubscribeExpired().first()) {
+                    subscribeExpired.value = true
+                } else if (it.message.parseErrorCode() == "B014"){
+                    _subscribePrompt.emit(true)
+                } else {
+                    baseEvent(Event.ShowToast("${flow.value!!} ${it.message.parseErrorMsg(this@HistoryViewModel)}"))
                 }
+            }
+        }
+    }
+
+    private fun setCloudAddAndDelete() {
+        viewModelScope.launch(Dispatchers.IO) {
+            baseEvent(Event.ShowLoading)
+            try {
+                // 플래그 변수로 모든 작업의 성공 여부 추적
+                var allOperationsSuccessful = true
+
+                // 삭제할 클라우드 이미지가 있는 경우
+                if (deletedCloudImageList.isNotEmpty()) {
+                    for (imageUrl in deletedCloudImageList) {
+                        val result = runCatching { subscribeDeleteCloudImageUseCase(imageUrl.id) }
+                        result.onSuccess {
+                            Timber.d("삭제 성공: ${imageUrl.id}")
+                        }.onFailure {
+                            Timber.e("삭제 실패: ${imageUrl.id}")
+                            baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@HistoryViewModel)))
+                            allOperationsSuccessful = false
+                        }
+                    }
+                }
+
+                Timber.i("this.localUrlList isNotEmpty : $localUrlList}")
+                // 추가할 로컬 이미지가 있는 경우
+                if (localUrlList.isNotEmpty()) {
+                    Timber.d("this.localUrlList isNotEmpty?? : $localUrlList}")
+                    for (file in localUrlList) {
+                        // presigned URL 가져오기
+                        val urlResult = subscribePresignedUrlUseCase(prefs.getString("bookKey", ""))
+                        urlResult.onSuccess { presignedData ->
+                            val url = presignedData.url
+                            // 파일 업로드 시도
+                            val uploadSuccess =
+                                uploadFileToPresignedUrl(url, file, presignedData.viewUrl)
+                            if (!uploadSuccess) {
+                                allOperationsSuccessful = false
+                            }
+                        }.onFailure {
+                            baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@HistoryViewModel)))
+                            allOperationsSuccessful = false
+                        }
+                    }
+                }
+
+                // 모든 작업이 성공적으로 완료된 경우에만 수정 진행
+                if (allOperationsSuccessful) {
+                    goModifyHistory()
+                } else {
+                    baseEvent(Event.ShowToast("이미지 처리 중 오류가 발생했습니다."))
+                }
+            } finally {
+                baseEvent(Event.HideLoading)
+            }
+        }
+    }
+
+    private fun setLocalToCloud() {
+        viewModelScope.launch(Dispatchers.IO) {
+            baseEvent(Event.ShowLoading)
+            try {
+                // 플래그 변수로 모든 작업의 성공 여부 추적
+                var allOperationsSuccessful = true
+
+                Timber.i("this.localUrlList isNotEmpty : $localUrlList}")
+                // 추가할 로컬 이미지가 있는 경우
+                if (localUrlList.isNotEmpty()) {
+                    Timber.d("this.localUrlList isNotEmpty?? : $localUrlList}")
+                    for (file in localUrlList) {
+                        // presigned URL 가져오기
+                        val urlResult = subscribePresignedUrlUseCase(prefs.getString("bookKey", ""))
+                        urlResult.onSuccess { presignedData ->
+                            val url = presignedData.url
+                            // 파일 업로드 시도
+                            val uploadSuccess =
+                                uploadFileToPresignedUrl(url, file, presignedData.viewUrl)
+                            if (!uploadSuccess) {
+                                allOperationsSuccessful = false
+                            }
+                        }.onFailure {
+                            baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@HistoryViewModel)))
+                            allOperationsSuccessful = false
+                        }
+                    }
+                }
+
+                // 모든 작업이 성공적으로 완료된 경우에만 추가 진행
+                if (allOperationsSuccessful) {
+                    goToAddHistory()
+                } else {
+                    baseEvent(Event.ShowToast("이미지 처리 중 오류가 발생했습니다."))
+                }
+            } finally {
+                baseEvent(Event.HideLoading)
+            }
+        }
+    }
+
+    // 업로드 함수 수정 - 성공 여부를 반환하도록 변경
+    private suspend fun uploadFileToPresignedUrl(
+        presignedUrl: String,
+        file: File,
+        viewUrl: String
+    ): Boolean {
+        return try {
+            withContext(Dispatchers.IO) {
+                val url = URL(presignedUrl)
+                val connection = url.openConnection() as HttpURLConnection
+                connection.requestMethod = "PUT"
+                connection.doOutput = true
+                connection.setRequestProperty("Content-Type", "image/jpeg")
+
+                file.inputStream().use { input ->
+                    connection.outputStream.use { output ->
+                        input.copyTo(output)
+                    }
+                }
+
+                if (connection.responseCode == 200) {
+                    println("File uploaded successfully!")
+                    cloudUrlList.add(ImageUrls(-1, viewUrl))
+                    true // 성공
+                } else {
+                    println("Upload failed with response code: ${connection.responseCode}")
+                    baseEvent(Event.ShowToast(connection.responseMessage.parseErrorMsg(this@HistoryViewModel)))
+                    false // 실패
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false // 예외 발생 시 실패
+        }
+    }
+
+    fun handleImageBeforeModify() {
+        // 클라우드 삭제, 로컬 추가 이미지 없을 경우 바로 수정
+        if (deletedCloudImageList.isEmpty() && localUrlList.isEmpty())
+            goModifyHistory()
+
+        // 클라우드 삭제 여부, 로컬 추가 이미지 있을 경우 따로 처리 후 수정한다.
+        setCloudAddAndDelete()
+    }
+
+    fun goModifyHistory() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val tempMoney = cost.value!!.replace(",", "")
+            postBooksLinesChangeUseCase(
+                lineId = modifyId,
+                bookKey = prefs.getString("bookKey", ""),
+                money = tempMoney.replace(CurrencyUtil.currency, "")
+                    .toDouble(),
+                flow = flow.value!!,
+                asset = asset.value!!,
+                line = line.value!!,
+                lineDate = date.value!!.replace(".", "-"),
+                description = content.value!!,
+                except = deleteChecked.value!!,
+                nickname = nickname.value!!,
+                memo = memo,
+                imageUrls = cloudUrlList.map { it.url }
+            ).onSuccess {
+                _postModifyBooksLines.emit(true)
             }.onFailure {
                 baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@HistoryViewModel)))
             }
         }
     }
-
 }

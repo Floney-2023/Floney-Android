@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
@@ -23,6 +24,7 @@ import com.aos.floney.databinding.ActivityBookAddBinding
 import com.aos.floney.databinding.FragmentBookAddSettingProfileBinding
 import com.aos.floney.databinding.FragmentMyPageBookAddSettingProfileBinding
 import com.aos.floney.ext.repeatOnStarted
+import com.aos.floney.util.PermissionUtil
 import com.aos.floney.view.common.BaseAlertDialog
 import com.aos.floney.view.common.ChoiceImageDialog
 import com.bumptech.glide.Glide
@@ -48,18 +50,38 @@ class MyPageBookAddSettingProfileFragment : BaseFragment<FragmentMyPageBookAddSe
         }
     }
 
+    // 갤러리 사진 불러오기
     private val imageResult = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
+        ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        uri?.let {
             lifecycleScope.launch {
-                viewModel.createBitmapFile(result.data?.data)
+                viewModel.createBitmapFile(uri)
 
                 Glide.with(requireContext())
                     .load(viewModel.getImageBitmap())
                     .fitCenter()
                     .centerCrop()
                     .into(binding.ivProfileCardView)
+            }
+        }
+    }
+
+    // Android 11 이하용 갤러리 선택
+    private val legacyImageResult = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            result.data?.data?.let { uri ->
+                lifecycleScope.launch {
+                    viewModel.createBitmapFile(uri)
+
+                    Glide.with(requireContext())
+                        .load(viewModel.getImageBitmap())
+                        .fitCenter()
+                        .centerCrop()
+                        .into(binding.ivProfileCardView)
+                }
             }
         }
     }
@@ -135,78 +157,58 @@ class MyPageBookAddSettingProfileFragment : BaseFragment<FragmentMyPageBookAddSe
     }
 
     private fun onClickChoiceImage() {
-        if(checkGalleryPermission()) {
-            ChoiceImageDialog(requireContext(), {
-                // 사진 촬영하기
-                viewModel.setTakeCaptureUri(viewModel.createTempImageFile())
-                takePhoto.launch(viewModel.getTakeCaptureUri())
-            }, {
-                // 앨범에서 사진 선택
-                selectGallery()
-            }, {
-                // 랜덤 이미지
-                val bitmap = BitmapFactory.decodeResource(
-                    requireContext().resources,
-                    viewModel.getRandomProfileDrawable()
-                )
+        ChoiceImageDialog(requireContext(), {
+            // 사진 촬영하기
+            viewModel.setTakeCaptureUri(viewModel.createTempImageFile())
+            takePhoto.launch(viewModel.getTakeCaptureUri())
+        }, {
+            // 앨범에서 사진 선택
+            launchPhotoPicker()
+        }, {
+            // 랜덤 이미지
+            val bitmap = BitmapFactory.decodeResource(
+                requireContext().resources,
+                viewModel.getRandomProfileDrawable()
+            )
 
-                viewModel.setImageBitmap(bitmap)
+            viewModel.setImageBitmap(bitmap)
 
-                Glide.with(requireContext())
-                    .load(bitmap)
-                    .fitCenter()
-                    .centerCrop()
-                    .into(binding.ivProfileCardView)
-            }).show()
+            Glide.with(requireContext())
+                .load(bitmap)
+                .fitCenter()
+                .centerCrop()
+                .into(binding.ivProfileCardView)
+        }).show()
+    }
+
+    private fun launchPhotoPicker() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            // Android 13 이상: PhotoPicker 사용
+            imageResult.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         } else {
-            viewModel.baseEvent(BaseViewModel.Event.ShowToast("이미지 접근 권한이 허용되지 않았습니다. "))
+            // Android 12 이하: 기존 Intent 방식 사용
+            launchLegacyImagePicker()
         }
+    }
+
+    private fun launchLegacyImagePicker() {
+        val intent =
+            Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI).apply {
+                type = "image/*"
+            }
+        legacyImageResult.launch(intent)
     }
 
     private fun selectGallery() {
-        if (checkGalleryPermission()) {
-            // 권한이 있는 경우 갤러리 실행
-            val intent = Intent(Intent.ACTION_PICK)
-            // intent와 data와 type을 동시에 설정하는 메서드
-            intent.setDataAndType(
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*"
-            )
-
-            imageResult.launch(intent)
-        }
+        launchPhotoPicker()
     }
 
-    private fun checkGalleryPermission(): Boolean {
-        val readPermission = ContextCompat.checkSelfPermission(
-            requireContext(), android.Manifest.permission.READ_EXTERNAL_STORAGE
-        )
-        val imagePermission = ContextCompat.checkSelfPermission(
-            requireContext(), android.Manifest.permission.READ_MEDIA_IMAGES
-        )
-
-        return if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.TIRAMISU) {
-            if(imagePermission == PackageManager.PERMISSION_DENIED) {
-                ActivityCompat.requestPermissions(
-                    requireActivity(), arrayOf(
-                        android.Manifest.permission.READ_MEDIA_IMAGES
-                    ), 1
-                )
-
-                false
-            } else {
-                true
-            }
-        } else{
-            if(readPermission == PackageManager.PERMISSION_DENIED) {
-                ActivityCompat.requestPermissions(
-                    requireActivity(), arrayOf(
-                        android.Manifest.permission.READ_EXTERNAL_STORAGE
-                    ), 1
-                )
-                false
-            } else {
-                true
-            }
-        }
+    // No longer needed as PhotoPicker doesn't require permissions
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 }

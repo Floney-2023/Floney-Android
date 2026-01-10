@@ -27,8 +27,9 @@ fun getAdvertiseCheck(advertiseTime : String): Long {
 }
 
 fun getAdvertiseTenMinutesCheck(advertiseTime : String): Long {
-    if (advertiseTime.isEmpty())
-        return 0
+    return if (advertiseTime.isEmpty())
+        0
     else
-        return 10 - (convertStringToDate(getCurrentDateTimeString()).time - convertStringToDate(advertiseTime).time) / (60 * 1000)
+        10 - (convertStringToDate(getCurrentDateTimeString()).time - convertStringToDate(advertiseTime).time) / (60 * 1000)
 }
+

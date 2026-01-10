@@ -48,14 +48,14 @@ class SettleUpStartViewModel @Inject constructor(
                 // 전송 성공
                 _lastDay.postValue(it.passedDays.toInt())
             }.onFailure {
-                baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@SettleUpStartViewModel)))
+                baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
             }
         }
     }
     // 정산하기 시작
     fun onClickedSettleUpStart() {
         viewModelScope.launch {
-            _settleUpStartPage.emit(prefs.getBoolean("subscribe_expired", false))
+            _settleUpStartPage.emit(true)
         }
     }
 

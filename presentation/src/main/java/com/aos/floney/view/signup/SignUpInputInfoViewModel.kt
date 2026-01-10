@@ -10,13 +10,11 @@ import com.aos.floney.base.BaseViewModel
 import com.aos.floney.ext.parseErrorMsg
 import com.aos.floney.util.EventFlow
 import com.aos.floney.util.MutableEventFlow
-import com.aos.floney.util.UtilToken
 import com.aos.usecase.signup.SignUpSocialUseCase
 import com.aos.usecase.signup.SignUpUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -52,70 +50,89 @@ class SignUpInputInfoViewModel @Inject constructor(
     var socialToken: String? = null
     var socialProvider: String? = null
 
+    // 소셜 로그인 여부
+    private var _socialSignUp = MutableLiveData<Boolean>()
+    val socialSignUp: LiveData<Boolean> get() = _socialSignUp
+
     // 다음으로 버튼 클릭
     fun onClickNext() {
-        if (password.value != "") {
-            if (rePassword.value != "") {
-                if (password.value.equals(rePassword.value)) {
-                    if (isPasswordValid(password.value ?: "")) {
-                        if (nickname.value != "") {
-                            // 회원가입 시도
-                            viewModelScope.launch(Dispatchers.IO) {
-                                baseEvent(Event.ShowLoading)
-                                // 일반 회원가입인지 소셜 회원가입인지 구분
-                                if(socialToken.equals("")) {
-                                    // 일반 회원가입
-                                    signUpUseCase(email.value ?: "", nickname = nickname.value ?: "", password = password.value ?: "", receiveMarketing = marketing.value ?: false).onSuccess {
-                                        // 엑세스 토큰 저장
-                                        prefs.setString("accessToken", it.accessToken)
-                                        prefs.setString("refreshToken", it.refreshToken)
+        if (checkSocialSignUp()) {
+            handleSocialSignUp()
+        } else {
+            handleNormalSignUp()
+        }
+    }
 
-                                        baseEvent(Event.HideLoading)
-                                        _nextPage.emit(true)
-                                    }.onFailure {
-                                        baseEvent(Event.HideLoading)
-                                        baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@SignUpInputInfoViewModel)))
-                                    }
-                                } else {
-                                    val email = if(email.value == "") {
-                                        tempEmail
-                                    } else {
-                                        email.value ?: tempEmail
-                                    }
-                                    // 소셜 회원가입
-                                    signUpSocialUseCase(socialProvider ?: "", socialToken ?: "", email, nickname.value ?: "", marketing.value ?: false).onSuccess {
-                                        // 엑세스 토큰 저장
-                                        prefs.setString("accessToken", it.accessToken)
-                                        prefs.setString("refreshToken", it.refreshToken)
-                                        prefs.setString("bookKey", "")
+    private fun handleNormalSignUp() {
+        when {
+            password.value.isNullOrEmpty() -> {
+                baseEvent(Event.ShowToastRes(R.string.request_input_password))
+            }
 
-                                        baseEvent(Event.HideLoading)
-                                        _nextPage.emit(true)
-                                    }.onFailure {
-                                        baseEvent(Event.HideLoading)
-                                        baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@SignUpInputInfoViewModel)))
-                                    }
-                                }
-                            }
-                        } else {
-                            // 닉네임 비어있을 경우
-                            baseEvent(Event.ShowToastRes(R.string.request_input_nickname))
-                        }
-                    } else {
-                        // 비밀번호 정규식 틀릴 경우
-                        baseEvent(Event.ShowToastRes(R.string.password_rule))
-                    }
-                } else {
-                    // 비밀번호 / 비밀번호 확인 일치하지 않을 경우
-                    baseEvent(Event.ShowToastRes(R.string.not_match_password))
-                }
-            } else {
-                // 비밀번호 확인 비어있을 경우
+            rePassword.value.isNullOrEmpty() -> {
                 baseEvent(Event.ShowToastRes(R.string.request_input_re_password))
             }
-        } else {
-            // 비밀번호 비어있을 경우
-            baseEvent(Event.ShowToastRes(R.string.request_input_password))
+
+            password.value != rePassword.value -> {
+                baseEvent(Event.ShowToastRes(R.string.not_match_password))
+            }
+
+            !isPasswordValid(password.value.orEmpty()) -> {
+                baseEvent(Event.ShowToastRes(R.string.password_rule))
+            }
+
+            nickname.value.isNullOrEmpty() -> {
+                baseEvent(Event.ShowToastRes(R.string.request_input_nickname))
+            }
+
+            else -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    baseEvent(Event.ShowLoading)
+                    signUpUseCase(
+                        email.value.orEmpty(),
+                        nickname.value.orEmpty(),
+                        password.value.orEmpty(),
+                        marketing.value ?: false
+                    ).onSuccess {
+                        prefs.setString("accessToken", it.accessToken)
+                        prefs.setString("refreshToken", it.refreshToken)
+                        baseEvent(Event.HideLoading)
+                        _nextPage.emit(true)
+                    }.onFailure {
+                        baseEvent(Event.HideLoading)
+                        baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@SignUpInputInfoViewModel)))
+                    }
+                }
+            }
+        }
+    }
+
+    private fun handleSocialSignUp() {
+        if (nickname.value.isNullOrEmpty()) {
+            baseEvent(Event.ShowToastRes(R.string.request_input_nickname))
+            return
+        }
+
+        val emailToUse = if (email.value.isNullOrBlank()) tempEmail else email.value!!
+
+        viewModelScope.launch(Dispatchers.IO) {
+            baseEvent(Event.ShowLoading)
+            signUpSocialUseCase(
+                socialProvider.orEmpty(),
+                socialToken.orEmpty(),
+                emailToUse,
+                nickname.value.orEmpty(),
+                marketing.value ?: false
+            ).onSuccess {
+                prefs.setString("accessToken", it.accessToken)
+                prefs.setString("refreshToken", it.refreshToken)
+                prefs.setString("bookKey", "")
+                baseEvent(Event.HideLoading)
+                _nextPage.emit(true)
+            }.onFailure {
+                baseEvent(Event.HideLoading)
+                baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@SignUpInputInfoViewModel)))
+            }
         }
     }
 
@@ -139,9 +156,14 @@ class SignUpInputInfoViewModel @Inject constructor(
         socialToken = token
         socialProvider = provider
         tempEmail = email
+
         viewModelScope.launch {
             _socialEmail.emit(email)
+            _socialSignUp.postValue(!socialToken.equals(""))
         }
     }
 
+    fun checkSocialSignUp(): Boolean {
+        return !socialToken.equals("")
+    }
 }

@@ -6,10 +6,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.android.billingclient.api.Purchase
 import com.aos.data.util.SharedPreferenceUtil
+import com.aos.data.util.SubscriptionDataStoreUtil
 import com.aos.floney.R
 import com.aos.floney.base.BaseViewModel
 import com.aos.floney.ext.parseErrorCode
 import com.aos.floney.ext.parseErrorMsg
+import com.aos.floney.util.ClickUtil
 import com.aos.floney.util.EventFlow
 import com.aos.floney.util.MutableEventFlow
 import com.aos.model.book.UiBookEntranceModel
@@ -20,24 +22,25 @@ import com.aos.usecase.mypage.MypageSearchUseCase
 import com.aos.usecase.subscribe.SubscribeAndroidUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
 class SubscribePlanViewModel @Inject constructor(
-    private val prefs: SharedPreferenceUtil,
+    private val subscriptionDataStoreUtil: SubscriptionDataStoreUtil,
     private val subscribeAndroidUseCase: SubscribeAndroidUseCase
 ): BaseViewModel(), BillingManager.BillingCallback {
-
 
     // 구독 하기
     private var _subscribe = MutableEventFlow<Boolean>()
     val subscribe: EventFlow<Boolean> get() = _subscribe
 
-    // 구독 해지하기 이동
-    private var _resubscribe = MutableEventFlow<Boolean>()
-    val resubscribe: EventFlow<Boolean> get() = _resubscribe
+    private val _subscribeChannel = Channel<Boolean>(Channel.CONFLATED)
+    val subscribeChannel = _subscribeChannel.receiveAsFlow()
 
     // 구매내역 복원하기
     private var _subscribeRestore = MutableEventFlow<Boolean>()
@@ -51,12 +54,36 @@ class SubscribePlanViewModel @Inject constructor(
     private var _back = MutableEventFlow<Boolean>()
     val back: EventFlow<Boolean> get() = _back
 
+    // 구독 정보 화면 나가기
+    private var _subscribeSuccess = MutableEventFlow<Boolean>()
+    val subscribeSuccess: EventFlow<Boolean> get() = _subscribeSuccess
+
     private lateinit var billingManager: BillingManager
     private var pendingPurchase: Purchase? = null
 
     fun initBillingManager(activity: Activity) {
-        billingManager = BillingManager(activity, this) // 콜백으로 ViewModel 전달
-        billingManager.startConnection()
+        if (!::billingManager.isInitialized) {
+            billingManager = BillingManager(activity, this)
+        } else {
+            Timber.d("BillingManager already initialized")
+        }
+    }
+
+    fun cleanupBillingManager() {
+        if (::billingManager.isInitialized) {
+            billingManager.endConnection()
+        }
+    }
+
+    fun startSubscribeConnection(){
+        viewModelScope.launch {
+            try {
+                billingManager.startConnection()
+            } catch (e: Exception) {
+                Timber.e("Error starting billing connection: ${e.message}")
+                baseEvent(Event.ShowToast("결제 연결에 실패했습니다. 다시 시도해주세요."))
+            }
+        }
     }
 
     override fun onPurchaseTokenReceived(token: String, purchase: Purchase) {
@@ -65,18 +92,34 @@ class SubscribePlanViewModel @Inject constructor(
     }
 
     override fun onPurchaseSuccess(checking: Boolean) {
-        if (checking){
-            baseEvent(Event.ShowSuccessToast("결제가 완료되었습니다."))
-        }else{
-            baseEvent(Event.ShowToast("결제가 실패되었습니다."))
+        viewModelScope.launch {
+            baseEvent(Event.HideCircleLoading)
+            if (checking) {
+                subscriptionDataStoreUtil.setUserSubscribe(true)
+            }
+            _subscribeSuccess.emit(checking)
         }
+    }
+
+    override fun onBillingError(errorMsg: String) {
+        viewModelScope.launch {
+            baseEvent(Event.ShowToast(errorMsg))
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        cleanupBillingManager()
     }
 
     private fun sendTokenToServer(purchaseToken: String) {
         viewModelScope.launch(Dispatchers.IO) {
+            baseEvent(Event.ShowCircleLoading)
             subscribeAndroidUseCase(purchaseToken).onSuccess {
+                Timber.d("subscribeAndroidUseCase onSuccess")
                 pendingPurchase?.let { billingManager.acknowledgePurchase(it) } // acknowledgePurchase 호출
             }.onFailure {
+                baseEvent(Event.HideCircleLoading)
                 baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@SubscribePlanViewModel)))
             }
         }
@@ -97,11 +140,14 @@ class SubscribePlanViewModel @Inject constructor(
     }
 
     // 구독 하기
-    fun onClickSubscribe(){
-        viewModelScope.launch {
-            _subscribe.emit(true)
+    fun onClickSubscribe() {
+        ClickUtil.debounceClick {
+            viewModelScope.launch {
+                _subscribeChannel.send(true)
+            }
         }
     }
+
 
     // 서비스 이용 약관
     fun onClickService(){

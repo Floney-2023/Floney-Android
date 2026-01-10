@@ -4,13 +4,17 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.aos.data.util.SharedPreferenceUtil
+import com.aos.data.util.SubscriptionDataStoreUtil
 import com.aos.floney.base.BaseViewModel
 import com.aos.floney.util.EventFlow
 import com.aos.floney.util.MutableEventFlow
+import com.aos.floney.util.getAdvertiseTenMinutesCheck
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -19,7 +23,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AnalyzeViewModel @Inject constructor(
-    private val prefs: SharedPreferenceUtil
+    private val prefs: SharedPreferenceUtil,
+    private val subscriptionDataStoreUtil: SubscriptionDataStoreUtil
 ): BaseViewModel() {
 
     // 지출, 수입, 예산, 자산
@@ -46,15 +51,32 @@ class AnalyzeViewModel @Inject constructor(
     private var _clickedAddHistory = MutableEventFlow<String>()
     val clickedAddHistory: EventFlow<String> get() = _clickedAddHistory
 
-    // 구독 만료 내역
-    var subscribeExpired = MutableLiveData<Boolean>(false)
+    // 가계부 구독 적용 여부
+    var subscribeBookActive = false
+
+    // 유저 구독 적용 여부
+    var subscribeUserActive = false
+
+    // 구독 만료됨 & 혜택 적용 여부
+    var subscribeExpired = false
+
+    // 구독 만료 팝업 표시 여부
+    var subscribePopupShow = MutableLiveData<Boolean>(false)
+
+    // 진입 시 표시되는 팝업인 지
+    var subscribePopupEnter = MutableLiveData<Boolean>(true)
 
     init {
+        subscribeUserActive = runBlocking(Dispatchers.IO) {
+            subscriptionDataStoreUtil.getUserSubscribe().first()
+        }
         getFormatDateMonth()
+        getSubscribeChecking()
     }
 
     // 지출, 수입, 이체 클릭
     fun onClickFlow(type: String) {
+        if (flow.value == type) return
         _flow.postValue(type)
     }
 
@@ -125,5 +147,38 @@ class AnalyzeViewModel @Inject constructor(
 
         // 월 업데이트
         getFormatDateMonth()
+    }
+
+    // 구독 만료 팝업 보이기
+    fun showSubscribePopupIfNeeded() {
+        // 로직이 생길 수 있다면 여기서 처리
+        subscribePopupShow.value = true
+        subscribePopupEnter.value = false
+    }
+
+    // 구독 여부, 만료 여부 가져오기
+    fun getSubscribeChecking(){
+        viewModelScope.launch(Dispatchers.IO) {
+
+            subscribeBookActive = subscriptionDataStoreUtil.getBookSubscribe().first()
+
+            // 둘 다 적용 중인 상태라면 확인하지 않는다.
+            if (subscribeBookActive && subscribeUserActive)
+                return@launch
+
+            // 10분 타이머 남은 시간
+            val remainTime = prefs.getString("subscribeCheckTenMinutes", "")
+
+            // 10분 지났을 경우 리셋
+            if (getAdvertiseTenMinutesCheck(remainTime) < 0)
+                prefs.setString("subscribeCheckTenMinutes", "")
+
+            // 구독 적용 중 아닌데 혜택 있는 경우
+            subscribeExpired = subscriptionDataStoreUtil.getSubscribeExpired().first()
+
+            // 구독 팝업 표시 여부 업데이트 (구독 만료 O && 타이머 시간이 유효하지 않을 경우)
+            subscribePopupShow.postValue(getAdvertiseTenMinutesCheck(remainTime) <= 0 && subscribeExpired)
+
+        }
     }
 }

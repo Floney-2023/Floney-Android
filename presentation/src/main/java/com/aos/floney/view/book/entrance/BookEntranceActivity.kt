@@ -15,6 +15,7 @@ import com.aos.floney.BuildConfig
 import com.aos.floney.R
 import com.aos.floney.base.BaseActivity
 import com.aos.floney.databinding.ActivityBookEntranceBinding
+import com.aos.floney.ext.applyOpenTransition
 import com.aos.floney.ext.repeatOnStarted
 import com.aos.floney.view.common.BaseAlertDialog
 import com.aos.floney.view.common.WarningPopupDialog
@@ -118,24 +119,6 @@ class BookEntranceActivity : BaseActivity<ActivityBookEntranceBinding, BookEntra
                         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
                     }
                 }
-                else {
-                    val exitDialogFragment = WarningPopupDialog(
-                        "사용중인 가계부를 확인하세요",
-                        "사용할 수 있는 가계부를 초과하였습니다.\n" +
-                                "마이페이지에서 내 가계부를 확인해 주세요.",
-                        getString(R.string.home_dialog_right_button),
-                        getString(R.string.home_dialog_right_button),
-                        true
-                    ) { checked ->
-                        startActivity(Intent(this@BookEntranceActivity, MyPageActivity::class.java))
-                        if (Build.VERSION.SDK_INT >= 34) {
-                            overrideActivityTransition(Activity.OVERRIDE_TRANSITION_OPEN, android.R.anim.fade_in, android.R.anim.fade_out)
-                        } else {
-                            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
-                        }
-                    }
-                    exitDialogFragment.show(supportFragmentManager, "clickDialog")
-                }
             }
         }
         repeatOnStarted {
@@ -230,10 +213,10 @@ class BookEntranceActivity : BaseActivity<ActivityBookEntranceBinding, BookEntra
 
     fun setInviteCode(inviteCode: Any) {
         if (inviteCode != "") {
-            Log.d("DeepLink", "Invite Code: $inviteCode")
+            Timber.d("DeepLink", "Invite Code: $inviteCode")
             viewModel.setinviteCode(inviteCode.toString())
         } else {
-            Log.d("DeepLink", "Invite Code not found")
+            Timber.d("DeepLink", "Invite Code not found")
         }
     }
 }

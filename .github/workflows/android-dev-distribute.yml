@@ -1,0 +1,102 @@
+name: Android Dev Test
+
+on:
+  push:
+    branches:
+      - release/floney-ver.3
+
+jobs:
+  build-and-distribute-debug:
+    runs-on: ubuntu-latest
+
+    env:
+      LOCAL_PROPERTIES_CONTENTS: ${{ secrets.LOCAL_PROPERTIES_CONTENTS }}
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Create file
+        run: cat presentation/google-services.json | base64
+
+      - name: Putting data
+        env:
+          DATA: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: echo $DATA > presentation/google-services.json
+
+      - name: Create local.properties
+        run: echo "$LOCAL_PROPERTIES_CONTENTS" > local.properties
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+
+      - name: Build Debug APK
+        run: ./gradlew :presentation:assembleDebug
+
+      - name: Extract version info
+        id: version
+        run: |
+          version_name=$(grep versionName presentation/build.gradle | head -1 | awk -F\\\" '{print $2}')
+          version_code=$(grep versionCode presentation/build.gradle | head -1 | awk '{print $2}')
+          echo "version_name=$version_name" >> $GITHUB_OUTPUT
+          echo "version_code=$version_code" >> $GITHUB_OUTPUT
+
+      - name: Read release notes
+        id: notes
+        run: |
+          notes=$(cat releasenotes.txt | sed ':a;N;$!ba;s/\n/\\n/g')
+          echo "release_notes=$notes" >> $GITHUB_OUTPUT
+
+      - name: Install Firebase CLI
+        run: curl -sL https://firebase.tools | bash
+
+      - name: Find Debug APK Path
+        run: |
+          apk_path=$(find presentation/build -name "*.apk" | head -n 1)
+          echo "apk_path=$apk_path"
+          echo "APK_PATH=$apk_path" >> $GITHUB_ENV
+
+      - name: Distribute Debug APK
+        run: |
+          firebase appdistribution:distribute $APK_PATH \
+            --app "${{ secrets.FIREBASE_APP_ID }}" \
+            --groups "Floney-Android-Tester" \
+            --release-notes "$(cat releasenotes.txt)" \
+            --token "${{ secrets.FIREBASE_TOKEN }}"
+
+
+      - name: Notify Slack
+        run: |
+          version_name="${{ steps.version.outputs.version_name }}"
+          version_code="${{ steps.version.outputs.version_code }}"
+          release_notes=$(cat releasenotes.txt | sed ':a;N;$!ba;s/\n/\\n/g')
+
+          curl -X POST -H 'Content-type: application/json' \
+            --data "{
+              \"attachments\": [
+                {
+                  \"color\": \"#31C690\",
+                  \"title\": \"📦 Floney-Dev ${version_name} (${version_code}) 업로드 완료\",
+                  \"text\": \"${release_notes}\",
+                  \"fields\": [
+                    {
+                      \"title\": \"Version\",
+                      \"value\": \"${version_name} (${version_code})\",
+                      \"short\": true
+                    }
+                  ],
+                  \"footer\": \"Firebase App Distribution\",
+                  \"ts\": $(date +%s)
+                }
+              ]
+            }" \
+            ${{ secrets.SLACK_WEBHOOK_URL }}

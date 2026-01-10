@@ -23,7 +23,15 @@ data class DayLiensResponse(
     val writerEmail: String,
     val writerNickname: String,
     val writerProfileImg: String,
-    val repeatDuration: String
+    val repeatDuration: String,
+    val memo: String? = "",
+    val imageUrls: List<ImageUrls>,
+)
+
+@Serializable
+data class ImageUrls(
+    val id: Int,
+    val url: String,
 )
 
 @Serializable

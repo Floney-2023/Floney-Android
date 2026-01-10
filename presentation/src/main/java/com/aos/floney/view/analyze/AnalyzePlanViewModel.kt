@@ -39,7 +39,7 @@ class AnalyzePlanViewModel @Inject constructor(
     // 예산 조회하기
     fun postAnalyzePlan(date: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            baseEvent(Event.ShowLoading)
+            baseEvent(Event.ShowCircleLoading)
             postAnalyzeIPlanUseCase(prefs.getString("bookKey", ""), date).onSuccess {
                 Timber.e("it $it")
 
@@ -48,10 +48,10 @@ class AnalyzePlanViewModel @Inject constructor(
                 remainDays.postValue(remainingDays.toString())
 
                 _postAnalyzePlan.postValue(it)
-                baseEvent(Event.HideLoading)
+                baseEvent(Event.HideCircleLoading)
             }.onFailure {
                 baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@AnalyzePlanViewModel)))
-                baseEvent(Event.HideLoading)
+                baseEvent(Event.HideCircleLoading)
             }
         }
     }
