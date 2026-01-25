@@ -33,7 +33,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="36dp"
             android:fontFamily="@font/pretendard_semibold"
-            android:text="항목 추가"
+            android:text="@string/book_setting_category_add_title"
             android:textSize="17dp"
             android:textColor="@color/grayscale1"
             app:layout_constraintEnd_toEndOf="parent"
@@ -47,7 +47,7 @@
             android:layout_marginStart="20dp"
             android:layout_marginTop="50dp"
             android:fontFamily="@font/pretendard_medium"
-            android:text="카테고리"
+            android:text="@string/book_setting_category_add_category"
             android:textSize="15dp"
             android:textColor="@color/grayscale2"
             app:layout_constraintStart_toStartOf="parent"
@@ -80,7 +80,7 @@
                     app:fontFamily="@{vm.flow == `자산`}"
                     android:gravity="center"
                     android:onClick="@{() -> vm.onClickFlow(`자산`)}"
-                    android:text="자산"
+                    android:text="@string/book_setting_category_add_assets"
                     android:textColor="@{vm.flow == `자산` ? @color/white : @color/grayscale7}"
                     android:textSize="15dp" />
                 <View
@@ -94,7 +94,7 @@
                     app:fontFamily="@{vm.flow == `지출`}"
                     android:gravity="center"
                     android:onClick="@{() -> vm.onClickFlow(`지출`)}"
-                    android:text="지출"
+                    android:text="@string/book_setting_category_add_expense"
                     android:textColor="@{vm.flow == `지출` ? @color/white : @color/grayscale7}"
                     android:textSize="15dp" />
             </LinearLayout>
@@ -116,7 +116,7 @@
                     app:fontFamily="@{vm.flow == `수입`}"
                     android:gravity="center"
                     android:onClick="@{() -> vm.onClickFlow(`수입`)}"
-                    android:text="수입"
+                    android:text="@string/book_setting_category_add_income"
                     android:textColor="@{vm.flow == `수입` ? @color/white : @color/grayscale7}"
                     android:textSize="15dp" />
                 <View
@@ -130,7 +130,7 @@
                     app:fontFamily="@{vm.flow == `이체`}"
                     android:gravity="center"
                     android:onClick="@{() -> vm.onClickFlow(`이체`)}"
-                    android:text="이체"
+                    android:text="@string/book_setting_category_add_transfer"
                     android:textColor="@{vm.flow == `이체`? @color/white : @color/grayscale7}"
                     android:textSize="15dp" />
             </LinearLayout>
@@ -143,7 +143,7 @@
             android:layout_marginStart="20dp"
             android:layout_marginTop="41dp"
             android:fontFamily="@font/pretendard_medium"
-            android:text="항목 이름"
+            android:text="@string/book_setting_category_add_name"
             android:textSize="15dp"
             android:textColor="@color/grayscale2"
             app:layout_constraintStart_toStartOf="parent"
@@ -158,7 +158,7 @@
             android:layout_marginEnd="20dp"
             android:background="@drawable/custom_radius_12_solid_greyscale_12_stroke_greyscale_10"
             android:fontFamily="@font/pretendard_regular"
-            android:hint="이름을 입력하세요."
+            android:hint="@string/book_setting_category_add_hint"
             android:maxLength="6"
             android:textColorHint="@color/grayscale6"
             android:paddingStart="20dp"
@@ -174,7 +174,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="14dp"
             android:fontFamily="@font/pretendard_regular"
-            android:text="* 최대 6자까지 쓸 수 있어요."
+            android:text="@string/book_setting_category_add_limit"
             android:textColor="@color/grayscale6"
             android:textSize="13dp"
             app:layout_constraintStart_toStartOf="@id/et_nickname"
@@ -185,7 +185,7 @@
             android:background="@color/grayscale2"
             android:paddingTop="20dp"
             android:paddingBottom="32dp"
-            android:text="완료하기"
+            android:text="@string/book_setting_category_add_button"
             android:fontFamily="@font/pretendard_bold"
             android:textSize="14dp"
             android:textColor="@color/white"

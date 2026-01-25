@@ -43,7 +43,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="편집"
+            android:text="@string/common_edit"
             android:paddingEnd="8dp"
             android:layout_marginEnd="16dp"
             android:paddingStart="8dp"
@@ -92,7 +92,7 @@
             android:fontFamily="@font/pretendard_bold"
             android:gravity="center"
             android:onClick="@{() -> dialog.onClickChoiceBtn()}"
-            android:text="확인"
+            android:text="@string/dialog_confirm"
             android:textColor="@color/white"
             android:textSize="14dp"
             app:layout_constraintBottom_toBottomOf="parent"

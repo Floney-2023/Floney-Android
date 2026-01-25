@@ -46,7 +46,7 @@
             android:layout_width="360dp"
             android:layout_height="360dp"
             android:layout_marginTop="42dp"
-            android:src="@drawable/icon_complete_sign_up"
+            android:src="@drawable/item_complete_sign_up"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_valid_email_text" />

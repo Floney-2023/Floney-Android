@@ -51,7 +51,7 @@
                         android:layout_weight="1"
                         android:fontFamily="@font/pretendard_medium"
                         android:gravity="center"
-                        android:text="일"
+                        android:text="@string/weekday_sun"
                         android:textColor="@color/grayscale6"
                         android:textSize="12dp" />
 
@@ -61,7 +61,7 @@
                         android:layout_weight="1"
                         android:fontFamily="@font/pretendard_medium"
                         android:gravity="center"
-                        android:text="월"
+                        android:text="@string/weekday_mon"
                         android:textColor="@color/grayscale6"
                         android:textSize="12dp" />
 
@@ -71,7 +71,7 @@
                         android:layout_weight="1"
                         android:fontFamily="@font/pretendard_medium"
                         android:gravity="center"
-                        android:text="화"
+                        android:text="@string/weekday_tue"
                         android:textColor="@color/grayscale6"
                         android:textSize="12dp" />
 
@@ -81,7 +81,7 @@
                         android:layout_weight="1"
                         android:fontFamily="@font/pretendard_medium"
                         android:gravity="center"
-                        android:text="수"
+                        android:text="@string/weekday_wed"
                         android:textColor="@color/grayscale6"
                         android:textSize="12dp" />
 
@@ -91,7 +91,7 @@
                         android:layout_weight="1"
                         android:fontFamily="@font/pretendard_medium"
                         android:gravity="center"
-                        android:text="목"
+                        android:text="@string/weekday_thu"
                         android:textColor="@color/grayscale6"
                         android:textSize="12dp" />
 
@@ -101,7 +101,7 @@
                         android:layout_weight="1"
                         android:fontFamily="@font/pretendard_medium"
                         android:gravity="center"
-                        android:text="금"
+                        android:text="@string/weekday_fri"
                         android:textColor="@color/grayscale6"
                         android:textSize="12dp" />
 
@@ -111,7 +111,7 @@
                         android:layout_weight="1"
                         android:fontFamily="@font/pretendard_medium"
                         android:gravity="center"
-                        android:text="토"
+                        android:text="@string/weekday_sat"
                         android:textColor="@color/grayscale6"
                         android:textSize="12dp" />
 
@@ -169,7 +169,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="0dp"
                             android:fontFamily="@font/pretendard_medium"
-                            android:text="총 지출"
+                            android:text="@string/home_total_expense"
                             android:textColor="@color/grayscale4"
                             android:textSize="12dp"
                             app:layout_constraintStart_toStartOf="parent"
@@ -210,7 +210,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="0dp"
                             android:fontFamily="@font/pretendard_medium"
-                            android:text="총 수입"
+                            android:text="@string/home_total_income"
                             android:textColor="@color/grayscale4"
                             android:textSize="12dp"
                             app:layout_constraintStart_toStartOf="parent"
@@ -251,7 +251,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="0dp"
                             android:fontFamily="@font/pretendard_medium"
-                            android:text="잔액"
+                            android:text="@string/home_balance"
                             android:textColor="@color/grayscale4"
                             android:textSize="12dp"
                             app:layout_constraintStart_toStartOf="parent"

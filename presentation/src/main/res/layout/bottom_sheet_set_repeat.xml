@@ -68,7 +68,7 @@
             android:fontFamily="@font/pretendard_semibold"
             android:gravity="center"
             android:onClick="@{() -> dialog.onClickChoiceBtn()}"
-            android:text="선택"
+            android:text="@string/dialog_select"
             android:textColor="@color/white"
             android:textSize="14dp"
             app:layout_constraintBottom_toBottomOf="parent"

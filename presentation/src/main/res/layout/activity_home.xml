@@ -132,7 +132,7 @@
                 bind:adjustCategoryFont="@{vm.clickedShowType.equals(`month`)}"
                 android:gravity="center"
                 android:onClick="@{() -> vm.onClickShowType(`month`)}"
-                android:text="캘린더"
+                android:text="@string/home_calendar"
                 android:textColor="@{vm.clickedShowType.equals(`month`) ? @color/grayscale2 : @color/grayscale8}"
                 android:textSize="11dp" />
 
@@ -144,7 +144,7 @@
                 bind:adjustCategoryFont="@{vm.clickedShowType.equals(`day`)}"
                 android:gravity="center"
                 android:onClick="@{() -> vm.onClickShowType(`day`)}"
-                android:text="일별"
+                android:text="@string/home_daily"
                 android:textColor="@{vm.clickedShowType.equals(`day`) ? @color/grayscale2 : @color/grayscale8}"
                 android:textSize="11dp" />
 
@@ -251,7 +251,7 @@
                 android:paddingEnd="4dp"
                 android:paddingBottom="10dp"
                 android:fontFamily="@font/pretendard_semibold"
-                android:text="내역 추가"
+                android:text="@string/home_add_entry"
                 android:textColor="@color/primary2"
                 android:textSize="12dp"
                 app:layout_constraintBottom_toBottomOf="@id/tv_month_day"
@@ -288,7 +288,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="내역이 없습니다."
+                android:text="@string/home_no_entries"
                 android:textColor="@color/grayscale6"
                 android:textSize="12dp"
                 android:fontFamily="@font/pretendard_medium"

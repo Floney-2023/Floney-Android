@@ -92,7 +92,7 @@
             android:background="@color/grayscale2"
             android:paddingTop="20dp"
             android:paddingBottom="32dp"
-            android:text="변경하기"
+            android:text="@string/profile_change"
             android:fontFamily="@font/pretendard_bold"
             android:textSize="14dp"
             android:textColor="@color/white"

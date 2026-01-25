@@ -101,7 +101,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
-                    android:text="원"
+                    android:text="@string/currency_won"
                     android:textColor="@color/grayscale2"
                     android:textSize="14sp"
                     android:visibility="gone"

@@ -27,7 +27,7 @@
                 android:fontFamily="@font/pretendard_medium"
                 android:textColor="@color/grayscale2"
                 android:gravity="center"
-                android:text="사진 촬영하기"/>
+                android:text="@string/photo_take_picture"/>
 
             <TextView
                 android:layout_width="match_parent"
@@ -38,7 +38,7 @@
                 android:fontFamily="@font/pretendard_medium"
                 android:textColor="@color/grayscale2"
                 android:gravity="center"
-                android:text="앨범에서 사진 선택"/>
+                android:text="@string/photo_select_from_album"/>
 
             <TextView
                 android:layout_width="match_parent"
@@ -49,7 +49,7 @@
                 android:fontFamily="@font/pretendard_medium"
                 android:textColor="@color/grayscale2"
                 android:gravity="center"
-                android:text="랜덤 이미지"/>
+                android:text="@string/photo_random_image"/>
 
         </LinearLayout>
         

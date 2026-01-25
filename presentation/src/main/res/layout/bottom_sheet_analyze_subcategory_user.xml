@@ -36,7 +36,7 @@
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="24dp"
                 android:fontFamily="@font/pretendard_bold"
-                android:text="사용자"
+                android:text="@string/common_user"
                 android:textColor="@color/grayscale1"
                 android:textSize="19dp"
                 app:layout_constraintStart_toStartOf="parent"

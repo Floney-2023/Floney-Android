@@ -38,7 +38,7 @@
             android:background="@drawable/custom_radius_12_solid_primary1"
             android:fontFamily="@font/pretendard_semibold"
             android:gravity="center"
-            android:text="선택"
+            android:text="@string/button_select"
             android:textColor="@color/white"
             android:textSize="14dp"
             app:layout_constraintBottom_toBottomOf="parent"

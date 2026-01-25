@@ -56,7 +56,7 @@
             android:layout_marginStart="24dp"
             android:layout_marginTop="52dp"
             android:fontFamily="@font/floney_pretendard_bold"
-            android:text="즐겨찾기"
+            android:text="@string/favorite_title"
             android:textSize="24dp"
             android:textColor="@color/grayscale2"
             app:layout_constraintStart_toStartOf="parent"
@@ -71,7 +71,7 @@
             android:lineSpacingExtra="3sp"
             android:translationY="-1.34sp"
             android:fontFamily="@font/pretendard_medium"
-            android:text="자주 사용하는 내역을\n즐겨찾기로 편하게 기록해 보세요"
+            android:text="@string/favorite_description_info"
             android:textColor="@color/grayscale6"
             android:textSize="13dp"
             app:layout_constraintStart_toStartOf="parent"
@@ -109,7 +109,7 @@
                 bind:adjustCategoryFont="@{vm.flow.equals(`지출`)}"
                 android:gravity="center"
                 android:onClick="@{() -> vm.onClickFlow(`지출`)}"
-                android:text="지출"
+                android:text="@string/flow_expense"
                 android:textColor="@{vm.flow.equals(`지출`) ? @color/grayscale2 : @color/grayscale8}"
                 android:textSize="14dp" />
 
@@ -121,7 +121,7 @@
                 bind:adjustCategoryFont="@{vm.flow.equals(`수입`)}"
                 android:gravity="center"
                 android:onClick="@{() -> vm.onClickFlow(`수입`)}"
-                android:text="수입"
+                android:text="@string/flow_income"
                 android:textColor="@{vm.flow.equals(`수입`) ? @color/grayscale2 : @color/grayscale8}"
                 android:textSize="14dp" />
 
@@ -134,7 +134,7 @@
                 bind:adjustCategoryFont="@{vm.flow.equals(`이체`)}"
                 android:gravity="center"
                 android:onClick="@{() -> vm.onClickFlow(`이체`)}"
-                android:text="이체"
+                android:text="@string/flow_transfer"
                 android:textColor="@{vm.flow.equals(`이체`) ? @color/grayscale2 : @color/grayscale8}"
                 android:textSize="14dp" />
 
@@ -177,7 +177,7 @@
             android:visibility="@{vm.edit ? View.GONE : View.VISIBLE}"
             android:paddingTop="20dp"
             android:paddingBottom="32dp"
-            android:text="추가하기"
+            android:text="@string/category_add"
             android:textColor="@color/white"
             android:textSize="14dp"
             app:layout_constraintBottom_toBottomOf="parent" />

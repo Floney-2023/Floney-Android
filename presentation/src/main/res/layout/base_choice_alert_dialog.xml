@@ -22,7 +22,7 @@
             android:gravity="center"
             android:lineSpacingExtra="-3sp"
             android:lineHeight="22.4dp"
-            android:text="이 내역을 삭제하시겠습니까?\n반복되는 내역입니다."
+            android:text="@string/dialog_delete_history_confirm"
             android:fontFamily="@font/floney_pretendard_bold"
             android:textSize="16dp"
             android:textColor="@color/grayscale1"/>
@@ -32,7 +32,7 @@
             android:layout_width="300dp"
             android:layout_height="54dp"
             android:layout_marginTop="14dp"
-            android:text="이 내역만 삭제"
+            android:text="@string/dialog_delete_only"
             android:textColor="@color/grayscale2"
             android:textSize="14sp"
             android:fontFamily="@font/pretendard_medium"/>
@@ -42,7 +42,7 @@
             android:layout_width="300dp"
             android:layout_height="54dp"
             android:layout_marginBottom="7dp"
-            android:text="이 내역만 삭제"
+            android:text="@string/dialog_delete_only"
             android:textColor="@color/grayscale2"
             android:textSize="14sp"
             android:fontFamily="@font/pretendard_medium"/>

@@ -189,7 +189,7 @@
             android:layout_marginTop="8dp"
             android:fontFamily="@font/pretendard_medium"
             android:gravity="center"
-            android:text="이번달"
+            android:text="@string/asset_this_month"
             android:textColor="@color/grayscale6"
             android:textSize="12dp"
             app:layout_constraintEnd_toEndOf="@id/barchart_this_month"
@@ -199,7 +199,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="현재자산"
+            android:text="@string/asset_current"
             android:textColor="@color/grayscale6"
             android:textSize="14dp"
             android:fontFamily="@font/pretendard_medium"
@@ -224,7 +224,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="초기자산"
+            android:text="@string/asset_initial"
             android:textColor="@color/grayscale6"
             android:textSize="14dp"
             android:fontFamily="@font/pretendard_medium"

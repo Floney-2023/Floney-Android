@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="36dp"
             android:fontFamily="@font/pretendard_semibold"
-            android:text="개인정보 처리방침"
+            android:text="@string/service_privacy_title"
             android:textSize="16dp"
             android:textColor="@color/grayscale1"
             app:layout_constraintEnd_toEndOf="parent"

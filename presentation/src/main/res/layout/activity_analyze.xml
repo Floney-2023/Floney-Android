@@ -21,7 +21,7 @@
             android:layout_marginStart="20dp"
             android:layout_marginTop="26dp"
             android:fontFamily="@font/pretendard_bold"
-            android:text="분석"
+            android:text="@string/analyze_title"
             android:textColor="@color/grayscale1"
             android:textSize="22dp"
             app:layout_constraintStart_toStartOf="parent"
@@ -85,7 +85,7 @@
                 android:background="@{vm.flow == `지출` ? @drawable/custom_radius_8_solid_white : null}"
                 android:gravity="center"
                 android:onClick="@{() -> vm.onClickFlow(`지출`)}"
-                android:text="지출"
+                android:text="@string/analyze_expense"
                 android:textColor="@{vm.flow == `지출` ? @color/grayscale2 : @color/grayscale8}"
                 android:textSize="14dp"
                 bind:adjustCategoryFont="@{vm.flow == `지출`}"/>
@@ -97,7 +97,7 @@
                 android:background="@{vm.flow == `수입` ? @drawable/custom_radius_8_solid_white : null}"
                 android:gravity="center"
                 android:onClick="@{() -> vm.onClickFlow(`수입`)}"
-                android:text="수입"
+                android:text="@string/analyze_income"
                 android:textColor="@{vm.flow == `수입` ? @color/grayscale2 : @color/grayscale8}"
                 android:textSize="14dp"
                 bind:adjustCategoryFont="@{vm.flow == `수입`}" />
@@ -110,7 +110,7 @@
                 android:background="@{vm.flow == `예산` ? @drawable/custom_radius_8_solid_white : null}"
                 android:gravity="center"
                 android:onClick="@{() -> vm.onClickFlow(`예산`)}"
-                android:text="예산"
+                android:text="@string/analyze_budget"
                 android:textColor="@{vm.flow == `예산` ? @color/grayscale2 : @color/grayscale8}"
                 android:textSize="14dp"
                 app:adjustCategoryFont="@{vm.flow == `예산`}" />
@@ -123,7 +123,7 @@
                 android:background="@{vm.flow == `자산` ? @drawable/custom_radius_8_solid_white : null}"
                 android:gravity="center"
                 android:onClick="@{() -> vm.onClickFlow(`자산`)}"
-                android:text="자산"
+                android:text="@string/analyze_assets"
                 android:textColor="@{vm.flow == `자산` ? @color/grayscale2 : @color/grayscale8}"
                 android:textSize="14dp"
                 app:adjustCategoryFont="@{vm.flow == `자산`}" />

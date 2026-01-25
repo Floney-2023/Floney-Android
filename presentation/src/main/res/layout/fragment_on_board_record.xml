@@ -35,7 +35,7 @@
             android:layout_height="0dp"
             android:layout_marginTop="32dp"
             android:scaleType="fitCenter"
-            android:src="@drawable/icon_onboard_show_flow"
+            android:src="@drawable/item_onboard_record"
             app:layout_constraintBottom_toTopOf="@+id/guideline_bottom"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
@@ -77,7 +77,8 @@
             android:textSize="12dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            tools:ignore="TextSizeCheck" />
 
         <View
             android:layout_width="0dp"

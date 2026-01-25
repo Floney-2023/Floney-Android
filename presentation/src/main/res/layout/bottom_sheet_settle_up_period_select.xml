@@ -79,7 +79,7 @@
                 android:layout_weight="1"
                 android:fontFamily="@font/floney_pretendard_regular"
                 android:gravity="center"
-                android:text="일"
+                android:text="@string/weekday_sun"
                 android:textColor="@color/grayscale6"
                 android:textSize="12dp" />
 
@@ -89,7 +89,7 @@
                 android:layout_weight="1"
                 android:fontFamily="@font/floney_pretendard_regular"
                 android:gravity="center"
-                android:text="월"
+                android:text="@string/weekday_mon"
                 android:textColor="@color/grayscale6"
                 android:textSize="12dp" />
 
@@ -99,7 +99,7 @@
                 android:layout_weight="1"
                 android:fontFamily="@font/floney_pretendard_regular"
                 android:gravity="center"
-                android:text="화"
+                android:text="@string/weekday_tue"
                 android:textColor="@color/grayscale6"
                 android:textSize="12dp" />
 
@@ -109,7 +109,7 @@
                 android:layout_weight="1"
                 android:fontFamily="@font/floney_pretendard_regular"
                 android:gravity="center"
-                android:text="수"
+                android:text="@string/weekday_wed"
                 android:textColor="@color/grayscale6"
                 android:textSize="12dp" />
 
@@ -119,7 +119,7 @@
                 android:layout_weight="1"
                 android:fontFamily="@font/floney_pretendard_regular"
                 android:gravity="center"
-                android:text="목"
+                android:text="@string/weekday_thu"
                 android:textColor="@color/grayscale6"
                 android:textSize="12dp" />
 
@@ -129,7 +129,7 @@
                 android:layout_weight="1"
                 android:fontFamily="@font/pretendard_regular"
                 android:gravity="center"
-                android:text="금"
+                android:text="@string/weekday_fri"
                 android:textColor="@color/grayscale6"
                 android:textSize="12dp" />
 
@@ -139,7 +139,7 @@
                 android:layout_weight="1"
                 android:fontFamily="@font/pretendard_regular"
                 android:gravity="center"
-                android:text="토"
+                android:text="@string/weekday_sat"
                 android:textColor="@color/grayscale6"
                 android:textSize="12dp" />
 

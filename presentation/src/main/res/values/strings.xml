@@ -3,6 +3,28 @@
     <string name="is_first">isFirst</string>
     <string name="bottom_navigation_home">홈</string>
     <string name="bottom_navigation_analysis">분석</string>
+
+    <!-- Analyze/Insights Screen -->
+    <string name="analyze_title">분석</string>
+    <string name="analyze_expense">지출</string>
+    <string name="analyze_income">수입</string>
+    <string name="analyze_budget">예산</string>
+    <string name="analyze_assets">자산</string>
+    <string name="analyze_no_data">데이터가 없습니다</string>
+
+    <!-- Income Tab -->
+    <string name="analyze_income_earned">수입이 있어요</string>
+    <string name="analyze_income_up_from_last">지난달 대비 %1$s 증가</string>
+    <string name="analyze_income_down_from_last">지난달 대비 %1$s 감소</string>
+
+    <!-- Budget Tab -->
+    <string name="analyze_budget_used">예산의 %1$s%%를 사용했어요</string>
+    <string name="analyze_budget_per_day">하루에 %1$s씩 쓸 수 있어요</string>
+    <string name="analyze_budget_plenty_left">예산이 충분히 남아있어요</string>
+    <string name="analyze_budget_set_message">더 나은 소비 습관을 위해\n예산을 설정해보세요</string>
+    <string name="analyze_budget_set_button">이번 달 예산 설정하기</string>
+    <string name="analyze_budget_remaining">남은 예산</string>
+    <string name="analyze_budget_total">전체 예산</string>
     <string name="bottom_navigation_calculate">정산</string>
     <string name="bottom_navigation_mypage">마이</string>
     <string name="date_pick_button">완료</string>
@@ -46,6 +68,8 @@
     <string name="simple_login">간편 로그인</string>
     <string name="currency_error">화폐 단위를 불러오지 못했습니다.</string>
     <string name="signup_rule">* 영문(대소문자 구분 없음), 숫자, 특수문자 포함 8자 이상</string>
+    <string name="input_amount_hint">금액을 입력하세요</string>
+    <string name="input_content_hint">내용을 입력하세요</string>
 
     <!--PasswordFindActivity-->
     <string name="find_password_text">가입한 이메일 주소를 입력하세요.\n로그인 가능한 임시 비밀번호를 보내드립니다.</string>
@@ -58,6 +82,12 @@
     <string name="mypage_main_suppose_text">플로니는 여러분의\n다양한 의견을\n기다리고 있어요</string>
     <string name="mypage_main_suppose_write_text">제안하기</string>
     <string name="mypage_main_my_wallet">내 가계부</string>
+    <string name="mypage_main_subscribe_info">최대 10명까지 사용 가능한 가계부가 필요하다면</string>
+    <string name="mypage_main_remove_ads">광고 제거하기</string>
+    <string name="mypage_main_time_remaining">남은 시간</string>
+    <string name="mypage_main_watch_ad">광고보기</string>
+    <string name="mypage_main_write_review">리뷰쓰기</string>
+    <string name="mypage_main_playstore_review">플레이스토어에서\n별점을 남겨주세요</string>
     <string name="mypage_main_user_soppose_text1">고객지원</string>
     <string name="mypage_main_user_soppose_text2">문의하기</string>
     <string name="mypage_main_user_soppose_text3">공지사항</string>
@@ -73,6 +103,7 @@
     <string name="mypage_main_setting_text3">Version 1.1</string>
     <string name="mypage_main_setting_text4">마케팅 정보 수신 알림</string>
     <string name="mypage_main_setting_text5">한국어</string>
+    <string name="mypage_main_setting_text6">오픈소스 라이브러리</string>
     <string name="mypage_main_setting_marketing_response">마케팅 정보 수신 알림이 변경되었습니다.</string>
 
 
@@ -322,14 +353,88 @@
     <string name="book_setting_category_title">분류 항목 관리</string>
     <string name="book_setting_category_info">가계부를 적을 때 선택하는 항목들을\n추가, 삭제 할 수 있어요</string>
     <string name="book_setting_category_dialog_title">분류항목 삭제</string>
-    <string name="book_setting_category_dialog_info">‘%1$s’ 항목을 삭제하시겠습니까?\n해당 항목으로 작성된 모든 내역이 삭제됩니다.</string>
+    <string name="book_setting_category_dialog_info">%s 항목을 삭제하시겠습니까?\n해당 항목으로 작성된 모든 내역이 삭제됩니다.</string>
     <string name="book_setting_category_dialog_left_button">삭제하기</string>
     <string name="book_setting_category_dialog_right_button">취소하기</string>
+
+    <!-- Category Add -->
+    <string name="book_setting_category_add_title">항목 추가</string>
+    <string name="book_setting_category_add_category">카테고리</string>
+    <string name="book_setting_category_add_assets">자산</string>
+    <string name="book_setting_category_add_expense">지출</string>
+    <string name="book_setting_category_add_income">수입</string>
+    <string name="book_setting_category_add_transfer">이체</string>
+    <string name="book_setting_category_add_name">카테고리 이름</string>
+    <string name="book_setting_category_add_hint">이름을 입력하세요.</string>
+    <string name="book_setting_category_add_limit">* 최대 6자까지 쓸 수 있어요.</string>
+    <string name="book_setting_category_add_button">추가하기</string>
 
     <string name="book_setting_category_repeat_title">반복 내역 삭제</string>
     <string name="book_setting_category_repeat_info">반복 내역을 삭제하시겠습니까?\n해당 반복의 모든 내역이 삭제됩니다.</string>
     <string name="book_setting_category_repeat_left_button">삭제하기</string>
     <string name="book_setting_category_repeat_right_button">취소하기</string>
+
+    <!-- History Entry -->
+    <string name="history_amount">금액</string>
+    <string name="history_amount_hint">금액을 입력하세요</string>
+    <string name="history_expense">지출</string>
+    <string name="history_income">수입</string>
+    <string name="history_transfer">이체</string>
+    <string name="history_date">날짜</string>
+    <string name="history_date_hint">날짜를 선택하세요</string>
+    <string name="history_asset">자산</string>
+    <string name="history_asset_hint">자산을 선택하세요</string>
+    <string name="history_category">분류</string>
+    <string name="history_category_hint">분류를 선택하세요</string>
+    <string name="history_description">내용</string>
+    <string name="history_description_hint">내용을 입력하세요</string>
+    <string name="history_exclude_budget">예산에서 제외</string>
+    <string name="history_exclude_asset">자산에서 제외</string>
+    <string name="history_memo">메모</string>
+    <string name="history_picture">사진</string>
+    <string name="history_save">저장하기</string>
+    <string name="history_delete">삭제하기</string>
+    <string name="history_created_by">작성자</string>
+    <string name="history_favorite">즐겨찾기</string>
+    <string name="history_repeat">반복</string>
+    <string name="history_repeat_none">없음</string>
+
+    <!-- Bottom Sheet Categories -->
+    <string name="bottom_sheet_categories">분류</string>
+    <string name="bottom_sheet_assets">자산</string>
+    <string name="bottom_sheet_edit">편집</string>
+    <string name="bottom_sheet_ok">확인</string>
+    <string name="bottom_sheet_select">선택하기</string>
+
+    <!-- Category Items - Asset -->
+    <string name="category_cash">현금</string>
+    <string name="category_debit_card">체크카드</string>
+    <string name="category_credit_card">신용카드</string>
+    <string name="category_bank">은행</string>
+
+    <!-- Category Items - Expense -->
+    <string name="category_food">식비</string>
+    <string name="category_cafe_snacks">카페/간식</string>
+    <string name="category_transport">교통</string>
+    <string name="category_housing_phone">주거/통신</string>
+    <string name="category_health">건강</string>
+    <string name="category_culture">문화</string>
+    <string name="category_travel_stay">여행/숙박</string>
+    <string name="category_living">생활</string>
+    <string name="category_style_beauty">스타일/뷰티</string>
+    <string name="category_family">가족</string>
+    <string name="category_education">교육</string>
+    <string name="category_events">경조사/회비</string>
+    <string name="category_other">기타</string>
+    <string name="category_uncategorized">미분류</string>
+
+    <!-- Category Items - Income -->
+    <string name="category_salary">월급</string>
+    <string name="category_extra_income">부수입</string>
+    <string name="category_allowance">용돈</string>
+    <string name="category_financial_income">금융소득</string>
+    <string name="category_business_income">사업소득</string>
+    <string name="category_bonus">상여금</string>
 
     <!--10-1 정산 -->
     <string name="settle_up_start">정산</string>
@@ -380,7 +485,85 @@
     <string name="settle_up_detail_see_settlement_money">정산 금액</string>
     <string name="settle_up_detail_see_card_settlement_one_member">1인</string>
     <string name="settle_up_detail_see_share_button">공유하기</string>
+
+    <!-- Settlement Additional Strings -->
+    <string name="settle_up_is_owed">%1$s님이 받을 금액</string>
+    <string name="settle_up_owes">%1$s님이 줄 금액</string>
+    <string name="settle_up_step_format">%1$d / %2$d</string>
+    <string name="settle_up_view_settlements">정산 내역 보기</string>
+    <string name="settle_up_settlements_title">정산</string>
+    <string name="settle_up_its_been_days">마지막 정산일로부터\n%1$s일 지났어요</string>
+    <string name="settle_up_handle_complicated">복잡하고 어려운 정산, 저희가 대신 해드릴게요</string>
     <string name="title_activity_analyze">AnalyzeActivity</string>
+
+    <!-- 알림 화면 -->
+    <string name="alarm_empty_text">알림 내역이 없습니다.</string>
+
+    <!-- 임시 비밀번호 -->
+    <string name="temp_password_sent_title">임시 비밀번호가\n발송되었습니다.</string>
+    <string name="temp_password_sent_info">임시 비밀번호로 로그인 후\n새로운 비밀번호로 변경해 주세요.</string>
+    <string name="temp_password_login_again">다시 로그인하기</string>
+
+
+    <!-- 단위 -->
+    <string name="currency_won">원</string>
+
+    <!-- 사진 상세 -->
+    <string name="picture_detail_title">사진 상세</string>
+    <string name="picture_delete">삭제</string>
+
+    <!-- 반복 설정 -->
+    <string name="repeat_history">반복 내역</string>
+    <string name="repeat_info">반복 기능을 통해\n편하게 기록해 보세요</string>
+
+    <!-- 사용자 -->
+    <string name="user_text">사용자</string>
+
+    <!-- 서비스 화면 -->
+    <string name="service_terms_title">이용약관</string>
+    <string name="service_privacy_title">개인정보 처리방침</string>
+
+    <!-- 공통 버튼 -->
+    <string name="button_select">선택</string>
+
+    <!-- 거래 유형 -->
+    <string name="transaction_transfer">이체</string>
+
+    <!-- 요일 -->
+    <string name="weekday_sun">일</string>
+    <string name="weekday_mon">월</string>
+    <string name="weekday_tue">화</string>
+    <string name="weekday_wed">수</string>
+    <string name="weekday_thu">목</string>
+    <string name="weekday_fri">금</string>
+    <string name="weekday_sat">토</string>
+
+    <!-- 홈 화면 -->
+    <string name="home_total_expense">총 지출</string>
+    <string name="home_total_income">총 수입</string>
+    <string name="home_balance">잔액</string>
+    <string name="home_calendar">캘린더</string>
+    <string name="home_daily">일별</string>
+    <string name="home_add_entry">내역 추가</string>
+    <string name="home_no_entries">내역이 없습니다.</string>
+
+    <!-- 메모/사진 -->
+    <string name="memo_title">메모</string>
+    <string name="memo_save">작성 저장하기</string>
+    <string name="photo_title">사진</string>
+    <string name="photo_delete">삭제</string>
+    <string name="photo_confirm_title">사진 확인</string>
+    <string name="photo_upload">업로드</string>
+    <string name="photo_delete_dialog_title">사진 삭제</string>
+    <string name="photo_delete_dialog_message">사진을 삭제하시겠습니까?</string>
+    <string name="memo_hint">메모를 입력하세요.</string>
+    <string name="memo_limit">* 최대 1,000자까지 쓸 수 있어요.</string>
+
+    <!-- 공지사항 -->
+    <string name="notice_title">공지사항</string>
+
+    <!-- 삭제 옵션 -->
+    <string name="delete_this_only">이 내역만 삭제</string>
 
     <!--17_구독_마이페이지/구독 정보-->
     <string name="subscribe_btn_text">Floney Plus+ 구독하기</string>
@@ -426,5 +609,154 @@
 
     <string name="unsubscribe_exit_popup_title">구독 서비스를 이용하고 있어요!</string>
     <string name="unsubscribe_exit_popup_info">구독을 해지하지 않은 경우 탈퇴할 수 없습니다.\n마이페이지에서 구독 정보를 확인해 주세요.</string>
-    
+
+    <!-- 공통 버튼 -->
+    <string name="common_save">저장하기</string>
+    <string name="common_edit">편집</string>
+    <string name="common_upload">업로드</string>
+    <string name="common_export">내보내기</string>
+    <string name="common_sort">정렬</string>
+    <string name="common_user">사용자</string>
+    <string name="common_won">원</string>
+
+    <!-- 정렬 옵션 -->
+    <string name="sort_latest">최신순</string>
+    <string name="sort_oldest">오래된순</string>
+    <string name="sort_category_alphabetical">분류 가나다순</string>
+    <string name="sort_user_alphabetical">사용자 가나다순</string>
+
+    <!-- 엑셀 -->
+    <string name="excel_export">엑셀 내보내기</string>
+
+    <!-- 알림 -->
+    <string name="notification_book">가계부 알림</string>
+
+    <!-- 사진 확인 -->
+    <string name="photo_confirm">사진 확인</string>
+
+    <!-- 다이얼로그 공통 -->
+    <string name="dialog_delete_only">이 내역만 삭제</string>
+    <string name="dialog_delete_repeat">반복 내역도 모두 삭제</string>
+    <string name="dialog_cancel">취소</string>
+    <string name="dialog_confirm">확인</string>
+    <string name="dialog_delete">삭제</string>
+    <string name="dialog_close">닫기</string>
+    <string name="dialog_complete">완료</string>
+    <string name="dialog_select">선택</string>
+    <string name="dialog_yes">네</string>
+    <string name="dialog_no">아니오</string>
+    <string name="dialog_delete_history_confirm">이 내역을 삭제하시겠습니까?\n반복되는 내역입니다.</string>
+    <string name="dialog_delete_photo_title">사진 삭제</string>
+    <string name="dialog_delete_photo_message">사진을 삭제하시겠습니까?</string>
+    <string name="dialog_no_2">아니요</string>
+    <string name="dialog_wait">잠깐!</string>
+    <string name="dialog_not_saved">수정한 내용이 저장되지 않았습니다.\n그대로 나가시겠습니까?</string>
+
+
+    <!-- 사진 선택 -->
+    <string name="photo_take_picture">사진 촬영하기</string>
+    <string name="photo_select_from_album">앨범에서 사진 선택</string>
+    <string name="photo_random_image">랜덤 이미지</string>
+    <string name="photo_delete_btn">삭제</string>
+    <string name="photo_select_all">전체 선택</string>
+    <string name="photo_deselect_all">선택 취소</string>
+    <string name="photo_add">사진 추가</string>
+
+    <!-- 홈 일별 화면 -->
+    <string name="home_day_income">수입</string>
+    <string name="home_day_expense">지출</string>
+    <string name="home_day_history">내역</string>
+    <string name="home_day_add_history">내역 추가</string>
+
+    <!-- 마이페이지 서비스 -->
+    <string name="mypage_service_ask_title">궁금한 점은\n언제든지 말해주세요</string>
+    <string name="mypage_service_ask_subtitle">궁금한 점을 문의해 주시면\n메일로 플로니가 답변해 드립니다.</string>
+    <string name="mypage_service_ask_button">메일로 문의하기</string>
+    <string name="mypage_service_notice">공지사항</string>
+
+    <!-- 정산 -->
+    <string name="settle_no_history">내역이 없습니다.</string>
+
+    <!-- 홈 월별 화면 -->
+    <string name="home_month_total_expense">총지출</string>
+
+    <!-- 구독 팝업 -->
+    <string name="popup_subscribe_required_title">방장의 구독이 필요해요</string>
+    <string name="popup_subscribe_required_info">현재 가계부에 구독 혜택이 적용되어 있습니다.\n지금은 마이페이지, 가계부 설정에만 접근할 수 있어요.</string>
+
+    <!-- 즐겨찾기 -->
+    <string name="favorite_title">즐겨찾기</string>
+    <string name="favorite_description_info">자주 사용하는 내역을\n즐겨찾기로 편하게 기록해 보세요</string>
+    <string name="favorite_add_title">즐겨찾기 추가</string>
+    <string name="favorite_edit_title">즐겨찾기 수정</string>
+    <string name="favorite_amount">금액</string>
+    <string name="favorite_asset">자산</string>
+    <string name="favorite_description">설명</string>
+    <string name="favorite_line">내역</string>
+    <string name="favorite_question">자주 입력하는 내역인가요?</string>
+    <string name="favorite_hint">불러올 즐겨찾기를 선택해주세요</string>
+    <string name="favorite_save_btn">추가하기</string>
+    <string name="favorite_update_btn">수정하기</string>
+    <string name="favorite_select_btn">선택하기</string>
+    <string name="favorite_category">분류</string>
+    <string name="favorite_save">저장하기</string>
+
+    <!-- 정산 기간 선택 -->
+    <string name="settle_period_select">정산 기간을 선택하세요</string>
+    <string name="settle_cancel">정산 취소</string>
+    <string name="settle_complete">정산 완료</string>
+    <string name="settle_required">요청 사항</string>
+    <string name="settle_optional">선택 사항</string>
+    <string name="settle_request">요청</string>
+    <string name="settle_status">정산 상태</string>
+    <string name="settle_delete_confirm">정산을 삭제하시겠습니까?</string>
+    <string name="settle_select_date">정산일 선택</string>
+
+    <!-- 카테고리/플로우 -->
+    <string name="flow_expense">지출</string>
+    <string name="flow_income">수입</string>
+    <string name="flow_transfer">이체</string>
+    <string name="category_asset">자산</string>
+    <string name="category_classification">분류</string>
+    <string name="category_content">내용</string>
+    <string name="category_add">추가하기</string>
+    <string name="profile_change">변경하기</string>
+
+    <!-- 분석 화면 자산 -->
+    <string name="asset_this_month">이번달</string>
+    <string name="asset_current">현재자산</string>
+    <string name="asset_initial">초기자산</string>
+    <string name="budget_set_this_month">이번달 예산 설정하기</string>
+
+    <!-- 분석 화면 예산 -->
+    <string name="analyze_remaining_amount">남은 금액</string>
+    <string name="analyze_total_budget">총 예산</string>
+    <string name="analyze_budget_progress">예산 진행률</string>
+    <string name="analyze_budget_warning">예산을 초과했어요!</string>
+
+    <!-- 서비스 약관 -->
+    <string name="terms_all_agree">모두 동의</string>
+    <string name="terms_service">서비스 이용약관</string>
+    <string name="terms_privacy">개인정보 처리방침</string>
+    <string name="terms_required">[필수]</string>
+    <string name="terms_optional">[선택]</string>
+    <string name="terms_title">이용약관</string>
+
+    <!-- 온보딩 -->
+    <string name="onboard_complete_title">회원가입 완료</string>
+    <string name="onboard_complete_subtitle">플로니와 함께 공동가계부를 시작해보세요!</string>
+
+    <!-- 설명 화면 -->
+    <string name="info_email">이메일</string>
+    <string name="info_nickname">닉네임</string>
+    <string name="info_book_name">가계부 이름</string>
+
+    <!-- 반복 주기 -->
+    <string name="repeat_daily">매일</string>
+    <string name="repeat_weekly">매주</string>
+    <string name="repeat_monthly">매월</string>
+    <string name="repeat_weekdays">평일</string>
+    <string name="repeat_weekends">주말</string>
+    <string name="repeat_end_date">반복 종료일</string>
+
 </resources>

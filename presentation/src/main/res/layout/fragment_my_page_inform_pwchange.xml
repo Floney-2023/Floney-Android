@@ -214,7 +214,7 @@
             android:background="@drawable/onboard_area1"
             android:fontFamily="@font/pretendard_bold"
             android:onClick="@{() -> vm.onClickPwChangeCheck()}"
-            android:text="확인"
+            android:text="@string/dialog_confirm"
             android:textSize="14dp"
             android:textColor="@color/white"
             app:fontFamily="@font/pretendard_bold"

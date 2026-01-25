@@ -31,7 +31,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="36dp"
             android:fontFamily="@font/pretendard_semibold"
-            android:text="이용약관"
+            android:text="@string/service_terms_title"
             android:textSize="16dp"
             android:textColor="@color/grayscale1"
             app:layout_constraintEnd_toEndOf="parent"

@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="36dp"
             android:fontFamily="@font/pretendard_semibold"
-            android:text="가계부 알림"
+            android:text="@string/notification_book"
             android:textSize="17dp"
             android:textColor="@color/grayscale1"
             app:layout_constraintEnd_toEndOf="parent"
