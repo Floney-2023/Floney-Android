@@ -483,4 +483,9 @@
     <style name="CustomTabLayout" parent="Widget.Design.TabLayout">
         <item name="tabIndicatorColor">@color/background2</item> <!-- 기본 인디케이터 색상 -->
     </style>
+
+    <!-- AppCompatButton 전역 스타일: 모든 AppCompatButton에 textAllCaps=false 적용 -->
+    <style name="Widget.AppCompat.Button.NoAllCaps" parent="Widget.AppCompat.Button">
+        <item name="android:textAllCaps">false</item>
+    </style>
 </resources>

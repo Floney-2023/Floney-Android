@@ -254,6 +254,7 @@
             android:fontFamily="@font/pretendard_bold"
             android:onClick="@{() -> vm.onClickNextPage()}"
             android:text="@string/sign_up_next"
+            android:textAllCaps="false"
             android:textColor="@color/white"
             android:textSize="14dp"
             app:layout_constraintBottom_toBottomOf="parent"

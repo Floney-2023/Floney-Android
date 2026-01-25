@@ -6,6 +6,7 @@
 
     <style name="customButtonFontStyle" parent="@android:style/Widget.DeviceDefault.Button.Borderless">
         <item name="android:fontFamily">@font/pretendard_medium</item>
+        <item name="android:textAllCaps">false</item>
     </style>
 
     <style name="customEditTextFontStyle" parent="@android:style/Widget.DeviceDefault.EditText">

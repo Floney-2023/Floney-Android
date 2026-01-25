@@ -27,16 +27,16 @@
     <string name="analyze_budget_total">Total Budget</string>
     <string name="bottom_navigation_calculate">Settlements</string>
     <string name="bottom_navigation_mypage">My Page</string>
-    <string name="date_pick_button">완료</string>
-    <string name="already_pick_button">확인</string>
-    <string name="default_error_text">에러가 발생하였습니다. 플로니 팀에 문의 해주세요.</string>
-    <string name="detail_empty_record_message">캘린더 내역 작성해주세요</string>
+    <string name="date_pick_button">Done</string>
+    <string name="already_pick_button">OK</string>
+    <string name="default_error_text">An error occurred. Please contact the Floney team.</string>
+    <string name="detail_empty_record_message">Please add calendar entries</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_login">LoginActivity</string>
-    <string name="sign_verification_text">- 유효 시간이 지났을 경우 인증 메일을 다시 보내주세요. \n- 하루동안 5번까지 새로운 인증 코드를 받을 수 있습니다. \n- 5번 연속 코드 입력에 실패했다면 24시간 이후 시도해 주세요.</string>
-    <string name="sign_input_text">* 영문(대소문자 구분 없음), 숫자, 특수문자 포함 8자 이상</string>
-    <string name="sign_length_limit_text">* 최대 8자까지 입력할 수 있어요.</string>
+    <string name="sign_verification_text">- If the code expired, please resend the verification email. \n- You can receive up to 5 new codes per day. \n- If you fail to enter the code 5 times in a row, please try again after 24 hours.</string>
+    <string name="sign_input_text">* At least 8 characters including letters, numbers, and special characters</string>
+    <string name="sign_length_limit_text">* Maximum 8 characters allowed.</string>
     <string name="sign_complete_text">Start a smart and simple shared ledger with Floney.</string>
 
     <!--onBoardRecordFragment-->
@@ -66,7 +66,7 @@
     <string name="find_pw">Forgot Password</string>
     <string name="sign_up">Sign Up</string>
     <string name="simple_login">Sign in with</string>
-    <string name="currency_error">화폐 단위를 불러오지 못했습니다.</string>
+    <string name="currency_error">Failed to load currency unit.</string>
     <string name="signup_rule">* At least 8 characters including letters, numbers, and special characters</string>
 
     <!--PasswordFindActivity-->
@@ -106,104 +106,104 @@
 
 
     <!--myPageActivity(회원정보 1-1, 회원 정보)-->
-    <string name="mypage_main_inform_title">회원 정보</string>
-    <string name="mypage_main_inform_nickname">닉네임</string>
-    <string name="mypage_main_inform_nickname_tint">닉네임을 입력하세요.</string>
-    <string name="mypage_main_inform_change_button">변경하기</string>
-    <string name="mypage_main_inform_change_profile">프로필 이미지 변경</string>
-    <string name="mypage_main_inform_change_passwd">비밀번호 변경</string>
-    <string name="mypage_main_inform_logout">로그아웃</string>
-    <string name="mypage_main_inform_logout_dialog_info">로그아웃 하시겠습니까?</string>
+    <string name="mypage_main_inform_title">Account Info</string>
+    <string name="mypage_main_inform_nickname">Nickname</string>
+    <string name="mypage_main_inform_nickname_tint">Enter your nickname.</string>
+    <string name="mypage_main_inform_change_button">Change</string>
+    <string name="mypage_main_inform_change_profile">Change Profile Image</string>
+    <string name="mypage_main_inform_change_passwd">Change Password</string>
+    <string name="mypage_main_inform_logout">Log Out</string>
+    <string name="mypage_main_inform_logout_dialog_info">Do you want to log out?</string>
 
-    <string name="mypage_main_inform_exit"><u>회원탈퇴</u></string>
-    <string name="mypage_main_inform_nickname_request">닉네임을 입력해주세요.</string>
-    <string name="mypage_main_inform_nickname_request_success">변경이 완료되었습니다.</string>
+    <string name="mypage_main_inform_exit"><u>Delete Account</u></string>
+    <string name="mypage_main_inform_nickname_request">Please enter your nickname.</string>
+    <string name="mypage_main_inform_nickname_request_success">Successfully changed.</string>
 
     <!--myPageActivity(회원정보 1-2, 비밀번호 변경)-->
-    <string name="mypage_main_inform_pwchange_title">비밀번호 변경</string>
-    <string name="mypage_main_inform_pwchange_nowpw">현재 비밀번호</string>
-    <string name="mypage_main_inform_pwchange_nowpw_tint">현재 비밀번호를 입력하세요.</string>
-    <string name="mypage_main_inform_pwchange_newpw">새 비밀번호</string>
-    <string name="mypage_main_inform_pwchange_newpw_tint">영문 대소문자, 숫자, 특수문자 포함 8자 이상</string>
-    <string name="mypage_main_inform_pwchange_newpw_check">새 비밀번호 확인</string>
-    <string name="mypage_main_inform_pwchange_newpw_check_tint">영문 대소문자, 숫자, 특수문자 포함 8자 이상</string>
-    <string name="mypage_main_inform_pwchange_check_button">확인</string>
-    <string name="mypage_main_inform_pwchange_nowpw_request">현재 비밀번호를 입력해주세요.</string>
-    <string name="mypage_main_inform_pwchange_request_input_password">새 비밀번호를 입력해주세요.</string>
-    <string name="mypage_main_inform_pwchange_request_input_re_password">새 비밀번호 확인을 입력해주세요.</string>
-    <string name="mypage_main_inform_pwchange_check_password_rule">비밀번호 양식을 확인해주세요.</string>
-    <string name="mypage_main_inform_pwchange_not_match_password">새 비밀번호가 일치하지 않습니다.</string>
+    <string name="mypage_main_inform_pwchange_title">Change Password</string>
+    <string name="mypage_main_inform_pwchange_nowpw">Current Password</string>
+    <string name="mypage_main_inform_pwchange_nowpw_tint">Enter your current password.</string>
+    <string name="mypage_main_inform_pwchange_newpw">New Password</string>
+    <string name="mypage_main_inform_pwchange_newpw_tint">At least 8 characters with uppercase, lowercase, numbers, and special characters</string>
+    <string name="mypage_main_inform_pwchange_newpw_check">Confirm New Password</string>
+    <string name="mypage_main_inform_pwchange_newpw_check_tint">At least 8 characters with uppercase, lowercase, numbers, and special characters</string>
+    <string name="mypage_main_inform_pwchange_check_button">Confirm</string>
+    <string name="mypage_main_inform_pwchange_nowpw_request">Please enter your current password.</string>
+    <string name="mypage_main_inform_pwchange_request_input_password">Please enter your new password.</string>
+    <string name="mypage_main_inform_pwchange_request_input_re_password">Please confirm your new password.</string>
+    <string name="mypage_main_inform_pwchange_check_password_rule">Please check password format.</string>
+    <string name="mypage_main_inform_pwchange_not_match_password">New passwords do not match.</string>
 
 
     <!--myPageActivity(회원정보 1-4, 프로필 이미지 변경)-->
-    <string name="mypage_main_inform_profile_change">프로필 이미지 변경</string>
-    <string name="mypage_main_inform_profile_change_basic">기본 프로필로 변경</string>
-    <string name="mypage_main_inform_profile_change_btn">변경하기</string>
+    <string name="mypage_main_inform_profile_change">Change Profile Image</string>
+    <string name="mypage_main_inform_profile_change_basic">Change to default profile</string>
+    <string name="mypage_main_inform_profile_change_btn">Change</string>
 
     <!--myPageActivity(회원정보 1-5, 회원탈퇴1단계)-->
-    <string name="mypage_main_inform_exit_title">회원탈퇴 전\n이유를 선택해주세요 😥</string>
-    <string name="mypage_main_inform_exit_info">잠깐! 탈퇴 시 가계부 기록이\n모두 삭제 됩니다.</string>
-    <string name="mypage_main_inform_exit_no_how_to_use">플로니를 어떻게 사용하는지 모르겠어요</string>
-    <string name="mypage_main_inform_exit_expensive">구독료가 비싸요</string>
-    <string name="mypage_main_inform_exit_no_already_use">자주 사용하지 않게 돼요</string>
-    <string name="mypage_main_inform_exit_re_login">다시 가입할 거예요</string>
-    <string name="mypage_main_inform_exit_direct_input">직접 입력하기</string>
-    <string name="mypage_main_inform_exit_direct_input_hint">이유를 작성해 주세요 (100자 이내)</string>
-    <string name="mypage_main_inform_exit_button">탈퇴하기</string>
-    <string name="mypage_main_inform_exit_blank_toast">탈퇴 이유를 작성해주세요.</string>
-    <string name="mypage_main_inform_exit_check_toast">탈퇴 이유를 선택해주세요.</string>
+    <string name="mypage_main_inform_exit_title">Before leaving,\nplease tell us why 😥</string>
+    <string name="mypage_main_inform_exit_info">Wait! All ledger records\nwill be deleted upon withdrawal.</string>
+    <string name="mypage_main_inform_exit_no_how_to_use">I don\'t know how to use Floney</string>
+    <string name="mypage_main_inform_exit_expensive">The subscription fee is too expensive</string>
+    <string name="mypage_main_inform_exit_no_already_use">I don\'t use it frequently anymore</string>
+    <string name="mypage_main_inform_exit_re_login">I\'ll sign up again</string>
+    <string name="mypage_main_inform_exit_direct_input">Enter reason directly</string>
+    <string name="mypage_main_inform_exit_direct_input_hint">Please write your reason (within 100 characters)</string>
+    <string name="mypage_main_inform_exit_button">Delete Account</string>
+    <string name="mypage_main_inform_exit_blank_toast">Please write your reason for leaving.</string>
+    <string name="mypage_main_inform_exit_check_toast">Please select a reason for leaving.</string>
 
     <!--myPageActivity(회원정보 1-6, 회원탈퇴2단계)-->
-    <string name="mypage_main_inform_exit_input_password_title">마지막으로 비밀번호를\n입력해 주세요.</string>
-    <string name="mypage_main_inform_exit_input_password_hint">비밀번호</string>
-    <string name="mypage_main_inform_exit_input_password_button">탈퇴하기</string>
-    <string name="mypage_main_inform_exit_input_password_toast">비밀번호를 입력해 주세요.</string>
+    <string name="mypage_main_inform_exit_input_password_title">Finally, please enter\nyour password.</string>
+    <string name="mypage_main_inform_exit_input_password_hint">Password</string>
+    <string name="mypage_main_inform_exit_input_password_button">Delete Account</string>
+    <string name="mypage_main_inform_exit_input_password_toast">Please enter your password.</string>
 
     <!--myPageActivity(회원정보 1-6, pop up 회원탈퇴)-->
-    <string name="mypage_main_inform_exit_popup_title">탈퇴 전에 꼭 확인해 주세요</string>
-    <string name="mypage_main_inform_exit_popup_info">-가계부 방장일 경우 팀원에게\n방장이 자동으로 위임되며 가계부를 나가게 됩니다.\n\n-가계부 팀원일 경우 즉시 가계부를 나가게 됩니다.\n\n-모든 사용자는 회원탈퇴 시 모든 가계부 및\n데이터, 개인정보가 즉시 파기됩니다.
-\n\n그래도 탈퇴하시겠습니까?</string>
-    <string name="mypage_main_inform_exit_popup_btn_exit">탈퇴하기</string>
-    <string name="mypage_main_inform_exit_popup_btn_cancel">취소하기</string>
+    <string name="mypage_main_inform_exit_popup_title">Please confirm before leaving</string>
+    <string name="mypage_main_inform_exit_popup_info">-If you\'re the ledger host, ownership will\nautomatically transfer to a member and you\'ll leave the ledger.\n\n-If you\'re a member, you\'ll immediately leave the ledger.\n\n-All users will have all ledgers,\ndata, and personal information deleted immediately upon withdrawal.
+\n\nDo you still want to delete your account?</string>
+    <string name="mypage_main_inform_exit_popup_btn_exit">Delete Account</string>
+    <string name="mypage_main_inform_exit_popup_btn_cancel">Cancel</string>
 
     <!--myPageActivity(회원정보 1-7, 탈퇴완료)-->
-    <string name="mypage_main_inform_exit_complete_title">회원 탈퇴가\n무사히 완료되었어요</string>
-    <string name="mypage_main_inform_exit_complete_info">이용해 주셔서 감사합니다.\n언제든 다시 돌아오세요!</string>
-    <string name="mypage_main_inform_exit_complete_btn_close">닫기</string>
+    <string name="mypage_main_inform_exit_complete_title">Account deletion\ncompleted successfully</string>
+    <string name="mypage_main_inform_exit_complete_info">Thank you for using Floney.\nYou\'re always welcome back!</string>
+    <string name="mypage_main_inform_exit_complete_btn_close">Close</string>
 
     <!--myPageActivity(서비스)-->
-    <string name="mypage_service_mail_title">플로니가 출시되었어요🍀</string>
-    <string name="mypage_service_mail_info">안녕하세요!\n공유가계부 플로니가 출시되었습니다.\n사용 중 궁금하거나 불편한 점이 있으시면 문의하기를 통해\n메일로 물어봐 주시면 언제든지 친절하게 답변해 드립니다.\n\n많은 이용과 관심 부탁드립니다.\n감사합니다.</string>
+    <string name="mypage_service_mail_title">Floney has launched!🍀</string>
+    <string name="mypage_service_mail_info">Hello!\nShared ledger Floney has launched.\nIf you have any questions or concerns while using it,\nplease feel free to contact us via email and we\'ll be happy to help.\n\nThank you for your support and interest.\nThank you.</string>
 
     <!--이미지 선택-->
-    <string name="camera">사진 촬영하기</string>
-    <string name="gallery">앨범에서 사진 선택</string>
-    <string name="random_image">랜덤 이미지</string>
-    <string name="choose_image_source">프로필 변경</string>
+    <string name="camera">Take Photo</string>
+    <string name="gallery">Choose from Gallery</string>
+    <string name="random_image">Random Image</string>
+    <string name="choose_image_source">Change Profile</string>
 
     <!--signUp-->
     <string name="sign_up_exist_email">This email is already registered.</string>
     <string name="sign_up_request_valid_email">Please enter a valid email.</string>
-    <string name="sign_up_request_email">이메일 주소를 입력해주세요.</string>
-    <string name="sign_up_request_email_hint">이메일을 입력해주세요.</string>
-    <string name="sign_up_valid_email">이메일 인증하기</string>
-    <string name="sign_up_valid_email_text">이메일 인증을 위해 사용 가능한\n이메일을 입력해주세요</string>
-    <string name="sign_up_send_mail">메일 보내기</string>
-    <string name="sign_up_agree_of_terms">약관 동의</string>
-    <string name="sign_up_all_agree_of_terms">전체 동의</string>
-    <string name="sign_up_terms_text_1">서비스 이용 약관 (필수)</string>
-    <string name="sign_up_terms_text_2">개인정보 수집 및 이용 동의 (필수)</string>
-    <string name="sign_up_terms_text_3">마케팅 정보 수신 동의 (선택)</string>
-    <string name="sign_up_terms_text_4">만 14세 이상 확인 (필수)</string>
-    <string name="sign_up_next">다음으로</string>
-    <string name="sign_up_error_terms">필수 약관에 모두 동의해주세요.</string>
-    <string name="sign_up_input_code">인증 코드 입력</string>
-    <string name="sign_up_input_code_text">이메일로 전송된 코드를\n하단에 입력해주세요.</string>
-    <string name="sign_up_input_code_info_text">- 유효 시간이 지났을 경우 인증 메일을 다시 보내주세요.\n- 하루동안 5번까지 새로운 인증 코드를 받을 수 있습니다.\n- 5번 연속 코드 입력에 실패했다면 24시간 이후 시도해 주세요.</string>
-    <string name="sign_up_expired_code">유효 시간이 초과되었습니다. 다시 시도해주세요.</string>
-    <string name="sign_up_not_valid_code">코드가 올바르지 않습니다.</string>
-    <string name="sign_up_request_input_code">코드를 입력해주세요</string>
-    <string name="sign_up_input_sign_up_info">가입 정보 입력</string>
+    <string name="sign_up_request_email">Please enter your email address.</string>
+    <string name="sign_up_request_email_hint">Enter your email.</string>
+    <string name="sign_up_valid_email">Verify Email</string>
+    <string name="sign_up_valid_email_text">Enter an active email address\nfor email verification</string>
+    <string name="sign_up_send_mail">Send Email</string>
+    <string name="sign_up_agree_of_terms">Agree To Terms</string>
+    <string name="sign_up_all_agree_of_terms">Agree To All</string>
+    <string name="sign_up_terms_text_1">Terms of Service (Required)</string>
+    <string name="sign_up_terms_text_2">Privacy Policy (Required)</string>
+    <string name="sign_up_terms_text_3">Marketing notifications (optional)</string>
+    <string name="sign_up_terms_text_4">I\'m at least 14 years old (Required)</string>
+    <string name="sign_up_next">Next</string>
+    <string name="sign_up_error_terms">Please agree to all required terms.</string>
+    <string name="sign_up_input_code">Enter Code</string>
+    <string name="sign_up_input_code_text">Enter the code\nsent to your email.</string>
+    <string name="sign_up_input_code_info_text">- If the code expired, please resend the email.\n- You can request up to 5 codes per day.\n- If you fail 5 times in a row, try again after 24 hours.</string>
+    <string name="sign_up_expired_code">Code has expired. Please try again.</string>
+    <string name="sign_up_not_valid_code">Invalid code.</string>
+    <string name="sign_up_request_input_code">Please enter the code</string>
+    <string name="sign_up_input_sign_up_info">Enter Your Info</string>
     <string name="sign_up_complete_text">Welcome,\n%1$s!</string>
     <string name="sign_up_complete_text_detail">Start a smart and simple\nshared ledger with Floney.</string>
     <string name="sign_up_start_floney">Start with Floney</string>

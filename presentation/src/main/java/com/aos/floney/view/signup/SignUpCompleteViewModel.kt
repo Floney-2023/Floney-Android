@@ -1,7 +1,9 @@
 package com.aos.floney.view.signup
 
+import android.app.Application
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.aos.floney.R
 import com.aos.floney.base.BaseViewModel
 import com.aos.floney.ext.parseErrorMsg
 import com.aos.floney.util.EventFlow
@@ -14,6 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SignUpCompleteViewModel @Inject constructor(
+    private val application: Application,
     private val mypageSearchUseCase : MypageSearchUseCase,
 ): BaseViewModel() {
 
@@ -22,17 +25,18 @@ class SignUpCompleteViewModel @Inject constructor(
     val nextPage: EventFlow<Boolean> get() = _nextPage
 
     // 닉네임
-    var nickname = MutableLiveData<String>("")
+    var nickname = MutableLiveData("")
 
     init{
         settingNickname()
     }
-    fun settingNickname()
+
+    private fun settingNickname()
     {
         viewModelScope.launch(Dispatchers.IO) {
             mypageSearchUseCase().onSuccess {
-
-                nickname.postValue("환영합니다\n${it.nickname}님!")
+                val welcomeText = application.getString(R.string.sign_up_complete_text, it.nickname)
+                nickname.postValue(welcomeText)
             }.onFailure {
                 baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@SignUpCompleteViewModel)))
             }
