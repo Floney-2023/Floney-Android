@@ -75,6 +75,7 @@
             android:fontFamily="@font/pretendard_bold"
             android:onClick="@{() -> vm.onClickStartBtn()}"
             android:text="@string/on_board_start_button_text"
+            android:textAllCaps="false"
             android:textColor="@color/white"
             android:textSize="14dp"
             app:layout_constraintEnd_toEndOf="parent"
