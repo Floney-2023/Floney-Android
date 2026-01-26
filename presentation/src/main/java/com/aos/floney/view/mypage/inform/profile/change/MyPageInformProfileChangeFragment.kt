@@ -101,7 +101,7 @@ class MyPageInformProfileChangeFragment :
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 if (viewModel.getImageBitmap() != null || (!viewModel.getUserProfile().equals("user_default") && viewModel.isDefaultProfile)) {
-                     BaseAlertDialog(title = "잠깐!", info = "수정한 내용이 저장되지 않았습니다.\n그대로 나가시겠습니까?", false) {
+                     BaseAlertDialog(title = getString(R.string.dialog_wait), info = getString(R.string.dialog_not_saved), false) {
                         if(it) {
                             findNavController().popBackStack()
                         }
@@ -133,7 +133,7 @@ class MyPageInformProfileChangeFragment :
             viewModel.back.collect() {
                 if(it){
                     if (viewModel.getImageBitmap() != null || (!viewModel.getUserProfile().equals("user_default") && viewModel.isDefaultProfile)) {
-                        BaseAlertDialog(title = "잠깐!", info = "수정한 내용이 저장되지 않았습니다.\n그대로 나가시겠습니까?", false) {
+                        BaseAlertDialog(title = getString(R.string.dialog_wait), info = getString(R.string.dialog_not_saved), false) {
                             if(it) {
                                 findNavController().popBackStack()
                             }
@@ -165,7 +165,7 @@ class MyPageInformProfileChangeFragment :
         repeatOnStarted {
             viewModel.onClickDefaultProfile.collect {
                 if (it) {
-                    BaseAlertDialog("프로필 변경", "기본 프로필로 변경하시겠습니까?", true) {
+                    BaseAlertDialog(getString(R.string.dialog_change_profile_title), getString(R.string.dialog_switch_default_profile), true) {
                         if(it) {
                             // 기본 이미지 설정
                             Glide.with(requireContext())

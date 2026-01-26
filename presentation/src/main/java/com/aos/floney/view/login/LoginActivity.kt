@@ -67,7 +67,7 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginViewModel>(R.layou
 //                val account = task.getResult(ApiException::class.java)
 //                firebaseAuthWithGoogle(account, account.idToken ?: "")
 //            } else {
-//                viewModel.baseEvent(BaseViewModel.Event.ShowToast("구글 로그인에 실패하였습니다."))
+//                viewModel.baseEvent(BaseViewModel.Event.ShowToast(getString(R.string.toast_google_login_failed)))
 //                viewModel.baseEvent(BaseViewModel.Event.HideLoading)
 //            }
 //        }
@@ -226,11 +226,11 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginViewModel>(R.layou
                 if (error != null) {
                     Timber.e("error? ${error}")
                     viewModel.baseEvent(BaseViewModel.Event.HideLoading)
-                    viewModel.baseEvent(BaseViewModel.Event.ShowToast("카카오 로그인에 실패하였습니다."))
+                    viewModel.baseEvent(BaseViewModel.Event.ShowToast(getString(R.string.toast_kakao_login_failed)))
                 } else if (token != null) {
                     UserApiClient.instance.me { user, error ->
                         if (error != null) {
-                            viewModel.baseEvent(BaseViewModel.Event.ShowToast("카카오 로그인에 실패하였습니다."))
+                            viewModel.baseEvent(BaseViewModel.Event.ShowToast(getString(R.string.toast_kakao_login_failed)))
                             viewModel.baseEvent(BaseViewModel.Event.HideLoading)
                         } else if (user != null) {
                             if (user.kakaoAccount != null) {
@@ -242,7 +242,7 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginViewModel>(R.layou
                                 )
                                 viewModel.isAuthTokenCheck("kakao", token.accessToken)
                             } else {
-                                viewModel.baseEvent(BaseViewModel.Event.ShowToast("카카오 로그인에 실패하였습니다."))
+                                viewModel.baseEvent(BaseViewModel.Event.ShowToast(getString(R.string.toast_kakao_login_failed)))
                                 viewModel.baseEvent(BaseViewModel.Event.HideLoading)
                             }
                         }
@@ -271,7 +271,7 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginViewModel>(R.layou
                     } else {
                         UserApiClient.instance.me { user, error ->
                             if (error != null) {
-                                viewModel.baseEvent(BaseViewModel.Event.ShowToast("카카오 로그인에 실패하였습니다."))
+                                viewModel.baseEvent(BaseViewModel.Event.ShowToast(getString(R.string.toast_kakao_login_failed)))
                             } else if (user != null) {
                                 if (token != null) {
                                     Timber.e("user $user")
@@ -285,11 +285,11 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginViewModel>(R.layou
                                         )
                                         viewModel.isAuthTokenCheck("kakao", token.accessToken)
                                     } else {
-                                        viewModel.baseEvent(BaseViewModel.Event.ShowToast("카카오 로그인에 실패하였습니다."))
+                                        viewModel.baseEvent(BaseViewModel.Event.ShowToast(getString(R.string.toast_kakao_login_failed)))
                                         viewModel.baseEvent(BaseViewModel.Event.HideLoading)
                                     }
                                 } else {
-                                    viewModel.baseEvent(BaseViewModel.Event.ShowToast("카카오 로그인에 실패하였습니다."))
+                                    viewModel.baseEvent(BaseViewModel.Event.ShowToast(getString(R.string.toast_kakao_login_failed)))
                                     viewModel.baseEvent(BaseViewModel.Event.HideLoading)
                                 }
                             }
@@ -336,17 +336,17 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginViewModel>(R.layou
             } catch (e: androidx.credentials.exceptions.GetCredentialCancellationException) {
                 Timber.e("Google login cancelled by user")
                 viewModel.baseEvent(BaseViewModel.Event.HideLoading)
-                viewModel.baseEvent(BaseViewModel.Event.ShowToast("구글 로그인을 취소하였습니다."))
+                viewModel.baseEvent(BaseViewModel.Event.ShowToast(getString(R.string.toast_google_login_cancelled)))
 
             } catch (e: GetCredentialException) {
                 Timber.e("Google login failed: ${e.message}")
                 viewModel.baseEvent(BaseViewModel.Event.HideLoading)
-                viewModel.baseEvent(BaseViewModel.Event.ShowToast("구글 로그인에 실패하였습니다."))
+                viewModel.baseEvent(BaseViewModel.Event.ShowToast(getString(R.string.toast_google_login_failed)))
 
             } catch (e: Exception) {
                 Timber.e("Unknown error: ${e.message}")
                 viewModel.baseEvent(BaseViewModel.Event.HideLoading)
-                viewModel.baseEvent(BaseViewModel.Event.ShowToast("알 수 없는 오류가 발생했습니다."))
+                viewModel.baseEvent(BaseViewModel.Event.ShowToast(getString(R.string.toast_unknown_error)))
             }
         }
 
@@ -382,7 +382,7 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginViewModel>(R.layou
                                 viewModel.isAuthTokenCheck("google", idToken)
                             } else {
                                 // Timber.e("failure ${task.exception}")
-                                viewModel.baseEvent(BaseViewModel.Event.ShowToast("구글 로그인에 실패하였습니다."))
+                                viewModel.baseEvent(BaseViewModel.Event.ShowToast(getString(R.string.toast_google_login_failed)))
                                 viewModel.baseEvent(BaseViewModel.Event.HideLoading)
                             }
                         }
@@ -408,11 +408,11 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginViewModel>(R.layou
                             )
                             viewModel.isAuthTokenCheck("google", token)
                         } else {
-                            viewModel.baseEvent(BaseViewModel.Event.ShowToast("구글 로그인에 실패하였습니다."))
+                            viewModel.baseEvent(BaseViewModel.Event.ShowToast(getString(R.string.toast_google_login_failed)))
                             viewModel.baseEvent(BaseViewModel.Event.HideLoading)
                         }
                     } else {
-                        viewModel.baseEvent(BaseViewModel.Event.ShowToast("구글 로그인에 실패하였습니다."))
+                        viewModel.baseEvent(BaseViewModel.Event.ShowToast(getString(R.string.toast_google_login_failed)))
                         viewModel.baseEvent(BaseViewModel.Event.HideLoading)
                     }
                 })

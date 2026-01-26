@@ -282,6 +282,82 @@
     <string name="home_dialog_info">해당 가계부의 멤버가 아닙니다.\n소속된 가계부를 다시 확인해 주세요.</string>
     <string name="home_dialog_right_button">확인</string>
 
+    <!-- 초대 코드 -->
+    <string name="invite_code_copy_title">초대 코드 복사</string>
+    <string name="invite_code_copy_message">초대 코드가 복사되었습니다.</string>
+
+    <!-- 다이얼로그 메시지 -->
+    <string name="dialog_reset_ledger_entries_title">가계부 내역 초기화</string>
+    <string name="dialog_reset_ledger_entries_info">모든 내역이 삭제됩니다.\n지금 초기화하시겠습니까?</string>
+    <string name="dialog_profile_updated">프로필이 업데이트되었습니다</string>
+    <string name="dialog_switch_default_profile">기본 프로필로 전환하시겠습니까?</string>
+    <string name="dialog_use_favorite_title">즐겨찾기 사용</string>
+    <string name="dialog_use_favorite_info">저장된 내역을 불러옵니다.</string>
+    <string name="dialog_leave_ledger_title">가계부 나가기</string>
+    <string name="dialog_leave_ledger_info">나가면 모든 내역이 삭제됩니다.\n지금 나가시겠습니까?</string>
+    <string name="dialog_delete_favorite_title">즐겨찾기 삭제</string>
+    <string name="dialog_delete_favorite_info">이 작업은 되돌릴 수 없습니다.</string>
+    <string name="dialog_change_profile_title">프로필 변경</string>
+    <string name="dialog_change_profile_info">기본 프로필로 초기화하시겠습니까?\n이 작업은 되돌릴 수 없습니다.</string>
+    <string name="dialog_delete_photo_single_title">사진 삭제</string>
+    <string name="dialog_delete_photo_single_info">삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.</string>
+    <string name="dialog_delete_photos_multiple_title">사진 삭제</string>
+    <string name="dialog_delete_photos_multiple_info">삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.</string>
+    <string name="dialog_subscription_cancellation_title">구독 취소</string>
+    <string name="dialog_subscription_cancellation_info">정말로 취소하시겠습니까?</string>
+    <string name="dialog_logout_title">로그아웃</string>
+    <string name="dialog_logout_info">로그아웃하시겠습니까?</string>
+    <string name="dialog_wait">잠깐!</string>
+    <string name="dialog_not_saved">수정한 내용이 저장되지 않았습니다.\n그대로 나가시겠습니까?</string>
+    <string name="dialog_delete_title">삭제하기</string>
+    <string name="dialog_delete_confirm_message">삭제하시겠습니까?</string>
+    <string name="dialog_account_exists_title">계정이 이미 존재합니다</string>
+    <string name="dialog_account_exists_info">%1$s\n[Apple] 해당 이메일로 로그인 하세요.\n재가입을 원한다면 \n[마이페이지] > [구독 정보 보기]로 이동하세요.</string>
+    <string name="dialog_subscription_cancelled">구독이 취소되었습니다</string>
+    <string name="dialog_check_ledgers">가계부 확인하기</string>
+    <string name="dialog_owner_subscription_title">방장의 구독이 필요해요</string>
+    <string name="dialog_owner_subscription_info">방장이 구독하면 모든 멤버가\n프리미엄 기능을 제한 없이 사용할 수 있어요.</string>
+    <string name="dialog_exceeded_ledgers_info">가입 가능한 가계부 수를 초과했습니다.\n마이페이지에서 가계부를 확인해주세요.</string>
+    <string name="dialog_view_plan">플랜 보기</string>
+    <string name="dialog_no_access_title">접근 권한이 없어요</string>
+    <string name="dialog_no_access_info">해당 가계부의 멤버가 아닙니다.\n다시 확인해주세요.</string>
+    <string name="dialog_delete_ledger_title">계속하기 전에 읽어주세요</string>
+    <string name="dialog_delete_ledger_info">가계부 팀을 삭제하시겠습니까? 모든 내역이 삭제되며 복구할 수 없습니다.\n-가계부 방장인 경우 소유권이 자동으로 이전됩니다.\n-멤버인 경우 즉시 제거됩니다.\n-모든 가계부, 데이터, 개인정보가 영구 삭제됩니다.\n\n계속하시겠습니까?</string>
+    <string name="dialog_delete_ledger_btn">나가기</string>
+    <string name="dialog_reset_ledger_title">가계부가 초기화됩니다</string>
+    <string name="dialog_reset_ledger_info">화폐를 %1$s(으)로 변경하시겠습니까?\n변경하면 가계부가 초기화됩니다.</string>
+    <string name="dialog_reset_btn">초기화</string>
+    <string name="dialog_subscription_active_title">구독 중입니다</string>
+    <string name="dialog_subscription_active_info">구독이 활성화된 상태에서는 계정을 삭제할 수 없습니다.\n마이페이지에서 구독 정보를 확인해주세요.</string>
+    <string name="dialog_delete_category_title">카테고리 삭제</string>
+    <string name="dialog_delete_category_info">"%1$s"을(를) 삭제하시겠습니까?\n이 카테고리를 사용하는 모든 내역이 삭제됩니다.</string>
+    <string name="dialog_delete_recurring_title">반복 내역 삭제</string>
+    <string name="dialog_delete_recurring_info">이 반복 내역을 삭제하시겠습니까?\n이 시리즈의 모든 내역이 삭제됩니다.</string>
+    <string name="dialog_app_shutdown_title">앱 중단 알림</string>
+    <string name="dialog_app_shutdown_info">원활한 앱 사용을 위해 \n업데이트가 필요합니다.</string>
+    <string name="dialog_update_title">업데이트 알림</string>
+    <string name="dialog_update_info">더 나은 서비스를 위해 플로니가 수정되었어요!\n업데이트 해주시겠어요?</string>
+
+    <!-- 토스트 메시지 -->
+    <string name="toast_google_login_failed">구글 로그인에 실패하였습니다.</string>
+    <string name="toast_google_login_cancelled">구글 로그인을 취소하였습니다.</string>
+    <string name="toast_kakao_login_failed">카카오 로그인에 실패하였습니다.</string>
+    <string name="toast_unknown_error">알 수 없는 오류가 발생했습니다.</string>
+    <string name="toast_select_period">기간을 설정해주세요.</string>
+    <string name="toast_check_email_password">이메일 또는 비밀번호를 다시 확인하세요.</string>
+    <string name="toast_no_user_info">가입된 정보가 없습니다.</string>
+    <string name="toast_history_deleted">내역 삭제가 완료되었습니다.</string>
+    <string name="toast_no_matching_member">일치하는 회원이 없습니다.</string>
+    <string name="toast_payment_connection_failed">결제 연결에 실패했습니다. 다시 시도해주세요.</string>
+    <string name="toast_profile_change_failed">프로필 변경을 실패하였습니다.</string>
+    <string name="toast_profile_change_failed2">프로필 변경이 실패하였습니다.</string>
+    <string name="toast_image_creation_failed">이미지 파일 생성에 실패하였습니다.</string>
+    <string name="toast_image_setting_failed">이미지 파일 설정에 실패하였습니다.</string>
+    <string name="toast_select_settlement_items">정산할 내역을 선택해주세요.</string>
+    <string name="toast_enter_name">이름을 입력하세요.</string>
+    <string name="toast_max_photos">사진은 최대 4장까지 추가할 수 있어요.</string>
+    <string name="toast_photo_deleted">사진 삭제가 완료되었습니다.</string>
+
     <!--7-1 가계부설정 -->
     <string name="book_setting_title">가계부 설정</string>
     <string name="book_setting_user">사용자</string>
@@ -649,8 +725,6 @@
     <string name="dialog_delete_photo_title">사진 삭제</string>
     <string name="dialog_delete_photo_message">사진을 삭제하시겠습니까?</string>
     <string name="dialog_no_2">아니요</string>
-    <string name="dialog_wait">잠깐!</string>
-    <string name="dialog_not_saved">수정한 내용이 저장되지 않았습니다.\n그대로 나가시겠습니까?</string>
 
 
     <!-- 사진 선택 -->

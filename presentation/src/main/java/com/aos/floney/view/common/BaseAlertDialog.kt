@@ -57,8 +57,9 @@ class BaseAlertDialog(
             tvPopupTitle.text = title
             tvPopupInfo.text = info
 
-            // 단일 버튼 모드 체크 (초대 코드 복사 또는 알림)
-            val isSingleButtonMode = title == "초대 코드 복사" || title.contains("알림")
+            // 단일 버튼 모드 체크 (check 파라미터가 false이거나 특정 타이틀인 경우)
+            val inviteCodeTitle = context?.getString(R.string.invite_code_copy_title) ?: ""
+            val isSingleButtonMode = !check || title == inviteCodeTitle || title.contains("알림")
 
             if (isSingleButtonMode) {
                 // 단일 버튼 모드: 왼쪽 버튼만 사용, 전체 너비

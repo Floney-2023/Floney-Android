@@ -61,7 +61,7 @@ class InsertPictureActivity :
             val remainingCount = 4 - currentImageCount
 
             if (uris.size > remainingCount) {
-                viewModel.baseEvent(BaseViewModel.Event.ShowToast("사진은 최대 4장까지 추가할 수 있어요."))
+                viewModel.baseEvent(BaseViewModel.Event.ShowToast(getString(R.string.toast_max_photos)))
                 return@registerForActivityResult
             }
 
@@ -92,7 +92,7 @@ class InsertPictureActivity :
                     val itemCount = clipData.itemCount
 
                     if (itemCount > remainingCount) {
-                        viewModel.baseEvent(BaseViewModel.Event.ShowToast("사진은 최대 4장까지 추가할 수 있어요."))
+                        viewModel.baseEvent(BaseViewModel.Event.ShowToast(getString(R.string.toast_max_photos)))
                         return@registerForActivityResult
                     }
 
@@ -113,7 +113,7 @@ class InsertPictureActivity :
                     // 단일 선택인 경우
                     data.data?.let { uri ->
                         if (currentImageCount >= 4) {
-                            viewModel.baseEvent(BaseViewModel.Event.ShowToast("사진은 최대 4장까지 추가할 수 있어요."))
+                            viewModel.baseEvent(BaseViewModel.Event.ShowToast(getString(R.string.toast_max_photos)))
                             return@registerForActivityResult
                         }
 

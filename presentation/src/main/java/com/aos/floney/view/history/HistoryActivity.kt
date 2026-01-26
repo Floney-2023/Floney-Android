@@ -227,7 +227,7 @@ class HistoryActivity :
                     }.show(supportFragmentManager, "baseChoiceDialog")
                 } else {
                     // 반복내역 없음
-                    BaseAlertDialog(title = "삭제하기", info = "삭제하시겠습니까?", false) {
+                    BaseAlertDialog(title = getString(R.string.dialog_delete_title), info = getString(R.string.dialog_delete_confirm_message), false) {
                         if (it) {
                             viewModel.deleteHistory()
                         }

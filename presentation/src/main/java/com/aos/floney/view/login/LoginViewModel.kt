@@ -1,5 +1,6 @@
 package com.aos.floney.view.login
 
+import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -31,6 +32,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
+    private val application: Application,
     private val prefs: SharedPreferenceUtil,
     private val loginUseCase: LoginUseCase,
     private val checkUserBookUseCase: CheckUserBookUseCase,
@@ -83,9 +85,9 @@ class LoginViewModel @Inject constructor(
                     }.onFailure {
                         baseEvent(Event.HideLoading)
                         if(it.message.parseErrorMsg(this@LoginViewModel).equals("잘못된 정보로 로그인에 실패했습니다.")){
-                            baseEvent(Event.ShowToast("이메일 또는 비밀번호를 다시 확인하세요."))
+                            baseEvent(Event.ShowToast(application.getString(R.string.toast_check_email_password)))
                         } else if(it.message.parseErrorMsg(this@LoginViewModel).equals("해당 이메일로 가입된 유저가 없습니다.")) {
-                            baseEvent(Event.ShowToast("가입된 정보가 없습니다."))
+                            baseEvent(Event.ShowToast(application.getString(R.string.toast_no_user_info)))
                         } else{
                             baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@LoginViewModel)))
                         }

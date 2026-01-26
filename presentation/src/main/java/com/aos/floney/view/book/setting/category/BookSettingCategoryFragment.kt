@@ -91,7 +91,7 @@ class BookSettingCategoryFragment : BaseFragment<FragmentBookSettingCategoryBind
                     activity.startBookSettingActivity()
                 }
                 else{ // 편집 모드일 경우
-                    BaseAlertDialog(title = "잠깐!", info = "수정한 내용이 저장되지 않았습니다.\n그대로 나가시겠습니까?", false) {
+                    BaseAlertDialog(title = getString(R.string.dialog_wait), info = getString(R.string.dialog_not_saved), false) {
                         if(it) {
                             val activity = requireActivity() as BookCategoryActivity
                             activity.startBookSettingActivity()

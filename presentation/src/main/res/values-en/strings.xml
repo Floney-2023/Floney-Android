@@ -226,18 +226,18 @@
     <string name="book_add_new_book_name_button_text">Next</string>
 
     <string name="book_add_new_book_profile_title">Set Ledger Profile</string>
-    <string name="book_add_new_book_profile_info">Set a photo to create\nyour personalized ledger.</string>
+    <string name="book_add_new_book_profile_info">Add a photo\nto personalize your ledger.</string>
     <string name="book_add_new_book_profile_button_text">Next</string>
 
-    <string name="book_add_new_book_success_title">Ledger created!</string>
+    <string name="book_add_new_book_success_title">Your Ledger is ready!</string>
     <string name="book_add_new_book_success_info">Manage your ledger easily with Floney.</string>
     <string name="book_add_new_book_success_go_home_button_text">Start</string>
     <string name="book_add_new_book_success_invite_friend_button_text">Invite Friends</string>
 
     <string name="book_add_invite_friend_title">Invite friends to\nshare your ledger together🍀</string>
     <string name="book_add_invite_friend_code_text">Invite Code</string>
-    <string name="book_add_invite_friend_code_share_button_text">Invite friends to\nshare your ledger together🍀</string>
-    <string name="book_add_invite_friend_exit_button_text">Later</string>
+    <string name="book_add_invite_friend_code_share_button_text">Invite friends to manage\n the ledger together🍀</string>
+    <string name="book_add_invite_friend_exit_button_text">Do it Later</string>
 
     <string name="book_add_invite_dialog_title">Invite friends to\nshare your ledger together🍀</string>
     <string name="book_add_invite_dialog_info">Invite Code</string>
@@ -279,6 +279,82 @@
     <string name="home_dialog_title">No Access</string>
     <string name="home_dialog_info">You are not a member of this ledger.\nPlease check your ledgers again.</string>
     <string name="home_dialog_right_button">OK</string>
+
+    <!-- Invite Code -->
+    <string name="invite_code_copy_title">Invite Code Copied</string>
+    <string name="invite_code_copy_message">The invite code has been copied.</string>
+
+    <!-- Dialog Messages -->
+    <string name="dialog_reset_ledger_entries_title">Reset Ledger Entries</string>
+    <string name="dialog_reset_ledger_entries_info">All entries will be deleted.\nReset now?</string>
+    <string name="dialog_profile_updated">Profile Updated</string>
+    <string name="dialog_switch_default_profile">Switch to the default profile?</string>
+    <string name="dialog_use_favorite_title">Use Favorite?</string>
+    <string name="dialog_use_favorite_info">Load this saved entry.</string>
+    <string name="dialog_leave_ledger_title">Leave Ledger</string>
+    <string name="dialog_leave_ledger_info">All your entries will be deleted\nwhen you leave. Leave now?</string>
+    <string name="dialog_delete_favorite_title">Delete Favorite?</string>
+    <string name="dialog_delete_favorite_info">This action can\'t be undone.</string>
+    <string name="dialog_change_profile_title">Change Profile</string>
+    <string name="dialog_change_profile_info">Reset to default profile?\nThis action can\'t be undone.</string>
+    <string name="dialog_delete_photo_single_title">Delete Photo?</string>
+    <string name="dialog_delete_photo_single_info">Delete this?\nThis action can\'t be undone.</string>
+    <string name="dialog_delete_photos_multiple_title">Delete Photos?</string>
+    <string name="dialog_delete_photos_multiple_info">Delete these?\nThis action can\'t be undone.</string>
+    <string name="dialog_subscription_cancellation_title">Subscription Cancellation</string>
+    <string name="dialog_subscription_cancellation_info">Are you sure you want to cancel?</string>
+    <string name="dialog_logout_title">Logout</string>
+    <string name="dialog_logout_info">Are you sure you want to log out?</string>
+    <string name="dialog_wait">Wait!</string>
+    <string name="dialog_not_saved">Your changes have not been saved.\nDo you want to leave anyway?</string>
+    <string name="dialog_delete_title">Delete</string>
+    <string name="dialog_delete_confirm_message">Do you want to delete?</string>
+    <string name="dialog_account_exists_title">This account already exists</string>
+    <string name="dialog_account_exists_info">%1$s\n[Apple] Please log in with that email.\nIf you want to restart, go to\n[My Page] > [View Subscription Details].</string>
+    <string name="dialog_subscription_cancelled">Subscription canceled</string>
+    <string name="dialog_check_ledgers">Check your active ledgers</string>
+    <string name="dialog_owner_subscription_title">Owner subscription required</string>
+    <string name="dialog_owner_subscription_info">When the owner subscribes, everyone can use\nall premium features without limits.</string>
+    <string name="dialog_exceeded_ledgers_info">You\'ve exceeded the number of ledgers you can join.\nCheck your ledgers in My Page.</string>
+    <string name="dialog_view_plan">View Plan</string>
+    <string name="dialog_no_access_title">No access</string>
+    <string name="dialog_no_access_info">You\'re not a member of this ledger.\nPlease check again.</string>
+    <string name="dialog_delete_ledger_title">Please read before continuing</string>
+    <string name="dialog_delete_ledger_info">Delete the ledger team? All entries will be deleted and cannot be restored.\n-If you\'re the ledger owner, ownership will be transferred automatically.\n-If you\'re a member, you\'ll be removed immediately.\n-All ledgers, data, and personal info will be permanently deleted.\n\nStill want to continue?</string>
+    <string name="dialog_delete_ledger_btn">Delete ledger</string>
+    <string name="dialog_reset_ledger_title">The ledger will be reset</string>
+    <string name="dialog_reset_ledger_info">Change the currency to %1$s?\nChanging this will reset the ledger.</string>
+    <string name="dialog_reset_btn">Reset</string>
+    <string name="dialog_subscription_active_title">You\'re subscribed</string>
+    <string name="dialog_subscription_active_info">You can\'t delete your account while your subscription is active.\nCheck your subscription details in My Page.</string>
+    <string name="dialog_delete_category_title">Delete category</string>
+    <string name="dialog_delete_category_info">Delete "%1$s"?\nAll entries using this category will be deleted.</string>
+    <string name="dialog_delete_recurring_title">Delete recurring entry</string>
+    <string name="dialog_delete_recurring_info">Delete this recurring entry?\nAll entries in this series will be deleted.</string>
+    <string name="dialog_app_shutdown_title">App shutdown notice</string>
+    <string name="dialog_app_shutdown_info">An update is required for smooth app usage.</string>
+    <string name="dialog_update_title">Update notice</string>
+    <string name="dialog_update_info">Floney has been improved for better service!\nWould you like to update?</string>
+
+    <!-- Toast Messages -->
+    <string name="toast_google_login_failed">Google login failed.</string>
+    <string name="toast_google_login_cancelled">Google login cancelled.</string>
+    <string name="toast_kakao_login_failed">Kakao login failed.</string>
+    <string name="toast_unknown_error">An unknown error occurred.</string>
+    <string name="toast_select_period">Please select a period.</string>
+    <string name="toast_check_email_password">Please check your email or password again.</string>
+    <string name="toast_no_user_info">No registered information found.</string>
+    <string name="toast_history_deleted">Entry deletion completed.</string>
+    <string name="toast_no_matching_member">No matching member found.</string>
+    <string name="toast_payment_connection_failed">Payment connection failed. Please try again.</string>
+    <string name="toast_profile_change_failed">Profile change failed.</string>
+    <string name="toast_profile_change_failed2">Profile change failed.</string>
+    <string name="toast_image_creation_failed">Image file creation failed.</string>
+    <string name="toast_image_setting_failed">Image file setup failed.</string>
+    <string name="toast_select_settlement_items">Please select items to settle.</string>
+    <string name="toast_enter_name">Please enter a name.</string>
+    <string name="toast_max_photos">You can add up to 4 photos.</string>
+    <string name="toast_photo_deleted">Photo deletion completed.</string>
 
     <!--7-1 가계부설정 -->
     <string name="book_setting_title">Ledger Settings</string>
@@ -575,7 +651,7 @@
 
     <!--18_구독_신청/해지-->
     <string name="subscribe_plan_header">Subscription Plans</string>
-    <string name="subscribe_plan_title">Enjoy convenient and diverse features\nwith Floney Plus+ subscription</string>
+    <string name="subscribe_plan_title">Enjoy more convenient features\nwith Floney Plus+</string>
     <string name="subscribe_plan_inform">Remove ads and invite more members!\nEnjoy various benefits with Floney.</string>
     <string name="subscribe_function_basic_wallet">Basic ledger features</string>
     <string name="subscribe_advertise_delete">Ad removal</string>
@@ -587,8 +663,8 @@
     <string name="subscribe_plan_infrom_notice">- Please note that deleting the app does not cancel the in-app subscription. <u>Restore Purchase</u></string>
     <string name="subscribe_plan_infrom_service">- For cancellation and refund details, please check the Terms of Service. <u>Terms of Service</u></string>
 
-    <string name="unsubscribe_title">Do you want to\ncancel your subscription?</string>
-    <string name="unsubscribe_inform">Auto-renewal will be cancelled from the next billing date.\nYou will lose access to all Plus benefits.</string>
+    <string name="unsubscribe_title">Cancel your\nsubscription?</string>
+    <string name="unsubscribe_inform">Auto-renewal will stop from the next billing date, and you won’t be able to use subscription benefits afterward.</string>
     <string name="unsubscribe_stay_btn">Keep Subscription</string>
     <string name="unsubscribe_btn"><u>Cancel Subscription</u></string>
     <string name="unsubscribe_btn_mypage"><u>Cancel Subscription</u></string>

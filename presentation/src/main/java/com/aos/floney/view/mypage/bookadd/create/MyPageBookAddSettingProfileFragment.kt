@@ -134,7 +134,7 @@ class MyPageBookAddSettingProfileFragment : BaseFragment<FragmentMyPageBookAddSe
         repeatOnStarted {
             viewModel.onClickDefaultProfile.collect {
                 if (it) {
-                    BaseAlertDialog("프로필 변경", "기본 프로필로 변경하시겠습니까?", true) {
+                    BaseAlertDialog(getString(R.string.dialog_change_profile_title), getString(R.string.dialog_switch_default_profile), true) {
                         if(it) {
                             // 랜덤 이미지
                             val bitmap = BitmapFactory.decodeResource(

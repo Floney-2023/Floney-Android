@@ -197,7 +197,7 @@ class SplashActivity :
     }
 
     private fun showUpdateDialog() {
-        BaseAlertDialog(title = "업데이트 알림", info = "더 나은 서비스를 위해 플로니가 수정되었어요!\n업데이트 해주시겠어요?", false) {
+        BaseAlertDialog(title = getString(R.string.dialog_update_title), info = getString(R.string.dialog_update_info), false) {
             if(it) {
                 redirectToPlayStore()
             }

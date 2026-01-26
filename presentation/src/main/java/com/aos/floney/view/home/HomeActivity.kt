@@ -86,7 +86,7 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(R.layout.a
             viewModel.baseEvent(BaseViewModel.Event.ShowSuccessToast("저장이 완료되었습니다."))
             intent.removeExtra("isSave")
         } else if (intent.getStringExtra("isDelete") != null) {
-            viewModel.baseEvent(BaseViewModel.Event.ShowToast("내역 삭제가 완료되었습니다."))
+            viewModel.baseEvent(BaseViewModel.Event.ShowToast(getString(R.string.toast_history_deleted)))
             intent.removeExtra("isDelete")
         }
     }

@@ -67,7 +67,11 @@ class BookAddInviteShareBottomSheetFragment :
     }
     private fun setDialog()
     {
-        BaseAlertDialog(title = "초대 코드 복사", info = "초대 코드가 복사되었습니다.", false) {
+        BaseAlertDialog(
+            title = getString(R.string.invite_code_copy_title),
+            info = getString(R.string.invite_code_copy_message),
+            false
+        ) {
             if(it) {
 
             }
