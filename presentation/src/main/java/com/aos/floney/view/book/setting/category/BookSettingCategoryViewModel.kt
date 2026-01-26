@@ -1,5 +1,6 @@
 package com.aos.floney.view.book.setting.category
 
+import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.map
@@ -8,6 +9,7 @@ import com.aos.data.util.SharedPreferenceUtil
 import com.aos.floney.base.BaseViewModel
 import com.aos.floney.ext.formatNumber
 import com.aos.floney.ext.parseErrorMsg
+import com.aos.floney.util.CategoryLocalizationMapper
 import com.aos.floney.util.EventFlow
 import com.aos.floney.util.MutableEventFlow
 import com.aos.model.book.UiBookCategory
@@ -21,6 +23,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BookSettingCategoryViewModel @Inject constructor(
+    private val application: Application,
     private val prefs: SharedPreferenceUtil,
     private val getBookCategoryUseCase: GetBookCategoryUseCase,
     private val booksCategoryDeleteUseCase: BooksCategoryDeleteUseCase
@@ -67,10 +70,13 @@ class BookSettingCategoryViewModel @Inject constructor(
     // 자산/분류 카테고리 항목 가져오기
     fun getBookCategory() {
         viewModelScope.launch(Dispatchers.IO) {
-            getBookCategoryUseCase(prefs.getString("bookKey", ""), flow.value!!).onSuccess { it ->
-                val item = it.map {
+            getBookCategoryUseCase(prefs.getString("bookKey", ""), flow.value!!).onSuccess { list ->
+                // Apply localization to categories
+                val localizedList = CategoryLocalizationMapper.localizeCategories(application, list)
+
+                val item = localizedList.map {
                     UiBookCategory(
-                        it.idx, edit.value!!, it.name, it.default
+                        it.idx, edit.value!!, it.name, it.categoryKey, it.default
                     )
                 }
                 _categoryList.postValue(item)

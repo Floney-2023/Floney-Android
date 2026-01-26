@@ -1,5 +1,6 @@
 package com.aos.floney.view.history
 
+import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -8,6 +9,7 @@ import com.aos.data.util.CurrencyUtil
 import com.aos.data.util.SharedPreferenceUtil
 import com.aos.data.util.SubscriptionDataStoreUtil
 import com.aos.data.util.checkDecimalPoint
+import com.aos.floney.R
 import com.aos.floney.base.BaseViewModel
 import com.aos.floney.ext.formatMoneyWithCurrency
 import com.aos.floney.ext.formatNumber
@@ -15,6 +17,7 @@ import com.aos.floney.ext.parseErrorCode
 import com.aos.floney.ext.parseErrorMsg
 import com.aos.floney.ext.toCategoryCode
 import com.aos.floney.ext.toCategoryName
+import com.aos.floney.util.CategoryLocalizationMapper
 import com.aos.floney.util.EventFlow
 import com.aos.floney.util.MutableEventFlow
 import com.aos.floney.util.getAdvertiseTenMinutesCheck
@@ -44,6 +47,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HistoryViewModel @Inject constructor(
+    private val application: Application,
     stateHandle: SavedStateHandle,
     private val prefs: SharedPreferenceUtil,
     private val subscriptionDataStoreUtil: SubscriptionDataStoreUtil,
@@ -196,12 +200,12 @@ class HistoryViewModel @Inject constructor(
 
         // 데이터 세팅
         val array = arrayListOf<UiBookCategory>(
-            UiBookCategory(0, true, "없음", false),
-            UiBookCategory(1, false, "매일", false),
-            UiBookCategory(2, false, "매주", false),
-            UiBookCategory(3, false, "매달", false),
-            UiBookCategory(4, false, "주중", false),
-            UiBookCategory(5, false, "주말", false)
+            UiBookCategory(0, true, application.getString(R.string.repeat_none), null, false),
+            UiBookCategory(1, false, application.getString(R.string.repeat_daily), null, false),
+            UiBookCategory(2, false, application.getString(R.string.repeat_weekly), null, false),
+            UiBookCategory(3, false, application.getString(R.string.repeat_monthly), null, false),
+            UiBookCategory(4, false, application.getString(R.string.repeat_weekdays), null, false),
+            UiBookCategory(5, false, application.getString(R.string.repeat_weekends), null, false)
         )
         _repeatItem.postValue(array)
     }
@@ -333,7 +337,10 @@ class HistoryViewModel @Inject constructor(
                 val tempValue = if (parent == "자산") asset.value else line.value
                 val isUnselected = tempValue == "자산을 선택하세요" || tempValue == "분류를 선택하세요"
 
-                val item = list.mapIndexed { index, innerItem ->
+                // Apply localization to categories
+                val localizedList = CategoryLocalizationMapper.localizeCategories(application, list)
+
+                val item = localizedList.mapIndexed { index, innerItem ->
                     val shouldSelect = if (isUnselected) {
                         index == 0
                     } else {
@@ -348,6 +355,7 @@ class HistoryViewModel @Inject constructor(
                         idx = innerItem.idx,
                         checked = shouldSelect,
                         name = innerItem.name,
+                        categoryKey = innerItem.categoryKey,
                         default = innerItem.default
                     )
                 }
@@ -608,13 +616,20 @@ class HistoryViewModel @Inject constructor(
         return if (_repeatClickItem.value == null) {
             "NONE"
         } else {
+            val repeatNone = application.getString(R.string.repeat_none)
+            val repeatDaily = application.getString(R.string.repeat_daily)
+            val repeatWeekly = application.getString(R.string.repeat_weekly)
+            val repeatMonthly = application.getString(R.string.repeat_monthly)
+            val repeatWeekdays = application.getString(R.string.repeat_weekdays)
+            val repeatWeekends = application.getString(R.string.repeat_weekends)
+
             when (_repeatClickItem.value!!.name) {
-                "없음" -> "NONE"
-                "매일" -> "EVERYDAY"
-                "매주" -> "WEEK"
-                "매달" -> "MONTH"
-                "주중" -> "WEEKDAY"
-                "주말" -> "WEEKEND"
+                repeatNone -> "NONE"
+                repeatDaily -> "EVERYDAY"
+                repeatWeekly -> "WEEK"
+                repeatMonthly -> "MONTH"
+                repeatWeekdays -> "WEEKDAY"
+                repeatWeekends -> "WEEKEND"
                 else -> ""
             }
         }
@@ -624,12 +639,12 @@ class HistoryViewModel @Inject constructor(
     private fun getConvertReceiveRepeatValue(value: String): String {
         Timber.e("value $value")
         return when (value) {
-            "NONE" -> "없음"
-            "EVERYDAY" -> "매일"
-            "WEEK" -> "매주"
-            "MONTH" -> "매달"
-            "WEEKDAY" -> "주중"
-            "WEEKEND" -> "주말"
+            "NONE" -> application.getString(R.string.repeat_none)
+            "EVERYDAY" -> application.getString(R.string.repeat_daily)
+            "WEEK" -> application.getString(R.string.repeat_weekly)
+            "MONTH" -> application.getString(R.string.repeat_monthly)
+            "WEEKDAY" -> application.getString(R.string.repeat_weekdays)
+            "WEEKEND" -> application.getString(R.string.repeat_weekends)
             else -> ""
         }
     }
@@ -663,7 +678,7 @@ class HistoryViewModel @Inject constructor(
 
         val item = _categoryList.value?.map {
             UiBookCategory(
-                it.idx, false, it.name, it.default
+                it.idx, false, it.name, it.categoryKey, it.default
             )
         } ?: listOf()
         item[_item.idx].checked = !item[_item.idx].checked
@@ -674,7 +689,7 @@ class HistoryViewModel @Inject constructor(
     fun onClickRepeatItem(_item: UiBookCategory) {
         val item = _repeatItem.value?.map {
             UiBookCategory(
-                it.idx, false, it.name, it.default
+                it.idx, false, it.name, it.categoryKey, it.default
             )
         } ?: listOf()
         item[_item.idx].checked = !item[_item.idx].checked

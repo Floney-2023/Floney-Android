@@ -488,6 +488,14 @@
     <string name="category_credit_card">신용카드</string>
     <string name="category_bank">은행</string>
 
+    <!-- Category Items - Transfer -->
+    <string name="category_transfer">이체</string>
+    <string name="category_savings">저축</string>
+    <string name="category_investment">투자</string>
+    <string name="category_insurance">보험</string>
+    <string name="category_card_payment">카드대금</string>
+    <string name="category_loan">대출</string>
+
     <!-- Category Items - Expense -->
     <string name="category_food">식비</string>
     <string name="category_cafe_snacks">카페/간식</string>
@@ -511,6 +519,41 @@
     <string name="category_financial_income">금융소득</string>
     <string name="category_business_income">사업소득</string>
     <string name="category_bonus">상여금</string>
+
+    <!-- Deprecated: Old Category Keys Mapping - No longer used -->
+    <!--
+    <string name="category_key_FOOD_EXPENSE">식비</string>
+    <string name="category_key_CAFE_SNACK_EXPENSE">카페/간식</string>
+    <string name="category_key_TRANSPORT_EXPENSE">교통</string>
+    <string name="category_key_CULTURE_EXPENSE">문화</string>
+    <string name="category_key_TRAVEL_EXPENSE">여행/숙박</string>
+    <string name="category_key_LIFE_EXPENSE">생활</string>
+    <string name="category_key_STYLE_EXPENSE">스타일/뷰티</string>
+    <string name="category_key_FAMILY_EXPENSE">가족</string>
+    <string name="category_key_EDUCATION_EXPENSE">교육</string>
+    <string name="category_key_HEALTH_EXPENSE">건강</string>
+    <string name="category_key_HOUSING_EXPENSE">주거/통신</string>
+    <string name="category_key_EVENT_EXPENSE">경조사/회비</string>
+    <string name="category_key_ETC_EXPENSE">기타</string>
+    <string name="category_key_UNCLASSIFIED_EXPENSE">미분류</string>
+    <string name="category_key_SALARY_INCOME">월급</string>
+    <string name="category_key_EXTRA_INCOME">부수입</string>
+    <string name="category_key_ALLOWANCE_INCOME">용돈</string>
+    <string name="category_key_FINANCIAL_INCOME">금융소득</string>
+    <string name="category_key_BUSINESS_INCOME">사업소득</string>
+    <string name="category_key_BONUS_INCOME">상여금</string>
+    <string name="category_key_ETC_INCOME">기타</string>
+    <string name="category_key_UNCLASSIFIED_INCOME">미분류</string>
+    <string name="category_key_WITHDRAW_TRANSFER">출금</string>
+    <string name="category_key_DEPOSIT_TRANSFER">입금</string>
+    -->
+
+    <!-- Excel Export Date Range Options -->
+    <string name="excel_export_this_month">이번달</string>
+    <string name="excel_export_last_month">저번달</string>
+    <string name="excel_export_this_year">올해</string>
+    <string name="excel_export_last_year">작년</string>
+    <string name="excel_export_all">전체</string>
 
     <!--10-1 정산 -->
     <string name="settle_up_start">정산</string>
@@ -826,6 +869,7 @@
     <string name="info_book_name">가계부 이름</string>
 
     <!-- 반복 주기 -->
+    <string name="repeat_none">없음</string>
     <string name="repeat_daily">매일</string>
     <string name="repeat_weekly">매주</string>
     <string name="repeat_monthly">매월</string>

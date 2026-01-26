@@ -486,6 +486,14 @@
     <string name="category_credit_card">Credit Card</string>
     <string name="category_bank">Bank</string>
 
+    <!-- Category Items - Transfer -->
+    <string name="category_transfer">Transfer</string>
+    <string name="category_savings">Savings</string>
+    <string name="category_investment">Investment</string>
+    <string name="category_insurance">Insurance</string>
+    <string name="category_card_payment">Card Payment</string>
+    <string name="category_loan">Loan</string>
+
     <!-- Category Items - Expense -->
     <string name="category_food">Food</string>
     <string name="category_cafe_snacks">Cafe/Snacks</string>
@@ -509,6 +517,41 @@
     <string name="category_financial_income">Financial Income</string>
     <string name="category_business_income">Business Income</string>
     <string name="category_bonus">Bonus</string>
+
+    <!-- Deprecated: Old Category Keys Mapping - No longer used -->
+    <!--
+    <string name="category_key_FOOD_EXPENSE">Food</string>
+    <string name="category_key_CAFE_SNACK_EXPENSE">Cafe/Snacks</string>
+    <string name="category_key_TRANSPORT_EXPENSE">Transport</string>
+    <string name="category_key_CULTURE_EXPENSE">Culture</string>
+    <string name="category_key_TRAVEL_EXPENSE">Travel/Stay</string>
+    <string name="category_key_LIFE_EXPENSE">Living</string>
+    <string name="category_key_STYLE_EXPENSE">Style/Beauty</string>
+    <string name="category_key_FAMILY_EXPENSE">Family</string>
+    <string name="category_key_EDUCATION_EXPENSE">Education</string>
+    <string name="category_key_HEALTH_EXPENSE">Health</string>
+    <string name="category_key_HOUSING_EXPENSE">Housing/Phone</string>
+    <string name="category_key_EVENT_EXPENSE">Events</string>
+    <string name="category_key_ETC_EXPENSE">Other</string>
+    <string name="category_key_UNCLASSIFIED_EXPENSE">Uncategorized</string>
+    <string name="category_key_SALARY_INCOME">Salary</string>
+    <string name="category_key_EXTRA_INCOME">Extra Income</string>
+    <string name="category_key_ALLOWANCE_INCOME">Allowance</string>
+    <string name="category_key_FINANCIAL_INCOME">Financial Income</string>
+    <string name="category_key_BUSINESS_INCOME">Business Income</string>
+    <string name="category_key_BONUS_INCOME">Bonus</string>
+    <string name="category_key_ETC_INCOME">Other</string>
+    <string name="category_key_UNCLASSIFIED_INCOME">Uncategorized</string>
+    <string name="category_key_WITHDRAW_TRANSFER">Withdrawal</string>
+    <string name="category_key_DEPOSIT_TRANSFER">Deposit</string>
+    -->
+
+    <!-- Excel Export Date Range Options -->
+    <string name="excel_export_this_month">This Month</string>
+    <string name="excel_export_last_month">Last Month</string>
+    <string name="excel_export_this_year">This Year</string>
+    <string name="excel_export_last_year">Last Year</string>
+    <string name="excel_export_all">All</string>
 
     <!--10-1 정산 -->
     <string name="settle_up_start">Settlement</string>
@@ -580,8 +623,6 @@
 
     <!-- 공통 다이얼로그 -->
     <string name="dialog_no_2">No</string>
-    <string name="dialog_wait">Wait!</string>
-    <string name="dialog_not_saved">Your changes have not been saved.\nDo you want to leave anyway?</string>
 
     <!-- 단위 -->
     <string name="currency_won">KRW</string>
@@ -832,6 +873,7 @@
     <string name="info_book_name">Ledger Name</string>
 
     <!-- Repeat Cycle -->
+    <string name="repeat_none">None</string>
     <string name="repeat_daily">Daily</string>
     <string name="repeat_weekly">Weekly</string>
     <string name="repeat_monthly">Monthly</string>

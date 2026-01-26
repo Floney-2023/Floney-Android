@@ -365,6 +365,7 @@ fun List<GetBookCategoryEntity>.toUiBookCategory(parent: String): List<UiBookCat
                 idx = idx,
                 checked = false,
                 name = it.name,
+                categoryKey = it.categoryKey,
                 default = it.default
             )
         }
@@ -378,6 +379,7 @@ fun List<GetBookCategoryEntity>.toUiBookCategory(parent: String): List<UiBookCat
                 idx = idx,
                 checked = false,
                 name = it.name,
+                categoryKey = it.categoryKey,
                 default = it.default
             )
         }
