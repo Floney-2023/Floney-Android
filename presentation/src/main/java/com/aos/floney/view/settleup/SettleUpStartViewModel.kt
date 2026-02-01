@@ -48,7 +48,7 @@ class SettleUpStartViewModel @Inject constructor(
                 // 전송 성공
                 _lastDay.postValue(it.passedDays.toInt())
             }.onFailure {
-                baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@SettleUpStartViewModel)))
+                baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
             }
         }
     }

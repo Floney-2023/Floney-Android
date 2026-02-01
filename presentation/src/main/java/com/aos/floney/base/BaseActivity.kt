@@ -17,30 +17,39 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.inputmethod.InputMethodManager
+import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDialog
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.ViewModelLazy
 import com.aos.floney.BR
 import com.aos.floney.R
 import com.aos.floney.ext.repeatOnStarted
+import com.aos.floney.ext.setupTouchEffect
+import com.aos.floney.util.LottieLoadingManager
 import com.aos.floney.view.common.ErrorToastDialog
 import com.aos.floney.view.common.SuccessToastDialog
 import com.aos.floney.view.login.LoginActivity
 import com.aos.floney.view.splash.SplashActivity
 import timber.log.Timber
 import java.lang.reflect.ParameterizedType
+import javax.inject.Inject
 
 abstract class BaseActivity<B : ViewDataBinding, VM : BaseViewModel>(
     @LayoutRes private val layoutResId: Int,
 ) : AppCompatActivity() {
 
     protected lateinit var binding: B
+
+    @Inject
+    lateinit var lottieLoadingManager: LottieLoadingManager
 
     private val viewModelClass = ((javaClass.genericSuperclass as ParameterizedType?)
         ?.actualTypeArguments
@@ -65,6 +74,7 @@ abstract class BaseActivity<B : ViewDataBinding, VM : BaseViewModel>(
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        setUpEdgeToEdge()
         setupUi()
         setupObserve()
     }
@@ -72,6 +82,21 @@ abstract class BaseActivity<B : ViewDataBinding, VM : BaseViewModel>(
     override fun onStart() {
         super.onStart()
         setupUI(binding.root)
+    }
+
+    private fun setUpEdgeToEdge(){
+        val contentView = findViewById<android.view.View>(android.R.id.content)
+        if (contentView != null) {
+            ViewCompat.setOnApplyWindowInsetsListener(contentView) { view, windowInsets ->
+                val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+
+                // 시스템 바 크기만큼 루트 뷰의 자식 뷰(실제 콘텐츠)에 패딩 적용
+                val firstChild = (view as? android.view.ViewGroup)?.getChildAt(0)
+                firstChild?.setPadding(insets.left, insets.top, insets.right, insets.bottom)
+
+                WindowInsetsCompat.CONSUMED
+            }
+        }
     }
 
     private fun setupUi() {
@@ -83,7 +108,6 @@ abstract class BaseActivity<B : ViewDataBinding, VM : BaseViewModel>(
         if (isDarkMode() && this !is SplashActivity) {
             binding.root.setBackgroundColor(Color.WHITE)  // 다크 모드일 때 흰색 배경 (스플래시일 때는 X)
         }
-        setStatusBarColor(ContextCompat.getColor(this, R.color.white))
     }
 
     private fun setupObserve() {
@@ -141,6 +165,9 @@ abstract class BaseActivity<B : ViewDataBinding, VM : BaseViewModel>(
                     startActivity(Intent(this, LoginActivity::class.java))
                     finishAffinity()
                 }
+
+                BaseViewModel.Event.HideCircleLoading -> hideCircleLoading()
+                BaseViewModel.Event.ShowCircleLoading -> showCircleLoading()
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -194,12 +221,27 @@ abstract class BaseActivity<B : ViewDataBinding, VM : BaseViewModel>(
             e.printStackTrace()
         }
     }
-    // 상태바 색상 설정 함수
-    protected fun setStatusBarColor(color: Int) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            window.statusBarColor = color
+
+    private fun showCircleLoading() {
+        try {
+            if (::lottieLoadingManager.isInitialized) {
+                lottieLoadingManager.showLoading(this)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
+
+    private fun hideCircleLoading() {
+        try {
+            if (::lottieLoadingManager.isInitialized) {
+                lottieLoadingManager.hideLoading()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
     // 다크 모드인지 확인하는 함수
     protected fun isDarkMode(): Boolean {
         val currentNightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
@@ -225,7 +267,9 @@ fun AppCompatActivity.setupUI(view: View) {
     if (view is ViewGroup) {
         for (i in 0 until view.childCount) {
             val innerView = view.getChildAt(i)
-            innerView.setupTouchEffect()
+            if (innerView is Button) {
+                innerView.setupTouchEffect()
+            }
         }
     }
 }

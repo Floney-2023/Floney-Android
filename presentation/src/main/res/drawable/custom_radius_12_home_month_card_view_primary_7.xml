@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 바탕 shape -->
+    <item>
+        <shape>
+            <solid android:color="@color/primary7"/>
+            <corners android:radius="12dp"/>
+        </shape>
+    </item>
+
+    <!-- inset을 사용한 흰색 네모 (오른쪽 모서리만 둥글게) -->
+    <item>
+        <inset
+            android:insetLeft="12dp">
+            <shape>
+                <solid android:color="@android:color/white"/>
+                <corners
+                    android:topLeftRadius="0dp"
+                    android:bottomLeftRadius="0dp"
+                    android:topRightRadius="12dp"
+                    android:bottomRightRadius="12dp"/>
+            </shape>
+        </inset>
+    </item>
+</layer-list>

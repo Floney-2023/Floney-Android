@@ -14,8 +14,10 @@ class PostBooksLinesUseCase(private val bookRepository: BookRepository) {
        description: String,
        except: Boolean,
        nickname: String,
-       repeatDuration: String
+       repeatDuration: String,
+       memo: String,
+       imageUrl: List<String>,
     ): Result<PostBooksLinesModel> {
-        return bookRepository.postBooksLines(bookKey, money, flow, asset, line, lineDate, description, except, nickname, repeatDuration)
+        return bookRepository.postBooksLines(bookKey, money, flow, asset, line, lineDate, description, except, nickname, repeatDuration, memo, imageUrl)
     }
 }

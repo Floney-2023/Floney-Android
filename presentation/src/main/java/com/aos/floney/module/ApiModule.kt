@@ -39,7 +39,7 @@ object ApiModule {
 
     @Singleton
     @Provides
-    fun provideAuthInterceptor(prefs: SharedPreferenceUtil): Authenticator {
+    fun provideAuthInterceptor(prefs: SharedPreferenceUtil): AuthInterceptor {
         return AuthInterceptor(prefs)
     }
 

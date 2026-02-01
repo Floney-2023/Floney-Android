@@ -25,26 +25,27 @@ import javax.inject.Inject
 @HiltViewModel
 class MyPageAlarmViewModel @Inject constructor(
     private val prefs: SharedPreferenceUtil,
-    private val mypageSearchUseCase : MypageSearchUseCase,
-    private val alarmInformGetUseCase : AlarmInformGetUseCase,
-    private val alarmUpdateGetUseCase : AlarmUpdateGetUseCase
-): BaseViewModel() {
+    private val mypageSearchUseCase: MypageSearchUseCase,
+    private val alarmInformGetUseCase: AlarmInformGetUseCase,
+    private val alarmUpdateGetUseCase: AlarmUpdateGetUseCase
+) : BaseViewModel() {
 
-    // 알람 조회 정보
+    // 해당 가계부 알람 조회 정보
     private var _alarmList = MutableLiveData<List<UiAlarmGetModel>>()
     val alarmList: LiveData<List<UiAlarmGetModel>> get() = _alarmList
 
+    // 현재 보여지고 있는 가계부 index
     var index = MutableLiveData<Int>(0)
 
-    // 알람 조회 정보
+    // 가계부 정보 리스트
     private var _bookList = MutableLiveData<List<MyBooks>>()
     val bookList: LiveData<List<MyBooks>> get() = _bookList
 
-    // 다음 정산 페이지
+    // 가계부 정보 가져온 여부
     private var _complete = MutableEventFlow<Boolean>()
     val complete: EventFlow<Boolean> get() = _complete
 
-    // 다음 정산 페이지
+    // 이전 페이지
     private var _back = MutableEventFlow<Boolean>()
     val back: EventFlow<Boolean> get() = _back
 
@@ -53,59 +54,49 @@ class MyPageAlarmViewModel @Inject constructor(
         index.value = 0
         searchMypageItems()
     }
-    fun searchMypageItems()
-    {
+
+    fun searchMypageItems() {
         viewModelScope.launch(Dispatchers.IO) {
             mypageSearchUseCase().onSuccess {
                 _bookList.postValue(it.myBooks)
-                _complete.emit(true)
+                bookList.value.let { _complete.emit(true) }// 가계부 알람 값이 있으면, 세부 정보를 읽어온다.
             }.onFailure {
                 baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
             }
         }
     }
+
     // 알람 내역 불러오기
-    fun getAlarmInform(){
-            viewModelScope.launch(Dispatchers.IO) {
-                _bookList.value?.let { books ->
-                    if (index.value != null && index.value!! < books.size) {
-                        val bookKey = books[index.value!!].bookKey
-                        alarmInformGetUseCase(bookKey).onSuccess { alarmList ->
-                            _alarmList.postValue(alarmList)
-                            setAlarmUpdate()
-                        }.onFailure {
-                            baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
-                        }
-                    }
-                }
+    fun getAlarmInform(bookKey: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            alarmInformGetUseCase(bookKey).onSuccess { alarmList ->
+                _alarmList.postValue(alarmList)
+                setAlarmUpdate(bookKey)
+            }.onFailure {
+                baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
             }
+        }
     }
+
     // 알람 읽음 처리
-    fun setAlarmUpdate()
-    {
+    fun setAlarmUpdate(bookKey: String) {
         viewModelScope.launch(Dispatchers.IO) {
             _bookList.value?.let { books ->
-                if (index.value != null && index.value!! < books.size) {
-                    val bookKey = books[index.value!!].bookKey
-                    _alarmList.value?.map {
-                        alarmUpdateGetUseCase(bookKey, it.id).onSuccess {
+                _alarmList.value?.map {
+                    alarmUpdateGetUseCase(bookKey, it.id).onSuccess {
 
-                        }.onFailure {
-                            baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
-                        }
+                    }.onFailure {
+                        baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
                     }
                 }
             }
         }
     }
+
     // exit 버튼 클릭 -> 처음 정산하기 페이지
     fun onClickedExit() {
         viewModelScope.launch {
             _back.emit(true)
         }
-    }
-    fun onClickFlow(flow: Int) {
-        index.value = flow
-        getAlarmInform()
     }
 }

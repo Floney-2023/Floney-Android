@@ -418,7 +418,7 @@
         <item name="bottomSheetStyle">@style/AppModalStyle</item>
         <item name="android:windowIsFloating">false</item>
         <item name="android:statusBarColor">@android:color/transparent
-        </item> <!-- And then this will be needed -->
+        </item> <!-- Changed to transparent -->
         <item name="android:navigationBarColor">@android:color/transparent</item>
     </style>
 

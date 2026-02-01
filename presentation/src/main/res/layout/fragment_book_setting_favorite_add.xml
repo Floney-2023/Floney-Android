@@ -66,7 +66,7 @@
             android:gravity="left|center_vertical"
             android:hint="금액을 입력하세요"
             android:maxLength="18"
-            android:onTextChanged="@{vm.onCostTextChanged}"
+            android:onTextChanged="@{vm::onCostTextChanged}"
             android:text="@{vm.cost}"
             android:textColor="@color/primary2"
             android:textColorHint="@color/grayscale9"
@@ -241,18 +241,22 @@
             app:layout_constraintStart_toStartOf="@id/tv_category"
             app:layout_constraintTop_toBottomOf="@id/tv_content" />
 
-        <Switch
-            android:layout_width="wrap_content"
-            android:layout_height="24dp"
+        <com.suke.widget.SwitchButton
+            android:id="@+id/switch_button"
+            android:layout_width="56dp"
+            android:layout_height="36dp"
             android:layout_marginEnd="18dp"
-            android:background="@null"
-            android:onCheckedChanged="@{(switch, checked) -> vm.onDeleteCheckedChange(checked)}"
-            android:thumb="@drawable/switch_thumb"
-            android:track="@drawable/switch_track_selector"
             android:visibility="@{vm.flow.equals(`이체`) ? View.GONE : View.VISIBLE}"
             app:layout_constraintBottom_toBottomOf="@id/tv_delete_plan"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/tv_delete_plan" />
+            app:layout_constraintTop_toTopOf="@id/tv_delete_plan"
+            app:onCheckedChanged="@{vm.onCheckedChangeListener}"
+            app:sb_background="@color/grayscale9"
+            app:sb_border_width="1.5dp"
+            app:sb_checked_color="@color/primary5"
+            app:sb_show_indicator="false"
+            app:sb_uncheck_color="@color/grayscale9" />
+
         <androidx.appcompat.widget.AppCompatButton
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -264,6 +268,6 @@
             android:textSize="14dp"
             android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:onClick="@{() -> vm.postAddFavorite()}" />
+            android:onClick="@{() -> vm.onClickSaveBtn()}" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -40,7 +40,6 @@
             android:layout_width="34dp"
             android:layout_height="34dp"
             android:onClick="@{() -> vm.onClickSettingPage()}"
-            android:visibility="@{vm.onClickedShowDetail != null ? View.INVISIBLE : View.VISIBLE}"
             app:cardCornerRadius="20dp"
             app:cardElevation="0dp"
             app:layout_constraintBottom_toBottomOf="@id/iv_logo"
@@ -174,16 +173,6 @@
             app:layout_constraintStart_toStartOf="@id/guideline_start"
             app:layout_constraintTop_toBottomOf="@id/iv_previous_month" />
 
-        <View
-            android:id="@+id/view2"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:background="#b3000000"
-            android:onClick="@{() -> vm.onClickCloseShowDetail()}"
-            android:visibility="@{vm.onClickedShowDetail != null ? View.VISIBLE : View.GONE}"
-            app:layout_constraintBottom_toBottomOf="@id/cl_show_detail"
-            app:layout_constraintTop_toTopOf="parent" />
-
         <FrameLayout
             android:id="@+id/ad_banner"
             android:layout_width="match_parent"
@@ -192,13 +181,37 @@
             app:layout_constraintBottom_toTopOf="@+id/ll_bottom_navigation"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"/>
+
+        <View
+            android:id="@+id/view2"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="#b3000000"
+            android:onClick="@{() -> vm.onClickCloseShowDetail()}"
+            android:visibility="@{vm.onClickedShowDetail != null || vm.subscribePopupShow ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="@id/cl_show_detail"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <include
+            android:id="@+id/include_popup_subscribe"
+            layout="@layout/item_popup_subscribe_use"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="16dp"
+            android:visibility="@{ vm.subscribePopupShow ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toTopOf="@+id/ll_bottom_navigation"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cl_show_detail"
             android:layout_width="0dp"
             android:layout_height="384dp"
             android:background="@drawable/custom_radius_top_left_right_12_solid_white"
             android:backgroundTint="@null"
-            android:visibility="@{vm.onClickedShowDetail != null ? View.VISIBLE : View.GONE}"
+            android:visibility="@{vm.onClickedShowDetail != null  &amp;&amp; vm.subscribePopupShow == false ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toTopOf="@+id/ll_bottom_navigation"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
@@ -261,14 +274,28 @@
                 tools:listitem="@layout/item_day_history" />
 
             <ImageView
-                android:layout_width="80dp"
-                android:layout_height="86dp"
-                android:src="@drawable/not_exist_history"
+                android:id="@+id/imageView3"
+                android:layout_width="50dp"
+                android:layout_height="84dp"
+                android:src="@drawable/icon_empty_list"
                 android:visibility="@{vm.getMoneyDayList.size() > 0 ? View.GONE : View.VISIBLE}"
                 app:layout_constraintBottom_toBottomOf="@id/rv_show_detail"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="내역이 없습니다."
+                android:textColor="@color/grayscale6"
+                android:textSize="12dp"
+                android:fontFamily="@font/pretendard_medium"
+                android:visibility="@{vm.getMoneyDayList.size() > 0 ? View.GONE : View.VISIBLE}"
+                app:layout_constraintEnd_toEndOf="@+id/imageView3"
+                app:layout_constraintStart_toStartOf="@+id/imageView3"
+                app:layout_constraintTop_toBottomOf="@+id/imageView3" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

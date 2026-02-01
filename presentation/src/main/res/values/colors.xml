@@ -31,6 +31,8 @@
     <color name="grayscale10">#F1F1F1</color>
     <color name="grayscale11">#F4F4F4</color>
     <color name="grayscale12">#FAFAFA</color>
+    <color name="grayscale13">#878787</color>
+    <color name="grayscale14">#464646</color>
 
     <!--blue color-->
     <color name="blue1">#0060E5</color>
@@ -72,6 +74,7 @@
     <color name="background1">#F5F5F5</color>
     <color name="background2">#F6F6F6</color>
     <color name="background3">#FAFAFA</color>
+    <color name="background_dim">#b3000000</color>
 
     <color name="checked_border_color">@color/primary5</color>
     <color name="checked_background_color">@color/primary5</color>

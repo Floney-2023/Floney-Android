@@ -1,24 +1,21 @@
 package com.aos.floney.view.book.setting
 
-import android.os.Build
-import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat.getString
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.aos.data.util.CommonUtil
-import com.aos.floney.R
 import com.aos.floney.base.BaseViewModel
 import com.aos.floney.ext.parseErrorMsg
 import com.aos.floney.util.EventFlow
 import com.aos.floney.util.MutableEventFlow
-import com.aos.model.user.UiMypageSearchModel
-import com.aos.usecase.mypage.MypageSearchUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
 import com.aos.data.util.SharedPreferenceUtil
+import com.aos.data.util.SubscriptionDataStoreUtil
+import com.aos.floney.R
 import com.aos.floney.util.getCurrentDateTimeString
 import com.aos.model.book.UiBookSettingModel
 import com.aos.model.user.MyBooks
@@ -27,8 +24,8 @@ import com.aos.usecase.booksetting.BooksOutUseCase
 import com.aos.usecase.booksetting.BooksSettingGetUseCase
 import com.aos.usecase.home.CheckUserBookUseCase
 import com.aos.usecase.mypage.AlarmSaveGetUseCase
-import com.aos.usecase.mypage.RecentBookkeySaveUseCase
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 
@@ -39,7 +36,8 @@ class BookSettingMainViewModel @Inject constructor(
     private val booksInitUseCase : BooksInitUseCase,
     private val booksOutUseCase: BooksOutUseCase,
     private val checkUserBookUseCase: CheckUserBookUseCase,
-    private val alarmSaveGetUseCase : AlarmSaveGetUseCase
+    private val alarmSaveGetUseCase : AlarmSaveGetUseCase,
+    private val subscriptionDataStoreUtil: SubscriptionDataStoreUtil
 ): BaseViewModel() {
 
     // 회원 닉네임
@@ -49,6 +47,14 @@ class BookSettingMainViewModel @Inject constructor(
     // 가계부 리스트
     private var _mypageList = MutableLiveData<List<MyBooks>>()
     val mypageList: LiveData<List<MyBooks>> get() = _mypageList
+
+    // 가계부 인원 수 텍스트
+    private var _bookMember = MutableLiveData<String>()
+    val bookMember: LiveData<String> get() = _bookMember
+
+    // 가계부 구독 혜택 활성 여부
+    private var _isSubscribeValid = MutableLiveData<Boolean>()
+    val isSubscribeValid: LiveData<Boolean> get() = _isSubscribeValid
 
 
     // 이전 페이지
@@ -92,7 +98,6 @@ class BookSettingMainViewModel @Inject constructor(
     private var _invitePage = MutableEventFlow<Boolean>()
     val invitePage: EventFlow<Boolean> get() = _invitePage
 
-
     // 친구 초대 페이지
     private var _repeatPage = MutableEventFlow<Boolean>()
     val repeatPage: EventFlow<Boolean> get() = _repeatPage
@@ -109,6 +114,46 @@ class BookSettingMainViewModel @Inject constructor(
     private var _favoritePage = MutableEventFlow<Boolean>()
     val favoritePage: EventFlow<Boolean> get() = _favoritePage
 
+    // 가계부 사용자 펼쳐진 여부
+    private var _isFold = MutableLiveData<Boolean>(true)
+    val isFold: LiveData<Boolean> get() = _isFold
+
+
+    init {
+        viewModelScope.launch {
+            withContext(Dispatchers.Default) {
+                _isFold.postValue(prefs.getBoolean("isFold", true))
+            }
+        }
+    }
+    
+    private fun getSubscribeBook() {
+        viewModelScope.launch {
+            val isBookSubscribe = subscriptionDataStoreUtil.getBookSubscribe().first()
+
+            // 가계부 구독 혜택 여부에 따른 Floney Plus+ <icon chip> 표시
+            _isSubscribeValid.postValue(isBookSubscribe)
+
+            // 가계부 인원수 세팅 : 구독 중인 경우 최대 10명, 구독 안한 경우 최대 4명
+            val maxMembercount = if (isBookSubscribe) 10 else 4
+
+            bookSettingInfo.value.let {
+                val text = "${it?.ourBookUsers?.size}/${maxMembercount}명"
+                _bookMember.postValue(text)
+            }
+        }
+    }
+
+    fun onClickFold() {
+        viewModelScope.launch {
+            withContext(Dispatchers.Default) {
+                _isFold.postValue(!_isFold.value!!)
+                prefs.setBoolean("isFold", !_isFold.value!!)
+            }
+        }
+    }
+
+
     // 마이페이지 정보 읽어오기
     fun searchBookSettingItems()
     {
@@ -119,6 +164,7 @@ class BookSettingMainViewModel @Inject constructor(
 
                 CommonUtil.bookProfile = it.bookImg
                 _bookSettingInfo.postValue(it.copy(ourBookUsers = sortedList))
+                getSubscribeBook() // 가계부 인원 텍스트 설정
             }.onFailure {
                 baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@BookSettingMainViewModel)))
             }

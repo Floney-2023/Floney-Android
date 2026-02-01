@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:bind="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="vm"
+            type="com.aos.floney.view.subscribe.SubscribePlanViewModel" />
+        <import type="android.view.View" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".view.subscribe.SubscribePlanActivity">
+
+        <ImageView
+            android:id="@+id/iv_icon_exit"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="22dp"
+            android:onClick="@{() -> vm.onClickedExit()}"
+            android:clickable="true"
+            android:padding="5dp"
+            android:src="@drawable/icon_exit"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tv_settlement_see_title" />
+
+        <TextView
+            android:id="@+id/tv_settlement_see_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="36dp"
+            android:fontFamily="@font/pretendard_semibold"
+            android:text="@string/subscribe_plan_header"
+            android:textSize="16dp"
+            android:textColor="@color/grayscale1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/nestedScrollView3"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="18dp"
+            app:layout_constraintBottom_toTopOf="@+id/cl_subscribe"
+            app:layout_constraintTop_toBottomOf="@+id/tv_settlement_see_title">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/img_subscribe_plan"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:src="@drawable/item_subscribe_plan"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tv_subscribe_plan_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/pretendard_bold"
+                    android:gravity="center"
+                    android:text="@string/subscribe_plan_title"
+                    android:textColor="@color/grayscale2"
+                    android:textSize="20dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/img_subscribe_plan" />
+
+                <TextView
+                    android:id="@+id/textView7"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="@font/pretendard_medium"
+                    android:gravity="center"
+                    android:text="@string/subscribe_plan_inform"
+                    android:textColor="@color/grayscale6"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_subscribe_plan_title" />
+
+                <ImageView
+                    android:id="@+id/img_subscribe_inform"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="26dp"
+                    android:layout_marginTop="80dp"
+                    android:adjustViewBounds="true"
+                    android:src="@drawable/item_subscribe_inform"
+                    app:layout_constraintTop_toBottomOf="@+id/textView7"
+                    tools:layout_editor_absoluteX="25dp" />
+
+                <ImageView
+                    android:id="@+id/img_subscribe_question"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="52dp"
+                    android:adjustViewBounds="true"
+                    android:src="@drawable/item_subscribe_question"
+                    app:layout_constraintTop_toBottomOf="@+id/img_subscribe_inform" />
+
+                <TextView
+                    android:id="@+id/tv_subscribe_plan_infrom_detail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginHorizontal="24dp"
+                    android:textColor="@color/grayscale2"
+                    android:fontFamily="@font/pretendard_regular"
+                    android:textSize="12dp"
+                    android:lineSpacingExtra="4sp"
+                    android:translationY="-1.84sp"
+                    android:text="@string/subscribe_plan_infrom_detail"
+                    app:layout_constraintTop_toBottomOf="@+id/img_subscribe_question"/>
+                <TextView
+                    android:id="@+id/tv_subscribe_plan_infrom_notice"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/grayscale2"
+                    android:fontFamily="@font/pretendard_regular"
+                    android:layout_marginHorizontal="24dp"
+                    android:textSize="12dp"
+                    android:layout_marginTop="1dp"
+                    android:lineSpacingExtra="4sp"
+                    android:translationY="-1.84sp"
+                    android:text="@string/subscribe_plan_infrom_notice"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_subscribe_plan_infrom_detail"/>
+
+                <TextView
+                    android:id="@+id/tv_subscribe_plan_infrom_service"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="24dp"
+                    android:layout_marginBottom="50dp"
+                    android:fontFamily="@font/pretendard_regular"
+                    android:lineSpacingExtra="4sp"
+                    android:layout_marginTop="1dp"
+                    android:text="@string/subscribe_plan_infrom_service"
+                    android:textColor="@color/grayscale2"
+                    android:textSize="12dp"
+                    android:translationY="-1.84sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_subscribe_plan_infrom_notice"
+                    tools:layout_editor_absoluteX="24dp" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.core.widget.NestedScrollView>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_subscribe"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <View
+                android:id="@+id/view_subsribe_line"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/grayscale10"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="22dp"
+                android:background="@drawable/custom_radius_12_solid_primary1"
+                android:fontFamily="@font/pretendard_bold"
+                android:onClick="@{() -> vm.onClickSubscribe()}"
+                android:text="@string/subscribe_apply_btn"
+                android:textColor="@color/white"
+                android:textSize="14dp"
+                android:textAllCaps="false"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:layout_editor_absoluteX="20dp" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

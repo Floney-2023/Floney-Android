@@ -27,7 +27,6 @@ import com.aos.data.entity.response.settlement.PostBooksOutcomesEntity
 import com.aos.data.entity.response.settlement.PostNaverShortenUrlEntity
 import com.aos.data.entity.response.settlement.PostSettlementAddEntity
 import com.aos.data.util.CurrencyUtil
-import com.aos.data.util.checkDecimalPoint
 import com.aos.model.book.BudgetItem
 import com.aos.model.book.GetBooksCodeModel
 import com.aos.model.book.GetBooksInfoCurrencyModel
@@ -71,6 +70,7 @@ import com.aos.model.book.UiBookEntranceModel
 import com.aos.model.book.UiBookFavoriteModel
 import com.aos.model.book.UiBookRepeatModel
 import com.aos.model.home.CarryOverInfo
+import com.aos.model.home.ImageUrls
 import com.aos.model.settlement.NaverShortenUrlModel
 
 // 유저 가계부 유효 확인
@@ -81,91 +81,53 @@ fun GetCheckUserBookEntity.toGetCheckUserBookModel(): GetCheckUserBookModel {
 // 캘린더 조회
 fun GetBookMonthEntity.toUiBookMonthModel(): UiBookMonthModel {
     val listData = arrayListOf<MonthMoney>()
-    var tempDay = ""
-    var tempExpenses: Expenses? = null
     var tempDate = ""
-    var tempOutcome = ""
 
     val calendar = Calendar.getInstance()
     val todayDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.time)
 
-    this.expenses.forEach {
+    // 날짜에 따라 지출, 수입으로 묶어 설정한다.
+    expenses.groupBy { it.date }.forEach { (date, items) ->
+        val (year, month, dayStr) = date.split("-")
+        val day = dayStr.toInt()
+        tempDate = date
 
-        if (it.date == tempDate) {
-            tempExpenses?.outcome = tempOutcome
-            listData.add(
-                MonthMoney(
-                    "${it.date.split("-")[0].toInt()}",
-                    "${it.date.split("-")[1].toInt()}",
-                    "${it.date.split("-")[2].toInt()}",
-                    Expenses(
-                        date = it.date,
-                        outcome = when {
-                            // 첫 번째 조건: money가 0.0이고 날짜가 1일이 아닌 경우
-                            it.money.toString() == "0.0" && it.date.split("-")[2].toInt() != 1 -> ""
+        val incomeItem = items.getOrNull(0)
+        val outcomeItem = items.getOrNull(1)
 
-                            // 두 번째 조건: 날짜가 1일인 경우
-                            it.date.split("-")[2].toInt() == 1 -> {
-                                when {
-                                    // 이월 상태가 없는 경우
-                                    !carryOverInfo.carryOverStatus -> {
-                                        if (it.money.toString() == "0.0") ""
-                                        else "-${NumberFormat.getNumberInstance().format(it.money)}"
-                                    }
-                                    // 이월 상태가 있는 경우
-                                    else -> {
-                                        val totalMoney = it.money + kotlin.math.abs(carryOverInfo.carryOverMoney)
-                                        if (kotlin.math.abs(totalMoney) >= 1e-9 && carryOverInfo.carryOverMoney < 0) {
-                                            "-${NumberFormat.getNumberInstance().format(totalMoney)}"
-                                        } else {
-                                            ""
-                                        }
-                                    }
-                                }
-                            }
-                            // 기본 조건: 위 조건에 해당하지 않는 경우
-                            else -> "-${NumberFormat.getNumberInstance().format(it.money)}"
-                        },
-                        income = tempExpenses!!.income
-                    ),
-                    todayDate == it.date
-                )
+        val income = incomeItem?.let {
+            calculateFormattedAmount(
+                money = it.money,
+                day = day,
+                carryOverStatus = carryOverInfo.carryOverStatus,
+                carryOverMoney = carryOverInfo.carryOverMoney,
+                isIncome = true
             )
-        } else {
-            tempDate = it.date
-            tempOutcome = "-${NumberFormat.getNumberInstance().format(it.money)}"
-            tempDay = it.date.split("-")[2].toInt().toString()
-            tempExpenses = Expenses(
-                date = it.date,
-                outcome = tempOutcome,
-                income = when {
-                    // 첫 번째 조건: money가 0.0이고 날짜가 1일이 아닌 경우
-                    it.money.toString() == "0.0" && it.date.split("-")[2].toInt() != 1 -> ""
+        } ?: ""
 
-                    // 두 번째 조건: 날짜가 1일인 경우
-                    it.date.split("-")[2].toInt() == 1 -> {
-                        when {
-                            // 이월 상태가 없는 경우
-                            !carryOverInfo.carryOverStatus -> {
-                                if (it.money.toString() == "0.0") ""
-                                else "+${NumberFormat.getNumberInstance().format(it.money)}"
-                            }
-                            // 이월 상태가 있는 경우
-                            else -> {
-                                val totalMoney = it.money + kotlin.math.abs(carryOverInfo.carryOverMoney)
-                                if (kotlin.math.abs(totalMoney) >= 1e-9 && carryOverInfo.carryOverMoney > 0) {
-                                    "+${NumberFormat.getNumberInstance().format(totalMoney)}"
-                                } else {
-                                    ""
-                                }
-                            }
-                        }
-                    }
-                    // 기본 조건: 위 조건에 해당하지 않는 경우
-                    else -> "+${NumberFormat.getNumberInstance().format(it.money)}"
-                }
+        val outcome = outcomeItem?.let {
+            calculateFormattedAmount(
+                money = it.money,
+                day = day,
+                carryOverStatus = carryOverInfo.carryOverStatus,
+                carryOverMoney = carryOverInfo.carryOverMoney,
+                isIncome = false
             )
-        }
+        } ?: ""
+
+        listData.add(
+            MonthMoney(
+                year,
+                month.toInt().toString(),
+                day.toString(),
+                Expenses(
+                    date = date,
+                    income = income,
+                    outcome = outcome
+                ),
+                todayDate == date
+            )
+        )
     }
 
     // 날짜 앞 빈공백 추가
@@ -183,51 +145,80 @@ fun GetBookMonthEntity.toUiBookMonthModel(): UiBookMonthModel {
     }
     list.addAll(listData)
 
-    return if (carryOverInfo.carryOverStatus) {
-        if (carryOverInfo.carryOverMoney >= 0) {
-            // 총 수입에 포함
-            UiBookMonthModel(
-                list, ExtData(
-                    "${
-                        NumberFormat.getNumberInstance()
-                            .format(totalIncome + carryOverInfo.carryOverMoney)
-                    }${CurrencyUtil.currency}", "${NumberFormat.getNumberInstance().format(totalOutcome)}${CurrencyUtil.currency}"
-                ), CarryOverInfo(carryOverInfo.carryOverStatus, NumberFormat.getNumberInstance()
-                    .format(carryOverInfo.carryOverMoney))
-            )
+    // 이월 설정 데이터
+    val carryOverValue = carryOverInfo.carryOverMoney
+    val adjustedIncome = if (carryOverInfo.carryOverStatus && carryOverValue >= 0) {
+        totalIncome + carryOverValue
+    } else {
+        totalIncome
+    }
+
+    val adjustedOutcome = if (carryOverInfo.carryOverStatus && carryOverValue < 0) {
+        totalOutcome + carryOverValue.absoluteValue
+    } else {
+        totalOutcome
+    }
+
+    val adjustedBalance = adjustedIncome - adjustedOutcome
+    val formatter = NumberFormat.getNumberInstance()
+
+    return UiBookMonthModel(
+        list,
+        ExtData(
+            totalIncome = "${formatter.format(adjustedIncome)}${CurrencyUtil.currency}",
+            totalOutcome = "${formatter.format(adjustedOutcome)}${CurrencyUtil.currency}",
+            totalBalance = "${formatter.format(adjustedBalance)}${CurrencyUtil.currency}"
+        ),
+        CarryOverInfo(
+            carryOverInfo.carryOverStatus,
+            formatter.format(carryOverValue)
+        )
+    )
+}
+
+fun calculateFormattedAmount(
+    money: Double,
+    day: Int,
+    carryOverStatus: Boolean,
+    carryOverMoney: Double,
+    isIncome: Boolean
+): String {
+    val symbol = if (isIncome) "+" else "-"
+    val isCarryPositive = carryOverMoney > 0
+    val isCarryNegative = carryOverMoney < 0
+
+    if (money == 0.0 && day != 1) return ""
+
+    // 1일의 경우, 이월 설정 데이터 여부에 따라 수입, 지출 값 설정
+    return if (day == 1) {
+        if (!carryOverStatus ||
+            (isIncome && !isCarryPositive) ||
+            (!isIncome && !isCarryNegative)
+        ) {
+            if (money == 0.0) "" else "$symbol${NumberFormat.getNumberInstance().format(money)}"
         } else {
-            // 총 지출에 포함
-            UiBookMonthModel(
-                list, ExtData(
-                    "${NumberFormat.getNumberInstance().format(totalIncome)}${CurrencyUtil.currency}", "${
-                        NumberFormat.getNumberInstance()
-                            .format(totalOutcome + kotlin.math.abs(carryOverInfo.carryOverMoney))
-                    }${CurrencyUtil.currency}"
-                ), CarryOverInfo(carryOverInfo.carryOverStatus, NumberFormat.getNumberInstance()
-                    .format(carryOverInfo.carryOverMoney))
-            )
+            val total = money + kotlin.math.abs(carryOverMoney)
+            if (total.absoluteValue >= 1e-9) {
+                "$symbol${NumberFormat.getNumberInstance().format(total)}"
+            } else {
+                ""
+            }
         }
     } else {
-        // 이월 내역 없을 경우
-        UiBookMonthModel(
-            list, ExtData(
-                "${NumberFormat.getNumberInstance().format(totalIncome)}${CurrencyUtil.currency}",
-                "${NumberFormat.getNumberInstance().format(totalOutcome)}${CurrencyUtil.currency}"
-            ), CarryOverInfo(carryOverInfo.carryOverStatus, NumberFormat.getNumberInstance()
-                .format(carryOverInfo.carryOverMoney))
-        )
+        "$symbol${NumberFormat.getNumberInstance().format(money)}"
     }
 }
 
 // 일별 조회
-fun GetBookDaysEntity.toUiBookMonthModel(): UiBookDayModel {
+fun GetBookDaysEntity.toUiBookMonthModel(date: String): UiBookDayModel {
     val dayMoneyList: List<DayMoney> = this.dayLinesResponse.map {
         DayMoney(
             id = it.id,
-            money = if (it.lineCategory == "INCOME") {
-                "+ ${NumberFormat.getNumberInstance().format(it.money)}"
-            } else {
-                "- ${NumberFormat.getNumberInstance().format(it.money)}"
+            money = when (it.lineCategory) {
+                "INCOME" -> "+ ${NumberFormat.getNumberInstance().format(it.money)}"
+                "OUTCOME" -> "- ${NumberFormat.getNumberInstance().format(it.money)}"
+                "TRANSFER" -> NumberFormat.getNumberInstance().format(it.money)
+                else -> "0"
             },
             description = it.description,
             lineCategory = it.lineCategory,
@@ -238,6 +229,13 @@ fun GetBookDaysEntity.toUiBookMonthModel(): UiBookDayModel {
             writerNickName = it.writerNickname,
             writerProfileImg = it.writerProfileImg,
             repeatDuration = getConvertReceiveRepeatValue(it.repeatDuration),
+            memo = it.memo ?: "",
+            imageUrls = it.imageUrls.map { image ->
+                ImageUrls(
+                    image.id,
+                    image.url
+                )
+            },
             seeProfileStatus = false
         )
     }
@@ -256,24 +254,42 @@ fun GetBookDaysEntity.toUiBookMonthModel(): UiBookDayModel {
             totalOutcome = it.money
         }
     }
+
+
+    val carryOverValue = carryOverInfo.carryOverMoney
+    val day = date.split("-")[2].toInt()
+
+    // 1일 일 경우, 이월 설정 값이 있을 때, 수입/지출 값 보정
+    if (carryOverInfo.carryOverStatus && day == 1){
+        totalIncome += maxOf(carryOverValue, 0.0)
+        totalOutcome += maxOf(-carryOverValue, 0.0)
+    }
+
+    val numberFormatter = NumberFormat.getNumberInstance()
+
     return UiBookDayModel(
-        dayMoneyList, ExtData(
-            "${NumberFormat.getNumberInstance().format(totalIncome)}${CurrencyUtil.currency}",
-            "${NumberFormat.getNumberInstance().format(totalOutcome)}${CurrencyUtil.currency}"
-        ), CarryOverInfo(carryOverInfo.carryOverStatus, NumberFormat.getNumberInstance()
-            .format(carryOverInfo.carryOverMoney))
+        dayMoneyList,
+        ExtData(
+            totalIncome ="${numberFormatter.format(totalIncome)}${CurrencyUtil.currency}",
+            totalOutcome = "${numberFormatter.format(totalOutcome)}${CurrencyUtil.currency}",
+            totalBalance = "${numberFormatter.format(totalIncome-totalOutcome)}${CurrencyUtil.currency}"
+        ),
+        CarryOverInfo(
+            carryOverInfo.carryOverStatus,
+            numberFormatter.format(carryOverValue)
+        )
     )
 }
 
 fun GetBookInfoEntity.toUiBookInfoModel(): UiBookInfoModel {
     val ourBookUsers = this.ourBookUsers.map {
         OurBookUsers(
-            name = it.name, profileImg = it.profileImg, role = it.role, me = it.me
+            name = it.name, profileImg = it.profileImg ?: "user_default", role = it.role, me = it.me
         )
     }
     return UiBookInfoModel(
         bookName = this.bookName,
-        bookImg = this.bookImg?:"book_default",
+        bookImg = this.bookImg ?: "book_default",
         startDay = this.startDay,
         seeProfileStatus = this.seeProfileStatus,
         carryOver = this.carryOver,
@@ -319,39 +335,77 @@ fun PostBooksChangeEntity.toPostBooksLinesChangeModel(): PostBooksChangeModel {
 
 // 정렬 기준 정의
 val assetOrder = listOf("현금", "체크카드", "신용카드", "은행")
-val expenseOrder = listOf("식비", "카페/간식", "교통", "주거/통신", "의료/건강", "문화", "여행/숙박", "생활", "패션/미용", "육아", "교육", "경조사", "기타", "미분류")
+val expenseOrder = listOf(
+    "식비",
+    "카페/간식",
+    "교통",
+    "주거/통신",
+    "의료/건강",
+    "문화",
+    "여행/숙박",
+    "생활",
+    "패션/미용",
+    "육아",
+    "교육",
+    "경조사",
+    "기타",
+    "미분류"
+)
 val incomeOrder = listOf("급여", "부수입", "용돈", "금융소득", "사업소득", "상여금", "기타", "미분류")
 val transferOrder = listOf("이체", "저축", "현금", "투자", "보험", "카드대금", "대출", "기타", "미분류")
 
-fun List<GetBookCategoryEntity>.toUiBookCategory(): List<UiBookCategory> {
-    val allOrders = assetOrder + expenseOrder + incomeOrder + transferOrder
-    return this.sortedWith(compareBy({ allOrders.indexOf(it.name).takeIf { it >= 0 } ?: Int.MAX_VALUE }, { it.name }))
+fun List<GetBookCategoryEntity>.toUiBookCategory(parent: String): List<UiBookCategory> {
+    val order = when (parent) {
+        "자산" -> assetOrder
+        "지출" -> expenseOrder
+        "수입" -> incomeOrder
+        "이체" -> transferOrder
+        else -> return this.mapIndexed { idx, it ->
+            UiBookCategory(
+                idx = idx,
+                checked = false,
+                name = it.name,
+                default = it.default
+            )
+        }
+    }
+
+    return this.sortedWith(compareBy({
+        order.indexOf(it.name).takeIf { idx -> idx >= 0 } ?: Int.MAX_VALUE
+    }, { it.name }))
         .mapIndexed { idx, it ->
             UiBookCategory(
-                idx, false, it.name, it.default
+                idx = idx,
+                checked = false,
+                name = it.name,
+                default = it.default
             )
         }
 }
-fun GetSettleUpLastEntity.toGetsettleUpLastModel() : GetSettlementLastModel {
+
+fun GetSettleUpLastEntity.toGetsettleUpLastModel(): GetSettlementLastModel {
     return GetSettlementLastModel(passedDays = this.passedDays)
 }
 
 fun List<GetBooksUsersEntity>.toUiMemberSelectModel(): UiMemberSelectModel {
     val myBookUsers = this.map {
         BookUsers(
-            email = it.email, nickname = it.nickname, profileImg = it.profileImg, isCheck = false
+            email = it.email, nickname = it.nickname, profileImg = it.profileImg ?: "user_default", isCheck = false
         )
     }
     return UiMemberSelectModel(
         booksUsers = myBookUsers
     )
 }
+
 fun List<PostBooksOutcomesEntity>.toUiOutcomesSelectModel(): UiOutcomesSelectModel {
     val myBookOutcomes = this.mapIndexed { index, item ->
         Outcomes(
             id = index, // 인덱스를 id로 사용
             money = item.money.roundToLong(),
-            moneyFormat ="${NumberFormat.getNumberInstance().format(formatAmount(item.money))}${CurrencyUtil.currency}" ,
+            moneyFormat = "${
+                NumberFormat.getNumberInstance().format(formatAmount(item.money))
+            }${CurrencyUtil.currency}",
             category = "${item.category[0]} ‧ ${item.category[1]}",
             assetType = item.assetType,
             content = item.content,
@@ -364,20 +418,30 @@ fun List<PostBooksOutcomesEntity>.toUiOutcomesSelectModel(): UiOutcomesSelectMod
         outcomes = myBookOutcomes
     )
 }
+
 fun PostSettlementAddEntity.toPostSettlementAddModel(): UiSettlementAddModel {
 
     val expenses = this.details.map {
         com.aos.model.settlement.Expenses(
-            money = if (it.money.toInt() == 0 ) "${NumberFormat.getNumberInstance().format(this.totalOutcome.roundToLong())}${CurrencyUtil.currency}" else "${NumberFormat.getNumberInstance().format(it.money.roundToLong() + this.outcome.roundToLong())}${CurrencyUtil.currency}",
+            money = if (it.money.toInt() == 0) "${
+                NumberFormat.getNumberInstance().format(this.totalOutcome.roundToLong())
+            }${CurrencyUtil.currency}" else "${
+                NumberFormat.getNumberInstance()
+                    .format(it.money.roundToLong() + this.outcome.roundToLong())
+            }${CurrencyUtil.currency}",
             userNickname = it.userNickname
         )
     }
 
     val details = this.details.map {
         Details(
-            money = if (it.money.toInt() == 0 ) "${NumberFormat.getNumberInstance().format(this.totalOutcome.roundToLong())}${CurrencyUtil.currency}" else "${NumberFormat.getNumberInstance().format(it.money.roundToLong().absoluteValue)}${CurrencyUtil.currency}",
+            money = if (it.money.toInt() == 0) "${
+                NumberFormat.getNumberInstance().format(this.totalOutcome.roundToLong())
+            }${CurrencyUtil.currency}" else "${
+                NumberFormat.getNumberInstance().format(it.money.roundToLong().absoluteValue)
+            }${CurrencyUtil.currency}",
             userNickname = it.userNickname,
-            useruserProfileImg = it.userProfileImg?: "user_default",
+            useruserProfileImg = it.userProfileImg ?: "user_default",
             moneyInfo = if (it.money < 0) "을 보내야해요." else if (it.money > 0) "을 받아야해요." else "정산할 금액이 없어요."
         )
     }
@@ -385,22 +449,31 @@ fun PostSettlementAddEntity.toPostSettlementAddModel(): UiSettlementAddModel {
         id = this.id,
         startDate = this.startDate,
         endDate = this.endDate,
-        dateString = "${this.startDate.replace('-','.')} - ${this.endDate.replace('-','.')}",
+        dateString = "${this.startDate.replace('-', '.')} - ${this.endDate.replace('-', '.')}",
         userCount = this.userCount,
-        totalOutcome ="${NumberFormat.getNumberInstance().format(this.totalOutcome.roundToLong())}${CurrencyUtil.currency}",
-        outcome = "${NumberFormat.getNumberInstance().format(this.outcome.roundToLong())}${CurrencyUtil.currency}",
+        totalOutcome = "${
+            NumberFormat.getNumberInstance().format(this.totalOutcome.roundToLong())
+        }${CurrencyUtil.currency}",
+        outcome = "${
+            NumberFormat.getNumberInstance().format(this.outcome.roundToLong())
+        }${CurrencyUtil.currency}",
         details = details,
         expenses = expenses
     )
 }
+
 fun List<GetSettlementSeeEntity>.toUiSettlementSeeModel(): UiSettlementSeeModel {
     val myBookSettlements = this.map {
         Settlement(
             id = it.id,
-            dateString = "${it.startDate.replace('-','.')} - ${it.endDate.replace('-','.')}",
+            dateString = "${it.startDate.replace('-', '.')} - ${it.endDate.replace('-', '.')}",
             userCount = "${it.userCount}명",
-            totalOutcome = "${NumberFormat.getNumberInstance().format(it.totalOutcome)}${CurrencyUtil.currency}",
-            outcome = "${NumberFormat.getNumberInstance().format(it.outcome)}${CurrencyUtil.currency}"
+            totalOutcome = "${
+                NumberFormat.getNumberInstance().format(it.totalOutcome)
+            }${CurrencyUtil.currency}",
+            outcome = "${
+                NumberFormat.getNumberInstance().format(it.outcome)
+            }${CurrencyUtil.currency}"
         )
     }
     return UiSettlementSeeModel(
@@ -412,41 +485,117 @@ fun GetBooksInfoEntity.toUiBookSettingModel(): UiBookSettingModel {
     val myBookUsers = this.ourBookUsers.map {
         val roleString = if (it.me) "${it.role}·나" else it.role
         MyBookUsers(
-            name = it.name, profileImg = it.profileImg, email = it.email, role = roleString, me = it.me
+            name = it.name,
+            profileImg = it.profileImg ?: "user_default",
+            email = it.email,
+            role = roleString,
+            me = it.me
         )
     }
     return UiBookSettingModel(
         bookName = this.bookName,
-        bookImg = this.bookImg?:"",
-        startDay = "${this.startDay.replace('-','.')} 개설",
+        bookImg = this.bookImg ?: "",
+        startDay = "${this.startDay.replace('-', '.')} 개설",
         seeProfileStatus = this.seeProfileStatus,
         carryOver = this.carryOver,
         ourBookUsers = myBookUsers
     )
 }
 
-fun PostBooksInfoCurrencyEntity.toPostBooksInfoCurrencyModel() : PostBooksInfoCurrencyModel {
-    return PostBooksInfoCurrencyModel(myBookCurrency = this.myBookCurrency ?:"")
+fun PostBooksInfoCurrencyEntity.toPostBooksInfoCurrencyModel(): PostBooksInfoCurrencyModel {
+    return PostBooksInfoCurrencyModel(myBookCurrency = this.myBookCurrency ?: "")
 }
 
-fun GetBooksInfoCurrencyEntity.toGetBooksInfoCurrencyModel() : GetBooksInfoCurrencyModel {
+fun GetBooksInfoCurrencyEntity.toGetBooksInfoCurrencyModel(): GetBooksInfoCurrencyModel {
     return GetBooksInfoCurrencyModel(myBookCurrency = this.myBookCurrency ?: "")
 }
 
 fun GetBooksBudgetEntity.toUiBookBudgetModel(): UiBookBudgetModel {
     val budgetList = listOf(
-        BudgetItem("1", "${NumberFormat.getNumberInstance().format(formatAmount(this.january))}${CurrencyUtil.currency}", this.january > 0.0),
-        BudgetItem("2", "${NumberFormat.getNumberInstance().format(formatAmount(this.february))}${CurrencyUtil.currency}", this.february > 0.0),
-        BudgetItem("3", "${NumberFormat.getNumberInstance().format(formatAmount(this.march))}${CurrencyUtil.currency}", this.march > 0.0),
-        BudgetItem("4", "${NumberFormat.getNumberInstance().format(formatAmount(this.april))}${CurrencyUtil.currency}", this.april > 0.0),
-        BudgetItem("5", "${NumberFormat.getNumberInstance().format(formatAmount(this.may))}${CurrencyUtil.currency}", this.may > 0.0),
-        BudgetItem("6", "${NumberFormat.getNumberInstance().format(formatAmount(this.june))}${CurrencyUtil.currency}", this.june > 0.0),
-        BudgetItem("7", "${NumberFormat.getNumberInstance().format(formatAmount(this.july))}${CurrencyUtil.currency}", this.july > 0.0),
-        BudgetItem("8", "${NumberFormat.getNumberInstance().format(formatAmount(this.august))}${CurrencyUtil.currency}", this.august > 0.0),
-        BudgetItem("9", "${NumberFormat.getNumberInstance().format(formatAmount(this.september))}${CurrencyUtil.currency}", this.september > 0.0),
-        BudgetItem("10", "${NumberFormat.getNumberInstance().format(formatAmount(this.october))}${CurrencyUtil.currency}", this.october > 0.0),
-        BudgetItem("11", "${NumberFormat.getNumberInstance().format(formatAmount(this.november))}${CurrencyUtil.currency}", this.november > 0.0),
-        BudgetItem("12", "${NumberFormat.getNumberInstance().format(formatAmount(this.december))}${CurrencyUtil.currency}", this.december > 0.0)
+        BudgetItem(
+            "1",
+            "${
+                NumberFormat.getNumberInstance().format(formatAmount(this.january))
+            }${CurrencyUtil.currency}",
+            this.january > 0.0
+        ),
+        BudgetItem(
+            "2",
+            "${
+                NumberFormat.getNumberInstance().format(formatAmount(this.february))
+            }${CurrencyUtil.currency}",
+            this.february > 0.0
+        ),
+        BudgetItem(
+            "3",
+            "${
+                NumberFormat.getNumberInstance().format(formatAmount(this.march))
+            }${CurrencyUtil.currency}",
+            this.march > 0.0
+        ),
+        BudgetItem(
+            "4",
+            "${
+                NumberFormat.getNumberInstance().format(formatAmount(this.april))
+            }${CurrencyUtil.currency}",
+            this.april > 0.0
+        ),
+        BudgetItem(
+            "5",
+            "${
+                NumberFormat.getNumberInstance().format(formatAmount(this.may))
+            }${CurrencyUtil.currency}",
+            this.may > 0.0
+        ),
+        BudgetItem(
+            "6",
+            "${
+                NumberFormat.getNumberInstance().format(formatAmount(this.june))
+            }${CurrencyUtil.currency}",
+            this.june > 0.0
+        ),
+        BudgetItem(
+            "7",
+            "${
+                NumberFormat.getNumberInstance().format(formatAmount(this.july))
+            }${CurrencyUtil.currency}",
+            this.july > 0.0
+        ),
+        BudgetItem(
+            "8",
+            "${
+                NumberFormat.getNumberInstance().format(formatAmount(this.august))
+            }${CurrencyUtil.currency}",
+            this.august > 0.0
+        ),
+        BudgetItem(
+            "9",
+            "${
+                NumberFormat.getNumberInstance().format(formatAmount(this.september))
+            }${CurrencyUtil.currency}",
+            this.september > 0.0
+        ),
+        BudgetItem(
+            "10",
+            "${
+                NumberFormat.getNumberInstance().format(formatAmount(this.october))
+            }${CurrencyUtil.currency}",
+            this.october > 0.0
+        ),
+        BudgetItem(
+            "11",
+            "${
+                NumberFormat.getNumberInstance().format(formatAmount(this.november))
+            }${CurrencyUtil.currency}",
+            this.november > 0.0
+        ),
+        BudgetItem(
+            "12",
+            "${
+                NumberFormat.getNumberInstance().format(formatAmount(this.december))
+            }${CurrencyUtil.currency}",
+            this.december > 0.0
+        )
     )
     return UiBookBudgetModel(
         budgetList = budgetList
@@ -461,12 +610,14 @@ fun formatAmount(amount: Double): Double {
     }
 }
 
-fun PostBooksCategoryAddEntity.toPostBooksCategoryAddModel() : PostBooksCategoryAddModel {
+fun PostBooksCategoryAddEntity.toPostBooksCategoryAddModel(): PostBooksCategoryAddModel {
     return PostBooksCategoryAddModel(name = this.name ?: "")
 }
+
 fun GetBooksCodeEntity.toGetBooksCodeModel(): GetBooksCodeModel {
     return GetBooksCodeModel(this.code ?: "")
 }
+
 fun List<GetBookRepeatEntity>.toUiBookRepeatModel(): List<UiBookRepeatModel> {
     return this.map {
         val repeatDurationInKorean = when (it.repeatDuration) {
@@ -479,15 +630,25 @@ fun List<GetBookRepeatEntity>.toUiBookRepeatModel(): List<UiBookRepeatModel> {
             else -> it.repeatDuration // 만약 매칭되는 값이 없을 경우 기본값 사용
         }
         UiBookRepeatModel(
-            it.id, it.description, repeatDurationInKorean, it.lineSubCategory, it.assetSubCategory, "${NumberFormat.getNumberInstance().format(formatAmount(it.money))}${CurrencyUtil.currency}", false
+            it.id,
+            it.description,
+            repeatDurationInKorean,
+            it.lineSubCategory,
+            it.assetSubCategory,
+            "${
+                NumberFormat.getNumberInstance().format(formatAmount(it.money))
+            }${CurrencyUtil.currency}",
+            false
         )
     }
 }
-fun GetBooksEntity.toUiBookEntranceModel() : UiBookEntranceModel {
+
+fun GetBooksEntity.toUiBookEntranceModel(): UiBookEntranceModel {
     return UiBookEntranceModel(
         bookName = this.bookName,
         bookImg = this.bookImg,
-        bookInfo = formatBookInfo(this.startDay, this.memberCount)
+        bookInfo = formatBookInfo(this.startDay, this.memberCount),
+        bookKey = this.bookKey
     )
 }
 
@@ -496,6 +657,7 @@ fun PostNaverShortenUrlEntity.toNaverShortenUrlModel(): NaverShortenUrlModel {
         result = this.result.url
     )
 }
+
 fun formatBookInfo(startDay: String, memberCount: Int): String {
     // 입력된 날짜 형식
     val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS", Locale.getDefault())
@@ -519,7 +681,9 @@ fun List<GetBookFavoriteEntity>.toUiBookFavorite(): List<UiBookFavoriteModel> {
             lineCategoryName = it.lineCategoryName,
             lineSubcategoryName = it.lineSubcategoryName,
             assetSubcategoryName = it.assetSubcategoryName,
-            money = "${NumberFormat.getNumberInstance().format(formatAmount(it.money))}${CurrencyUtil.currency}",
+            money = "${
+                NumberFormat.getNumberInstance().format(formatAmount(it.money))
+            }${CurrencyUtil.currency}",
             exceptStatus = it.exceptStatus
         )
     }
@@ -540,7 +704,7 @@ fun PostBookFavoriteEntity.toPostBookFavoriteModel(): PostBookFavoriteModel {
 
 private fun getConvertReceiveRepeatValue(value: String): String {
     Timber.e("value $value")
-    return when(value) {
+    return when (value) {
         "NONE" -> "없음"
         "EVERYDAY" -> "매일"
         "WEEK" -> "매주"

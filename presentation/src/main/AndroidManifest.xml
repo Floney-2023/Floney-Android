@@ -5,9 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
-    <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" />
+    <uses-permission android:name="com.android.vending.BILLING" />
 
     <application
         android:name=".di.AppApplication"
@@ -35,6 +33,7 @@
             android:exported="false" />
         <activity
             android:name=".view.home.HomeActivity"
+            android:theme="@style/Theme.Floney.StatusBarDark"
             android:exported="false" />
         <activity
             android:name=".view.password.find.PasswordFindActivity"
@@ -50,6 +49,7 @@
             android:exported="false" />
         <activity
             android:name=".view.login.LoginActivity"
+            android:launchMode="singleTop"
             android:exported="false" />
         <activity
             android:name=".view.onboard.OnBoardActivity"
@@ -90,6 +90,26 @@
             android:exported="false" />
         <activity
             android:name=".view.book.setting.favorite.BookFavoriteActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.subscribe.SubscribeInformActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.subscribe.SubscribePlanActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.subscribe.UnsubscribeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.history.memo.InsertMemoActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.history.picture.InsertPictureActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.history.picture.InsertPictureDetailActivity"
+            android:exported="false" />
+        <activity android:name=".view.history.picture.UploadPreviewActivity"
             android:exported="false" />
         <activity
             android:name=".view.book.entrance.BookEntranceActivity"
@@ -144,6 +164,7 @@
         <meta-data
             android:name="af_dev_key"
             android:value="${appsflyer_dev_key}" />
+        <service android:name="com.amazonaws.mobileconnectors.s3.transferutility.TransferService" android:enabled="true"/>
     </application>
 
 </manifest>

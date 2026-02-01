@@ -58,7 +58,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:fontFamily="@font/pretendard_regular"
-            android:text="2023-10-02"
+            android:text="2024-09-20"
             android:textColor="@color/grayscale6"
             android:textSize="12dp"
             app:layout_constraintStart_toStartOf="@+id/tv_notice_title"

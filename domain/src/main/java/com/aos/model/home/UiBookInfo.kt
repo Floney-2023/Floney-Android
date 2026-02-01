@@ -1,7 +1,5 @@
 package com.aos.model.home
 
-import androidx.recyclerview.widget.DiffUtil
-import timber.log.Timber
 
 data class UiBookInfoModel(
     val bookImg: String? = "book_default",
@@ -14,7 +12,7 @@ data class UiBookInfoModel(
 
 data class OurBookUsers(
     val name: String,
-    val profileImg: String,
+    val profileImg: String? = "user_default",
     val role: String,
     val me: Boolean
 )

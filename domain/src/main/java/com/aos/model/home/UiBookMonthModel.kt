@@ -1,7 +1,6 @@
 package com.aos.model.home
 
 import androidx.recyclerview.widget.DiffUtil
-import timber.log.Timber
 
 
 data class UiBookMonthModel(
@@ -35,6 +34,7 @@ data class MonthMoney(
 data class ExtData(
     val totalIncome: String,
     val totalOutcome: String,
+    val totalBalance : String = "0"
 )
 
 data class Expenses(

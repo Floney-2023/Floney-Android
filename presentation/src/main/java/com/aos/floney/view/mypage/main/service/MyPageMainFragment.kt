@@ -1,42 +1,28 @@
 package com.aos.floney.view.mypage.main.service
 
-import android.app.Activity
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import androidx.databinding.library.baseAdapters.BR
 import androidx.navigation.fragment.findNavController
 import com.aos.floney.BuildConfig
 import com.aos.floney.R
-import com.aos.floney.base.BaseActivity
 import com.aos.floney.base.BaseFragment
-import com.aos.floney.base.BaseViewModel
-import com.aos.floney.base.setupTouchEffect
-import com.aos.floney.base.setupUI
-import com.aos.floney.databinding.ActivityMyPageBinding
 import com.aos.floney.databinding.FragmentMyPageMainBinding
 import com.aos.floney.ext.repeatOnStarted
-import com.aos.floney.view.analyze.AnalyzeActivity
-import com.aos.floney.view.home.HomeActivity
-import com.aos.floney.view.home.HomeMonthTypeFragment
+import com.aos.floney.ext.setViewTouchEffect
+import com.aos.floney.view.book.setting.favorite.BookFavoriteActivity
+import com.aos.floney.view.common.BaseAlertDialog
+import com.aos.floney.view.common.ErrorToastDialog
+import com.aos.floney.view.common.WarningPopupDialog
 import com.aos.floney.view.mypage.MyPageActivity
-import com.aos.floney.view.mypage.alarm.MyPageAlarmActivity
-import com.aos.floney.view.mypage.bookadd.MypageBookAddSelectBottomSheetFragment
-import com.aos.floney.view.mypage.bookadd.codeinput.MyPageBookCodeInputActivity
-import com.aos.floney.view.mypage.bookadd.create.MyPageBookCreateActivity
-import com.aos.floney.view.mypage.inform.MyPageInformActivity
-import com.aos.floney.view.mypage.main.service.MyPageServicePrivacyFragment
-import com.aos.floney.view.mypage.main.service.MyPageServiceTermsFragment
-import com.aos.floney.view.mypage.main.service.MyPageServiceTermsViewModel
-import com.aos.floney.view.mypage.setting.MyPageSettingActivity
-import com.aos.floney.view.settleup.SettleUpActivity
-import com.aos.floney.view.signup.SignUpActivity
 import com.aos.model.user.MyBooks
 import com.aos.model.user.UiMypageSearchModel
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.DecodeFormat
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.FullScreenContentCallback
@@ -46,6 +32,7 @@ import com.google.android.gms.ads.OnUserEarnedRewardListener
 import com.google.android.gms.ads.rewarded.RewardItem
 import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
+import com.google.android.play.core.review.ReviewManagerFactory
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
@@ -53,12 +40,15 @@ import timber.log.Timber
 class MyPageMainFragment : BaseFragment<FragmentMyPageMainBinding, MyPageMainViewModel>(R.layout.fragment_my_page_main), UiMypageSearchModel.OnItemClickListener {
 
     private var mRewardAd: RewardedAd? = null
+
     override fun onItemClick(item: MyBooks) {
         viewModel.settingBookKey(item.bookKey)
     }
+
     override fun onResume() {
         super.onResume()
 
+        viewModel.settingAdvertiseTime()
         viewModel.searchMypageItems()
     }
 
@@ -69,7 +59,7 @@ class MyPageMainFragment : BaseFragment<FragmentMyPageMainBinding, MyPageMainVie
         setUpViewModelObserver()
     }
     private fun setUpUi() {
-        binding.liUserInformView.setupTouchEffect()
+        binding.liUserInformView.setViewTouchEffect()
         binding.setVariable(BR.eventHolder, this@MyPageMainFragment)
     }
 
@@ -91,6 +81,26 @@ class MyPageMainFragment : BaseFragment<FragmentMyPageMainBinding, MyPageMainVie
             }
         }
         repeatOnStarted {
+            viewModel.reviewPage.collect {
+                if(it) {
+                    val manager = ReviewManagerFactory.create(requireContext())
+                    val request = manager.requestReviewFlow()
+                    request.addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            val reviewInfo = task.result
+                            val flow = manager.launchReviewFlow(requireActivity(), reviewInfo)
+                            flow.addOnCompleteListener {
+                                // 리뷰 플로우가 종료된 후의 처리
+                            }
+                        } else {
+                            // 에러 발생 시 처리
+                            ErrorToastDialog(requireContext(), "리뷰 작성하기 페이지 이동 실패하였습니다.").show()
+                        }
+                    }
+                }
+            }
+        }
+        repeatOnStarted {
             viewModel.settingPage.collect {
                 if(it) {
 
@@ -105,6 +115,22 @@ class MyPageMainFragment : BaseFragment<FragmentMyPageMainBinding, MyPageMainVie
 
                     val activity = requireActivity() as MyPageActivity
                     activity.startBottomSheet()
+                } else {
+                    // 구독 안한 유저의 경우 2개 초과 시 구독 유도 팝업
+                    val exitDialogFragment = WarningPopupDialog(
+                        getString(R.string.subscribe_prompt_title),
+                        getString(R.string.subscribe_prompt_inform),
+                        getString(R.string.already_pick_button),
+                        getString(R.string.subscribe_plan_btn),
+                        true
+                    ) {  checked ->
+                        if (!checked) // 구독 플랜 보기로 이동
+                        {
+                            val activity = requireActivity() as BookFavoriteActivity
+                            activity.goToSubscribePlanActivity()
+                        }
+                    }
+                    exitDialogFragment.show(parentFragmentManager, "exitDialog")
                 }
             }
         }
@@ -148,6 +174,38 @@ class MyPageMainFragment : BaseFragment<FragmentMyPageMainBinding, MyPageMainVie
             }
         }
         repeatOnStarted {
+            viewModel.unsubscribePage.collect{
+                if (it){
+                    // 구독 해지 여부 확인 팝업
+                    BaseAlertDialog(title = getString(R.string.unsubscribe_notice_pop_title), info = getString(R.string.unsubscribe_notice_pop_info), true) {
+                        if(it) {
+
+                            val packageName = requireActivity().packageName // 현재 앱의 패키지 이름
+                            val uri = Uri.parse("https://play.google.com/store/account/subscriptions?package=$packageName")
+
+                            val intent = Intent(Intent.ACTION_VIEW, uri).apply {
+                                setPackage("com.android.vending") // Play Store 앱으로만 열리도록 설정
+                            }
+
+                            // Play Store 앱이 설치되어 있는지 확인
+                            if (intent.resolveActivity(requireActivity().packageManager) != null) {
+                                requireActivity().startActivity(intent)
+                            } else {
+                                // Play Store 앱이 없는 경우 팝업
+                                val errorToastDialog = ErrorToastDialog(requireContext(), "플레이 스토어가 설치 되어 있지 않습니다.")
+                                errorToastDialog.show()
+
+                                Handler(Looper.myLooper()!!).postDelayed({
+                                    errorToastDialog.dismiss()
+                                }, 2000)
+                            }
+
+                        }
+                    }.show(parentFragmentManager, "baseAlertDialog")
+                }
+            }
+        }
+        repeatOnStarted {
             viewModel.supposePage.collect {
                 if (it){
                     val url = "https://m.cafe.naver.com/ca-fe/web/cafes/31054271/menus/5"
@@ -165,6 +223,31 @@ class MyPageMainFragment : BaseFragment<FragmentMyPageMainBinding, MyPageMainVie
             viewModel.loadCheck.collect {
                 if(it) {
                     loadProfileImage()
+                }
+            }
+        }
+        repeatOnStarted {
+            viewModel.subscribePage.collect {
+                if(it) { // 구독 중인 경우, 구독 정보 보기로 이동
+                    val activity = requireActivity() as MyPageActivity
+                    activity.startSubscribeInformActivity()
+                } else{ // 구독 중이 아닐 경우, 구독하기 화면으로 이동
+                    val activity = requireActivity() as MyPageActivity
+                    activity.startSubscribePlanActivity()
+                }
+            }
+        }
+        repeatOnStarted {
+            viewModel.unsubscribePopup.collect {
+                if(it) {
+                    // 구독 해지 완료 팝업
+                    val exitDialogFragment = WarningPopupDialog(
+                        getString(R.string.unsubscribe_popup_title),
+                        getString(R.string.unsubscribe_popup_info),
+                        "",getString(R.string.already_pick_button),
+                        true
+                    ){}
+                    exitDialogFragment.show(parentFragmentManager, "initDialog")
                 }
             }
         }
@@ -233,6 +316,7 @@ class MyPageMainFragment : BaseFragment<FragmentMyPageMainBinding, MyPageMainVie
                 .load(viewModel.getUserProfile())
                 .fitCenter()
                 .centerCrop()
+                .format(DecodeFormat.PREFER_RGB_565)
                 .into(binding.ivProfile)
         }
     }

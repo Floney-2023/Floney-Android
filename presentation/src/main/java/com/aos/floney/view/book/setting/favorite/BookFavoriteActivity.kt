@@ -9,8 +9,10 @@ import androidx.navigation.fragment.NavHostFragment
 import com.aos.floney.R
 import com.aos.floney.base.BaseActivity
 import com.aos.floney.databinding.ActivityBookFavoriteBinding
+import com.aos.floney.ext.applyOpenTransition
 import com.aos.floney.view.book.setting.BookSettingActivity
 import com.aos.floney.view.home.HomeActivity
+import com.aos.floney.view.subscribe.SubscribePlanActivity
 import com.aos.model.book.UiBookFavoriteModel
 import com.aos.model.home.DayMoneyFavoriteItem
 import dagger.hilt.android.AndroidEntryPoint
@@ -103,5 +105,11 @@ class BookFavoriteActivity : BaseActivity<ActivityBookFavoriteBinding, BookFavor
             startActivity(Intent(this, BookSettingActivity::class.java).putExtra("entryPoint", "history"))
             finishAffinity()
         }
+    }
+
+    // 구독 플랜 화면으로 이동
+    fun goToSubscribePlanActivity(){
+        startActivity(Intent(this, SubscribePlanActivity::class.java))
+        applyOpenTransition()
     }
 }

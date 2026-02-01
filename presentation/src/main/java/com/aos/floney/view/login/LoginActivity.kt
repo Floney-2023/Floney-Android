@@ -2,39 +2,47 @@ package com.aos.floney.view.login
 
 import android.app.Activity
 import android.content.Intent
+import android.credentials.GetCredentialException
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
+import android.view.View
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
+import androidx.credentials.CustomCredential
+import androidx.lifecycle.lifecycleScope
+import com.aos.data.util.AuthInterceptor
 import com.aos.data.util.SharedPreferenceUtil
+import com.aos.floney.BuildConfig
 import com.aos.floney.R
 import com.aos.floney.base.BaseActivity
 import com.aos.floney.base.BaseViewModel
 import com.aos.floney.databinding.ActivityLoginBinding
 import com.aos.floney.ext.repeatOnStarted
 import com.aos.floney.util.NetworkUtils
-import com.aos.floney.view.book.add.BookAddActivity
 import com.aos.floney.view.home.HomeActivity
 import com.aos.floney.view.password.find.PasswordFindActivity
 import com.aos.floney.view.signup.SignUpActivity
 import com.aos.floney.view.signup.SignUpCompleteActivity
-import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
+import com.kakao.sdk.common.util.Utility
 import com.kakao.sdk.user.UserApiClient
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -44,47 +52,74 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginViewModel>(R.layou
 
     private lateinit var googleResultLauncher: ActivityResultLauncher<Intent>
     private lateinit var googleClient: GoogleSignInClient
+    private lateinit var googleIdOption: GetGoogleIdOption
     private lateinit var mAuth: FirebaseAuth
+
     @Inject
     lateinit var prefs: SharedPreferenceUtil
 
     override fun onStart() {
         super.onStart()
 
-         googleResultLauncher= registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if(it.resultCode == Activity.RESULT_OK) {
-                val task = GoogleSignIn.getSignedInAccountFromIntent(it.data)
-                val account = task.getResult(ApiException::class.java)
-                firebaseAuthWithGoogle(account, account.idToken ?: "")
-            } else {
-                viewModel.baseEvent(BaseViewModel.Event.ShowToast("구글 로그인에 실패하였습니다."))
-                viewModel.baseEvent(BaseViewModel.Event.HideLoading)
-            }
-        }
+//         googleResultLauncher= registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+//            if(it.resultCode == Activity.RESULT_OK) {
+//                val task = GoogleSignIn.getSignedInAccountFromIntent(it.data)
+//                val account = task.getResult(ApiException::class.java)
+//                firebaseAuthWithGoogle(account, account.idToken ?: "")
+//            } else {
+//                viewModel.baseEvent(BaseViewModel.Event.ShowToast("구글 로그인에 실패하였습니다."))
+//                viewModel.baseEvent(BaseViewModel.Event.HideLoading)
+//            }
+//        }
+//
+//        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+//            .requestIdToken(getString(R.string.default_web_client_id))
+//            .requestEmail()
+//            .requestProfile()
+//            .build()
+//
+//        googleClient = GoogleSignIn.getClient(this, gso)
 
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken("918730717655-fv6illgnhvl3ne5sha3qjjr9kbjuk4ri.apps.googleusercontent.com")
-            .requestEmail()
-            .requestProfile()
-            .build()
-
-        googleClient = GoogleSignIn.getClient(this, gso)
-
-        if(prefs.getString("accessToken", "") == "") {
+        if (prefs.getString("accessToken", "") == "") {
             // 카카오 로그아웃
             UserApiClient.instance.logout {}
             // 구글 로그아웃
-            googleClient.signOut()
+//            googleClient.signOut()
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mAuth = FirebaseAuth.getInstance()
-
+        setActionListener()
         setUpViewModelObserver()
     }
 
+    private fun hideKeyboard() {
+        val imm = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        val view = currentFocus ?: View(this)
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+
+    private fun setActionListener() {
+        binding.etEmail.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_NEXT) {
+                binding.pwText.requestFocus()
+                true
+            } else false
+        }
+
+        binding.pwText.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                hideKeyboard()
+                viewModel.onClickLogin()
+                true
+            } else false
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     private fun setUpViewModelObserver() {
         repeatOnStarted {
             viewModel.existBook.collect {
@@ -185,13 +220,13 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginViewModel>(R.layou
         }
     }
 
-    // 카카오 로그인
     private fun onClickedKakaoLogin() {
         if (NetworkUtils.isNetworkConnected(applicationContext)) {
             val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
                 if (error != null) {
                     Timber.e("error? ${error}")
                     viewModel.baseEvent(BaseViewModel.Event.HideLoading)
+                    viewModel.baseEvent(BaseViewModel.Event.ShowToast("카카오 로그인에 실패하였습니다."))
                 } else if (token != null) {
                     UserApiClient.instance.me { user, error ->
                         if (error != null) {
@@ -271,10 +306,89 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginViewModel>(R.layou
     }
 
     // 구글 로그인
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     private fun onClickGoogleLogin() {
         Timber.e("onClickGoogleLogin")
-        googleResultLauncher.launch(googleClient.signInIntent)
+//        googleResultLauncher.launch(googleClient.signInIntent)
 
+        val credentialManager = androidx.credentials.CredentialManager.create(this@LoginActivity)
+
+        googleIdOption = GetGoogleIdOption.Builder()
+            .setFilterByAuthorizedAccounts(false)
+            .setServerClientId(BuildConfig.googleoauthkey)
+            .setAutoSelectEnabled(true)
+            .build()
+
+        val request: androidx.credentials.GetCredentialRequest =
+            androidx.credentials.GetCredentialRequest.Builder()
+                .addCredentialOption(googleIdOption)
+                .build()
+
+        lifecycleScope.launch {
+            try {
+                val result = credentialManager.getCredential(
+                    request = request,
+                    context = this@LoginActivity,
+                )
+                Timber.e("result $result")
+                handleSignIn(result)
+
+            } catch (e: androidx.credentials.exceptions.GetCredentialCancellationException) {
+                Timber.e("Google login cancelled by user")
+                viewModel.baseEvent(BaseViewModel.Event.HideLoading)
+                viewModel.baseEvent(BaseViewModel.Event.ShowToast("구글 로그인을 취소하였습니다."))
+
+            } catch (e: GetCredentialException) {
+                Timber.e("Google login failed: ${e.message}")
+                viewModel.baseEvent(BaseViewModel.Event.HideLoading)
+                viewModel.baseEvent(BaseViewModel.Event.ShowToast("구글 로그인에 실패하였습니다."))
+
+            } catch (e: Exception) {
+                Timber.e("Unknown error: ${e.message}")
+                viewModel.baseEvent(BaseViewModel.Event.HideLoading)
+                viewModel.baseEvent(BaseViewModel.Event.ShowToast("알 수 없는 오류가 발생했습니다."))
+            }
+        }
+
+    }
+
+    private fun handleSignIn(result: androidx.credentials.GetCredentialResponse) {
+        val auth = Firebase.auth
+
+        when (val credential = result.credential) {
+
+            is CustomCredential -> {
+                if (credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
+                    val googleIdTokenCredential =
+                        GoogleIdTokenCredential.createFrom(credential.data)
+                    val idToken = googleIdTokenCredential.idToken
+                    val firebaseCredential = GoogleAuthProvider.getCredential(idToken, null)
+                    auth.signInWithCredential(firebaseCredential)
+                        .addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                Timber.e("successful ${task.result.user?.photoUrl}")
+                                Timber.e("successful ${task.result.user?.email}")
+                                Timber.e("successful $idToken")
+
+                                val name = task.result.user?.displayName
+                                val email = task.result.user?.email
+
+                                viewModel.setSocialTempData(
+                                    "google",
+                                    idToken,
+                                    email ?: "",
+                                    name ?: "",
+                                )
+                                viewModel.isAuthTokenCheck("google", idToken)
+                            } else {
+                                // Timber.e("failure ${task.exception}")
+                                viewModel.baseEvent(BaseViewModel.Event.ShowToast("구글 로그인에 실패하였습니다."))
+                                viewModel.baseEvent(BaseViewModel.Event.HideLoading)
+                            }
+                        }
+                }
+            }
+        }
     }
 
     private fun firebaseAuthWithGoogle(acct: GoogleSignInAccount, token: String) {
@@ -285,7 +399,7 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginViewModel>(R.layou
                     if (task.isSuccessful) {
                         //로그인에 성공한다면 UI를 업데이트하고 계정 정보를 불러온다.
                         val user: FirebaseUser? = mAuth.currentUser
-                        if(user != null) {
+                        if (user != null) {
                             viewModel.setSocialTempData(
                                 "google",
                                 token,

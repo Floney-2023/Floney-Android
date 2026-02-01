@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:bind="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="item"
+            type="com.aos.model.settlement.BookUsers" />
+        <variable
+            name="eventHolder"
+            type="com.aos.model.settlement.UiMemberSelectModel.OnItemClickListener" />
+        <import type="android.view.View" />
+    </data>
+
+    <LinearLayout
+        android:id="@+id/li_member_select_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:onClick="@{() -> eventHolder.onItemClick(item)}"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="12dp">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp">
+
+            <ImageView
+                android:id="@+id/iv_member_img"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                setImageToUrl="@{item.profileImg}"
+                android:background="@drawable/background_circle_image"
+                android:clipToOutline="true" />
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:id="@+id/iv_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:text="@{item.nickname}"
+            android:fontFamily="@font/pretendard_semibold"
+            android:textSize="14dp"
+            android:textColor="@color/grayscale2"
+            tools:text="가나다라마바사아"/>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <ImageView
+            android:id="@+id/iv_bool_activated"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@{item.isCheck ? @drawable/icon_check_circle_activated : @drawable/icon_check_circle_inactivated}"
+            tools:src="@drawable/icon_check_circle_activated"/>
+    </LinearLayout>
+</layout>

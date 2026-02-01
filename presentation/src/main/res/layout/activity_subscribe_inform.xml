@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:bind="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="vm"
+            type="com.aos.floney.view.subscribe.SubscribeInformViewModel"/>
+
+        <variable
+            name="eventHolder"
+            type="com.aos.floney.view.subscribe.SubscribeInformActivity" />
+        <import type="android.view.View" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".view.subscribe.SubscribeInformActivity">
+
+        <ImageView
+            android:id="@+id/iv_icon_exit"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="22dp"
+            android:onClick="@{() -> vm.onClickedExit()}"
+            android:clickable="true"
+            android:padding="5dp"
+            android:src="@drawable/icon_exit"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tv_settlement_see_title" />
+
+        <TextView
+            android:id="@+id/tv_settlement_see_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="36dp"
+            android:fontFamily="@font/pretendard_semibold"
+            android:text="@string/subscribe_inform_see"
+            android:textSize="16dp"
+            android:textColor="@color/grayscale1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="38dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/custom_radius_12_solid_grayscale_12"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_settlement_see_title">
+
+            <TextView
+                android:id="@+id/subscribe_inform_item_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:fontFamily="@font/pretendard_semibold"
+                android:text="@string/subscribe_inform_item_name"
+                android:textColor="@color/grayscale1"
+                android:textSize="18dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/subscribe_inform_item_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="17dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/custom_radius_24_solid_g_white"
+                android:fontFamily="@font/pretendard_semibold"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="6dp"
+                android:text="@{vm.subscribeInfo.remainingDays}"
+                android:textColor="@color/grayscale2"
+                android:textSize="11dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="62dp"
+                android:layout_marginBottom="20dp"
+                android:fontFamily="@font/pretendard_regular"
+                android:text="@{vm.subscribeInfo.autoRenewing ? vm.subscribeInfo.autoResumeTimeMillis : vm.subscribeInfo.expiryTimeMillis}"
+                android:textColor="@color/grayscale13"
+                android:textSize="12dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/subscribe_inform_item_name"
+                app:layout_constraintTop_toBottomOf="@+id/subscribe_inform_item_name" />
+
+            <TextView
+                android:id="@+id/textView6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:layout_marginBottom="20dp"
+                android:fontFamily="@font/pretendard_semibold"
+                android:text='@{vm.subscribeInfo.priceCurrencyCode + " " + vm.subscribeInfo.priceAmountMicros}'
+                android:textColor="@color/grayscale1"
+                android:textSize="18dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/textView8" />
+
+            <TextView
+                android:id="@+id/textView8"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="21dp"
+                android:fontFamily="@font/pretendard_regular"
+                android:text="/ 월"
+                android:textColor="@color/grayscale14"
+                android:textSize="14dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:paddingVertical="16dp"
+            android:background="@drawable/custom_radius_12_solid_primary1"
+            android:fontFamily="@font/pretendard_bold"
+            android:onClick="@{() -> vm.onClickSubscribeRetry()}"
+            android:text="@string/subscribe_inform_item_retry"
+            android:textColor="@color/white"
+            android:textSize="14dp"
+            android:visibility="@{vm.subscribeInfo.autoRenewing ? View.GONE : View.VISIBLE }"
+            app:layout_constraintEnd_toEndOf="@+id/constraintLayout2"
+            app:layout_constraintStart_toStartOf="@+id/constraintLayout2"
+            app:layout_constraintTop_toBottomOf="@+id/constraintLayout2" />
+
+        <TextView
+            android:id="@+id/tv_unsubscribe_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="37dp"
+            android:fontFamily="@font/pretendard_regular"
+            android:text="@string/unsubscribe_btn"
+            android:textColor="@color/grayscale6"
+            android:onClick="@{() -> vm.onClickUnsubscribe()}"
+            android:textSize="12dp"
+            android:visibility="@{vm.subscribeInfo.autoRenewing ? View.VISIBLE : View.GONE }"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

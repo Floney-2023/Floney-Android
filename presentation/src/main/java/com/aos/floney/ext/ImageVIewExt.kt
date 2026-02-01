@@ -10,8 +10,12 @@ import com.aos.floney.R
 import com.aos.floney.view.home.HomeActivity
 import com.aos.model.analyze.UiAnalyzeAssetModel
 import com.aos.model.analyze.UiAnalyzePlanModel
+import com.aos.model.subscribe.PictureItem
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DecodeFormat
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import timber.log.Timber
+import java.io.File
 
 @BindingAdapter("setImageToUrl")
 fun ImageView.setImageToUrl(url: String?) {
@@ -35,6 +39,7 @@ fun ImageView.setImageToUrl(url: String?) {
         } else {
             Glide.with(this)
                 .load(url)
+                .format(DecodeFormat.PREFER_RGB_565)
                 .into(this)
         }
     }
@@ -53,6 +58,7 @@ fun ImageView.setBookImageToUrl(url: String?) {
         // URL로부터 이미지 로드
         Glide.with(this)
             .load(url)
+            .format(DecodeFormat.PREFER_RGB_565)
             .error(R.drawable.icon_book_profile)
             .into(this)
     }
@@ -84,6 +90,7 @@ fun ImageView.setUserImageToUrl(url: String?) {
             Glide.with(this)
                 .load(url)
                 .error(R.drawable.icon_default_profile)
+                .format(DecodeFormat.PREFER_RGB_565)
                 .into(this)
         }
     }
@@ -122,7 +129,6 @@ fun ImageView.setAlarmImage(url: String?) {
 
 @BindingAdapter("setAnalyzeImage")
 fun ImageView.setAnalyzeImage(item: UiAnalyzePlanModel?) {
-
     if(item != null) {
         if(item.initBudget.substring(0, item.initBudget.length - 1) == "0") {
             Glide.with(this)
@@ -186,4 +192,58 @@ fun ImageView.setAnalyzeAssetImage(item: UiAnalyzeAssetModel?) {
 @BindingAdapter("bind:setImageColor")
 fun ImageView.setImageColor(color: Int) {
     this.setBackgroundColor(color)
+}
+
+@BindingAdapter(value = ["bind:setPictureImage", "imageIndex"], requireAll = true)
+fun ImageView.setPictureImage(files: List<File>, num: Int) {
+    Glide.with(this)
+        .load(files[num])
+        .fitCenter()
+        .centerCrop()
+        .into(this)
+}
+
+@BindingAdapter("setSortedImage")
+fun ImageView.setSortedImage(picture: PictureItem?) {
+    if (picture == null) {
+        resetPictureImage(this)
+        return
+    }
+
+    when (picture) {
+        is PictureItem.CloudImage -> {
+            setPictureImageFromUrl(this, picture.imageUrls.url)
+        }
+        is PictureItem.LocalImage -> {
+            setPictureImage(this, picture.file)
+        }
+    }
+}
+
+private fun resetPictureImage(imageView: ImageView) {
+    Glide.with(imageView.context).clear(imageView)
+    imageView.setImageDrawable(null)
+}
+
+private fun setPictureImageFromUrl(imageView: ImageView, url: String) {
+    Timber.i("url ${url}")
+    Glide.with(imageView)
+        .load(url)
+        .thumbnail(Glide.with(imageView).load(url))
+        .fitCenter()
+        .centerCrop()
+        .diskCacheStrategy(DiskCacheStrategy.NONE)
+        .skipMemoryCache(true)
+        .into(imageView)
+}
+
+private fun setPictureImage(imageView: ImageView, file: File) {
+    Glide.with(imageView)
+        .load(file)
+        .thumbnail(Glide.with(imageView).load(file))
+        .fitCenter()
+        .centerCrop()
+        .diskCacheStrategy(DiskCacheStrategy.NONE)
+        .skipMemoryCache(true)
+        .into(imageView)
 }

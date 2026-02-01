@@ -50,9 +50,12 @@ class WarningPopupDialog(
 
             // check true면 black Popup, false면 red Popup
             if (check) {
+                ivPopupImage.setImageResource(R.drawable.item_black_exit_popup)
+            }
+
+            if (leftButton.isBlank()){
                 btnLeft.visibility = View.GONE
                 viewPadding.visibility = View.GONE
-                ivPopupImage.setImageResource(R.drawable.item_black_exit_popup)
             }
         }
     }

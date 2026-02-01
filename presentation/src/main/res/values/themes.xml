@@ -8,7 +8,7 @@
         <item name="android:checkboxStyle">@style/customCheckboxFontStyle</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:windowBackground">@color/white</item>
-        <item name="android:statusBarColor">@color/white</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
     </style>
@@ -418,8 +418,7 @@
     <style name="AppBottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/AppModalStyle</item>
         <item name="android:windowIsFloating">false</item>
-        <item name="android:statusBarColor">@color/white
-        </item> <!-- And then this will be needed -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
     </style>
 
@@ -433,6 +432,12 @@
         <item name="android:textSize">20sp</item>
         <item name="android:textColorPrimary">@android:color/black</item>
         <item name="android:fontFamily">@font/pretendard_semibold</item>
+    </style>
+
+    <!-- 상태바 색상 설정 -->
+    <style name="Theme.Floney.StatusBarDark" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:statusBarColor">@color/background3</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <!-- 달력에 사용하는 스타일 -->
@@ -475,4 +480,7 @@
         <item name="fontFamily">@font/pretendard_semibold</item>
     </style>
 
+    <style name="CustomTabLayout" parent="Widget.Design.TabLayout">
+        <item name="tabIndicatorColor">@color/background2</item> <!-- 기본 인디케이터 색상 -->
+    </style>
 </resources>

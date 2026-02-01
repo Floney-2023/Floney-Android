@@ -24,6 +24,7 @@ class AnalyzeInComeBarChart(context: Context, attrs: AttributeSet? = null) : Vie
         super.onDraw(canvas)
 
         var individualWidth = 0f
+        colorIdx = 0 // onDraw 시작 시 colorIdx 초기화
 
         for ((index, value) in data.withIndex()) {
             Timber.e("value $value")
@@ -48,7 +49,10 @@ class AnalyzeInComeBarChart(context: Context, attrs: AttributeSet? = null) : Vie
                 if(colorArr.isEmpty()) {
                     Color.TRANSPARENT
                 } else {
-                    colorArr[colorIdx++]
+                    // colorIdx가 colorArr 크기를 넘지 않도록 안전하게 처리
+                    val safeColorIdx = colorIdx.coerceIn(0, colorArr.size - 1)
+                    colorIdx++
+                    colorArr[safeColorIdx]
                 }
             }
 

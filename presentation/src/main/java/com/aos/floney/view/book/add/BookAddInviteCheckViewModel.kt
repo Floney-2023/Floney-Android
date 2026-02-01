@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.aos.data.util.SharedPreferenceUtil
 import com.aos.floney.R
 import com.aos.floney.base.BaseViewModel
+import com.aos.floney.ext.parseErrorCode
 import com.aos.floney.ext.parseErrorMsg
 import com.aos.floney.util.EventFlow
 import com.aos.floney.util.MutableEventFlow
@@ -46,7 +47,16 @@ class BookAddInviteCheckViewModel @Inject constructor(
                         _codeInputCompletePage.emit(true)
                     }.onFailure {
                         baseEvent(Event.HideLoading)
-                        baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@BookAddInviteCheckViewModel)))
+
+                        val errorCode = it.message.parseErrorCode()
+
+                        val message = when (errorCode) {
+                            "B008" -> "이미 참여한 가계부 입니다."
+                            "B002" -> "이미 사용자가 가득 찬 가계부 입니다."
+                            "B001" -> "존재하지 않는 가계부 입니다."
+                            else -> "알 수 없는 오류입니다. 다시 시도해 주세요."
+                        }
+                        baseEvent(Event.ShowToast(message))
                     }
                 }
         } else {

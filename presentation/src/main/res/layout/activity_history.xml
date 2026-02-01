@@ -110,7 +110,7 @@
             android:hint="금액을 입력하세요"
             android:maxLength="18"
             android:maxLines="1"
-            android:onTextChanged="@{vm.onCostTextChanged}"
+            android:onTextChanged="@{vm::onCostTextChanged}"
             android:text="@{vm.cost}"
             android:textColor="@color/primary2"
             android:textColorHint="@color/grayscale9"
@@ -338,6 +338,7 @@
                     app:layout_constraintBottom_toBottomOf="@id/tv_delete_plan"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/tv_delete_plan"
+                    app:sb_checked="@{vm.deleteChecked ?  true : false}"
                     app:onCheckedChanged="@{vm.onCheckedChangeListener}"
                     app:sb_background="@color/grayscale9"
                     app:sb_border_width="1.5dp"
@@ -345,10 +346,69 @@
                     app:sb_show_indicator="false"
                     app:sb_uncheck_color="@color/grayscale9" />
 
+                <LinearLayout
+                    android:id="@+id/ll_memo"
+                    android:layout_width="87dp"
+                    android:layout_height="46dp"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="32dp"
+                    android:visibility="@{vm.getIsSubscribe || vm.memoOrImageExist ? View.VISIBLE : View.GONE}"
+                    android:onClick="@{() -> vm.onClickMemo()}"
+                    android:gravity="center"
+                    app:layout_constraintStart_toStartOf="@id/tv_content"
+                    app:layout_constraintTop_toBottomOf="@id/tv_delete_plan"
+                    android:background="@drawable/custom_radius_12_solid_primary10">
+    
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginEnd="2dp"
+                        android:src="@drawable/icon_memo"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="메모"
+                        android:textColor="@color/primary2"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/floney_pretendard_medium"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_picture"
+                    android:layout_width="87dp"
+                    android:layout_height="46dp"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="32dp"
+                    android:visibility="@{vm.getIsSubscribe || vm.memoOrImageExist ? View.VISIBLE : View.GONE}"
+                    android:onClick="@{() -> vm.onClickPicture()}"
+                    android:gravity="center"
+                    android:layout_marginStart="12dp"
+                    app:layout_constraintStart_toEndOf="@id/ll_memo"
+                    app:layout_constraintTop_toBottomOf="@id/tv_delete_plan"
+                    android:background="@drawable/custom_radius_12_solid_primary10">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginEnd="2dp"
+                        android:src="@drawable/icon_photo"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="사진"
+                        android:textColor="@color/primary2"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/floney_pretendard_medium"/>
+
+                </LinearLayout>
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="30dp"
+                    android:layout_marginTop="16dp"
                     android:layout_marginBottom="36dp"
                     android:fontFamily="@font/pretendard_medium"
                     android:text="@{`작성자 : ` + vm.nickname}"
@@ -357,10 +417,35 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_delete_plan" />
+                    app:layout_constraintTop_toBottomOf="@+id/ll_picture" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>
 
+        <View
+            android:id="@+id/dim_background"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@android:color/black"
+            android:alpha="0.7"
+            android:visibility="@{ vm.subscribeExpired ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <include
+            android:id="@+id/include_popup_subscribe"
+            layout="@layout/item_popup_subscribe_use"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="16dp"
+            android:visibility="@{vm.subscribeExpired ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toTopOf="@+id/btn_save"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+<!--        android:visibility="@{ vm.subscribeExpired ? View.VISIBLE : View.GONE}"-->
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_delete"
@@ -391,5 +476,6 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/btn_delete" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

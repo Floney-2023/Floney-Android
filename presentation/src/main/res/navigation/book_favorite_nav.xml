@@ -23,6 +23,10 @@
         android:id="@+id/bookSettingFavoriteAddFragment"
         android:name="com.aos.floney.view.book.setting.favorite.BookSettingFavoriteAddFragment"
         android:label="BookSettingFavoriteAddFragment"
-        tools:layout="@layout/fragment_book_setting_favorite_add" />
+        tools:layout="@layout/fragment_book_setting_favorite_add" >
+        <argument
+            android:name="flow"
+            app:argType="string" />
+    </fragment>
 
 </navigation>

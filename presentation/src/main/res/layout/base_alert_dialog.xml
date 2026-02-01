@@ -56,6 +56,9 @@
                 android:layout_weight="1"
                 android:fontFamily="@font/pretendard_semibold"
                 android:text="네"
+                android:background="@android:color/transparent"
+                android:backgroundTint="@color/white"
+                android:elevation="0dp"
                 android:textAllCaps="false"
                 android:textColor="@color/grayscale2"
                 android:textSize="16dp" />
@@ -73,6 +76,9 @@
                 android:layout_weight="1"
                 android:fontFamily="@font/pretendard_semibold"
                 android:text="아니오"
+                android:background="@android:color/transparent"
+                android:backgroundTint="@color/white"
+                android:elevation="0dp"
                 android:textAllCaps="false"
                 android:textColor="@color/grayscale2"
                 android:textSize="16dp" />

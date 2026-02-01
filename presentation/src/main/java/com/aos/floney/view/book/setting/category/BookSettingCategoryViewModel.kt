@@ -26,30 +26,6 @@ class BookSettingCategoryViewModel @Inject constructor(
     private val booksCategoryDeleteUseCase: BooksCategoryDeleteUseCase
 ) : BaseViewModel() {
 
-    // 내역 삭제
-    private var _deleteBooksLines = MutableEventFlow<Boolean>()
-    val deleteBooksLines: EventFlow<Boolean> get() = _deleteBooksLines
-
-    // 내역 수정 결과
-    private var _postModifyBooksLines = MutableEventFlow<Boolean>()
-    val postModifyBooksLines: EventFlow<Boolean> get() = _postModifyBooksLines
-
-    // 날짜 클릭 여부
-    private var _showCalendar = MutableEventFlow<Boolean>()
-    val showCalendar: EventFlow<Boolean> get() = _showCalendar
-
-    // 닫기 클릭
-    private var _onClickCloseBtn = MutableEventFlow<Boolean>()
-    val onClickCloseBtn: EventFlow<Boolean> get() = _onClickCloseBtn
-
-    // 카테고리 클릭
-    private var _onClickCategory = MutableEventFlow<Boolean>()
-    val onClickCategory: EventFlow<Boolean> get() = _onClickCategory
-
-    // 날짜
-    private var tempDate = ""
-    var date = MutableLiveData<String>("날짜를 선택하세요")
-
     // 닉네임
     private val _nickname = MutableLiveData<String>()
     val nickname: LiveData<String> get() = _nickname

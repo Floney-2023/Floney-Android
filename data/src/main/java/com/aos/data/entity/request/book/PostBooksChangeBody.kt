@@ -14,4 +14,6 @@ data class PostBooksChangeBody (
     val description: String,
     val except: Boolean,
     val nickname: String,
+    val memo : String,
+    val imageUrl : List<String>
 )

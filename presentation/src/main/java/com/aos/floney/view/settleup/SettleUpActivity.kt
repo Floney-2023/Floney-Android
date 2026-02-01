@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.aos.data.util.CurrencyUtil
@@ -12,8 +13,12 @@ import com.aos.data.util.SharedPreferenceUtil
 import com.aos.floney.BuildConfig.appsflyer_dev_key
 import com.aos.floney.R
 import com.aos.floney.base.BaseActivity
+import com.aos.floney.base.BaseViewModel
 import com.aos.floney.databinding.ActivitySettleUpBinding
+import com.aos.floney.ext.applyHistoryOpenTransition
+import com.aos.floney.ext.applyOpenTransition
 import com.aos.floney.ext.repeatOnStarted
+import com.aos.floney.util.getCurrentDateTimeString
 import com.aos.floney.view.analyze.AnalyzeActivity
 import com.aos.floney.view.history.HistoryActivity
 import com.aos.floney.view.home.HomeActivity
@@ -35,6 +40,16 @@ class SettleUpActivity : BaseActivity<ActivitySettleUpBinding, SettleUpViewModel
     lateinit var sharedPreferenceUtil: SharedPreferenceUtil
     private lateinit var navController: NavController
 
+    private val launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val isSaved = result.data?.getBooleanExtra("isSave", false) ?: false
+            if (isSaved) {
+                viewModel.baseEvent(BaseViewModel.Event.ShowSuccessToast("저장이 완료되었습니다."))
+                result.data?.removeExtra("isSave")
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         CurrencyUtil.currency = sharedPreferenceUtil.getString("symbol", "원")
@@ -43,23 +58,22 @@ class SettleUpActivity : BaseActivity<ActivitySettleUpBinding, SettleUpViewModel
         setUpBottomNavigation()
         setupJetpackNavigation()
         setUpViewModelObserver()
+        setSubscribePopup()
     }
 
     private fun setUpViewModelObserver() {
         repeatOnStarted {
             // 내역추가
             viewModel.clickedAddHistory.collect {
-                startActivity(
-                    Intent(
-                        this@SettleUpActivity,
-                        HistoryActivity::class.java
-                    ).putExtra("date", it)
-                        .putExtra("nickname", userNickname)
-                )
-                if (Build.VERSION.SDK_INT >= 34) {
-                    overrideActivityTransition(Activity.OVERRIDE_TRANSITION_OPEN, R.anim.slide_in, R.anim.slide_out_down)
+                if (viewModel.subscribeExpired.value == true) {
+                    viewModel.showSubscribePopupIfNeeded()
                 } else {
-                    overridePendingTransition(R.anim.slide_in, R.anim.slide_out_down)
+                    val intent = Intent(this@SettleUpActivity, HistoryActivity::class.java).apply {
+                        putExtra("date", it)
+                        putExtra("nickname", userNickname)
+                    }
+                    launcher.launch(intent)
+                    applyHistoryOpenTransition()
                 }
             }
         }
@@ -74,11 +88,7 @@ class SettleUpActivity : BaseActivity<ActivitySettleUpBinding, SettleUpViewModel
 
     fun startSettleUpActivity() {
         startActivity(Intent(this, SettleUpActivity::class.java))
-        if (Build.VERSION.SDK_INT >= 34) {
-            overrideActivityTransition(Activity.OVERRIDE_TRANSITION_OPEN, android.R.anim.fade_in, android.R.anim.fade_out)
-        } else {
-            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
-        }
+        applyOpenTransition()
         finishAffinity()
     }
     fun startHomeActivity() {
@@ -88,11 +98,7 @@ class SettleUpActivity : BaseActivity<ActivitySettleUpBinding, SettleUpViewModel
                 HomeActivity::class.java
             ).putExtra("accessCheck", true)
         )
-        if (Build.VERSION.SDK_INT >= 34) {
-            overrideActivityTransition(Activity.OVERRIDE_TRANSITION_OPEN, android.R.anim.fade_in, android.R.anim.fade_out)
-        } else {
-            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
-        }
+        applyOpenTransition()
     }
 
     private fun setUpBottomNavigation() {
@@ -106,31 +112,19 @@ class SettleUpActivity : BaseActivity<ActivitySettleUpBinding, SettleUpViewModel
             when (it.itemId) {
                 R.id.homeFragment -> {
                     startActivity(Intent(this, HomeActivity::class.java))
-                    if (Build.VERSION.SDK_INT >= 34) {
-                        overrideActivityTransition(Activity.OVERRIDE_TRANSITION_OPEN, android.R.anim.fade_in, android.R.anim.fade_out)
-                    } else {
-                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
-                    }
+                    applyOpenTransition()
                     finish()
                     false
                 }
                 R.id.analysisFragment -> {
                     startActivity(Intent(this, AnalyzeActivity::class.java))
-                    if (Build.VERSION.SDK_INT >= 34) {
-                        overrideActivityTransition(Activity.OVERRIDE_TRANSITION_OPEN, android.R.anim.fade_in, android.R.anim.fade_out)
-                    } else {
-                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
-                    }
+                    applyOpenTransition()
                     finish()
                     false
                 }
                 R.id.mypageFragment -> {
                     startActivity(Intent(this, MyPageActivity::class.java))
-                    if (Build.VERSION.SDK_INT >= 34) {
-                        overrideActivityTransition(Activity.OVERRIDE_TRANSITION_OPEN, android.R.anim.fade_in, android.R.anim.fade_out)
-                    } else {
-                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
-                    }
+                    applyOpenTransition()
                     finish()
                     false
                 }
@@ -162,21 +156,18 @@ class SettleUpActivity : BaseActivity<ActivitySettleUpBinding, SettleUpViewModel
                             val intent = Intent(this@SettleUpActivity, LoginActivity::class.java)
 
                             startActivity(intent)
-                            if (Build.VERSION.SDK_INT >= 34) {
-                                overrideActivityTransition(Activity.OVERRIDE_TRANSITION_OPEN, android.R.anim.fade_in, android.R.anim.fade_out)
-                            } else {
-                                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
-                            }
+                            applyOpenTransition()
                             finishAffinity()
                         }
                         else{
                             val deepLinkObj = deepLinkResult.deepLink
 
                             val settlementId = deepLinkObj.values["settlementId"].toString().toLong()
-                            val bookKey = deepLinkObj.values["bookKey"].toString()
+                            val bookCode = deepLinkObj.values["bookCode"].toString()
 
-                            Timber.e("settlement ${settlementId} ------ ${bookKey}")
-                            goShareSettlement(settlementId, bookKey)
+                            Timber.e("settlement : ${settlementId} bookCode : ${bookCode}")
+
+                            viewModel.convertBookCodeToKey(settlementId, bookCode)
                         }
                     }
                     DeepLinkResult.Status.NOT_FOUND -> {
@@ -219,16 +210,26 @@ class SettleUpActivity : BaseActivity<ActivitySettleUpBinding, SettleUpViewModel
         })
     }
     private fun setShareSettlementInform(){ // 딥 링크로 부터 받아온 값
-        val settlementId = intent.getStringExtra("settlementId")?.toLong()
-        val bookKey = intent.getStringExtra("bookKey")?:""
-        goShareSettlement(settlementId, bookKey)
-    }
-    private fun goShareSettlement(settlementId: Long?, bookKey: String) {
-        if (settlementId != null && bookKey.isNotEmpty()) {
-            viewModel.settingBookKey(settlementId, bookKey)
-        } else {
-            Log.d("DeepLink", "SettleUp not found")
-        }
+        val settlementId = intent.getStringExtra("settlementId")?.toLong() ?: 0
+        val bookCode = intent.getStringExtra("bookCode")?:""
+
+        Timber.e("settlement : ${settlementId} bookCode : ${bookCode}")
+
+        // bookCode가 있는 경우(딥링크를 통해 정산 화면으로 들어온 경우)만 bookKey 세팅
+        if (bookCode.isNotBlank())
+            viewModel.convertBookCodeToKey(settlementId, bookCode)
     }
 
+    private fun setSubscribePopup() {
+        binding.includePopupSubscribe.ivExit.setOnClickListener {
+            // 진입 시 표시되는 팝업일 경우에만 시간 체크
+            if (viewModel.subscribePopupEnter.value == true)
+                sharedPreferenceUtil.setString(
+                    "subscribeCheckTenMinutes",
+                    getCurrentDateTimeString()
+                )
+
+            viewModel.subscribePopupShow.postValue(false)
+        }
+    }
 }

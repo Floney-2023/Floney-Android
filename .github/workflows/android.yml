@@ -1,1 +1,75 @@
+name: Android Release
 
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      LOCAL_PROPERTIES_CONTENTS: ${{ secrets.LOCAL_PROPERTIES_CONTENTS }} # scerets에서 로컬 프로퍼티 값 변수(LOCAL_PROPERTIES_CONTENTS)로 설정
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Decode google-services.json
+        run: echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 -d > presentation/google-services.json
+      
+      - name: Create local.properties
+        run: echo "$LOCAL_PROPERTIES_CONTENTS" > local.properties
+          
+      - name: Decode keystore
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > keystore.jks
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+
+      - name: Build AAB
+        run: |
+          ./gradlew bundleRelease \
+            -Pandroid.injected.signing.store.file=keystore.jks \
+            -Pandroid.injected.signing.store.password=${{ secrets.KEYSTORE_PASSWORD }} \
+            -Pandroid.injected.signing.key.alias=${{ secrets.KEY_ALIAS }} \
+            -Pandroid.injected.signing.key.password=${{ secrets.KEY_PASSWORD }}
+
+      - name: Extract versionName from build.gradle
+        id: version
+        run: echo "version_name=$(grep versionName app/build.gradle | head -1 | awk -F\\\" '{print $2}')" >> $GITHUB_OUTPUT
+
+      - name: Read release notes
+        id: notes
+        run: |
+          notes=$(cat release-notes.txt | sed ':a;N;$!ba;s/\n/\\n/g')
+          echo "release_notes=$notes" >> $GITHUB_OUTPUT
+
+      - name: Install Firebase CLI
+        run: curl -sL https://firebase.tools | bash
+
+      - name: Distribute AAB to Firebase App Distribution
+        run: |
+          firebase appdistribution:distribute app/build/outputs/bundle/release/app-release.aab \
+            --app "<YOUR_FIREBASE_APP_ID>" \
+            --groups "internal-testers" \
+            --release-notes "$(cat release-notes.txt)" \
+            --token "${{ secrets.FIREBASE_TOKEN }}"
+
+      - name: Notify Slack
+        run: |
+          curl -X POST -H 'Content-type: application/json' \
+            --data "{
+              \"text\": \"✅ *Floney v${{ steps.version.outputs.version_name }} 배포 완료!*\n📝 *Release Notes:*\n${{ steps.notes.outputs.release_notes }}\"
+            }" \
+            ${{ secrets.SLACK_WEBHOOK_URL }}

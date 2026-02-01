@@ -4,6 +4,7 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
@@ -23,7 +24,9 @@ import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import android.view.inputmethod.InputMethodManager
+import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatDialog
@@ -36,6 +39,8 @@ import androidx.lifecycle.ViewModelLazy
 import com.aos.floney.BR
 import com.aos.floney.R
 import com.aos.floney.ext.repeatOnStarted
+import com.aos.floney.ext.setupTouchEffect
+import com.aos.floney.util.LottieLoadingManager
 import com.aos.floney.view.common.ErrorToastDialog
 import com.aos.floney.view.common.SuccessToastDialog
 import com.aos.floney.view.login.LoginActivity
@@ -43,6 +48,7 @@ import com.google.android.material.transition.MaterialFadeThrough
 import com.google.android.material.transition.MaterialSharedAxis
 import timber.log.Timber
 import java.lang.reflect.ParameterizedType
+import javax.inject.Inject
 
 abstract class BaseFragment<B : ViewDataBinding, VM : BaseViewModel>(
     @LayoutRes private val layoutResId: Int,
@@ -61,6 +67,9 @@ abstract class BaseFragment<B : ViewDataBinding, VM : BaseViewModel>(
         { defaultViewModelProviderFactory },
         { defaultViewModelCreationExtras },
     )
+
+    @Inject
+    lateinit var lottieLoadingManager: LottieLoadingManager
 
     private val loadingDialog by lazy {
         AppCompatDialog(requireContext()).apply {
@@ -150,6 +159,9 @@ abstract class BaseFragment<B : ViewDataBinding, VM : BaseViewModel>(
                     startActivity(Intent(requireContext(), LoginActivity::class.java))
                     requireActivity().finishAffinity()
                 }
+
+                BaseViewModel.Event.HideCircleLoading -> hideCircleLoading()
+                BaseViewModel.Event.ShowCircleLoading -> showCircleLoading()
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -231,6 +243,27 @@ abstract class BaseFragment<B : ViewDataBinding, VM : BaseViewModel>(
             e.printStackTrace()
         }
     }
+
+    private fun showCircleLoading() {
+        try {
+            if (::lottieLoadingManager.isInitialized) {
+                lottieLoadingManager.showLoading(requireActivity())
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun hideCircleLoading() {
+        try {
+            if (::lottieLoadingManager.isInitialized) {
+                lottieLoadingManager.hideLoading()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
     protected open fun onBackPressed() {
         // 상속받는 클래스에서 필요에 따라 구현
     }
@@ -255,24 +288,9 @@ fun Fragment.setupUI(view: View) {
     if (view is ViewGroup) {
         for (i in 0 until view.childCount) {
             val innerView = view.getChildAt(i)
-            innerView.setupTouchEffect()
-        }
-    }
-
-}
-
-fun View.setupTouchEffect() {
-    if (this.isClickable || this.isLongClickable){
-        this.setOnTouchListener { v, event ->
-            when (event.action) {
-                MotionEvent.ACTION_DOWN -> {
-                    v.alpha = 0.7f
-                }
-                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                    v.alpha = 1.0f
-                }
+            if (innerView is Button) {
+                innerView.setupTouchEffect()
             }
-            false
         }
     }
 }

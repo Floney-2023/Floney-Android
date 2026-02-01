@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:bind="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="item"
+            type="com.aos.model.home.MonthMoney" />
+
+        <variable
+            name="eventHolder"
+            type="com.aos.model.home.UiBookMonthModel.OnItemClickListener" />
+
+        <import type="android.view.View" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="@{() -> eventHolder.onItemClick(item)}"
+        android:background="@drawable/custom_radius_12_home_month_card_view_primary_5"
+        android:elevation="1dp"
+        android:paddingStart="20dp"
+        android:paddingVertical="20dp"
+        android:paddingEnd="16dp"
+        android:minWidth="64dp">
+    <TextView
+        android:id="@+id/tv_total_outcome"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="0dp"
+        android:fontFamily="@font/pretendard_medium"
+        android:text="총지출"
+        android:textColor="@color/grayscale4"
+        android:textSize="12dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_total_outcome_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:fontFamily="@font/pretendard_semibold"
+            android:text="00000원"
+            android:textColor="@color/grayscale4"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@id/tv_total_outcome"
+            app:layout_constraintTop_toBottomOf="@id/tv_total_outcome"
+            app:layout_constraintVertical_bias="1.0"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

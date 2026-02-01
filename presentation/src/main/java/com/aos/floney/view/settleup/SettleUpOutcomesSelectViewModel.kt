@@ -21,6 +21,7 @@ import com.aos.model.settlement.UiOutcomesSelectModel
 import com.aos.model.settlement.settleOutcomes
 import com.aos.usecase.settlement.BooksOutComesUseCase
 import com.aos.usecase.settlement.BooksUsersUseCase
+import com.aos.usecase.subscribe.SubscribeCheckUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -33,7 +34,8 @@ import javax.inject.Inject
 class SettleUpOutcomesSelectViewModel @Inject constructor(
     stateHandle: SavedStateHandle,
     private val prefs: SharedPreferenceUtil,
-    private val booksOutComesUseCase : BooksOutComesUseCase
+    private val booksOutComesUseCase : BooksOutComesUseCase,
+    private val subscribeCheckUseCase: SubscribeCheckUseCase
 ): BaseViewModel() {
 
 
@@ -75,8 +77,12 @@ class SettleUpOutcomesSelectViewModel @Inject constructor(
     private var _settlementPage = MutableEventFlow<Boolean>()
     val settlementPage: EventFlow<Boolean> get() = _settlementPage
 
+    // 구독 여부
+    private var subscribeCheck = MutableLiveData<Boolean>(false)
+
     init {
         getOutcomesItems()
+        getSubscribeChecking()
     }
     fun getOutcomesItems(){
         val userEmails = memberArray.value!!.map { it }
@@ -131,9 +137,7 @@ class SettleUpOutcomesSelectViewModel @Inject constructor(
                     val advertiseTime = prefs.getString("advertiseTime", "")
                     val advertiseTenMinutes = prefs.getString("advertiseSettleUpTenMinutes", "")
                     val showNextPage =
-                        getAdvertiseCheck(advertiseTime) > 0 || getAdvertiseTenMinutesCheck(
-                            advertiseTenMinutes
-                        ) > 0
+                        getAdvertiseCheck(advertiseTime) > 0 || getAdvertiseTenMinutesCheck(advertiseTenMinutes) > 0 || subscribeCheck.value!!
 
                     if (getAdvertiseCheck(advertiseTime) <= 0) {
                         prefs.setString("advertiseTime", "")
@@ -188,5 +192,16 @@ class SettleUpOutcomesSelectViewModel @Inject constructor(
     // 10분 광고 시간 기록
     fun updateAdvertiseTenMinutes(){
         prefs.setString("advertiseSettleUpTenMinutes", getCurrentDateTimeString())
+    }
+
+    // 구독 여부 가져오기
+    fun getSubscribeChecking(){
+        viewModelScope.launch(Dispatchers.IO) {
+            subscribeCheckUseCase().onSuccess {
+                subscribeCheck.postValue(it.isValid)
+            }.onFailure {
+                baseEvent(Event.ShowToast(it.message.parseErrorMsg()))
+            }
+        }
     }
 }

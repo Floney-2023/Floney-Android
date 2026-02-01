@@ -21,6 +21,7 @@ import com.aos.model.analyze.UiAnalyzePlanModel
 import com.suke.widget.SwitchButton
 import timber.log.Timber
 import java.text.DecimalFormat
+import kotlin.math.abs
 
 
 fun String.formatNumber(): String {
@@ -113,20 +114,25 @@ fun TextView.setTextWithEllipsis(text: String?) {
 fun TextView.adjustTotalMoneyText(amount: String?) {
     amount?.let {
         Timber.e("amount : ${amount}")
-        var amount = amount.replace(CurrencyUtil.currency, "")
-        val amountValue = amount.replace(",", "").toLongOrNull() ?: return
+
+        // 금액에 따른 최대 글자 단위 조정
+        val isNegative = if(amount.startsWith("-")) "-" else ""
+        var filterAmount = amount.replace(CurrencyUtil.currency, "")
 
         val displayAmount = when {
-            checkDecimalPoint() && amount.length >= 15 -> {
-                "999,999,999.99"
+            checkDecimalPoint() && filterAmount.length >= 15 -> {
+                "${isNegative}999,999,999.99"
             }
-            !checkDecimalPoint() && amount.length >= 15 -> {
-                "99,999,999,999"
+            !checkDecimalPoint() && filterAmount.length >= 15 -> {
+                "${isNegative}99,999,999,999"
             }
             else -> {
-                amount
+                filterAmount
             }
         }
+
+        // 자릿수에 따른 글자 크기 조정
+        val amountValue = filterAmount.replace(",", "").toLongOrNull()?.let { abs(it) } ?: return
 
         when {
             amountValue < 1_000_000_000 -> {
@@ -229,5 +235,19 @@ fun TextView.setProfileMargin(status: Boolean) {
 
     val layoutParams = this.layoutParams as ViewGroup.MarginLayoutParams
     layoutParams.marginStart = (marginStartValue * context.resources.displayMetrics.density).toInt()
+    this.layoutParams = layoutParams
+}
+
+@BindingAdapter("bind:setSubscribeMarginTop")
+fun TextView.setSubscribeMarginTop(status: Boolean) {
+
+    val marginTopValue = if (status) {
+        16
+    } else {
+        10
+    }
+
+    val layoutParams = this.layoutParams as ViewGroup.MarginLayoutParams
+    layoutParams.topMargin = (marginTopValue * context.resources.displayMetrics.density).toInt()
     this.layoutParams = layoutParams
 }

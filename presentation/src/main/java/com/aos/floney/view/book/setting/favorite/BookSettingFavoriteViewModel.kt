@@ -4,34 +4,35 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.aos.data.util.SharedPreferenceUtil
+import com.aos.data.util.SubscriptionDataStoreUtil
 import com.aos.floney.base.BaseViewModel
 import com.aos.floney.ext.parseErrorMsg
+import com.aos.floney.ext.toCategoryCode
 import com.aos.floney.util.EventFlow
 import com.aos.floney.util.MutableEventFlow
+import com.aos.floney.util.getAdvertiseTenMinutesCheck
 import com.aos.model.book.UiBookFavoriteModel
 import com.aos.usecase.booksetting.BooksFavoriteDeleteUseCase
 import com.aos.usecase.history.GetBookFavoriteUseCase
+import com.aos.usecase.subscribe.SubscribeBenefitUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
 class BookSettingFavoriteViewModel @Inject constructor(
     private val prefs: SharedPreferenceUtil,
     private val getBookFavoriteUseCase: GetBookFavoriteUseCase,
-    private val booksFavoriteDeleteUseCase: BooksFavoriteDeleteUseCase
+    private val booksFavoriteDeleteUseCase: BooksFavoriteDeleteUseCase,
+    private val subscriptionDataStoreUtil: SubscriptionDataStoreUtil
 ) : BaseViewModel() {
 
-    // 닫기 클릭
-    private var _onClickCloseBtn = MutableEventFlow<Boolean>()
-    val onClickCloseBtn: EventFlow<Boolean> get() = _onClickCloseBtn
-
-    // 카테고리 클릭
-    private var _onClickCategory = MutableEventFlow<Boolean>()
-    val onClickCategory: EventFlow<Boolean> get() = _onClickCategory
-
-
+    // 구독 유도 팝업
+    private var _subscribePrompt = MutableEventFlow<Boolean>()
+    val subscribePrompt: EventFlow<Boolean> get() = _subscribePrompt
 
     // 이전 페이지
     private var _back = MutableEventFlow<Boolean>()
@@ -69,7 +70,7 @@ class BookSettingFavoriteViewModel @Inject constructor(
     // 자산/분류 카테고리 항목 가져오기
     fun getBookCategory() {
         viewModelScope.launch(Dispatchers.IO) {
-            getBookFavoriteUseCase(prefs.getString("bookKey", ""), getCategory(flow.value!!)).onSuccess { it ->
+            getBookFavoriteUseCase(prefs.getString("bookKey", ""), flow.value!!.toCategoryCode()).onSuccess { it ->
                 val item = it.map {
                     UiBookFavoriteModel(
                         it.idx, edit.value!!, it.description,it.lineCategoryName,it.lineSubcategoryName,it.assetSubcategoryName, it.money, it.exceptStatus
@@ -83,40 +84,52 @@ class BookSettingFavoriteViewModel @Inject constructor(
         }
     }
 
-    // 추가하기 버튼 클릭
+    // 추가 버튼 클릭
     fun onClickAddBtn() {
-        var sum = 0
-        viewModelScope.launch {
-            baseEvent(Event.ShowLoading)
-            getBookFavoriteUseCase(prefs.getString("bookKey", ""), getCategory("수입")).onSuccess { it ->
-                sum+=it.size
-                getBookFavoriteUseCase(prefs.getString("bookKey", ""), getCategory("이체")).onSuccess { it ->
-                    sum+=it.size
-                    getBookFavoriteUseCase(prefs.getString("bookKey", ""), getCategory("지출")).onSuccess { it ->
-                        sum+=it.size
-                        baseEvent(Event.HideLoading)
-                        if (sum==15){
-                            baseEvent(Event.ShowToast("즐겨찾기 개수가 초과 되었습니다."))
-                        }
-                        else {
-                            _addPage.emit(true)
-                        }
+        viewModelScope.launch(Dispatchers.IO) {
+            // 구독자면 바로 패스
+            if (subscriptionDataStoreUtil.getBookSubscribe().first()) {
+                _addPage.emit(true)
+                return@launch
+            }
 
-                    }.onFailure {
-                        baseEvent(Event.HideLoading)
-                        baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@BookSettingFavoriteViewModel)))
+            try {
+                val bookKey = prefs.getString("bookKey", "")
+
+                val categories = listOf("지출", "수입", "이체")
+                var totalCount = 0
+
+                for (category in categories) {
+                    val result = getBookFavoriteUseCase(
+                        bookKey,
+                        category.toCategoryCode()
+                    )
+
+                    if (result.isFailure) {
+                        baseEvent(Event.ShowToast(result.exceptionOrNull()?.message.parseErrorMsg()))
+                        return@launch
                     }
-                }.onFailure {
-                    baseEvent(Event.HideLoading)
-                    baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@BookSettingFavoriteViewModel)))
-                }
-            }.onFailure {
 
-                baseEvent(Event.HideLoading)
-                baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@BookSettingFavoriteViewModel)))
+                    val count = result.getOrNull()?.size ?: 0
+                    totalCount += count
+
+                    // 누적합 15 초과 시 즉시 종료
+                    if (totalCount >= 15) {
+                        _subscribePrompt.emit(true)
+                        return@launch
+                    }
+                }
+
+                // 여기까지 왔으면 15 미만 → 추가 페이지 이동
+                _addPage.emit(true)
+
+            } catch (e: Exception) {
+                baseEvent(Event.ShowToast(e.message.parseErrorMsg()))
             }
         }
     }
+
+
     // 편집버튼 클릭
     fun onClickEdit(){
         edit.value = !edit.value!!
@@ -140,23 +153,6 @@ class BookSettingFavoriteViewModel @Inject constructor(
                 baseEvent(Event.ShowLoading)
                 baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@BookSettingFavoriteViewModel)))
             }
-        }
-    }
-    private fun getCategory(category: String): String {
-        return when (category) {
-            "수입" -> {
-                "INCOME"
-            }
-
-            "지출" -> {
-                "OUTCOME"
-            }
-
-            "이체" -> {
-                "TRANSFER"
-            }
-
-            else -> ""
         }
     }
 
