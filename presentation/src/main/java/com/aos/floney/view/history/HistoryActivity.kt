@@ -80,7 +80,7 @@ class HistoryActivity :
                 // SecondActivity에서 전달한 데이터를 받음
                 val receivedValue = result.data?.getStringExtra("memo") ?: ""
                 viewModel.setMemo(receivedValue)
-                viewModel.baseEvent(Event.ShowSuccessToast("메모 작성을 완료하였습니다."))
+                viewModel.baseEvent(Event.ShowSuccessToast(getString(R.string.history_memo_complete)))
             }
         }
 
@@ -212,9 +212,9 @@ class HistoryActivity :
                 if (it.isExistRepeat) {
                     // 반복내역 있음
                     BaseChoiceAlertDialog(
-                        title = "이 내역을 삭제하시겠습니까?\n반복되는 내역입니다.",
-                        btnTextStr1 = "이 내역만 삭제",
-                        btnTextStr2 = "이후 모든 내역 삭제"
+                        title = getString(R.string.history_delete_repeat_title),
+                        btnTextStr1 = getString(R.string.history_delete_this_only),
+                        btnTextStr2 = getString(R.string.history_delete_all_after)
                     ) {
                         if (it) {
                             // 이 내역만 삭제 선택
@@ -301,7 +301,9 @@ class HistoryActivity :
                 if (it) {
                     // 수정 내역 있음
                     BaseAlertDialog(
-                        title = "잠깐!", info = "수정한 내용이 저장되지 않았습니다.\n그대로 나가시겠습니까?", false
+                        title = getString(R.string.history_unsaved_changes_title),
+                        info = getString(R.string.history_unsaved_changes_message),
+                        false
                     ) {
                         if (it) {
                             finish()
@@ -336,9 +338,9 @@ class HistoryActivity :
             viewModel.onClickFavorite.collect {
                 if (it) {
                     BaseChoiceAlertDialog(
-                        title = "즐겨찾기에 추가하시겠습니까?",
-                        btnTextStr1 = "즐겨찾기에 추가",
-                        btnTextStr2 = "즐겨찾기 내역 보기"
+                        title = getString(R.string.history_add_favorite_title),
+                        btnTextStr1 = getString(R.string.history_add_favorite_button),
+                        btnTextStr2 = getString(R.string.history_view_favorites_button)
                     ) {
                         if (it) {
                             // 즐겨찾기에 추가

@@ -1,5 +1,7 @@
 package com.aos.data.repository.remote.book
 
+import android.content.Context
+import dagger.hilt.android.qualifiers.ApplicationContext
 import com.aos.data.entity.request.book.DeleteBookCategoryBody
 import com.aos.data.entity.request.book.PostBooksChangeBody
 import com.aos.data.entity.request.settlement.Duration
@@ -77,8 +79,10 @@ import okhttp3.ResponseBody
 import timber.log.Timber
 import javax.inject.Inject
 
-class BookRepositoryImpl @Inject constructor(private val bookDataSource: BookRemoteDataSource) :
-    BookRepository {
+class BookRepositoryImpl @Inject constructor(
+    @ApplicationContext private val context: Context,
+    private val bookDataSource: BookRemoteDataSource
+) : BookRepository {
 
     override suspend fun getCheckUserBook(): Result<GetCheckUserBookModel> {
         when (val data = bookDataSource.getCheckUserBook()) {
@@ -181,7 +185,7 @@ class BookRepositoryImpl @Inject constructor(private val bookDataSource: BookRem
     override suspend fun postBooksLines(
         bookKey: String,
         money: Double,
-        flow: String,
+        lineType: String,
         asset: String,
         line: String,
         lineDate: String,
@@ -196,7 +200,7 @@ class BookRepositoryImpl @Inject constructor(private val bookDataSource: BookRem
             PostBooksLinesBody(
                 bookKey,
                 money,
-                flow,
+                lineType,
                 asset,
                 line,
                 lineDate,
@@ -222,7 +226,7 @@ class BookRepositoryImpl @Inject constructor(private val bookDataSource: BookRem
         lineId: Int,
         bookKey: String,
         money: Double,
-        flow: String,
+        lineType: String,
         asset: String,
         line: String,
         lineDate: String,
@@ -234,7 +238,7 @@ class BookRepositoryImpl @Inject constructor(private val bookDataSource: BookRem
     ): Result<PostBooksChangeModel> {
         when (val data = bookDataSource.postBooksLinesChange(
             PostBooksChangeBody(
-                lineId, bookKey, money, flow, asset, line, lineDate, description, except, nickname, memo, imageUrls
+                lineId, bookKey, money, lineType, asset, line, lineDate, description, except, nickname, memo, imageUrls
             )
         )) {
             is NetworkState.Success -> return Result.success(data.body.toPostBooksLinesChangeModel())
@@ -366,7 +370,7 @@ class BookRepositoryImpl @Inject constructor(private val bookDataSource: BookRem
     override suspend fun getBooksInfo(bookKey: String): Result<UiBookSettingModel> {
         when (val data =
             bookDataSource.getBooksInfo(bookKey)) {
-            is NetworkState.Success -> return Result.success(data.body.toUiBookSettingModel())
+            is NetworkState.Success -> return Result.success(data.body.toUiBookSettingModel(context))
             is NetworkState.Failure -> return Result.failure(
                 RetrofitFailureStateException(data.error, data.code)
             )
@@ -535,7 +539,7 @@ class BookRepositoryImpl @Inject constructor(private val bookDataSource: BookRem
     override suspend fun getBooksBudget(bookKey: String, date: String): Result<UiBookBudgetModel> {
         when (val data =
             bookDataSource.getBooksBudget(bookKey, date)) {
-            is NetworkState.Success -> return Result.success(data.body.toUiBookBudgetModel())
+            is NetworkState.Success -> return Result.success(data.body.toUiBookBudgetModel(context))
             is NetworkState.Failure -> return Result.failure(
                 RetrofitFailureStateException(data.error, data.code)
             )

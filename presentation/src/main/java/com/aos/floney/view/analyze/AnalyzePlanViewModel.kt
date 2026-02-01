@@ -5,7 +5,9 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
+import java.util.Locale
 import com.aos.data.util.SharedPreferenceUtil
 import com.aos.floney.base.BaseViewModel
 import com.aos.floney.ext.parseErrorMsg
@@ -28,13 +30,21 @@ class AnalyzePlanViewModel @Inject constructor(
     val postAnalyzeIPlanUseCase: PostAnalyzeIPlanUseCase
 ) : BaseViewModel() {
     // 예산 조회하기
-    private var _postAnalyzePlan = MutableLiveData<UiAnalyzePlanModel>(UiAnalyzePlanModel("", "0원", "0", ""))
+    private var _postAnalyzePlan =
+        MutableLiveData<UiAnalyzePlanModel>(UiAnalyzePlanModel("", "0원", "0", "", "", "", ""))
     val postAnalyzePlan: LiveData<UiAnalyzePlanModel> get() = _postAnalyzePlan
+
+    // 포맷된 텍스트 for UI - AnalyzeMapper에서 가져옴
+    val budgetUsedText: LiveData<String> = _postAnalyzePlan.map { plan ->
+        plan.budgetUsedText
+    }
+
+    val budgetPerDayText: LiveData<String> = _postAnalyzePlan.map { plan ->
+        plan.budgetPerDayText
+    }
 
     private var _onClickSetBudget = MutableEventFlow<Boolean>()
     val onClickSetBudget: EventFlow<Boolean> get() = _onClickSetBudget
-
-    var remainDays = MutableLiveData<String>("")
 
     // 예산 조회하기
     fun postAnalyzePlan(date: String) {
@@ -42,10 +52,6 @@ class AnalyzePlanViewModel @Inject constructor(
             baseEvent(Event.ShowCircleLoading)
             postAnalyzeIPlanUseCase(prefs.getString("bookKey", ""), date).onSuccess {
                 Timber.e("it $it")
-
-                // Calculate remaining days in the month
-                val remainingDays = calculateRemainingDaysInMonth()
-                remainDays.postValue(remainingDays.toString())
 
                 _postAnalyzePlan.postValue(it)
                 baseEvent(Event.HideCircleLoading)

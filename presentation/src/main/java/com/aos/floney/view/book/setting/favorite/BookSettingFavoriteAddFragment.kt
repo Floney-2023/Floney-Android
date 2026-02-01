@@ -66,7 +66,7 @@ class BookSettingFavoriteAddFragment :
         repeatOnStarted {
             viewModel.postBooksFavorites.collect {
                 if(it) {
-                    setFragmentResult("key", bundleOf("flow" to viewModel.flow.value))
+                    setFragmentResult("key", bundleOf("flow" to viewModel.lineType.value))
                     findNavController().popBackStack()
                 }
             }

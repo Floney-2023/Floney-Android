@@ -117,7 +117,14 @@ class AnalyzeViewModel @Inject constructor(
 
     // 날짜 포멧 월만 결과 가져오기
     private fun getFormatDateMonth() {
-        val date = SimpleDateFormat("M월", Locale.getDefault()).format(_calendar.value.time)
+        val locale = Locale.getDefault()
+        val date = if (locale.language == "en") {
+            // English format: Feb
+            SimpleDateFormat("MMM", Locale.ENGLISH).format(_calendar.value.time)
+        } else {
+            // Korean format: 2월
+            SimpleDateFormat("M월", locale).format(_calendar.value.time)
+        }
         _showDate.postValue(date)
 
         viewModelScope.launch {

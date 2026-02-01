@@ -7,6 +7,9 @@ data class UiAnalyzePlanModel(
     val initBudget: String,
     val percent: String,
     val divMoney: String,
+    val budgetUsedText: String,
+    val budgetPerDayText: String,
+    val budgetStatusText: String
 ) {
     interface OnItemClickListener {
         fun onItemClick(item: AnalyzeResult)

@@ -1,5 +1,6 @@
 package com.aos.floney.module
 
+import android.content.Context
 import com.aos.data.repository.remote.alarm.AlarmRemoteDataSourceImpl
 import com.aos.data.repository.remote.alarm.AlarmRepositoryImpl
 import com.aos.data.repository.remote.analyze.AnalyzeRemoteDataSourceImpl
@@ -18,6 +19,7 @@ import com.aos.repository.UserRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -38,9 +40,11 @@ object RepositoryModule {
     @Singleton
     @Provides
     fun provideBookRepository(
+        @ApplicationContext context: Context,
         bookDataSourceImpl: BookRemoteDataSourceImpl
     ) : BookRepository {
         return BookRepositoryImpl(
+            context,
             bookDataSourceImpl
         )
     }
@@ -48,9 +52,11 @@ object RepositoryModule {
     @Singleton
     @Provides
     fun provideAnalyzeRepository(
+        @ApplicationContext context: Context,
         analyzeRemoteDataSourceImpl: AnalyzeRemoteDataSourceImpl
     ) : AnalyzeRepository {
         return AnalyzeRepositoryImpl(
+            context,
             analyzeRemoteDataSourceImpl
         )
     }

@@ -12,14 +12,21 @@
     <string name="analyze_assets">Assets</string>
     <string name="analyze_no_data">No data.</string>
 
+    <!-- Analyze Outcome -->
+    <string name="analyze_outcome_less_than_last">Down %s\nfrom last month</string>
+    <string name="analyze_outcome_more_than_last">Up %s\nfrom last month</string>
+
+    <!-- Analyze Income -->
+
+    <!-- Analyze Budget -->
+    <string name="analyze_budget_used">You\'ve used %s%%\nof your budget</string>
+    <string name="analyze_budget_per_day">You can spend %s\nper day for the rest of the month</string>
+
+    <!-- Analyze Asset -->
+
     <!-- Income Tab -->
-    <string name="analyze_income_earned">You earned</string>
-    <string name="analyze_income_up_from_last">Up %1$s\nfrom last month.</string>
-    <string name="analyze_income_down_from_last">Down %1$s\nfrom last month.</string>
 
     <!-- Budget Tab -->
-    <string name="analyze_budget_used">You\'ve used %1$s%%\nof your budget</string>
-    <string name="analyze_budget_per_day">You can spend %1$s\nper day for the rest of the month.</string>
     <string name="analyze_budget_plenty_left">You have\nplenty of budget left.</string>
     <string name="analyze_budget_set_message">Set a budget to build\nbetter spending habits.</string>
     <string name="analyze_budget_set_button">Set This Month\'s Budget</string>
@@ -250,6 +257,7 @@
     <string name="book_add_invite_select_dialog_create_select">Create Ledger</string>
     <string name="book_add_invite_select_dialog_input_select">Enter Code</string>
     <string name="book_add_invite_select_dialog_add_button">Add</string>
+    <string name="month_budget_format">%s</string>
 
     <!--5-2 가계부 초대받기(팀원)-->
     <string name="book_entrance_title">Join\nInvited Ledger</string>
@@ -469,9 +477,21 @@
     <string name="history_save">Save</string>
     <string name="history_delete">Delete</string>
     <string name="history_created_by">Created By</string>
+    <string name="author_label">Author : </string>
     <string name="history_favorite">Favorite</string>
     <string name="history_repeat">Repeat</string>
     <string name="history_repeat_none">None</string>
+
+    <!-- History Dialogs -->
+    <string name="history_memo_complete">Memo has been saved.</string>
+    <string name="history_delete_repeat_title">Delete this entry?\nThis is a recurring entry.</string>
+    <string name="history_delete_this_only">Delete this entry only</string>
+    <string name="history_delete_all_after">Delete all future entries</string>
+    <string name="history_unsaved_changes_title">Wait!</string>
+    <string name="history_unsaved_changes_message">You have unsaved changes.\nAre you sure you want to leave?</string>
+    <string name="history_add_favorite_title">Add to favorites?</string>
+    <string name="history_add_favorite_button">Add to favorites</string>
+    <string name="history_view_favorites_button">View favorites</string>
 
     <!-- Bottom Sheet Categories -->
     <string name="bottom_sheet_categories">Categories</string>
@@ -517,34 +537,6 @@
     <string name="category_financial_income">Financial Income</string>
     <string name="category_business_income">Business Income</string>
     <string name="category_bonus">Bonus</string>
-
-    <!-- Deprecated: Old Category Keys Mapping - No longer used -->
-    <!--
-    <string name="category_key_FOOD_EXPENSE">Food</string>
-    <string name="category_key_CAFE_SNACK_EXPENSE">Cafe/Snacks</string>
-    <string name="category_key_TRANSPORT_EXPENSE">Transport</string>
-    <string name="category_key_CULTURE_EXPENSE">Culture</string>
-    <string name="category_key_TRAVEL_EXPENSE">Travel/Stay</string>
-    <string name="category_key_LIFE_EXPENSE">Living</string>
-    <string name="category_key_STYLE_EXPENSE">Style/Beauty</string>
-    <string name="category_key_FAMILY_EXPENSE">Family</string>
-    <string name="category_key_EDUCATION_EXPENSE">Education</string>
-    <string name="category_key_HEALTH_EXPENSE">Health</string>
-    <string name="category_key_HOUSING_EXPENSE">Housing/Phone</string>
-    <string name="category_key_EVENT_EXPENSE">Events</string>
-    <string name="category_key_ETC_EXPENSE">Other</string>
-    <string name="category_key_UNCLASSIFIED_EXPENSE">Uncategorized</string>
-    <string name="category_key_SALARY_INCOME">Salary</string>
-    <string name="category_key_EXTRA_INCOME">Extra Income</string>
-    <string name="category_key_ALLOWANCE_INCOME">Allowance</string>
-    <string name="category_key_FINANCIAL_INCOME">Financial Income</string>
-    <string name="category_key_BUSINESS_INCOME">Business Income</string>
-    <string name="category_key_BONUS_INCOME">Bonus</string>
-    <string name="category_key_ETC_INCOME">Other</string>
-    <string name="category_key_UNCLASSIFIED_INCOME">Uncategorized</string>
-    <string name="category_key_WITHDRAW_TRANSFER">Withdrawal</string>
-    <string name="category_key_DEPOSIT_TRANSFER">Deposit</string>
-    -->
 
     <!-- Excel Export Date Range Options -->
     <string name="excel_export_this_month">This Month</string>
@@ -719,9 +711,9 @@
     <string name="subscribe_popup_title">Your subscription has started!</string>
     <string name="subscribe_popup_info">Enjoy more convenient features with Floney.\nYou can check your status in [My Page] > [View Subscription Details].</string>
 
-    <string name="subscribe_prompt_title">The owner needs a subscription</string>
-    <string name="subscribe_prompt_inform">When the owner subscribes to Floney Plus+,\neveryone can use various features without limits.</string>
-    <string name="subscribe_plan_btn">View Subscription Plans</string>
+    <string name="subscribe_prompt_title">Owner Subscription required</string>
+    <string name="subscribe_prompt_inform">When the owner subscribes, everyone can use all premium features without limits.</string>
+    <string name="subscribe_plan_btn">View Plan</string>
 
     <string name="unsubscribe_exit_popup_title">You have an active subscription!</string>
     <string name="unsubscribe_exit_popup_info">You cannot delete your account without cancelling your subscription.\nPlease check your subscription status in My Page.</string>

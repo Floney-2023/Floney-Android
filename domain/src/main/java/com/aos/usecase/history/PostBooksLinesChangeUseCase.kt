@@ -9,7 +9,7 @@ class PostBooksLinesChangeUseCase(private val bookRepository: BookRepository) {
        lineId: Int,
        bookKey: String,
        money: Double,
-       flow: String,
+       lineType: String,
        asset:String,
        line: String,
        lineDate: String,
@@ -19,6 +19,6 @@ class PostBooksLinesChangeUseCase(private val bookRepository: BookRepository) {
        memo : String,
        imageUrls : List<String>
     ): Result<PostBooksChangeModel> {
-        return bookRepository.postBooksLinesChange(lineId, bookKey, money, flow, asset, line, lineDate, description, except, nickname, memo, imageUrls)
+        return bookRepository.postBooksLinesChange(lineId, bookKey, money, lineType, asset, line, lineDate, description, except, nickname, memo, imageUrls)
     }
 }

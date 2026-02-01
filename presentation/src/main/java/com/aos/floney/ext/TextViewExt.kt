@@ -49,20 +49,7 @@ fun String.formatNumber(): String {
 
 @BindingAdapter("bind:setPlanText")
 fun TextView.setPlanText(item: UiAnalyzePlanModel?) {
-
-    if(item != null) {
-        if(item.initBudget.substring(0, item.initBudget.length - 1) == "0") {
-            this.text = "예산을 설정하고\n체계적인 소비 습관을 만들어 보세요!"
-        } else {
-            when(item.percent.toInt()) {
-                in 0..30 -> this.text = "쓸 수 있는 예산이\n충분해요!"
-                in 31..60 -> this.text = "조금씩 지출을\n줄여볼까요?"
-                in 61..100 -> this.text = "예산을 넘기지 않게\n주의하세요!"
-            }
-        }
-    } else {
-        this.text = ""
-    }
+    this.text = item?.budgetStatusText ?: ""
 }
 
 @BindingAdapter("setDynamicMarginTop")

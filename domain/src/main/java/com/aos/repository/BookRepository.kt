@@ -55,7 +55,7 @@ interface BookRepository {
     suspend fun postBooksLines(
         bookKey: String,
         money: Double,
-        flow: String,
+        lineType: String,
         asset: String,
         line: String,
         lineDate: String,
@@ -72,7 +72,7 @@ interface BookRepository {
         lineId: Int,
         bookKey: String,
         money: Double,
-        flow: String,
+        lineType: String,
         asset: String,
         line: String,
         lineDate: String,

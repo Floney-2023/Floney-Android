@@ -1,5 +1,7 @@
 package com.aos.data.mapper
 
+import android.content.Context
+import com.aos.data.R
 import com.aos.data.entity.request.book.PostBooksLinesEntity
 import com.aos.data.entity.response.book.GetBookCategoryEntity
 import com.aos.data.entity.response.book.GetBookFavoriteEntity
@@ -483,9 +485,22 @@ fun List<GetSettlementSeeEntity>.toUiSettlementSeeModel(): UiSettlementSeeModel 
     )
 }
 
-fun GetBooksInfoEntity.toUiBookSettingModel(): UiBookSettingModel {
+fun GetBooksInfoEntity.toUiBookSettingModel(context: Context): UiBookSettingModel {
     val myBookUsers = this.ourBookUsers.map {
-        val roleString = if (it.me) "${it.role}·나" else it.role
+        // Localize the role text
+        val localizedRole = when(it.role) {
+            "방장" -> context.getString(R.string.book_role_owner)
+            "팀원" -> context.getString(R.string.book_role_member)
+            else -> it.role
+        }
+
+        // Create the role string with optional "Me" suffix
+        val roleString = if (it.me) {
+            "$localizedRole·${context.getString(R.string.book_role_me)}"
+        } else {
+            localizedRole
+        }
+
         MyBookUsers(
             name = it.name,
             profileImg = it.profileImg ?: "user_default",
@@ -512,93 +527,38 @@ fun GetBooksInfoCurrencyEntity.toGetBooksInfoCurrencyModel(): GetBooksInfoCurren
     return GetBooksInfoCurrencyModel(myBookCurrency = this.myBookCurrency ?: "")
 }
 
-fun GetBooksBudgetEntity.toUiBookBudgetModel(): UiBookBudgetModel {
-    val budgetList = listOf(
-        BudgetItem(
-            "1",
-            "${
-                NumberFormat.getNumberInstance().format(formatAmount(this.january))
-            }${CurrencyUtil.currency}",
-            this.january > 0.0
-        ),
-        BudgetItem(
-            "2",
-            "${
-                NumberFormat.getNumberInstance().format(formatAmount(this.february))
-            }${CurrencyUtil.currency}",
-            this.february > 0.0
-        ),
-        BudgetItem(
-            "3",
-            "${
-                NumberFormat.getNumberInstance().format(formatAmount(this.march))
-            }${CurrencyUtil.currency}",
-            this.march > 0.0
-        ),
-        BudgetItem(
-            "4",
-            "${
-                NumberFormat.getNumberInstance().format(formatAmount(this.april))
-            }${CurrencyUtil.currency}",
-            this.april > 0.0
-        ),
-        BudgetItem(
-            "5",
-            "${
-                NumberFormat.getNumberInstance().format(formatAmount(this.may))
-            }${CurrencyUtil.currency}",
-            this.may > 0.0
-        ),
-        BudgetItem(
-            "6",
-            "${
-                NumberFormat.getNumberInstance().format(formatAmount(this.june))
-            }${CurrencyUtil.currency}",
-            this.june > 0.0
-        ),
-        BudgetItem(
-            "7",
-            "${
-                NumberFormat.getNumberInstance().format(formatAmount(this.july))
-            }${CurrencyUtil.currency}",
-            this.july > 0.0
-        ),
-        BudgetItem(
-            "8",
-            "${
-                NumberFormat.getNumberInstance().format(formatAmount(this.august))
-            }${CurrencyUtil.currency}",
-            this.august > 0.0
-        ),
-        BudgetItem(
-            "9",
-            "${
-                NumberFormat.getNumberInstance().format(formatAmount(this.september))
-            }${CurrencyUtil.currency}",
-            this.september > 0.0
-        ),
-        BudgetItem(
-            "10",
-            "${
-                NumberFormat.getNumberInstance().format(formatAmount(this.october))
-            }${CurrencyUtil.currency}",
-            this.october > 0.0
-        ),
-        BudgetItem(
-            "11",
-            "${
-                NumberFormat.getNumberInstance().format(formatAmount(this.november))
-            }${CurrencyUtil.currency}",
-            this.november > 0.0
-        ),
-        BudgetItem(
-            "12",
-            "${
-                NumberFormat.getNumberInstance().format(formatAmount(this.december))
-            }${CurrencyUtil.currency}",
-            this.december > 0.0
-        )
+fun GetBooksBudgetEntity.toUiBookBudgetModel(context: Context): UiBookBudgetModel {
+    val monthNames = listOf(
+        context.getString(R.string.month_january),
+        context.getString(R.string.month_february),
+        context.getString(R.string.month_march),
+        context.getString(R.string.month_april),
+        context.getString(R.string.month_may),
+        context.getString(R.string.month_june),
+        context.getString(R.string.month_july),
+        context.getString(R.string.month_august),
+        context.getString(R.string.month_september),
+        context.getString(R.string.month_october),
+        context.getString(R.string.month_november),
+        context.getString(R.string.month_december)
     )
+
+    val budgetValues = listOf(
+        this.january, this.february, this.march, this.april,
+        this.may, this.june, this.july, this.august,
+        this.september, this.october, this.november, this.december
+    )
+
+    val budgetList = monthNames.zip(budgetValues).map { (month, value) ->
+        BudgetItem(
+            month,
+            "${
+                NumberFormat.getNumberInstance().format(formatAmount(value))
+            }${CurrencyUtil.currency}",
+            value > 0.0
+        )
+    }
+
     return UiBookBudgetModel(
         budgetList = budgetList
     )

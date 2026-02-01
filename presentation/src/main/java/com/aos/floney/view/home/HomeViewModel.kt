@@ -3,6 +3,7 @@ package com.aos.floney.view.home
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.aos.data.util.CurrencyUtil
 import com.aos.data.util.SharedPreferenceUtil
@@ -91,6 +92,34 @@ class HomeViewModel @Inject constructor(
 
     private var _onClickedShowDetail = MutableLiveData<MonthMoney?>(null)
     val onClickedShowDetail: LiveData<MonthMoney?> get() = _onClickedShowDetail
+
+    // Formatted year for display
+    val formattedYear: LiveData<String> = _onClickedShowDetail.map { money ->
+        money?.let {
+            if (Locale.getDefault().language == "en") {
+                it.year  // English: just year (2022)
+            } else {
+                "${it.year}년"  // Korean: 2022년
+            }
+        } ?: ""
+    }
+
+    // Formatted month and day for display
+    val formattedMonthDay: LiveData<String> = _onClickedShowDetail.map { money ->
+        money?.let {
+            if (Locale.getDefault().language == "en") {
+                // English: Nov 20
+                val monthNames = arrayOf("Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                                       "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+                val monthIndex = it.month.toIntOrNull()?.minus(1) ?: 0
+                val monthName = if (monthIndex in 0..11) monthNames[monthIndex] else ""
+                "$monthName ${it.day}"
+            } else {
+                // Korean: 11월 20일
+                "${it.month}월 ${it.day}일"
+            }
+        } ?: ""
+    }
 
     private var myNickname: String = ""
 
@@ -374,7 +403,17 @@ class HomeViewModel @Inject constructor(
     // 날짜 포멧 결과 가져오기
     fun getFormatDateMonth(): String {
         val date = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(_calendar.value.time)
-        val showDate = date.substring(0, 7).replace("-", ".")
+        val locale = Locale.getDefault()
+
+        val showDate = if (locale.language == "en") {
+            // English format: Feb 2026
+            val monthFormat = SimpleDateFormat("MMM yyyy", Locale.ENGLISH)
+            monthFormat.format(_calendar.value.time)
+        } else {
+            // Korean format: 2026.02
+            date.substring(0, 7).replace("-", ".")
+        }
+
         _showDate.postValue(showDate)
         return date
     }
@@ -382,7 +421,17 @@ class HomeViewModel @Inject constructor(
     // 날짜 포멧 결과 가져오기
     fun getFormatDateDay(): String {
         val date = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(_calendar.value.time)
-        val showDate = date.substring(5, 10).replace("-", ".")
+        val locale = Locale.getDefault()
+
+        val showDate = if (locale.language == "en") {
+            // English format: Feb 02
+            val dayFormat = SimpleDateFormat("MMM dd", Locale.ENGLISH)
+            dayFormat.format(_calendar.value.time)
+        } else {
+            // Korean format: 02.20
+            date.substring(5, 10).replace("-", ".")
+        }
+
         _showDate.postValue(showDate)
         return date
     }

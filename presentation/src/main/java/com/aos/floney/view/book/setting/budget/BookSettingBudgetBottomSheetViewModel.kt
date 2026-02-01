@@ -1,11 +1,13 @@
 package com.aos.floney.view.book.setting.budget
 
+import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.aos.data.util.CurrencyUtil
 import com.aos.data.util.SharedPreferenceUtil
+import com.aos.floney.R
 import com.aos.floney.base.BaseViewModel
 import com.aos.floney.ext.formatNumber
 import com.aos.floney.ext.parseErrorMsg
@@ -19,6 +21,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BookSettingBudgetBottomSheetViewModel @Inject constructor(
+    private val app: Application,
     stateHandle: SavedStateHandle,
     private val prefs: SharedPreferenceUtil,
     private val booksInfoBudgetUseCase: BooksInfoBudgetUseCase
@@ -44,7 +47,8 @@ class BookSettingBudgetBottomSheetViewModel @Inject constructor(
     fun settingUi(item: BudgetItem, dateString: String){
 
         date.postValue(dateString)
-        title.postValue(item.month+"월 예산")
+        // Use formatted string resource for title
+        title.postValue(app.getString(R.string.month_budget_format, item.month))
 
         if (!item.money.equals("0${CurrencyUtil.currency}"))
             cost.postValue(item.money)

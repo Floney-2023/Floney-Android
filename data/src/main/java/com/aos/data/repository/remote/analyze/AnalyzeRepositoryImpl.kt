@@ -1,6 +1,8 @@
 package com.aos.data.repository.remote.analyze
 
+import android.content.Context
 import com.aos.data.entity.request.analyze.PostAnalyzeAssetBody
+import dagger.hilt.android.qualifiers.ApplicationContext
 import com.aos.data.entity.request.analyze.PostAnalyzeBudgetBody
 import com.aos.data.entity.request.analyze.PostAnalyzeCategoryBody
 import com.aos.data.entity.request.analyze.PostAnalyzeLineSubCategoryBody
@@ -21,8 +23,10 @@ import com.aos.util.NetworkState
 import timber.log.Timber
 import javax.inject.Inject
 
-class AnalyzeRepositoryImpl @Inject constructor(private val analyzeDataSourceImpl: AnalyzeRemoteDataSourceImpl) :
-    AnalyzeRepository {
+class AnalyzeRepositoryImpl @Inject constructor(
+    @ApplicationContext private val context: Context,
+    private val analyzeDataSourceImpl: AnalyzeRemoteDataSourceImpl
+) : AnalyzeRepository {
 
     override suspend fun postAnalyzeOutComeCategory(
         bookKey: String, root: String, date: String
@@ -32,7 +36,7 @@ class AnalyzeRepositoryImpl @Inject constructor(private val analyzeDataSourceImp
                 bookKey, root, date
             )
         )) {
-            is NetworkState.Success -> return Result.success(data.body.toUiAnalyzeModel())
+            is NetworkState.Success -> return Result.success(data.body.toUiAnalyzeModel(context))
             is NetworkState.Failure -> return Result.failure(
                 RetrofitFailureStateException(data.error, data.code)
             )
@@ -55,7 +59,7 @@ class AnalyzeRepositoryImpl @Inject constructor(private val analyzeDataSourceImp
                 bookKey, root, date
             )
         )) {
-            is NetworkState.Success -> return Result.success(data.body.toUiAnalyzeModel())
+            is NetworkState.Success -> return Result.success(data.body.toUiAnalyzeModel(context))
             is NetworkState.Failure -> return Result.failure(
                 RetrofitFailureStateException(data.error, data.code)
             )
@@ -77,7 +81,7 @@ class AnalyzeRepositoryImpl @Inject constructor(private val analyzeDataSourceImp
                 bookKey, date
             )
         )) {
-            is NetworkState.Success -> return Result.success(data.body.toUiAnalyzePlanModel())
+            is NetworkState.Success -> return Result.success(data.body.toUiAnalyzePlanModel(context))
             is NetworkState.Failure -> return Result.failure(
                 RetrofitFailureStateException(data.error, data.code)
             )
@@ -99,7 +103,7 @@ class AnalyzeRepositoryImpl @Inject constructor(private val analyzeDataSourceImp
                 bookKey, date
             )
         )) {
-            is NetworkState.Success -> return Result.success(data.body.toUiAnalyzeAssetModel())
+            is NetworkState.Success -> return Result.success(data.body.toUiAnalyzeAssetModel(context))
             is NetworkState.Failure -> return Result.failure(
                 RetrofitFailureStateException(data.error, data.code)
             )

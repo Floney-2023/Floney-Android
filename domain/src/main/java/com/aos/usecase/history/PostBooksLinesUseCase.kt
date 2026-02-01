@@ -7,7 +7,7 @@ class PostBooksLinesUseCase(private val bookRepository: BookRepository) {
     suspend operator fun invoke(
        bookKey: String,
        money: Double,
-       flow: String,
+       lineType: String,
        asset:String,
        line: String,
        lineDate: String,
@@ -18,6 +18,6 @@ class PostBooksLinesUseCase(private val bookRepository: BookRepository) {
        memo: String,
        imageUrl: List<String>,
     ): Result<PostBooksLinesModel> {
-        return bookRepository.postBooksLines(bookKey, money, flow, asset, line, lineDate, description, except, nickname, repeatDuration, memo, imageUrl)
+        return bookRepository.postBooksLines(bookKey, money, lineType, asset, line, lineDate, description, except, nickname, repeatDuration, memo, imageUrl)
     }
 }

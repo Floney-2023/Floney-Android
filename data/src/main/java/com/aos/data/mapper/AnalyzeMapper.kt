@@ -1,6 +1,7 @@
 package com.aos.data.mapper
 
-import android.graphics.Color
+import android.content.Context
+import com.aos.data.R
 import com.aos.data.entity.response.analyze.PostAnalyzeAssetEntity
 import com.aos.data.entity.response.analyze.PostAnalyzeBudgetEntity
 import com.aos.data.entity.response.analyze.PostAnalyzeCategoryInComeEntity
@@ -20,7 +21,6 @@ import java.text.NumberFormat
 import java.util.Calendar
 import kotlin.math.pow
 import kotlin.math.roundToInt
-import kotlin.random.Random
 import androidx.core.graphics.toColorInt
 
 private val colorUsedArr = arrayListOf<Int>()
@@ -43,36 +43,32 @@ private val randomColorArr = arrayListOf<Int>()
 private var stepIdx = 0
 private var colorIdx = 0
 
-fun PostAnalyzeCategoryOutComeEntity.toUiAnalyzeModel(): UiAnalyzeCategoryOutComeModel {
+fun PostAnalyzeCategoryOutComeEntity.toUiAnalyzeModel(context: Context): UiAnalyzeCategoryOutComeModel {
     colorIdx = 0
     stepIdx = 0
     colorUsedArr.clear()
     randomColorArr.clear()
     randomColorArr.addAll(getRandomColor(this.analyzeResult.size))
 
-    return UiAnalyzeCategoryOutComeModel(total = "총 ${
-        NumberFormat.getNumberInstance().format(this.total)
-    }${CurrencyUtil.currency}을\n소비했어요",
+    val formattedTotal = "${NumberFormat.getNumberInstance().format(this.total)}${CurrencyUtil.currency}"
+
+    return UiAnalyzeCategoryOutComeModel(
+        total = context.getString(R.string.analyze_outcome_total, formattedTotal),
         differance = if (differance < 0) {
-            "저번달 대비 ${
-                NumberFormat.getNumberInstance().format(this.differance * -1.0)
-            }${CurrencyUtil.currency}을\n덜 사용했어요"
+            val formattedDiff = "${NumberFormat.getNumberInstance().format(this.differance * -1.0)}${CurrencyUtil.currency}"
+            context.getString(R.string.analyze_outcome_less_than_last, formattedDiff)
         } else if (this.differance == this.total) {
-            "저번달 대비 ${
-                NumberFormat.getNumberInstance().format(differance)
-            }${CurrencyUtil.currency}을\n더 사용했어요"
+            val formattedDiff = "${NumberFormat.getNumberInstance().format(differance)}${CurrencyUtil.currency}"
+            context.getString(R.string.analyze_outcome_more_than_last, formattedDiff)
         } else if (this.differance > this.total) {
-            "저번달 대비 ${
-                NumberFormat.getNumberInstance().format(this.differance - total)
-            }${CurrencyUtil.currency}을\n더 사용했어요"
+            val formattedDiff = "${NumberFormat.getNumberInstance().format(this.differance - total)}${CurrencyUtil.currency}"
+            context.getString(R.string.analyze_outcome_more_than_last, formattedDiff)
         } else if (total > differance) {
-            "저번달 대비 ${
-                NumberFormat.getNumberInstance().format(differance)
-            }${CurrencyUtil.currency}을\n더 사용했어요"
+            val formattedDiff = "${NumberFormat.getNumberInstance().format(differance)}${CurrencyUtil.currency}"
+            context.getString(R.string.analyze_outcome_more_than_last, formattedDiff)
         } else {
-            "저번달 대비 ${
-                NumberFormat.getNumberInstance().format(differance)
-            }${CurrencyUtil.currency}을\n덜 사용했어요"
+            val formattedDiff = "${NumberFormat.getNumberInstance().format(differance)}${CurrencyUtil.currency}"
+            context.getString(R.string.analyze_outcome_less_than_last, formattedDiff)
         },
         size = this.analyzeResult.size,
         analyzeResult = this.analyzeResult.map {
@@ -113,7 +109,7 @@ fun PostAnalyzeCategoryOutComeEntity.toUiAnalyzeModel(): UiAnalyzeCategoryOutCom
         })
 }
 
-fun PostAnalyzeCategoryInComeEntity.toUiAnalyzeModel(): UiAnalyzeCategoryInComeModel {
+fun PostAnalyzeCategoryInComeEntity.toUiAnalyzeModel(context: Context): UiAnalyzeCategoryInComeModel {
     colorIdx = 0
     stepIdx = 0
     colorUsedArr.clear()
@@ -123,29 +119,25 @@ fun PostAnalyzeCategoryInComeEntity.toUiAnalyzeModel(): UiAnalyzeCategoryInComeM
     Timber.e("different $differance")
     Timber.e("total $total")
 
-    return UiAnalyzeCategoryInComeModel(total = "총 ${
-        NumberFormat.getNumberInstance().format(this.total)
-    }${CurrencyUtil.currency}을\n벌었어요",
+    val formattedTotal = "${NumberFormat.getNumberInstance().format(this.total)}${CurrencyUtil.currency}"
+
+    return UiAnalyzeCategoryInComeModel(
+        total = context.getString(R.string.analyze_income_total, formattedTotal),
         differance = if (differance < 0 && total == 0.0) {
-            "저번달 대비 ${
-                NumberFormat.getNumberInstance().format(this.differance * -1.0)
-            }${CurrencyUtil.currency}을\n덜 벌었어요"
+            val formattedDiff = "${NumberFormat.getNumberInstance().format(this.differance * -1.0)}${CurrencyUtil.currency}"
+            context.getString(R.string.analyze_income_less_than_last, formattedDiff)
         } else if (this.differance == this.total) {
-            "저번달 대비 ${
-                NumberFormat.getNumberInstance().format(differance)
-            }${CurrencyUtil.currency}을\n더 벌었어요"
+            val formattedDiff = "${NumberFormat.getNumberInstance().format(differance)}${CurrencyUtil.currency}"
+            context.getString(R.string.analyze_income_more_than_last, formattedDiff)
         } else if (this.differance > this.total) {
-            "저번달 대비 ${
-                NumberFormat.getNumberInstance().format(this.differance - total)
-            }${CurrencyUtil.currency}을\n더 벌었어요"
+            val formattedDiff = "${NumberFormat.getNumberInstance().format(this.differance - total)}${CurrencyUtil.currency}"
+            context.getString(R.string.analyze_income_more_than_last, formattedDiff)
         } else if (differance < 0 && total > differance) {
-            "저번달 대비 ${
-                NumberFormat.getNumberInstance().format(differance * -1.0)
-            }${CurrencyUtil.currency}을\n더 벌었어요"
+            val formattedDiff = "${NumberFormat.getNumberInstance().format(differance * -1.0)}${CurrencyUtil.currency}"
+            context.getString(R.string.analyze_income_more_than_last, formattedDiff)
         } else {
-            "저번달 대비 ${
-                NumberFormat.getNumberInstance().format(differance)
-            }${CurrencyUtil.currency}을\n더 벌었어요"
+            val formattedDiff = "${NumberFormat.getNumberInstance().format(differance)}${CurrencyUtil.currency}"
+            context.getString(R.string.analyze_income_more_than_last, formattedDiff)
         },
         size = this.analyzeResult.size,
         analyzeResult = this.analyzeResult.map {
@@ -186,7 +178,7 @@ fun PostAnalyzeCategoryInComeEntity.toUiAnalyzeModel(): UiAnalyzeCategoryInComeM
         })
 }
 
-fun PostAnalyzeBudgetEntity.toUiAnalyzePlanModel(): UiAnalyzePlanModel {
+fun PostAnalyzeBudgetEntity.toUiAnalyzePlanModel(context: Context): UiAnalyzePlanModel {
     val tempLeftMoney = "${
         NumberFormat.getNumberInstance().format(this.leftMoney)
     }${CurrencyUtil.currency}".substring(
@@ -194,11 +186,37 @@ fun PostAnalyzeBudgetEntity.toUiAnalyzePlanModel(): UiAnalyzePlanModel {
         "${NumberFormat.getNumberInstance().format(this.leftMoney)}${CurrencyUtil.currency}".length
     )
 
-    // 남은 일 수 계산 
+    // 남은 일 수 계산
     val calendar = Calendar.getInstance()
     val today = calendar.get(Calendar.DAY_OF_MONTH)
     val lastDayOfMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
-    val enemyDay = lastDayOfMonth - today + 1
+    val remainingDays = lastDayOfMonth - today + 1
+
+    val percentValue = if (this.leftMoney < 0) {
+        "100"
+    } else {
+        (((this.initBudget - this.leftMoney) / this.initBudget) * 100).toInt().toString()
+    }
+
+    val divMoneyValue = "${
+        if (leftMoney > 0) {
+            NumberFormat.getNumberInstance().format((this.leftMoney / remainingDays).roundToInt())
+        } else {
+            0
+        }
+    }${CurrencyUtil.currency}".replace("-", "")
+
+    // Budget status text 결정
+    val budgetStatusText = if (this.initBudget == 0.0) {
+        context.getString(R.string.analyze_budget_no_budget)
+    } else {
+        when (percentValue.toIntOrNull() ?: 0) {
+            in 0..30 -> context.getString(R.string.analyze_budget_plenty)
+            in 31..60 -> context.getString(R.string.analyze_budget_reduce)
+            in 61..100 -> context.getString(R.string.analyze_budget_careful)
+            else -> context.getString(R.string.analyze_budget_careful)
+        }
+    }
 
     return UiAnalyzePlanModel(
         initBudget = "${
@@ -207,22 +225,15 @@ fun PostAnalyzeBudgetEntity.toUiAnalyzePlanModel(): UiAnalyzePlanModel {
         leftMoney = "${
             NumberFormat.getNumberInstance().format(this.leftMoney)
         }${CurrencyUtil.currency}",
-        percent = if (this.leftMoney < 0) {
-            "100"
-        } else {
-            (((this.initBudget - this.leftMoney) / this.initBudget) * 100).toInt().toString()
-        },
-        divMoney = "${
-            if (leftMoney > 0) {
-                NumberFormat.getNumberInstance().format((this.leftMoney / enemyDay).roundToInt())
-            } else {
-                0
-            }
-        }${CurrencyUtil.currency}".replace("-", "")
+        percent = percentValue,
+        divMoney = divMoneyValue,
+        budgetUsedText = context.getString(R.string.analyze_budget_used, percentValue),
+        budgetPerDayText = context.getString(R.string.analyze_budget_per_day, remainingDays.toString(), divMoneyValue),
+        budgetStatusText = budgetStatusText
     )
 }
 
-fun PostAnalyzeAssetEntity.toUiAnalyzeAssetModel(): UiAnalyzeAssetModel {
+fun PostAnalyzeAssetEntity.toUiAnalyzeAssetModel(context: Context): UiAnalyzeAssetModel {
     val listAsset = arrayListOf<Asset>()
     var maxAsset = 0.0
 
@@ -254,20 +265,18 @@ fun PostAnalyzeAssetEntity.toUiAnalyzeAssetModel(): UiAnalyzeAssetModel {
 
     return UiAnalyzeAssetModel(
         totalDifference = if (this.difference > 0) {
-            "나의 자산이\n지난달보다 증가했어요"
+            context.getString(R.string.analyze_asset_increased)
         } else if (this.difference.toInt() == 0) {
-            "나의 자산이\n지난달과 같아요"
+            context.getString(R.string.analyze_asset_same)
         } else {
-            "나의 자산이\n지난달보다 감소했어요"
+            context.getString(R.string.analyze_asset_decreased)
         },
         difference = if (this.difference >= 0) {
-            "지난달 대비 ${
-                NumberFormat.getNumberInstance().format(this.difference)
-            }${CurrencyUtil.currency}이\n증가했어요"
+            val formattedDiff = "${NumberFormat.getNumberInstance().format(this.difference)}${CurrencyUtil.currency}"
+            context.getString(R.string.analyze_asset_up, formattedDiff)
         } else {
-            "지난달 대비 ${
-                NumberFormat.getNumberInstance().format(this.difference)
-            }${CurrencyUtil.currency}이\n감소했어요".replace("-", "")
+            val formattedDiff = "${NumberFormat.getNumberInstance().format(this.difference)}${CurrencyUtil.currency}".replace("-", "")
+            context.getString(R.string.analyze_asset_down, formattedDiff)
         },
         initAsset = "${
             NumberFormat.getNumberInstance().format(this.initAsset)
@@ -308,13 +317,13 @@ fun Double.round(decimals: Int): Double {
     return (this * factor).roundToInt() / factor
 }
 
-private fun getConvertReceiveRepeatValue(value: String): String {
+private fun getConvertReceiveRepeatValue(context: Context, value: String): String {
     Timber.e("value $value")
     return when(value) {
-        "LATEST" -> "최신순"
-        "OLDEST" -> "오래된 순"
-        "USER_NICKNAME" -> "사용자 닉네임 순"
-        "LINE_SUBCATEGORY_NAME" -> "분류 가나다 순"
+        "LATEST" -> context.getString(R.string.sort_latest)
+        "OLDEST" -> context.getString(R.string.sort_oldest)
+        "USER_NICKNAME" -> context.getString(R.string.sort_user_nickname)
+        "LINE_SUBCATEGORY_NAME" -> context.getString(R.string.sort_subcategory)
         else -> ""
     }
 }

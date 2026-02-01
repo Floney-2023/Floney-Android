@@ -153,14 +153,28 @@
         </LinearLayout>
 
         <ImageView
-            android:layout_width="80dp"
-            android:layout_height="86dp"
-            android:src="@drawable/icon_empty_category"
+            android:id="@+id/imageView_empty"
+            android:layout_width="50dp"
+            android:layout_height="84dp"
+            android:src="@drawable/icon_empty_list"
             android:visibility="@{vm.categoryList.size() > 0 ? View.GONE : View.VISIBLE}"
             app:layout_constraintBottom_toBottomOf="@+id/rv_wallet_item_view"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/ll_category" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/home_no_entries"
+            android:textColor="@color/grayscale6"
+            android:textSize="12dp"
+            android:fontFamily="@font/pretendard_medium"
+            android:visibility="@{vm.categoryList.size() > 0 ? View.GONE : View.VISIBLE}"
+            app:layout_constraintEnd_toEndOf="@+id/imageView_empty"
+            app:layout_constraintStart_toStartOf="@+id/imageView_empty"
+            app:layout_constraintTop_toBottomOf="@+id/imageView_empty" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_wallet_item_view"

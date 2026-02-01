@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.aos.data.util.CurrencyUtil
 import com.aos.data.util.SharedPreferenceUtil
@@ -131,15 +132,17 @@ class HistoryViewModel @Inject constructor(
     var cost = MutableLiveData<String>("")
 
     // 자산, 지출, 수입, 이체
-    private val _flow: MutableLiveData<String> = stateHandle.getLiveData("flow", "지출")
-    val flow: LiveData<String> get() = _flow
+    private val _lineType: MutableLiveData<String> = stateHandle.getLiveData("lineType", "OUTCOME")
+    val lineType: LiveData<String> get() = _lineType
 
 
     // 자산
-    var asset = MutableLiveData<String>("자산을 선택하세요")
+    var asset = MutableLiveData<String>("")
+    val isAssetSelected: LiveData<Boolean> = asset.map { it.isNotEmpty() }
 
     // 분류
-    var line = MutableLiveData<String>("분류를 선택하세요")
+    var line = MutableLiveData<String>("")
+    val isLineSelected: LiveData<Boolean> = line.map { it.isNotEmpty() }
 
     // 내용
     var content = MutableLiveData<String>("")
@@ -246,7 +249,7 @@ class HistoryViewModel @Inject constructor(
         modifyId = item.id
         cost.value = item.money.formatMoneyWithCurrency()
         date.value = item.lineDate
-        _flow.value = item.lineCategory.toCategoryName()
+        _lineType.value = item.lineCategory
         asset.value = item.assetSubCategory
         line.value = item.lineSubCategory
         content.value = item.description
@@ -267,7 +270,7 @@ class HistoryViewModel @Inject constructor(
 
         modifyItem = item
         modifyItem!!.money =item.money.formatMoneyWithCurrency()
-        modifyItem!!.lineCategory = item.lineCategory.toCategoryName()
+        modifyItem!!.lineCategory = item.lineCategory
 
         _memoOrImageExist.postValue(memo.isNotBlank() || cloudUrlList.isNotEmpty())
     }
@@ -280,7 +283,7 @@ class HistoryViewModel @Inject constructor(
         line.value = item.lineSubcategoryName
         asset.value = item.assetSubcategoryName
         content.value = item.description
-        _flow.value = item.lineCategoryName
+        _lineType.value = item.lineCategoryName.toCategoryCode()
         deleteChecked.value = item.exceptStatus
     }
 
@@ -335,7 +338,7 @@ class HistoryViewModel @Inject constructor(
                 categoryClickItem = null
 
                 val tempValue = if (parent == "자산") asset.value else line.value
-                val isUnselected = tempValue == "자산을 선택하세요" || tempValue == "분류를 선택하세요"
+                val isUnselected = tempValue.isNullOrEmpty()
 
                 // Apply localization to categories
                 val localizedList = CategoryLocalizationMapper.localizeCategories(application, list)
@@ -394,7 +397,7 @@ class HistoryViewModel @Inject constructor(
                 bookKey = prefs.getString("bookKey", ""),
                 money = cost.value!!.replace(",", "").replace(CurrencyUtil.currency, "")
                     .toDouble(),
-                flow = flow.value!!,
+                lineType = lineType.value!!,
                 asset = asset.value!!,
                 line = line.value!!,
                 lineDate = date.value!!.replace(".", "-"),
@@ -454,20 +457,20 @@ class HistoryViewModel @Inject constructor(
     // 모든 데이터 입력 되었는지 체크
     private fun isAllInputData(): Boolean {
         createErrorMsg()
-        return cost.value != "" && asset.value != "자산을 선택하세요" && line.value != "분류를 선택하세요"
+        return cost.value != "" && asset.value != "" && line.value != ""
     }
 
     fun isFavoriteAllData(): Boolean {
-        return cost.value != "" || asset.value != "자산을 선택하세요" || line.value != "분류를 선택하세요"
+        return cost.value != "" || asset.value != "" || line.value != ""
     }
 
     // 에러 메세지 생성
     private fun createErrorMsg() {
         if (cost.value == "") {
             baseEvent(Event.ShowToast("금액을 입력해주세요"))
-        } else if (asset.value == "자산을 선택하세요") {
+        } else if (asset.value == "") {
             baseEvent(Event.ShowToast("자산을 선택해주세요"))
-        } else if (line.value == "분류를 선택하세요") {
+        } else if (line.value == "") {
             baseEvent(Event.ShowToast("분류를 선택해주세요"))
         }
     }
@@ -475,9 +478,9 @@ class HistoryViewModel @Inject constructor(
     private fun createFavoriteErrorMsg() {
         if (cost.value == "") {
             baseEvent(Event.ShowToast("금액을 입력해주세요"))
-        } else if (asset.value == "자산을 선택하세요") {
+        } else if (asset.value == "") {
             baseEvent(Event.ShowToast("자산을 선택해주세요"))
-        } else if (line.value == "분류를 선택하세요") {
+        } else if (line.value == "") {
             baseEvent(Event.ShowToast("분류를 선택해주세요"))
         }
     }
@@ -489,7 +492,7 @@ class HistoryViewModel @Inject constructor(
 
     // 추가한 내용이 있는지 체크
     private fun isExistAdd(): Boolean {
-        return cost.value != "" || asset.value != "자산을 선택하세요" || line.value != "분류를 선택하세요" || content.value != "" || localUrlList.isNotEmpty() || memo.isNotEmpty()
+        return cost.value != "" || asset.value != "" || line.value != "" || content.value != "" || localUrlList.isNotEmpty() || memo.isNotEmpty()
     }
 
     // 사진 이미지 변경된 내용 있는 지 체크한 후, 최종 수정
@@ -551,15 +554,15 @@ class HistoryViewModel @Inject constructor(
 
     // 카테고리 분류 표시 클릭
     fun onClickCategoryDiv() {
-        parent = flow.value ?: "지출"
+        parent = lineType.value?.toCategoryName() ?: "지출"
         getBookCategory()
     }
 
     // 지출, 수입, 이체 클릭
     fun onClickFlow(type: String) {
         if (mode.value == "add" || mode.value == "favorite") {
-            line.postValue("분류를 선택하세요")
-            _flow.postValue(type)
+            line.postValue("")
+            _lineType.postValue(type)
         }
     }
 
@@ -739,7 +742,7 @@ class HistoryViewModel @Inject constructor(
                 money = cost.value!!.replace(",", "").replace(CurrencyUtil.currency, "")
                     .toDouble(),
                 description = if (content.value == "") line.value!! else content.value!!,
-                lineCategoryName = flow.value!!,
+                lineCategoryName = lineType.value!!.toCategoryName(),
                 lineSubcategoryName = line.value!!,
                 assetSubcategoryName = asset.value!!,
                 exceptStatus = deleteChecked.value!!
@@ -752,7 +755,7 @@ class HistoryViewModel @Inject constructor(
                 } else if (it.message.parseErrorCode() == "B014"){
                     _subscribePrompt.emit(true)
                 } else {
-                    baseEvent(Event.ShowToast("${flow.value!!} ${it.message.parseErrorMsg(this@HistoryViewModel)}"))
+                    baseEvent(Event.ShowToast("${lineType.value!!} ${it.message.parseErrorMsg(this@HistoryViewModel)}"))
                 }
             }
         }
@@ -907,7 +910,7 @@ class HistoryViewModel @Inject constructor(
                 bookKey = prefs.getString("bookKey", ""),
                 money = tempMoney.replace(CurrencyUtil.currency, "")
                     .toDouble(),
-                flow = flow.value!!,
+                lineType = lineType.value!!,
                 asset = asset.value!!,
                 line = line.value!!,
                 lineDate = date.value!!.replace(".", "-"),

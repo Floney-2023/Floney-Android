@@ -7,7 +7,7 @@ data class PostBooksChangeBody (
     val lineId: Int,
     val bookKey: String,
     val money: Double,
-    val flow: String,
+    val lineType: String,
     val asset:String,
     val line: String,
     val lineDate: String,
