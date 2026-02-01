@@ -457,10 +457,35 @@
     <string name="history_date">Date</string>
     <string name="history_date_hint">Select date</string>
     <string name="history_asset">Asset</string>
+    <string name="history_asset_category">Asset</string>
     <string name="history_asset_hint">Select an asset</string>
     <string name="history_category">Category</string>
     <string name="history_category_hint">Select a category</string>
     <string name="history_description">Description</string>
+    <string name="history_error_input_amount">Please enter an amount</string>
+    <string name="history_error_select_asset">Please select an asset</string>
+    <string name="history_error_select_category">Please select a category</string>
+    <string name="history_date_hint">Select a date</string>
+    <string name="history_author">Author : %s</string>
+    <string name="history_exclude_from_budget">Exclude from budget</string>
+    <string name="history_exclude_from_asset">Exclude from asset</string>
+
+    <!-- Dialog Strings -->
+    <string name="dialog_add_to_favorites_title">Add to Favorites?</string>
+    <string name="dialog_add_to_favorites">Add to Favorites</string>
+    <string name="dialog_view_favorites">View Favorites</string>
+    <string name="dialog_delete_entry_title">Delete this entry?</string>
+    <string name="dialog_delete_duplicate">It\'s a duplicate.</string>
+    <string name="dialog_delete_this_only">Delete This Only</string>
+    <string name="dialog_delete_all_future">Delete All Future Entries</string>
+
+    <!-- Image Dialog -->
+    <string name="dialog_take_photo">Take Photo</string>
+    <string name="dialog_choose_from_gallery">Choose from Gallery</string>
+    <string name="dialog_choose_from_library">Choose from Library</string>
+    <string name="dialog_random_image">Random Image</string>
+    <string name="dialog_cancel">Cancel</string>
+    <string name="dialog_action_sheet_title">Action Sheet title</string>
     <string name="history_description_hint">Enter a description</string>
     <string name="history_exclude_budget">Exclude from budget</string>
     <string name="history_exclude_asset">Exclude from assets</string>
