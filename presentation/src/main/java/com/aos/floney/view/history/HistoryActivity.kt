@@ -336,9 +336,9 @@ class HistoryActivity :
             viewModel.onClickFavorite.collect {
                 if (it) {
                     BaseChoiceAlertDialog(
-                        title = getString(R.string.dialog_add_to_favorites_title),
-                        btnTextStr1 = getString(R.string.dialog_add_to_favorites),
-                        btnTextStr2 = getString(R.string.dialog_view_favorites)
+                        title = "즐겨찾기에 추가하시겠습니까?",
+                        btnTextStr1 = "즐겨찾기에 추가",
+                        btnTextStr2 = "즐겨찾기 내역 보기"
                     ) {
                         if (it) {
                             // 즐겨찾기에 추가

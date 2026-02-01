@@ -118,7 +118,7 @@ class HistoryViewModel @Inject constructor(
 
     // 날짜
     private var tempDate = ""
-    var date = MutableLiveData<String>()
+    var date = MutableLiveData<String>("날짜를 선택하세요")
 
     // 닉네임
     private val _nickname = MutableLiveData<String>()
@@ -131,15 +131,15 @@ class HistoryViewModel @Inject constructor(
     var cost = MutableLiveData<String>("")
 
     // 자산, 지출, 수입, 이체
-    private val _flow: MutableLiveData<String> = MutableLiveData<String>()
+    private val _flow: MutableLiveData<String> = stateHandle.getLiveData("flow", "지출")
     val flow: LiveData<String> get() = _flow
 
 
     // 자산
-    var asset = MutableLiveData<String>()
+    var asset = MutableLiveData<String>("자산을 선택하세요")
 
     // 분류
-    var line = MutableLiveData<String>()
+    var line = MutableLiveData<String>("분류를 선택하세요")
 
     // 내용
     var content = MutableLiveData<String>("")
@@ -197,15 +197,6 @@ class HistoryViewModel @Inject constructor(
         // 구독 여부 조회
         getSubscribeBook()
         getSubscribeUser()
-
-        // 초기값 설정
-        date.value = application.getString(R.string.history_date_hint)
-        asset.value = application.getString(R.string.history_asset_hint)
-        line.value = application.getString(R.string.history_category_hint)
-
-        // flow 초기값 설정 - stateHandle에서 가져오거나 기본값 설정
-        val initialFlow = stateHandle.get<String>("flow") ?: application.getString(R.string.history_expense)
-        _flow.value = initialFlow
 
         // 데이터 세팅
         val array = arrayListOf<UiBookCategory>(
@@ -343,11 +334,8 @@ class HistoryViewModel @Inject constructor(
 
                 categoryClickItem = null
 
-                val assetCategory = application.getString(R.string.history_asset_category)
-                val tempValue = if (parent == assetCategory) asset.value else line.value
-                val assetHint = application.getString(R.string.history_asset_hint)
-                val categoryHint = application.getString(R.string.history_category_hint)
-                val isUnselected = tempValue == assetHint || tempValue == categoryHint
+                val tempValue = if (parent == "자산") asset.value else line.value
+                val isUnselected = tempValue == "자산을 선택하세요" || tempValue == "분류를 선택하세요"
 
                 // Apply localization to categories
                 val localizedList = CategoryLocalizationMapper.localizeCategories(application, list)
@@ -466,41 +454,31 @@ class HistoryViewModel @Inject constructor(
     // 모든 데이터 입력 되었는지 체크
     private fun isAllInputData(): Boolean {
         createErrorMsg()
-        val assetHint = application.getString(R.string.history_asset_hint)
-        val categoryHint = application.getString(R.string.history_category_hint)
-        return cost.value != "" && asset.value != assetHint && line.value != categoryHint
+        return cost.value != "" && asset.value != "자산을 선택하세요" && line.value != "분류를 선택하세요"
     }
 
     fun isFavoriteAllData(): Boolean {
-        val assetHint = application.getString(R.string.history_asset_hint)
-        val categoryHint = application.getString(R.string.history_category_hint)
-        return cost.value != "" || asset.value != assetHint || line.value != categoryHint
+        return cost.value != "" || asset.value != "자산을 선택하세요" || line.value != "분류를 선택하세요"
     }
 
     // 에러 메세지 생성
     private fun createErrorMsg() {
-        val assetHint = application.getString(R.string.history_asset_hint)
-        val categoryHint = application.getString(R.string.history_category_hint)
-
         if (cost.value == "") {
-            baseEvent(Event.ShowToast(application.getString(R.string.history_error_input_amount)))
-        } else if (asset.value == assetHint) {
-            baseEvent(Event.ShowToast(application.getString(R.string.history_error_select_asset)))
-        } else if (line.value == categoryHint) {
-            baseEvent(Event.ShowToast(application.getString(R.string.history_error_select_category)))
+            baseEvent(Event.ShowToast("금액을 입력해주세요"))
+        } else if (asset.value == "자산을 선택하세요") {
+            baseEvent(Event.ShowToast("자산을 선택해주세요"))
+        } else if (line.value == "분류를 선택하세요") {
+            baseEvent(Event.ShowToast("분류를 선택해주세요"))
         }
     }
 
     private fun createFavoriteErrorMsg() {
-        val assetHint = application.getString(R.string.history_asset_hint)
-        val categoryHint = application.getString(R.string.history_category_hint)
-
         if (cost.value == "") {
-            baseEvent(Event.ShowToast(application.getString(R.string.history_error_input_amount)))
-        } else if (asset.value == assetHint) {
-            baseEvent(Event.ShowToast(application.getString(R.string.history_error_select_asset)))
-        } else if (line.value == categoryHint) {
-            baseEvent(Event.ShowToast(application.getString(R.string.history_error_select_category)))
+            baseEvent(Event.ShowToast("금액을 입력해주세요"))
+        } else if (asset.value == "자산을 선택하세요") {
+            baseEvent(Event.ShowToast("자산을 선택해주세요"))
+        } else if (line.value == "분류를 선택하세요") {
+            baseEvent(Event.ShowToast("분류를 선택해주세요"))
         }
     }
 
@@ -511,9 +489,7 @@ class HistoryViewModel @Inject constructor(
 
     // 추가한 내용이 있는지 체크
     private fun isExistAdd(): Boolean {
-        val assetHint = application.getString(R.string.history_asset_hint)
-        val categoryHint = application.getString(R.string.history_category_hint)
-        return cost.value != "" || asset.value != assetHint || line.value != categoryHint || content.value != "" || localUrlList.isNotEmpty() || memo.isNotEmpty()
+        return cost.value != "" || asset.value != "자산을 선택하세요" || line.value != "분류를 선택하세요" || content.value != "" || localUrlList.isNotEmpty() || memo.isNotEmpty()
     }
 
     // 사진 이미지 변경된 내용 있는 지 체크한 후, 최종 수정
@@ -569,20 +545,20 @@ class HistoryViewModel @Inject constructor(
 
     // 카테고리 자산 표시 클릭
     fun onClickCategory() {
-        parent = application.getString(R.string.history_asset_category)
+        parent = "자산"
         getBookCategory()
     }
 
     // 카테고리 분류 표시 클릭
     fun onClickCategoryDiv() {
-        parent = flow.value ?: application.getString(R.string.history_expense)
+        parent = flow.value ?: "지출"
         getBookCategory()
     }
 
     // 지출, 수입, 이체 클릭
     fun onClickFlow(type: String) {
         if (mode.value == "add" || mode.value == "favorite") {
-            line.postValue(application.getString(R.string.history_category_hint))
+            line.postValue("분류를 선택하세요")
             _flow.postValue(type)
         }
     }
@@ -682,8 +658,7 @@ class HistoryViewModel @Inject constructor(
 
     // 선택 버튼 클릭
     fun onClickCategoryChoiceDate() {
-        val assetCategory = application.getString(R.string.history_asset_category)
-        if (parent == assetCategory) {
+        if (parent == "자산") {
             // 자산 선택
             asset.value = categoryClickItem?.name
         } else {
