@@ -42,7 +42,7 @@
             android:layout_marginEnd="20dp"
             android:fontFamily="@font/pretendard_regular"
             android:onClick="@{() -> vm.onClickEdit()}"
-            android:text="@{vm.edit ? `완료` : `편집`}"
+            android:text="@{vm.edit ? @string/common_complete : @string/common_edit}"
             android:textSize="14dp"
             android:textColor="@color/grayscale2"
             android:visibility="@{vm.favoriteList.size() > 0 ? View.VISIBLE : View.GONE}"

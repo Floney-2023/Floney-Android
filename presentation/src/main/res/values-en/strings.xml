@@ -192,9 +192,9 @@
     <string name="sign_up_exist_email">This email is already registered.</string>
     <string name="sign_up_request_valid_email">Please enter a valid email.</string>
     <string name="sign_up_request_email">Please enter your email address.</string>
-    <string name="sign_up_request_email_hint">Enter your email.</string>
+    <string name="sign_up_request_email_hint">Enter your email</string>
     <string name="sign_up_valid_email">Verify Email</string>
-    <string name="sign_up_valid_email_text">Enter an active email address\nfor email verification</string>
+    <string name="sign_up_valid_email_text">Please enter an email\nthat can receive verification.</string>
     <string name="sign_up_send_mail">Send Email</string>
     <string name="sign_up_agree_of_terms">Agree To Terms</string>
     <string name="sign_up_all_agree_of_terms">Agree To All</string>
@@ -241,7 +241,7 @@
     <string name="book_add_new_book_success_go_home_button_text">Start</string>
     <string name="book_add_new_book_success_invite_friend_button_text">Invite Friends</string>
 
-    <string name="book_add_invite_friend_title">Invite friends to\nshare your ledger together🍀</string>
+    <string name="book_add_invite_friend_title">Invite friends to manage\nthe ledger together🍀</string>
     <string name="book_add_invite_friend_code_text">Invite Code</string>
     <string name="book_add_invite_friend_code_share_button_text">Invite friends to manage\n the ledger together🍀</string>
     <string name="book_add_invite_friend_exit_button_text">Do it Later</string>
@@ -477,16 +477,16 @@
     <string name="history_save">Save</string>
     <string name="history_delete">Delete</string>
     <string name="history_created_by">Created By</string>
-    <string name="author_label">Author : </string>
+    <string name="author_label">Created By </string>
     <string name="history_favorite">Favorite</string>
     <string name="history_repeat">Repeat</string>
     <string name="history_repeat_none">None</string>
 
     <!-- History Dialogs -->
     <string name="history_memo_complete">Memo has been saved.</string>
-    <string name="history_delete_repeat_title">Delete this entry?\nThis is a recurring entry.</string>
-    <string name="history_delete_this_only">Delete this entry only</string>
-    <string name="history_delete_all_after">Delete all future entries</string>
+    <string name="history_delete_repeat_title">Delete this entry?\nIt’s a duplicate.</string>
+    <string name="history_delete_this_only">Delete this only</string>
+    <string name="history_delete_all_after">Delete All Future Entries</string>
     <string name="history_unsaved_changes_title">Wait!</string>
     <string name="history_unsaved_changes_message">You have unsaved changes.\nAre you sure you want to leave?</string>
     <string name="history_add_favorite_title">Add to favorites?</string>
@@ -609,8 +609,8 @@
     <string name="alarm_empty_text">No notifications.</string>
 
     <!-- 임시 비밀번호 -->
-    <string name="temp_password_sent_title">Temporary password\nhas been sent.</string>
-    <string name="temp_password_sent_info">Please log in with the temporary password\nand change to a new password.</string>
+    <string name="temp_password_sent_title">A Temporary password\nhas been sent.</string>
+    <string name="temp_password_sent_info">Log in with the temporary password\nand set a new one.</string>
     <string name="temp_password_login_again">Log In Again</string>
 
     <!-- 공통 다이얼로그 -->
@@ -624,7 +624,8 @@
     <string name="picture_delete">Delete</string>
 
     <!-- 반복 설정 -->
-    <string name="repeat_history">Repeat History</string>
+    <string name="repeat_history_title">Repeat Settings</string>
+    <string name="repeat_history">Recurring Entries</string>
     <string name="repeat_info">Record easily with\nthe repeat feature</string>
 
     <!-- 사용자 -->
@@ -653,8 +654,8 @@
     <string name="home_total_expense">Total Expense</string>
     <string name="home_total_income">Total Income</string>
     <string name="home_balance">Balance</string>
-    <string name="home_calendar">Calendar</string>
-    <string name="home_daily">Daily</string>
+    <string name="home_calendar">Month</string>
+    <string name="home_daily">Day</string>
     <string name="home_add_entry">Add Entry</string>
     <string name="home_no_entries">No entries.</string>
 
@@ -721,6 +722,7 @@
     <!-- Common Buttons -->
     <string name="common_save">Save</string>
     <string name="common_edit">Edit</string>
+    <string name="common_complete">Done</string>
     <string name="common_upload">Upload</string>
     <string name="common_export">Export</string>
     <string name="common_sort">Sort</string>
@@ -743,17 +745,17 @@
     <string name="photo_confirm">Confirm Photo</string>
 
     <!-- Common Dialogs -->
-    <string name="dialog_delete_only">Delete this entry only</string>
-    <string name="dialog_delete_repeat">Delete all repeat entries</string>
+    <string name="dialog_delete_only">Delete This only</string>
+    <string name="dialog_delete_repeat">Delete All Future Entries</string>
     <string name="dialog_cancel">Cancel</string>
-    <string name="dialog_confirm">Confirm</string>
+    <string name="dialog_confirm">OK</string>
     <string name="dialog_delete">Delete</string>
     <string name="dialog_close">Close</string>
     <string name="dialog_complete">Complete</string>
     <string name="dialog_select">Select</string>
     <string name="dialog_yes">Yes</string>
     <string name="dialog_no">No</string>
-    <string name="dialog_delete_history_confirm">Delete this entry?\nThis is a recurring entry.</string>
+    <string name="dialog_delete_history_confirm">Delete this entry?\nIt’s a duplicate.</string>
     <string name="dialog_delete_photo_title">Delete Photo</string>
     <string name="dialog_delete_photo_message">Delete this photo?</string>
 
@@ -780,9 +782,9 @@
     <string name="photo_delete_dialog_message">Do you want to delete this photo?</string>
 
     <!-- Home Daily Screen -->
-    <string name="home_day_income">Income</string>
-    <string name="home_day_expense">Expense</string>
-    <string name="home_day_history">History</string>
+    <string name="home_day_income">Incomes</string>
+    <string name="home_day_expense">Expenses</string>
+    <string name="home_day_history">Entries</string>
     <string name="home_day_add_history">Add Entry</string>
 
     <!-- My Page Service -->
@@ -804,7 +806,7 @@
 
     <!-- Favorites -->
     <string name="favorite_title">Favorites</string>
-    <string name="favorite_description_info">Record frequently used entries\neasily with favorites</string>
+    <string name="favorite_description_info">Save frequently used entries\nas favorites for quick access.</string>
     <string name="favorite_add_title">Add Favorite</string>
     <string name="favorite_edit_title">Edit Favorite</string>
     <string name="favorite_amount">Amount</string>
@@ -865,12 +867,18 @@
     <string name="info_book_name">Ledger Name</string>
 
     <!-- Repeat Cycle -->
-    <string name="repeat_none">None</string>
+    <string name="repeat_none">없음</string>
     <string name="repeat_daily">Daily</string>
     <string name="repeat_weekly">Weekly</string>
     <string name="repeat_monthly">Monthly</string>
     <string name="repeat_weekdays">Weekdays</string>
     <string name="repeat_weekends">Weekends</string>
-    <string name="repeat_end_date">Repeat End Date</string>
+
+    <string name="repeat_none_history">None</string>
+    <string name="repeat_daily_history">D</string>
+    <string name="repeat_weekly_history">Wk</string>
+    <string name="repeat_monthly_history">Mo</string>
+    <string name="repeat_weekdays_history">Wd</string>
+    <string name="repeat_weekends_history">We</string>
 
 </resources>

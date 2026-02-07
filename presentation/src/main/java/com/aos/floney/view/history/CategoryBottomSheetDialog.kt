@@ -3,13 +3,16 @@ package com.aos.floney.view.history
 import android.content.Context
 import android.os.Bundle
 import android.view.View
+import androidx.annotation.StringRes
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import androidx.recyclerview.widget.RecyclerView
 import com.aos.floney.BR
+import com.aos.floney.R
 import com.aos.floney.base.BaseViewModel
 import com.aos.floney.databinding.BottomSheetCategoryBinding
+import com.aos.floney.util.BookCategory
 import com.aos.model.book.UiBookCategory
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexWrap
@@ -48,7 +51,9 @@ class CategoryBottomSheetDialog(
             setVariable(BR.eventHolder, this@CategoryBottomSheetDialog)
             lifecycleOwner = activityLifecycleOwner
 
-            binding.tvCategory.text = "분류"
+            binding.tvCategory.text =
+                BookCategory.fromRaw(category)?.let { context.getString(it.labelRes) }
+                    ?: context.getString(R.string.bottom_sheet_categories)
         }
     }
 
@@ -70,8 +75,9 @@ class CategoryBottomSheetDialog(
             behavior.state = BottomSheetBehavior.STATE_EXPANDED
         }
     }
+
     fun onClickChoiceBtn() {
-        if(viewModel.isClickedCategoryItem()) {
+        if (viewModel.isClickedCategoryItem()) {
             // 선택 버튼 클릭 리스너
             clickedChoiceBtn()
             this.dismiss()

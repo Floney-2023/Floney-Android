@@ -139,6 +139,7 @@
                     app:layout_constraintTop_toTopOf="@id/tv_history" />
 
                 <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerView"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_marginTop="16dp"
@@ -147,22 +148,43 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    tools:listitem="@layout/item_day_history"
+                    app:layout_constraintTop_toBottomOf="@id/tv_history"
                     bind:diffCallback="@{(Object)UiBookDayModel.Companion}"
                     bind:eventHolder="@{eventHolder}"
                     bind:itemLayout="@{@layout/item_day_history}"
                     bind:items="@{vm.getDayList}"
-                    app:layout_constraintTop_toBottomOf="@id/tv_history" />
+                    tools:listitem="@layout/item_day_history" />
 
-                <ImageView
-                    android:layout_width="80dp"
-                    android:layout_height="86dp"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:visibility="@{vm.getDayList.size() > 0 ? View.GONE : View.VISIBLE}"
-                    android:src="@drawable/not_exist_history"
-                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintBottom_toBottomOf="@id/cl_money_history"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/cl_money_history"
-                    app:layout_constraintBottom_toBottomOf="@id/cl_money_history"/>
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/recyclerView">
+
+                    <ImageView
+                        android:id="@+id/imageView3"
+                        android:layout_width="50dp"
+                        android:layout_height="84dp"
+                        android:src="@drawable/icon_empty_list"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:fontFamily="@font/pretendard_medium"
+                        android:text="@string/home_no_entries"
+                        android:textColor="@color/grayscale6"
+                        android:textSize="12dp"
+                        app:layout_constraintEnd_toEndOf="@+id/imageView3"
+                        app:layout_constraintStart_toStartOf="@+id/imageView3"
+                        app:layout_constraintTop_toBottomOf="@+id/imageView3" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>

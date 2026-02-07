@@ -18,7 +18,6 @@ import com.aos.floney.util.getAdvertiseTenMinutesCheck
 import com.aos.floney.util.getCurrentDateTimeString
 import com.aos.model.book.getCurrencySymbolByCode
 import com.aos.model.home.DayMoney
-import com.aos.model.home.ExtData
 import com.aos.model.home.MonthMoney
 import com.aos.model.home.UiBookDayModel
 import com.aos.model.home.UiBookInfoModel
@@ -29,7 +28,6 @@ import com.aos.usecase.home.GetMoneyHistoryDaysUseCase
 import com.aos.usecase.subscribe.SubscribeBenefitUseCase
 import com.aos.usecase.subscribe.SubscribeBookUseCase
 import com.aos.usecase.subscribe.SubscribeCheckUseCase
-import com.aos.usecase.subscribe.SubscribeUserBenefitUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -77,7 +75,7 @@ class HomeViewModel @Inject constructor(
     val clickedNextMonth: EventFlow<String> get() = _clickedNextMonth
 
     // 캘린더, 일별 표시 타입
-    private var _clickedShowType = MutableLiveData<String>("month")
+    private var _clickedShowType = MutableLiveData("month")
     val clickedShowType: LiveData<String> get() = _clickedShowType
 
     // 내역추가
@@ -137,17 +135,17 @@ class HomeViewModel @Inject constructor(
     val accessCheck: EventFlow<Boolean> get() = _accessCheck
 
     // 유저 구독 여부
-    var subscribeCheck = MutableLiveData<Boolean>(false)
+    private var subscribeCheck = MutableLiveData(false)
 
     // 구독 만료 여부 (구독 안 한 경우만 확인, 구독 적용 팝업을 보여주기 위해서)
-    var subscribeExpired = MutableLiveData<Boolean>(false)
+    var subscribeExpired = MutableLiveData(false)
 
     // 구독 팝업 표시 여부 (구독 만료 여부 & 10분 타이머 체크)
     private var _subscribePopupShow = MutableLiveData<Boolean>()
     val subscribePopupShow: LiveData<Boolean> get() = _subscribePopupShow
 
     // 진입 시 표시되는 팝업인 지
-    var subscribePopupEnter = MutableLiveData<Boolean>(true)
+    var subscribePopupEnter = MutableLiveData(true)
 
     // dim 처리 여부 값 합쳐진 LiveData 선언
     val showOverlay = MediatorLiveData<Boolean>().apply {
@@ -200,7 +198,7 @@ class HomeViewModel @Inject constructor(
     }
 
     // 화폐 설정 조회
-    fun searchCurrency(){
+    private fun searchCurrency(){
         viewModelScope.launch {
             booksCurrencySearchUseCase(prefs.getString("bookKey", "")).onSuccess {
                 if(it.myBookCurrency != "") {
@@ -483,7 +481,7 @@ class HomeViewModel @Inject constructor(
         prefs.setString("advertiseBookSettingTenMinutes", getCurrentDateTimeString())
     }
     // 광고 표시 여부
-    fun setAdvertisement() {
+    private fun setAdvertisement() {
         val advertiseTime = prefs.getString("advertiseTime", "")
 
         if (getAdvertiseCheck(advertiseTime) <= 0) {
@@ -501,7 +499,7 @@ class HomeViewModel @Inject constructor(
     }
 
     // 구독 여부 세팅
-    fun setBookSubscribeChecking(){
+    private fun setBookSubscribeChecking(){
         viewModelScope.launch(Dispatchers.IO) {
             subscribeBookUseCase(prefs.getString("bookKey","")).onSuccess {
 
@@ -542,7 +540,7 @@ class HomeViewModel @Inject constructor(
 
 
     // 구독 혜택 받고 있는 지 여부 가져오기
-    fun getSubscribeBenefitChecking(){
+    private fun getSubscribeBenefitChecking(){
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val bookKey = prefs.getString("bookKey", "")
@@ -561,7 +559,7 @@ class HomeViewModel @Inject constructor(
                     // 가계부 관점에서 구독 만료 여부 확인
                     val expiredBook = !subscriptionDataStoreUtil.getBookSubscribe().first() && (bookBenefit.maxFavorite || bookBenefit.overBookUser)
 
-                    Timber.i("book : ${expiredBook} remainTime : ${remainTime}")
+                    Timber.i("book : $expiredBook remainTime : $remainTime")
 
                     // 구독 혜택 적용 여부 캐싱
                     subscriptionDataStoreUtil.setSubscribeExpired(expiredBook)

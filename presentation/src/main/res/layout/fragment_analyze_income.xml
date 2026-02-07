@@ -105,15 +105,36 @@
             bind:itemLayout="@{@layout/item_income_analyze}"
             bind:items="@{vm.postAnalyzeInComeCategoryResult.analyzeResult}" />
 
-        <ImageView
-            android:layout_width="80dp"
-            android:layout_height="108dp"
-            android:src="@drawable/not_exist_analyze"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:visibility="@{vm.postAnalyzeInComeCategoryResult.analyzeResult.size() > 0 || vm.postAnalyzeInComeCategoryResult.analyzeResult == null ? View.GONE : View.VISIBLE}"
             app:layout_constraintBottom_toBottomOf="@id/rv_analyze"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/rv_analyze" />
+            app:layout_constraintTop_toTopOf="@id/rv_analyze">
+
+            <ImageView
+                android:id="@+id/imageView3"
+                android:layout_width="50dp"
+                android:layout_height="84dp"
+                android:src="@drawable/icon_empty_list"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/pretendard_medium"
+                android:text="@string/home_no_entries"
+                android:textColor="@color/grayscale6"
+                android:textSize="12dp"
+                app:layout_constraintEnd_toEndOf="@+id/imageView3"
+                app:layout_constraintStart_toStartOf="@+id/imageView3"
+                app:layout_constraintTop_toBottomOf="@+id/imageView3" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

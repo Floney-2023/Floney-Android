@@ -113,7 +113,7 @@ class BookRepositoryImpl @Inject constructor(
 
     override suspend fun getBooksDays(bookKey: String, date: String): Result<UiBookDayModel> {
         when (val data = bookDataSource.getBooksDays(bookKey, date)) {
-            is NetworkState.Success -> return Result.success(data.body.toUiBookMonthModel(date))
+            is NetworkState.Success -> return Result.success(data.body.toUiBookMonthModel(context, date))
             is NetworkState.Failure -> return Result.failure(
                 RetrofitFailureStateException(data.error, data.code)
             )

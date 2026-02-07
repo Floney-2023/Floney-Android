@@ -612,6 +612,7 @@
     <string name="picture_delete">삭제</string>
 
     <!-- 반복 설정 -->
+    <string name="repeat_history_title">반복 설정</string>
     <string name="repeat_history">반복 내역</string>
     <string name="repeat_info">반복 기능을 통해\n편하게 기록해 보세요</string>
 
@@ -712,6 +713,7 @@
     <!-- 공통 버튼 -->
     <string name="common_save">저장하기</string>
     <string name="common_edit">편집</string>
+    <string name="common_complete">편집</string>
     <string name="common_upload">업로드</string>
     <string name="common_export">내보내기</string>
     <string name="common_sort">정렬</string>
@@ -855,6 +857,12 @@
     <string name="repeat_monthly">매월</string>
     <string name="repeat_weekdays">평일</string>
     <string name="repeat_weekends">주말</string>
-    <string name="repeat_end_date">반복 종료일</string>
+
+    <string name="repeat_none_history">없음</string>
+    <string name="repeat_daily_history">매일</string>
+    <string name="repeat_weekly_history">매주</string>
+    <string name="repeat_monthly_history">매월</string>
+    <string name="repeat_weekdays_history">평일</string>
+    <string name="repeat_weekends_history">주말</string>
 
 </resources>

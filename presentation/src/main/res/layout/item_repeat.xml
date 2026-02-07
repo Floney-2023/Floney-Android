@@ -20,15 +20,15 @@
         android:paddingEnd="8dp">
 
         <TextView
-            android:layout_width="57dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="18dp"
             android:background="@{item.checked == true ? @drawable/custom_solid_white_radius_49_stroke_primary_2 : @drawable/custom_solid_background2_radius_49}"
             android:fontFamily="@font/pretendard_medium"
             android:gravity="center"
             android:onClick="@{() -> eventHolder.onItemClick(item)}"
-            android:paddingTop="12dp"
-            android:paddingBottom="12dp"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="12dp"
             android:text="@{item.name}"
             android:textColor="@{item.checked == true ? @color/primary2 : @color/grayscale6}"
             android:textSize="14dp"

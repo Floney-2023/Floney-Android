@@ -212,7 +212,7 @@ fun calculateFormattedAmount(
 }
 
 // 일별 조회
-fun GetBookDaysEntity.toUiBookMonthModel(date: String): UiBookDayModel {
+fun GetBookDaysEntity.toUiBookMonthModel(context: Context, date: String): UiBookDayModel {
     val dayMoneyList: List<DayMoney> = this.dayLinesResponse.map {
         DayMoney(
             id = it.id,
@@ -230,7 +230,7 @@ fun GetBookDaysEntity.toUiBookMonthModel(date: String): UiBookDayModel {
             writerEmail = it.writerEmail,
             writerNickName = it.writerNickname,
             writerProfileImg = it.writerProfileImg,
-            repeatDuration = getConvertReceiveRepeatValue(it.repeatDuration),
+            repeatDuration = getConvertReceiveRepeatValue(context, it.repeatDuration),
             memo = it.memo ?: "",
             imageUrls = it.imageUrls.map { image ->
                 ImageUrls(
@@ -311,7 +311,7 @@ fun PostBooksCreateEntity.toPostBooksCreateModel(): PostBooksCreateModel {
 fun PostBooksLinesEntity.toPostBooksLinesModel(): PostBooksLinesModel {
     return PostBooksLinesModel(
         money = this.money.toInt(),
-        flow = this.flow,
+        flow = this.lineType,
         asset = this.asset,
         line = this.line,
         lineDate = this.lineDate,
@@ -325,7 +325,7 @@ fun PostBooksLinesEntity.toPostBooksLinesModel(): PostBooksLinesModel {
 fun PostBooksChangeEntity.toPostBooksLinesChangeModel(): PostBooksChangeModel {
     return PostBooksChangeModel(
         money = this.money,
-        flow = this.flow,
+        flow = this.lineType,
         asset = this.asset,
         line = this.line,
         lineDate = this.lineDate,
@@ -664,15 +664,14 @@ fun PostBookFavoriteEntity.toPostBookFavoriteModel(): PostBookFavoriteModel {
 
 }
 
-private fun getConvertReceiveRepeatValue(value: String): String {
-    Timber.e("value $value")
+private fun getConvertReceiveRepeatValue(context: Context, value: String): String {
     return when (value) {
-        "NONE" -> "없음"
-        "EVERYDAY" -> "매일"
-        "WEEK" -> "매주"
-        "MONTH" -> "매달"
-        "WEEKDAY" -> "주중"
-        "WEEKEND" -> "주말"
+        "NONE" -> context.getString(R.string.repeat_none)
+        "EVERYDAY" -> context.getString(R.string.repeat_daily)
+        "WEEK" -> context.getString(R.string.repeat_weekly)
+        "MONTH" -> context.getString(R.string.repeat_monthly)
+        "WEEKDAY" -> context.getString(R.string.repeat_weekdays)
+        "WEEKEND" -> context.getString(R.string.repeat_weekends)
         else -> ""
     }
 }

@@ -40,186 +40,194 @@
             app:layout_constraintTop_toTopOf="parent" />
 
 
-        <TextView
-            android:id="@+id/tv_now_pw_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="38dp"
-            android:text="@string/mypage_main_inform_pwchange_nowpw"
-            android:textSize="14dp"
-            android:textColor="@color/grayscale2"
-            android:fontFamily="@font/pretendard_medium"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_pwchange_title" />
-
-        <LinearLayout
-            android:id="@+id/li_now_password_view"
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/pw_scroll_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="12dp"
-            android:layout_marginEnd="20dp"
-            android:orientation="horizontal"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_height="0dp"
+            android:layout_marginHorizontal="20dp"
+            app:layout_constraintBottom_toTopOf="@+id/btn_check"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_now_pw_text">
+            app:layout_constraintTop_toBottomOf="@+id/tv_pwchange_title">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/et_now_password_edit_text"
-                style="@style/login_edit_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="92"
-                app:hintEnabled="false"
-                app:passwordToggleDrawable="@drawable/toogle_icon_status"
-                app:passwordToggleEnabled="true"
-                app:passwordToggleTint="@null">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/custom_radius_12_solid_greyscale_12_stroke_greyscale_10"
-                    android:fontFamily="@font/pretendard_regular"
-                    android:hint="@string/mypage_main_inform_pwchange_nowpw_tint"
-                    android:inputType="textPassword"
-                    android:textColorHint="@color/grayscale6"
-                    android:padding="16dp"
-                    android:maxLength="32"
-                    android:text="@={vm.nowPassword}"
-                    android:textSize="14dp"
-                    android:textColor="@color/grayscale2" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/tv_new_password"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="32dp"
-            android:text="@string/mypage_main_inform_pwchange_newpw"
-            android:textSize="14dp"
-            android:textColor="@color/grayscale2"
-            android:fontFamily="@font/pretendard_medium"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/li_now_password_view" />
-
-        <LinearLayout
-            android:id="@+id/li_new_password_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="12dp"
-            android:layout_marginEnd="20dp"
-            android:orientation="horizontal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_new_password">
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/et_new_password_edit_text"
-                style="@style/login_edit_text"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/grayscale6"
-                app:hintEnabled="false"
-                app:passwordToggleDrawable="@drawable/toogle_icon_status"
-                app:passwordToggleEnabled="true"
-                app:passwordToggleTint="@null">
+                android:layout_height="wrap_content">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/new_password_text"
+                <TextView
+                    android:id="@+id/tv_now_pw_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="32dp"
+                    android:fontFamily="@font/pretendard_medium"
+                    android:text="@string/mypage_main_inform_pwchange_nowpw"
+                    android:textColor="@color/grayscale2"
+                    android:textSize="14dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <LinearLayout
+                    android:id="@+id/li_now_password_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/custom_radius_12_solid_greyscale_12_stroke_greyscale_10"
-                    android:hint="@string/mypage_main_inform_pwchange_nowpw_tint"
-                    android:inputType="textPassword"
-                    android:maxLength="32"
-                    android:textSize="14dp"
-                    android:padding="16dp"
-                    android:text="@={vm.newPassword}"
-                    android:textAppearance="@style/login_edit_text"
+                    android:layout_marginTop="12dp"
+                    android:orientation="horizontal"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_now_pw_text">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/et_now_password_edit_text"
+                        style="@style/login_edit_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="92"
+                        app:hintEnabled="false"
+                        app:passwordToggleDrawable="@drawable/toogle_icon_status"
+                        app:passwordToggleEnabled="true"
+                        app:passwordToggleTint="@null">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/custom_radius_12_solid_greyscale_12_stroke_greyscale_10"
+                            android:fontFamily="@font/pretendard_regular"
+                            android:hint="@string/mypage_main_inform_pwchange_nowpw_tint"
+                            android:inputType="textPassword"
+                            android:maxLength="32"
+                            android:padding="16dp"
+                            android:text="@={vm.nowPassword}"
+                            android:textColor="@color/grayscale2"
+                            android:textColorHint="@color/grayscale6"
+                            android:textSize="14dp" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tv_new_password"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="32dp"
+                    android:fontFamily="@font/pretendard_medium"
+                    android:text="@string/mypage_main_inform_pwchange_newpw"
                     android:textColor="@color/grayscale2"
-                    android:textColorHint="@color/grayscale6" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:textSize="14dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/li_now_password_view" />
 
-            <View
-                android:layout_width="8dp"
-                android:layout_height="0dp"
-                android:layout_weight="2" />
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/newpw_check"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="20dp"
-            android:text="@string/mypage_main_inform_pwchange_newpw_check"
-            android:textSize="14dp"
-            android:textColor="@color/grayscale2"
-            android:fontFamily="@font/pretendard_medium"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/li_new_password_view" />
-
-        <LinearLayout
-            android:id="@+id/new_password_check_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="12dp"
-            android:layout_marginEnd="20dp"
-            android:orientation="horizontal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/newpw_check">
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/et_new_password_check_edit_text"
-                style="@style/login_edit_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="92"
-                android:textColor="@color/grayscale6"
-                app:hintEnabled="false"
-                app:passwordToggleDrawable="@drawable/toogle_icon_status"
-                app:passwordToggleEnabled="true"
-                app:passwordToggleTint="@null">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/new_password_check_text"
+                <LinearLayout
+                    android:id="@+id/li_new_password_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/custom_radius_12_solid_greyscale_12_stroke_greyscale_10"
-                    android:hint="@string/mypage_main_inform_pwchange_newpw_check_tint"
-                    android:inputType="textPassword"
-                    android:textSize="14dp"
-                    android:maxLength="32"
-                    android:padding="16dp"
-                    android:text="@={vm.newRePassword}"
-                    android:textAppearance="@style/login_edit_text"
+                    android:layout_marginTop="12dp"
+                    android:orientation="horizontal"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_new_password">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/et_new_password_edit_text"
+                        style="@style/login_edit_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/grayscale6"
+                        app:hintEnabled="false"
+                        app:passwordToggleDrawable="@drawable/toogle_icon_status"
+                        app:passwordToggleEnabled="true"
+                        app:passwordToggleTint="@null">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/new_password_text"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/custom_radius_12_solid_greyscale_12_stroke_greyscale_10"
+                            android:hint="@string/mypage_main_inform_pwchange_nowpw_tint"
+                            android:inputType="textPassword"
+                            android:maxLength="32"
+                            android:padding="16dp"
+                            android:text="@={vm.newPassword}"
+                            android:textAppearance="@style/login_edit_text"
+                            android:textColor="@color/grayscale2"
+                            android:textColorHint="@color/grayscale6"
+                            android:textSize="14dp" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <View
+                        android:layout_width="8dp"
+                        android:layout_height="0dp"
+                        android:layout_weight="2" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/newpw_check"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:fontFamily="@font/pretendard_medium"
+                    android:text="@string/mypage_main_inform_pwchange_newpw_check"
                     android:textColor="@color/grayscale2"
-                    android:textColorHint="@color/grayscale6" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:textSize="14dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/li_new_password_view" />
 
-        </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/new_password_check_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:orientation="horizontal"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/newpw_check">
 
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/et_new_password_check_edit_text"
+                        style="@style/login_edit_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="92"
+                        android:textColor="@color/grayscale6"
+                        app:hintEnabled="false"
+                        app:passwordToggleDrawable="@drawable/toogle_icon_status"
+                        app:passwordToggleEnabled="true"
+                        app:passwordToggleTint="@null">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/new_password_check_text"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/custom_radius_12_solid_greyscale_12_stroke_greyscale_10"
+                            android:hint="@string/mypage_main_inform_pwchange_newpw_check_tint"
+                            android:inputType="textPassword"
+                            android:maxLength="32"
+                            android:padding="16dp"
+                            android:text="@={vm.newRePassword}"
+                            android:textAppearance="@style/login_edit_text"
+                            android:textColor="@color/grayscale2"
+                            android:textColorHint="@color/grayscale6"
+                            android:textSize="14dp" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.core.widget.NestedScrollView>
+        
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_check"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_marginTop="32dp"
+            android:layout_marginBottom="38dp"
             android:background="@drawable/onboard_area1"
             android:fontFamily="@font/pretendard_bold"
             android:onClick="@{() -> vm.onClickPwChangeCheck()}"
             android:text="@string/dialog_confirm"
-            android:textSize="14dp"
             android:textColor="@color/white"
+            android:textSize="14dp"
             app:fontFamily="@font/pretendard_bold"
-            app:layout_constraintEnd_toEndOf="@+id/new_password_check_view"
-            app:layout_constraintStart_toStartOf="@+id/new_password_check_view"
-            app:layout_constraintTop_toBottomOf="@+id/new_password_check_view" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/pw_scroll_view"
+            app:layout_constraintStart_toStartOf="@+id/pw_scroll_view"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

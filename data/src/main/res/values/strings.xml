@@ -51,4 +51,12 @@
     <string name="book_role_owner">방장</string>
     <string name="book_role_member">팀원</string>
     <string name="book_role_me">나</string>
+
+    <!-- Repeat Cycle -->
+    <string name="repeat_none">없음</string>
+    <string name="repeat_daily">매일</string>
+    <string name="repeat_weekly">매주</string>
+    <string name="repeat_monthly">매월</string>
+    <string name="repeat_weekdays">평일</string>
+    <string name="repeat_weekends">주말</string>
 </resources>

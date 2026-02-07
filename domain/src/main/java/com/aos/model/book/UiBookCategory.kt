@@ -9,7 +9,8 @@ data class UiBookCategory(
     var checked: Boolean = false,
     val name: String,
     val categoryKey: String? = null,
-    val default: Boolean
+    val default: Boolean,
+    val label: String? = "",
 ){
     interface OnItemClickListener {
         fun onItemClick(item: UiBookCategory)

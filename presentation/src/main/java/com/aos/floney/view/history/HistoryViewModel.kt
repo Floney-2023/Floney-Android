@@ -203,12 +203,12 @@ class HistoryViewModel @Inject constructor(
 
         // 데이터 세팅
         val array = arrayListOf<UiBookCategory>(
-            UiBookCategory(0, true, application.getString(R.string.repeat_none), null, false),
-            UiBookCategory(1, false, application.getString(R.string.repeat_daily), null, false),
-            UiBookCategory(2, false, application.getString(R.string.repeat_weekly), null, false),
-            UiBookCategory(3, false, application.getString(R.string.repeat_monthly), null, false),
-            UiBookCategory(4, false, application.getString(R.string.repeat_weekdays), null, false),
-            UiBookCategory(5, false, application.getString(R.string.repeat_weekends), null, false)
+            UiBookCategory(0, true, application.getString(R.string.repeat_none_history), null, false, application.getString(R.string.repeat_none_history)),
+            UiBookCategory(1, false, application.getString(R.string.repeat_daily), null, false, application.getString(R.string.repeat_daily_history)),
+            UiBookCategory(2, false, application.getString(R.string.repeat_weekly), null, false, application.getString(R.string.repeat_weekly_history)),
+            UiBookCategory(3, false, application.getString(R.string.repeat_monthly), null, false, application.getString(R.string.repeat_monthly_history)),
+            UiBookCategory(4, false, application.getString(R.string.repeat_weekdays), null, false, application.getString(R.string.repeat_weekdays_history)),
+            UiBookCategory(5, false, application.getString(R.string.repeat_weekends), null, false, application.getString(R.string.repeat_weekends_history)),
         )
         _repeatItem.postValue(array)
     }
@@ -530,7 +530,7 @@ class HistoryViewModel @Inject constructor(
     // 반복 설정 클릭
     fun onClickRepeat() {
         viewModelScope.launch {
-            _onClickRepeat.emit("반복 설정")
+            _onClickRepeat.emit(application.getString(R.string.repeat_history_title))
         }
     }
 
@@ -692,7 +692,7 @@ class HistoryViewModel @Inject constructor(
     fun onClickRepeatItem(_item: UiBookCategory) {
         val item = _repeatItem.value?.map {
             UiBookCategory(
-                it.idx, false, it.name, it.categoryKey, it.default
+                it.idx, false, it.name, it.categoryKey, it.default, it.label
             )
         } ?: listOf()
         item[_item.idx].checked = !item[_item.idx].checked

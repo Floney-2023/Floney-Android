@@ -10,6 +10,7 @@ import com.aos.floney.R
 import com.aos.floney.base.BaseFragment
 import com.aos.floney.databinding.FragmentBookSettingFavoriteAddBinding
 import com.aos.floney.ext.repeatOnStarted
+import com.aos.floney.ext.toCategoryName
 import com.aos.floney.view.common.BaseAlertDialog
 import com.aos.floney.view.common.WarningPopupDialog
 import com.aos.floney.view.history.CategoryBottomSheetDialog
@@ -66,7 +67,7 @@ class BookSettingFavoriteAddFragment :
         repeatOnStarted {
             viewModel.postBooksFavorites.collect {
                 if(it) {
-                    setFragmentResult("key", bundleOf("flow" to viewModel.lineType.value))
+                    setFragmentResult("key", bundleOf("flow" to viewModel.lineType.value?.toCategoryName()))
                     findNavController().popBackStack()
                 }
             }

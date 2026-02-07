@@ -52,4 +52,12 @@
     <string name="book_role_owner">Owner</string>
     <string name="book_role_member">Member</string>
     <string name="book_role_me">Me</string>
+
+    <!-- Repeat Cycle -->
+    <string name="repeat_none">없음</string>
+    <string name="repeat_daily">Daily</string>
+    <string name="repeat_weekly">Weekly</string>
+    <string name="repeat_monthly">Monthly</string>
+    <string name="repeat_weekdays">Weekdays</string>
+    <string name="repeat_weekends">Weekends</string>
 </resources>
