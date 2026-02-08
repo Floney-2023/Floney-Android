@@ -56,7 +56,7 @@ class BookSettingMainFragment :
                     val settingAction = BookSettingMainFragmentDirections.actionBookSettingMainFragmentToBookSettingEditFragment(
                         viewModel.bookSettingInfo.value!!.bookImg,
                         viewModel.bookSettingInfo.value!!.seeProfileStatus,
-                        if (viewModel.bookSettingInfo.value!!.ourBookUsers[0].roleOrigin.equals("방장")) true else false,
+                        viewModel.bookSettingInfo.value!!.ourBookUsers[0].roleOrigin == "방장",
                         viewModel.bookSettingInfo.value!!.ourBookUsers.size,
                         viewModel.bookSettingInfo.value!!.bookName
                     )

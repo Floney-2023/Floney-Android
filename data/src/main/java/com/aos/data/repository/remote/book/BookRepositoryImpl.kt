@@ -324,7 +324,7 @@ class BookRepositoryImpl @Inject constructor(
         }
         when (val data =
             bookDataSource.postSettlementAdd(PostSettlementAddBody(bookKey, startDate, endDate, usersEmails, outcomes))) {
-            is NetworkState.Success -> return Result.success(data.body.toPostSettlementAddModel(context))
+            is NetworkState.Success -> return Result.success(data.body.toPostSettlementAddModel())
             is NetworkState.Failure -> return Result.failure(
                 RetrofitFailureStateException(data.error, data.code)
             )
@@ -338,7 +338,7 @@ class BookRepositoryImpl @Inject constructor(
     override suspend fun getSettlementSee(bookKey: String): Result<UiSettlementSeeModel> {
         when (val data =
             bookDataSource.getSettlementSee(bookKey)) {
-            is NetworkState.Success -> return Result.success(data.body.toUiSettlementSeeModel())
+            is NetworkState.Success -> return Result.success(data.body.toUiSettlementSeeModel(context))
             is NetworkState.Failure -> return Result.failure(
                 RetrofitFailureStateException(data.error, data.code)
             )
@@ -354,7 +354,7 @@ class BookRepositoryImpl @Inject constructor(
     ):  Result<UiSettlementAddModel> {
         when (val data =
             bookDataSource.getSettlementDetailSee(id)) {
-            is NetworkState.Success -> return Result.success(data.body.toPostSettlementAddModel(context))
+            is NetworkState.Success -> return Result.success(data.body.toPostSettlementAddModel())
             is NetworkState.Failure -> return Result.failure(
                 RetrofitFailureStateException(data.error, data.code)
             )

@@ -9,19 +9,19 @@
 
     <!-- Income Analysis -->
     <string name="analyze_income_total">You earned %s</string>
-    <string name="analyze_income_more_than_last">%s more\nthan last month</string>
-    <string name="analyze_income_less_than_last">%s less\nthan last month</string>
+    <string name="analyze_income_more_than_last">Up %s\nfrom last month.</string>
+    <string name="analyze_income_less_than_last">Down %s\nfrom last month.</string>
 
     <!-- Asset Analysis -->
-    <string name="analyze_asset_increased">Assets increased</string>
-    <string name="analyze_asset_decreased">Assets decreased</string>
+    <string name="analyze_asset_increased">Your Assets\nincreased</string>
+    <string name="analyze_asset_decreased">Your Assets\ndecreased</string>
     <string name="analyze_asset_same">Assets unchanged</string>
     <string name="analyze_asset_up">Up %s\nfrom last month</string>
     <string name="analyze_asset_down">Down %s\nfrom last month</string>
 
     <!-- Budget Plan -->
     <string name="analyze_budget_used">You\'ve used %s%%\nof your budget</string>
-    <string name="analyze_budget_per_day">You can spend %2$s\nper day for the rest of the month</string>
+    <string name="analyze_budget_per_day">You can spend %s$\nper day for the rest of the month</string>
     <string name="analyze_budget_no_budget">Set a budget to build\nbetter spending habits.</string>
     <string name="analyze_budget_plenty">You have\nplenty of budget left.</string>
     <string name="analyze_budget_reduce">Try reducing your spending\nlittle by little.</string>
@@ -71,5 +71,6 @@
     <string name="book_info_format">Created %1$s · %2$d member</string>
     <string name="book_info_format_plural">Created %1$s · %2$d members</string>
     <string name="book_opened_date">Created %1$s</string>
+    <string name="user_count_with_unit">%1$d Members</string>
 
 </resources>

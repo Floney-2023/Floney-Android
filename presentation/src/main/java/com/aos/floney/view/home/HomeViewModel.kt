@@ -107,8 +107,8 @@ class HomeViewModel @Inject constructor(
         money?.let {
             if (Locale.getDefault().language == "en") {
                 // English: Nov 20
-                val monthNames = arrayOf("Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                                       "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+                val monthNames = arrayOf("Jan.", "Feb.", "Mar.", "Apr.", "May.", "Jun.",
+                                       "Jul.", "Aug.", "Sep.", "Oct.", "Nov.", "Dec.")
                 val monthIndex = it.month.toIntOrNull()?.minus(1) ?: 0
                 val monthName = if (monthIndex in 0..11) monthNames[monthIndex] else ""
                 "$monthName ${it.day}"

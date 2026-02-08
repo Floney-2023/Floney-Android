@@ -21,7 +21,7 @@
 
     <!-- Budget Plan -->
     <string name="analyze_budget_used">현재 예산의\n%s%%를 사용했어요</string>
-    <string name="analyze_budget_per_day">남은 %1$s일 동안 하루에\n%2$s을 사용할 수 있어요</string>
+    <string name="analyze_budget_per_day">남은 기간 동안 하루에\n%s원을 사용할 수 있어요</string>
     <string name="analyze_budget_no_budget">예산을 설정하고\n체계적인 소비 습관을 만들어 보세요!</string>
     <string name="analyze_budget_plenty">쓸 수 있는 예산이\n충분해요!</string>
     <string name="analyze_budget_reduce">조금씩 지출을\n줄여볼까요?</string>
@@ -57,6 +57,7 @@
     <string name="book_info_format">%1$s 개설 · %2$d명</string>
     <string name="book_info_format_plural">%1$s 개설 · %2$d명</string>
     <string name="book_opened_date">%1$s 개설</string>
+    <string name="user_count_with_unit">%1$d명</string>
 
     <!-- Repeat Cycle -->
     <string name="repeat_none">없음</string>

@@ -20,7 +20,7 @@
 
     <!-- Analyze Budget -->
     <string name="analyze_budget_used">You\'ve used %s%%\nof your budget</string>
-    <string name="analyze_budget_per_day">You can spend %s\nper day for the rest of the month</string>
+    <string name="analyze_budget_per_day">You can spend %2s\nper day for the rest of the month</string>
 
     <!-- Analyze Asset -->
 
@@ -386,6 +386,7 @@
     <string name="book_setting_money">Currency Settings</string>
     <string name="book_setting_excel">Export to Excel</string>
     <string name="book_setting_invite_friend">Invite Friends</string>
+    <string name="book_member_count">%1$d/%2$d Members</string>
 
     <string name="book_setting_edit_title">Edit Ledger</string>
     <string name="book_setting_edit_name">Ledger Name</string>
@@ -854,7 +855,7 @@
 
 
     <!-- Analysis Screen Budget -->
-    <string name="analyze_remaining_amount">Remaining</string>
+    <string name="analyze_remaining_amount">Remaining Budget</string>
     <string name="analyze_total_budget">Total Budget</string>
     <string name="analyze_budget_progress">Budget Progress</string>
     <string name="analyze_budget_warning">Budget exceeded!</string>

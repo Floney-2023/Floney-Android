@@ -228,7 +228,7 @@ fun PostAnalyzeBudgetEntity.toUiAnalyzePlanModel(context: Context): UiAnalyzePla
         percent = percentValue,
         divMoney = divMoneyValue,
         budgetUsedText = context.getString(R.string.analyze_budget_used, percentValue),
-        budgetPerDayText = context.getString(R.string.analyze_budget_per_day, remainingDays.toString(), divMoneyValue),
+        budgetPerDayText = context.getString(R.string.analyze_budget_per_day, divMoneyValue),
         budgetStatusText = budgetStatusText
     )
 }

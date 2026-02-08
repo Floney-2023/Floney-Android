@@ -376,6 +376,7 @@
     <string name="book_setting_money">화폐 설정</string>
     <string name="book_setting_excel">엑셀 내보내기</string>
     <string name="book_setting_invite_friend">친구 초대하기</string>
+    <string name="book_member_count">%1$d/%2$d명</string>
 
     <string name="book_setting_edit_title">가계부 편집</string>
     <string name="book_setting_edit_name">가계부 이름</string>

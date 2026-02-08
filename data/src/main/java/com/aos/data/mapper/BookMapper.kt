@@ -302,11 +302,11 @@ fun GetBookInfoEntity.toUiBookInfoModel(): UiBookInfoModel {
 
 
 fun PostBooksJoinEntity.toPostBooksJoinModel(): PostBooksJoinModel {
-    return PostBooksJoinModel(this.bookKey ?: "", this.code ?: "")
+    return PostBooksJoinModel(this.bookKey, this.code)
 }
 
 fun PostBooksCreateEntity.toPostBooksCreateModel(): PostBooksCreateModel {
-    return PostBooksCreateModel(this.bookKey ?: "", this.code ?: "")
+    return PostBooksCreateModel(this.bookKey, this.code)
 }
 
 fun PostBooksLinesEntity.toPostBooksLinesModel(): PostBooksLinesModel {
@@ -424,7 +424,7 @@ fun List<PostBooksOutcomesEntity>.toUiOutcomesSelectModel(): UiOutcomesSelectMod
     )
 }
 
-fun PostSettlementAddEntity.toPostSettlementAddModel(context: Context): UiSettlementAddModel {
+fun PostSettlementAddEntity.toPostSettlementAddModel(): UiSettlementAddModel {
 
     val expenses = this.details.map {
         com.aos.model.settlement.Expenses(
@@ -471,12 +471,15 @@ fun PostSettlementAddEntity.toPostSettlementAddModel(context: Context): UiSettle
     )
 }
 
-fun List<GetSettlementSeeEntity>.toUiSettlementSeeModel(): UiSettlementSeeModel {
+fun List<GetSettlementSeeEntity>.toUiSettlementSeeModel(context: Context): UiSettlementSeeModel {
     val myBookSettlements = this.map {
         Settlement(
             id = it.id,
             dateString = "${it.startDate.replace('-', '.')} - ${it.endDate.replace('-', '.')}",
-            userCount = "${it.userCount}명",
+            userCount = context.getString(
+                R.string.user_count_with_unit,
+                it.userCount
+            ),
             totalOutcome = "${
                 NumberFormat.getNumberInstance().format(it.totalOutcome)
             }${CurrencyUtil.currency}",

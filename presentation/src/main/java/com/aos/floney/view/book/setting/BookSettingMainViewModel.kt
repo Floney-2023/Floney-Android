@@ -1,5 +1,6 @@
 package com.aos.floney.view.book.setting
 
+import android.app.Application
 import androidx.core.content.ContextCompat.getString
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -31,14 +32,15 @@ import timber.log.Timber
 
 @HiltViewModel
 class BookSettingMainViewModel @Inject constructor(
+    private val application: Application,
     private val prefs: SharedPreferenceUtil,
-    private val booksSettingGetUseCase : BooksSettingGetUseCase,
-    private val booksInitUseCase : BooksInitUseCase,
+    private val booksSettingGetUseCase: BooksSettingGetUseCase,
+    private val booksInitUseCase: BooksInitUseCase,
     private val booksOutUseCase: BooksOutUseCase,
     private val checkUserBookUseCase: CheckUserBookUseCase,
-    private val alarmSaveGetUseCase : AlarmSaveGetUseCase,
+    private val alarmSaveGetUseCase: AlarmSaveGetUseCase,
     private val subscriptionDataStoreUtil: SubscriptionDataStoreUtil
-): BaseViewModel() {
+) : BaseViewModel() {
 
     // 회원 닉네임
     private var _bookSettingInfo = MutableLiveData<UiBookSettingModel>()
@@ -126,7 +128,7 @@ class BookSettingMainViewModel @Inject constructor(
             }
         }
     }
-    
+
     private fun getSubscribeBook() {
         viewModelScope.launch {
             val isBookSubscribe = subscriptionDataStoreUtil.getBookSubscribe().first()
@@ -138,7 +140,11 @@ class BookSettingMainViewModel @Inject constructor(
             val maxMembercount = if (isBookSubscribe) 10 else 4
 
             bookSettingInfo.value.let {
-                val text = "${it?.ourBookUsers?.size}/${maxMembercount}명"
+                val text = application.getString(
+                    R.string.book_member_count,
+                    it?.ourBookUsers?.size ?: 0,
+                    maxMembercount
+                )
                 _bookMember.postValue(text)
             }
         }
@@ -155,10 +161,9 @@ class BookSettingMainViewModel @Inject constructor(
 
 
     // 마이페이지 정보 읽어오기
-    fun searchBookSettingItems()
-    {
+    fun searchBookSettingItems() {
         viewModelScope.launch(Dispatchers.IO) {
-            booksSettingGetUseCase(prefs.getString("bookKey","")).onSuccess {
+            booksSettingGetUseCase(prefs.getString("bookKey", "")).onSuccess {
                 // me가 true인 항목이 맨 앞에 오도록 정렬
                 val sortedList = it.ourBookUsers.sortedByDescending { it.me }
 
@@ -172,11 +177,11 @@ class BookSettingMainViewModel @Inject constructor(
     }
 
     // 가계부 초기화하기
-    fun initBook(){
+    fun initBook() {
         viewModelScope.launch {
-            if(prefs.getString("bookKey","").isNotEmpty()) {
+            if (prefs.getString("bookKey", "").isNotEmpty()) {
                 baseEvent(Event.ShowLoading)
-                booksInitUseCase(prefs.getString("bookKey","")).onSuccess {
+                booksInitUseCase(prefs.getString("bookKey", "")).onSuccess {
                     delay(1000)
                     baseEvent(Event.HideLoading)
                     baseEvent(Event.ShowSuccessToast("가계부가 초기화 되었습니다."))
@@ -190,15 +195,14 @@ class BookSettingMainViewModel @Inject constructor(
     }
 
     // 가계부 초기화 알람 저장
-    fun alarmInitSave()
-    {
+    fun alarmInitSave() {
         viewModelScope.launch {
-            if(prefs.getString("bookKey","").isNotEmpty()) {
+            if (prefs.getString("bookKey", "").isNotEmpty()) {
                 baseEvent(Event.ShowLoading)
 
                 bookSettingInfo.value?.ourBookUsers?.map {
                     alarmSaveGetUseCase(
-                        prefs.getString("bookKey",""),
+                        prefs.getString("bookKey", ""),
                         "플로니",
                         "${_bookSettingInfo.value!!.bookName} 가계부가 초기화 되었어요.",
                         "icon_noti_reset",
@@ -215,16 +219,16 @@ class BookSettingMainViewModel @Inject constructor(
             }
         }
     }
+
     // 가계부 나가기 알람 저장
-    fun alarmExitSave()
-    {
+    fun alarmExitSave() {
         viewModelScope.launch {
-            if(prefs.getString("bookKey","").isNotEmpty()) {
+            if (prefs.getString("bookKey", "").isNotEmpty()) {
                 baseEvent(Event.ShowLoading)
                 bookSettingInfo.value?.ourBookUsers?.forEachIndexed { index, user ->
                     if (index != 0) { // 인덱스가 0이 아닌 경우에만 실행(본인 제외, 알람)
                         alarmSaveGetUseCase(
-                            prefs.getString("bookKey",""),
+                            prefs.getString("bookKey", ""),
                             "플로니",
                             "${_bookSettingInfo.value!!.ourBookUsers[index].name}님이 ${_bookSettingInfo.value!!.bookName} 가계부를 나갔습니다.",
                             "icon_noti_exit",
@@ -246,10 +250,9 @@ class BookSettingMainViewModel @Inject constructor(
     }
 
     // 가계부 나가기
-    fun onBookExit()
-    {
+    fun onBookExit() {
         viewModelScope.launch(Dispatchers.IO) {
-            booksOutUseCase(prefs.getString("bookKey","")).onSuccess {
+            booksOutUseCase(prefs.getString("bookKey", "")).onSuccess {
                 alarmExitSave()
             }.onFailure {
                 baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@BookSettingMainViewModel)))
@@ -258,115 +261,108 @@ class BookSettingMainViewModel @Inject constructor(
     }
 
     // 이월 설정
-    fun changeCarryOver(carryOver : Boolean){
+    fun changeCarryOver(carryOver: Boolean) {
         viewModelScope.launch {
             val currentInfo = bookSettingInfo.value
             _bookSettingInfo.postValue(currentInfo?.copy(carryOver = carryOver))
         }
     }
+
     // 이전 페이지 이동
-    fun onClickPreviousPage()
-    {
+    fun onClickPreviousPage() {
         viewModelScope.launch {
             _back.emit(true)
         }
     }
 
     // 가계부 상세 설정 페이지 이동
-    fun onClickInformPage()
-    {
+    fun onClickInformPage() {
         viewModelScope.launch {
             _settingPage.emit(true)
         }
     }
 
     // 이월설정
-    fun onClickCarryInfoSetting()
-    {
+    fun onClickCarryInfoSetting() {
         viewModelScope.launch {
             _carryInfoPage.emit(true)
         }
     }
 
     // 반복내역 설정
-    fun onClickRepeat()
-    {
+    fun onClickRepeat() {
         viewModelScope.launch {
             _repeatPage.emit(true)
         }
     }
+
     // 즐겨찾기 설정
-    fun onClickFavorite()
-    {
+    fun onClickFavorite() {
         viewModelScope.launch {
             _favoritePage.emit(true)
         }
     }
+
     // 가계부 초기화하기
-    fun onClickBookInit()
-    {
+    fun onClickBookInit() {
         viewModelScope.launch {
             _initPage.emit(true)
         }
     }
+
     // 예산 설정
-    fun onClickAssetSetting()
-    {
+    fun onClickAssetSetting() {
         viewModelScope.launch {
             _budgetPage.emit(true)
         }
     }
+
     // 초기 자산 설정
-    fun onClickSTartMoneySetting()
-    {
+    fun onClickSTartMoneySetting() {
         viewModelScope.launch {
             _assetPage.emit(true)
         }
     }
 
     // 분류항목 관리
-    fun onClickSettingCategory()
-    {
+    fun onClickSettingCategory() {
         viewModelScope.launch {
             _categoryPage.emit(true)
         }
     }
 
     // 화폐 설정
-    fun onClickSettingMoney()
-    {
+    fun onClickSettingMoney() {
         viewModelScope.launch {
             _currencyPage.emit(true)
         }
     }
+
     // 엑셀 내보내기
-    fun onClickExcelExport()
-    {
+    fun onClickExcelExport() {
         viewModelScope.launch {
             _excelPage.emit(true)
         }
     }
 
     // 친구 추가
-    fun onClickInviteFriend()
-    {
+    fun onClickInviteFriend() {
         viewModelScope.launch {
             _invitePage.emit(true)
         }
     }
 
     // 가계부 나가기
-    fun onClickBookExit()
-    {
+    fun onClickBookExit() {
         viewModelScope.launch {
             _exitPopup.emit(true)
         }
     }
 
-    fun settingBookKey(){
+    fun settingBookKey() {
         viewModelScope.launch {
             checkUserBookUseCase().onSuccess {
-                if(it.bookKey != "") {
+                if (it.bookKey != "") {
                     prefs.setString("bookKey", it.bookKey)
                     _exitPage.emit(true)
                 } else {

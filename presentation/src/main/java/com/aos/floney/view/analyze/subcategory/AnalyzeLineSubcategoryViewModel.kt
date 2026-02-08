@@ -159,7 +159,7 @@ class AnalyzeLineSubcategoryViewModel @Inject constructor(
 
             Timber.i("flowState :${flow.value}")
             Timber.i("bookUser :${booksUsersList.value?.booksUsers}")
-            val sortType = flow.value?.let { fromIntToDisplayName(it) } ?: "최신순"
+            val sortType = flow.value.let { fromIntToDisplayName(it) } ?: "최신순"
 
             postAnalyzeLineSubCategoryUseCase(
                 bookKey = prefs.getString("bookKey",""),
