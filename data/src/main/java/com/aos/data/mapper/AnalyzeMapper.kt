@@ -22,6 +22,8 @@ import java.util.Calendar
 import kotlin.math.pow
 import kotlin.math.roundToInt
 import androidx.core.graphics.toColorInt
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 private val colorUsedArr = arrayListOf<Int>()
 private val colorArr = listOf<Int>(
@@ -290,18 +292,48 @@ fun PostAnalyzeAssetEntity.toUiAnalyzeAssetModel(context: Context): UiAnalyzeAss
 
 // 상세 분석-지출/수입
 
-fun PostAnalyzeLineSubCategoryEntity.toUiLineSubCategoryModel(category: String): UiAnalyzeLineSubCategoryModel {
+fun PostAnalyzeLineSubCategoryEntity.toUiLineSubCategoryModel(
+    context: Context,
+    category: String
+): UiAnalyzeLineSubCategoryModel {
+
     return UiAnalyzeLineSubCategoryModel(
         subcategoryName = this.subcategoryName,
         bookLines = this.bookLines.map {
+
+            val formattedDate = formatLocalizedDate(context, it.lineDate)
+
             BookSubData(
-                money = "${if (category == "수입") "+" else "-"}${NumberFormat.getNumberInstance().format(it.money)}",
-                descriptionDetail = "${it.asset} ‧ ${it.lineDate.replace("-",".")}", // yyyy-mm-dd -> yyyy.mm.dd 형식으로 파싱
+                money = "${if (category == "수입") "+" else "-"}${
+                    NumberFormat.getNumberInstance().format(it.money)
+                }",
+
+                descriptionDetail = context.getString(
+                    R.string.line_detail_format,
+                    it.asset,
+                    formattedDate
+                ),
+
                 description = it.description,
                 userProfileImg = it.userProfileImg ?: ""
             )
         }
     )
+}
+
+
+fun formatLocalizedDate(context: Context, dateString: String): String {
+    return try {
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val date = inputFormat.parse(dateString)
+
+        val pattern = context.getString(R.string.book_date_pattern)
+        val outputFormat = SimpleDateFormat(pattern, Locale.getDefault())
+
+        outputFormat.format(date!!)
+    } catch (e: Exception) {
+        dateString
+    }
 }
 
 

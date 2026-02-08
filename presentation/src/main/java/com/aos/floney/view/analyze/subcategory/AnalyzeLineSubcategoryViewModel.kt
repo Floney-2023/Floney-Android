@@ -1,9 +1,11 @@
 package com.aos.floney.view.analyze.subcategory
 
+import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.aos.data.util.SharedPreferenceUtil
+import com.aos.floney.R
 import com.aos.floney.base.BaseViewModel
 import com.aos.floney.ext.parseErrorMsg
 import com.aos.floney.util.EventFlow
@@ -24,6 +26,7 @@ import java.util.Calendar
 
 @HiltViewModel
 class AnalyzeLineSubcategoryViewModel @Inject constructor(
+    private val application: Application,
     private val prefs: SharedPreferenceUtil,
     private val postAnalyzeLineSubCategoryUseCase: PostAnalyzeLineSubCategoryUseCase,
     private val booksUsersUseCase : BooksUsersUseCase
@@ -127,19 +130,29 @@ class AnalyzeLineSubcategoryViewModel @Inject constructor(
     }
 
     // 선택된 사용자 chip 텍스트 설정
-    fun getSelectedUserChip() : String{
-        val selectedUsers = booksUsersList.value?.booksUsers?.filter { it.isCheck }.orEmpty()
+    fun getSelectedUserChip(): String {
+        val allUsers = booksUsersList.value?.booksUsers.orEmpty()
+        val selectedUsers = allUsers.filter { it.isCheck }
 
         return when {
-            selectedUsers.isEmpty() -> "사용자 전체"
-            selectedUsers.size == 1 -> selectedUsers.first().nickname
-            selectedUsers.size == booksUsersList.value?.booksUsers?.size -> "사용자 전체"
+            selectedUsers.isEmpty() || selectedUsers.size == allUsers.size ->
+                application.getString(com.aos.data.R.string.all_members)
+
+            selectedUsers.size == 1 ->
+                selectedUsers.first().nickname
+
             else -> {
                 val sortedNames = selectedUsers.map { it.nickname }.sorted()
-                "${sortedNames.first()} 외 ${selectedUsers.size - 1}명"
+                application.getString(
+                    com.aos.data.R.string.member_plus_format,
+                    sortedNames.first(),
+                    selectedUsers.size - 1
+                )
             }
         }
     }
+
+
 
     // 카테고리 설정
     fun setCategory(selectedCategory: String, selectedSubCategory: String, selectedDate: String){
@@ -159,17 +172,20 @@ class AnalyzeLineSubcategoryViewModel @Inject constructor(
 
             Timber.i("flowState :${flow.value}")
             Timber.i("bookUser :${booksUsersList.value?.booksUsers}")
-            val sortType = flow.value.let { fromIntToDisplayName(it) } ?: "최신순"
+            val sortTypeText = getSortDisplayText(flow.value)
+
 
             postAnalyzeLineSubCategoryUseCase(
                 bookKey = prefs.getString("bookKey",""),
                 category = category.value!!,
                 subcategory = subCategory.value!!,
                 emails = email.value!!,
-                sortingType = SortType.fromDisplayName(sortType).toString(),
+                sortingType = SortType.fromServerValue(
+                    SortType.values()[flow.value - 1].serverValue
+                )!!.serverValue,
                 yearMonth = month.value!!
             ).onSuccess {
-                _sortType.postValue(sortType)
+                _sortType.postValue(sortTypeText)
                 _userChip.postValue(getSelectedUserChip())
                 _analyzeSubCategoryData.postValue(it)
             }.onFailure {
@@ -225,15 +241,17 @@ class AnalyzeLineSubcategoryViewModel @Inject constructor(
         }
     }
 
-    fun fromIntToDisplayName(value: Int): String? {
-        return when (value) {
-            1 -> SortType.LATEST.displayName
-            2 -> SortType.OLDEST.displayName
-            3 -> SortType.LINE_SUBCATEGORY_NAME.displayName
-            4 -> SortType.USER_NICKNAME.displayName
-            else -> null // ✅ 예외 처리 (잘못된 값이 들어왔을 때)
+    fun getSortDisplayText(type: Int): String {
+        val sort = when (type) {
+            1 -> SortType.LATEST
+            2 -> SortType.OLDEST
+            3 -> SortType.LINE_SUBCATEGORY_NAME
+            4 -> SortType.USER_NICKNAME
+            else -> SortType.LATEST
         }
+        return application.getString(sort.stringRes)
     }
+
     // 정렬 필터 변경 (적용 버튼 클릭)
     fun onClickSortSaveButton(){
         viewModelScope.launch {
@@ -242,21 +260,14 @@ class AnalyzeLineSubcategoryViewModel @Inject constructor(
     }
 }
 
-enum class SortType(val serverValue: String, val displayName: String) {
-    LATEST("LATEST", "최신순"),
-    OLDEST("OLDEST", "오래된순"),
-    LINE_SUBCATEGORY_NAME("LINE_SUBCATEGORY_NAME", "분류 가나다순"),
-    USER_NICKNAME("USER_NICKNAME", "사용자 가나다순");
+enum class SortType(val serverValue: String, val stringRes: Int) {
+    LATEST("LATEST", R.string.sort_latest),
+    OLDEST("OLDEST", R.string.sort_oldest),
+    LINE_SUBCATEGORY_NAME("LINE_SUBCATEGORY_NAME", R.string.sort_category_alphabetical),
+    USER_NICKNAME("USER_NICKNAME", R.string.sort_user_alphabetical);
 
     companion object {
-        // 서버에서 받은 값으로 Enum 찾기
-        fun fromServerValue(value: String): SortType? {
-            return values().find { it.serverValue == value }
-        }
-
-        // UI에서 표시하는 값으로 Enum 찾기
-        fun fromDisplayName(value: String): SortType? {
-            return values().find { it.displayName == value }
-        }
+        fun fromServerValue(value: String) =
+            values().find { it.serverValue == value }
     }
 }

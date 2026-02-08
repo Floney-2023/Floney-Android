@@ -71,5 +71,9 @@
     <string name="settlement_send_money">%1$s을 보내야 해요.</string>
     <string name="settlement_receive_money">%1$s을 받아야 해요.</string>
     <string name="settlement_no_money">정산할 금액이 없어요.</string>
+    <string name="line_detail_format">%1$s · %2$s</string>
+
+    <string name="all_members">사용자 전체</string>
+    <string name="member_plus_format">%1$s 외 %2$d명</string>
 
 </resources>
