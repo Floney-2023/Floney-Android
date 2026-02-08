@@ -1,877 +1,896 @@
 <resources>
     <string name="app_name">Floney</string>
     <string name="is_first">isFirst</string>
-    <string name="bottom_navigation_home">홈</string>
-    <string name="bottom_navigation_analysis">분석</string>
+    <string name="bottom_navigation_home">Home</string>
+    <string name="bottom_navigation_analysis">Insights</string>
 
     <!-- Analyze/Insights Screen -->
-    <string name="analyze_title">분석</string>
-    <string name="analyze_expense">지출</string>
-    <string name="analyze_income">수입</string>
-    <string name="analyze_budget">예산</string>
-    <string name="analyze_assets">자산</string>
-    <string name="analyze_no_data">내역이 없습니다.</string>
+    <string name="analyze_title">Insights</string>
+    <string name="analyze_expense">Expense</string>
+    <string name="analyze_income">Income</string>
+    <string name="analyze_budget">Budget</string>
+    <string name="analyze_assets">Assets</string>
+    <string name="analyze_no_data">No data.</string>
+
+    <!-- Analyze Outcome -->
+    <string name="analyze_outcome_less_than_last">Down %s\nfrom last month</string>
+    <string name="analyze_outcome_more_than_last">Up %s\nfrom last month</string>
+
+    <!-- Analyze Income -->
+
+    <!-- Analyze Budget -->
+    <string name="analyze_budget_used">You\'ve used %s%%\nof your budget</string>
+    <string name="analyze_budget_per_day">You can spend %2s\nper day for the rest of the month</string>
+
+    <!-- Analyze Asset -->
+
+    <!-- Income Tab -->
 
     <!-- Budget Tab -->
-    <string name="analyze_budget_used">예산의 %1$s%%를 사용했어요</string>
-    <string name="analyze_budget_per_day">하루에 %1$s씩 쓸 수 있어요</string>
-    <string name="analyze_budget_plenty_left">예산이 충분히 남아있어요</string>
-    <string name="analyze_budget_set_message">더 나은 소비 습관을 위해\n예산을 설정해보세요</string>
-    <string name="analyze_budget_set_button">이번 달 예산 설정하기</string>
-    <string name="analyze_budget_remaining">남은 예산</string>
-    <string name="analyze_budget_total">전체 예산</string>
-    <string name="bottom_navigation_calculate">정산</string>
-    <string name="bottom_navigation_mypage">마이</string>
-    <string name="date_pick_button">완료</string>
-    <string name="already_pick_button">확인</string>
-    <string name="default_error_text">에러가 발생하였습니다. 플로니 팀에 문의 해주세요.</string>
-    <string name="detail_empty_record_message">캘린더 내역 작성해주세요</string>
+    <string name="analyze_budget_plenty_left">You have\nplenty of budget left.</string>
+    <string name="analyze_budget_set_message">Set a budget to build\nbetter spending habits.</string>
+    <string name="analyze_budget_set_button">Set This Month\'s Budget</string>
+    <string name="analyze_budget_remaining">Remaining Budget</string>
+    <string name="analyze_budget_total">Total Budget</string>
+    <string name="bottom_navigation_calculate">Settlements</string>
+    <string name="bottom_navigation_mypage">My Page</string>
+    <string name="date_pick_button">Done</string>
+    <string name="already_pick_button">OK</string>
+    <string name="default_error_text">An error occurred. Please contact the Floney team.</string>
+    <string name="detail_empty_record_message">Please add calendar entries</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_login">LoginActivity</string>
-    <string name="sign_verification_text">- 유효 시간이 지났을 경우 인증 메일을 다시 보내주세요. \n- 하루동안 5번까지 새로운 인증 코드를 받을 수 있습니다. \n- 5번 연속 코드 입력에 실패했다면 24시간 이후 시도해 주세요.</string>
-    <string name="sign_input_text">* 영문(대소문자 구분 없음), 숫자, 특수문자 포함 8자 이상</string>
-    <string name="sign_length_limit_text">* 최대 8자까지 입력할 수 있어요.</string>
-    <string name="sign_complete_text">플로니와 함께 똑똑하고 편리한 가계부를 작성해보세요.</string>
+    <string name="sign_verification_text">- If the code expired, please resend the verification email. \n- You can receive up to 5 new codes per day. \n- If you fail to enter the code 5 times in a row, please try again after 24 hours.</string>
+    <string name="sign_input_text">* At least 8 characters including letters, numbers, and special characters</string>
+    <string name="sign_length_limit_text">* Maximum 8 characters allowed.</string>
+    <string name="sign_complete_text">Start a smart and simple shared ledger with Floney.</string>
 
     <!--onBoardRecordFragment-->
-    <string name="on_board_record_text">함께, 간편하게\n가계부를 기록해 보세요</string>
-    <string name="on_board_show_flow_text">모으고 사용한 흐름을\n한눈에 볼 수 있어요</string>
-    <string name="on_board_start_text">기록한 내역으로\n손쉽게 정산할 수 있어요</string>
-    <string name="on_board_skip_text">건너뛰기</string>
-    <string name="on_board_start_button_text">플로니 시작하기</string>
+    <string name="on_board_record_text">Keep your shared ledger\nsimple, together</string>
+    <string name="on_board_show_flow_text">See how your money\nmoves at a glance</string>
+    <string name="on_board_start_text">Settle balances easily\nwith your recorded entries</string>
+    <string name="on_board_skip_text">Skip</string>
+    <string name="on_board_start_button_text">Start with Floney</string>
 
     <!--loginActivity-->
-    <string name="login">로그인하기</string>
-    <string name="nickname">닉네임</string>
-    <string name="request_nickname">닉네임을 입력하세요.</string>
-    <string name="request_input_nickname">닉네임을 입력해주세요.</string>
-    <string name="nickname_rule">* 최대 8자까지 입력할 수 있어요.</string>
-    <string name="email">이메일</string>
-    <string name="request_input_email">이메일 주소를 입력하세요.</string>
-    <string name="request_input_email_toast">이메일 주소를 입력해주세요.</string>
-    <string name="email_address">이메일 주소</string>
-    <string name="request_input_password">비밀번호를 입력해주세요.</string>
-    <string name="request_input_re_password">비밀번호 확인을 입력해주세요.</string>
-    <string name="check_password_rule">비밀번호 양식을 확인해주세요.</string>
-    <string name="not_match_password">비밀번호가 일치하지 않습니다.</string>
-    <string name="re_password">비밀번호 확인</string>
-    <string name="password_rule">비밀번호 양식을 확인해주세요.</string>
-    <string name="password">비밀번호</string>
-    <string name="find_pw">비밀번호 찾기</string>
-    <string name="sign_up">회원가입 하기</string>
-    <string name="simple_login">간편 로그인</string>
-    <string name="currency_error">화폐 단위를 불러오지 못했습니다.</string>
-    <string name="signup_rule">* 영문(대소문자 구분 없음), 숫자, 특수문자 포함 8자 이상</string>
-    <string name="input_amount_hint">금액을 입력하세요</string>
-    <string name="input_content_hint">내용을 입력하세요</string>
+    <string name="login">Log In</string>
+    <string name="nickname">Nickname</string>
+    <string name="request_nickname">Enter your nickname.</string>
+    <string name="request_input_nickname">Please enter your nickname.</string>
+    <string name="nickname_rule">* Maximum 8 characters allowed.</string>
+    <string name="email">Email</string>
+    <string name="request_input_email">Enter your email address.</string>
+    <string name="request_input_email_toast">Please enter your email address.</string>
+    <string name="email_address">Email address</string>
+    <string name="request_input_password">Please enter your password.</string>
+    <string name="request_input_re_password">Please confirm your password.</string>
+    <string name="check_password_rule">Please check password format.</string>
+    <string name="not_match_password">Passwords do not match.</string>
+    <string name="re_password">Confirm password</string>
+    <string name="password_rule">Please check password format.</string>
+    <string name="password">Password</string>
+    <string name="find_pw">Forgot Password</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="simple_login">Sign in with</string>
+    <string name="currency_error">Failed to load currency unit.</string>
+    <string name="signup_rule">* At least 8 characters including letters, numbers, and special characters</string>
 
     <!--PasswordFindActivity-->
-    <string name="find_password_text">가입한 이메일 주소를 입력하세요.\n로그인 가능한 임시 비밀번호를 보내드립니다.</string>
-    <string name="send_temp_password">임시 비밀번호 보내기</string>
+    <string name="find_password_text">Enter the email you used to sign up.\nWe\'ll send you a temporary password.</string>
+    <string name="send_temp_password">Send Temporary Password</string>
 
     <!--myPageActivity(메인)-->
-    <string name="mypage_main_mypage_text">마이페이지</string>
-    <string name="mypage_main_appstore_text">앱스토어에서\n별점을 남겨주세요</string>
-    <string name="mypage_main_appstore_write_text">리뷰쓰기</string>
-    <string name="mypage_main_suppose_text">플로니는 여러분의\n다양한 의견을\n기다리고 있어요</string>
-    <string name="mypage_main_suppose_write_text">제안하기</string>
-    <string name="mypage_main_my_wallet">내 가계부</string>
-    <string name="mypage_main_subscribe_info">최대 10명까지 사용 가능한 가계부가 필요하다면</string>
-    <string name="mypage_main_remove_ads">광고 제거하기</string>
-    <string name="mypage_main_time_remaining">남은 시간</string>
-    <string name="mypage_main_watch_ad">광고보기</string>
-    <string name="mypage_main_write_review">리뷰쓰기</string>
-    <string name="mypage_main_playstore_review">플레이스토어에서\n별점을 남겨주세요</string>
-    <string name="mypage_main_user_soppose_text1">고객지원</string>
-    <string name="mypage_main_user_soppose_text2">문의하기</string>
-    <string name="mypage_main_user_soppose_text3">공지사항</string>
-    <string name="mypage_main_user_soppose_text4">리뷰 작성하기</string>
-    <string name="mypage_main_user_soppose_text5">개인정보 처리방침</string>
-    <string name="mypage_main_user_soppose_text6">이용 약관</string>
-    <string name="member_count_format">%1$s명</string>
+    <string name="mypage_main_mypage_text">My Page</string>
+    <string name="mypage_main_appstore_text">Please rate us\nin the App Store</string>
+    <string name="mypage_main_appstore_write_text">Write a Review</string>
+    <string name="mypage_main_suppose_text">Floney welcomes\nyour feedback</string>
+    <string name="mypage_main_suppose_write_text">Send Feedback</string>
+    <string name="mypage_main_my_wallet">My Ledgers</string>
+    <string name="mypage_main_subscribe_info">If you need a ledger for up to 10 members,</string>
+    <string name="mypage_main_remove_ads">Remove ads</string>
+    <string name="mypage_main_time_remaining">Time remaining</string>
+    <string name="mypage_main_watch_ad">Watch Ad</string>
+    <string name="mypage_main_write_review">Write a Review</string>
+    <string name="mypage_main_playstore_review">Please rate us\nin the App Store</string>
+    <string name="mypage_main_user_soppose_text1">Services</string>
+    <string name="mypage_main_user_soppose_text2">Contact Us</string>
+    <string name="mypage_main_user_soppose_text3">Announcements</string>
+    <string name="mypage_main_user_soppose_text4">Write a Review</string>
+    <string name="mypage_main_user_soppose_text5">Privacy Policy</string>
+    <string name="mypage_main_user_soppose_text6">Terms of Service</string>
+    <string name="member_count_format">%1$s Members</string>
 
     <!--myPageActivity(설정)-->
-    <string name="mypage_main_setting_text">설정</string>
-    <string name="mypage_main_setting_text1">알림 설정</string>
-    <string name="mypage_main_setting_text2">언어 설정</string>
+    <string name="mypage_main_setting_text">Settings</string>
+    <string name="mypage_main_setting_text1">Notifications</string>
+    <string name="mypage_main_setting_text2">Languages</string>
     <string name="mypage_main_setting_text3">Version 1.1</string>
-    <string name="mypage_main_setting_text4">마케팅 정보 수신 알림</string>
-    <string name="mypage_main_setting_text5">한국어</string>
-    <string name="mypage_main_setting_text6">오픈소스 라이브러리</string>
-    <string name="mypage_main_setting_marketing_response">마케팅 정보 수신 알림이 변경되었습니다.</string>
+    <string name="mypage_main_setting_text4">Marketing messages</string>
+    <string name="mypage_main_setting_text5">English</string>
+    <string name="mypage_main_setting_text6">Open Source Libraries</string>
+    <string name="mypage_main_setting_marketing_response">Marketing notification settings have been updated.</string>
 
 
     <!--myPageActivity(회원정보 1-1, 회원 정보)-->
-    <string name="mypage_main_inform_title">회원 정보</string>
-    <string name="mypage_main_inform_nickname">닉네임</string>
-    <string name="mypage_main_inform_nickname_tint">닉네임을 입력하세요.</string>
-    <string name="mypage_main_inform_change_button">변경하기</string>
-    <string name="mypage_main_inform_change_profile">프로필 이미지 변경</string>
-    <string name="mypage_main_inform_change_passwd">비밀번호 변경</string>
-    <string name="mypage_main_inform_logout">로그아웃</string>
-    <string name="mypage_main_inform_logout_dialog_info">로그아웃 하시겠습니까?</string>
+    <string name="mypage_main_inform_title">Account Info</string>
+    <string name="mypage_main_inform_nickname">Nickname</string>
+    <string name="mypage_main_inform_nickname_tint">Enter your nickname.</string>
+    <string name="mypage_main_inform_change_button">Change</string>
+    <string name="mypage_main_inform_change_profile">Change Profile Image</string>
+    <string name="mypage_main_inform_change_passwd">Change Password</string>
+    <string name="mypage_main_inform_logout">Log Out</string>
+    <string name="mypage_main_inform_logout_dialog_info">Do you want to log out?</string>
 
-    <string name="mypage_main_inform_exit"><u>회원탈퇴</u></string>
-    <string name="mypage_main_inform_nickname_request">닉네임을 입력해주세요.</string>
-    <string name="mypage_main_inform_nickname_request_success">변경이 완료되었습니다.</string>
+    <string name="mypage_main_inform_exit"><u>Delete Account</u></string>
+    <string name="mypage_main_inform_nickname_request">Please enter your nickname.</string>
+    <string name="mypage_main_inform_nickname_request_success">Successfully changed.</string>
 
     <!--myPageActivity(회원정보 1-2, 비밀번호 변경)-->
-    <string name="mypage_main_inform_pwchange_title">비밀번호 변경</string>
-    <string name="mypage_main_inform_pwchange_nowpw">현재 비밀번호</string>
-    <string name="mypage_main_inform_pwchange_nowpw_tint">현재 비밀번호를 입력하세요.</string>
-    <string name="mypage_main_inform_pwchange_newpw">새 비밀번호</string>
-    <string name="mypage_main_inform_pwchange_newpw_tint">영문 대소문자, 숫자, 특수문자 포함 8자 이상</string>
-    <string name="mypage_main_inform_pwchange_newpw_check">새 비밀번호 확인</string>
-    <string name="mypage_main_inform_pwchange_newpw_check_tint">영문 대소문자, 숫자, 특수문자 포함 8자 이상</string>
-    <string name="mypage_main_inform_pwchange_check_button">확인</string>
-    <string name="mypage_main_inform_pwchange_nowpw_request">현재 비밀번호를 입력해주세요.</string>
-    <string name="mypage_main_inform_pwchange_request_input_password">새 비밀번호를 입력해주세요.</string>
-    <string name="mypage_main_inform_pwchange_request_input_re_password">새 비밀번호 확인을 입력해주세요.</string>
-    <string name="mypage_main_inform_pwchange_check_password_rule">비밀번호 양식을 확인해주세요.</string>
-    <string name="mypage_main_inform_pwchange_not_match_password">새 비밀번호가 일치하지 않습니다.</string>
+    <string name="mypage_main_inform_pwchange_title">Change Password</string>
+    <string name="mypage_main_inform_pwchange_nowpw">Current Password</string>
+    <string name="mypage_main_inform_pwchange_nowpw_tint">Enter your current password.</string>
+    <string name="mypage_main_inform_pwchange_newpw">New Password</string>
+    <string name="mypage_main_inform_pwchange_newpw_tint">At least 8 characters with uppercase, lowercase, numbers, and special characters</string>
+    <string name="mypage_main_inform_pwchange_newpw_check">Confirm New Password</string>
+    <string name="mypage_main_inform_pwchange_newpw_check_tint">At least 8 characters with uppercase, lowercase, numbers, and special characters</string>
+    <string name="mypage_main_inform_pwchange_check_button">Confirm</string>
+    <string name="mypage_main_inform_pwchange_nowpw_request">Please enter your current password.</string>
+    <string name="mypage_main_inform_pwchange_request_input_password">Please enter your new password.</string>
+    <string name="mypage_main_inform_pwchange_request_input_re_password">Please confirm your new password.</string>
+    <string name="mypage_main_inform_pwchange_check_password_rule">Please check password format.</string>
+    <string name="mypage_main_inform_pwchange_not_match_password">New passwords do not match.</string>
 
 
     <!--myPageActivity(회원정보 1-4, 프로필 이미지 변경)-->
-    <string name="mypage_main_inform_profile_change">프로필 이미지 변경</string>
-    <string name="mypage_main_inform_profile_change_basic">기본 프로필로 변경</string>
-    <string name="mypage_main_inform_profile_change_btn">변경하기</string>
+    <string name="mypage_main_inform_profile_change">Change Profile Image</string>
+    <string name="mypage_main_inform_profile_change_basic">Use Default Image</string>
+    <string name="mypage_main_inform_profile_change_btn">Save</string>
 
     <!--myPageActivity(회원정보 1-5, 회원탈퇴1단계)-->
-    <string name="mypage_main_inform_exit_title">회원탈퇴 전\n이유를 선택해주세요 😥</string>
-    <string name="mypage_main_inform_exit_info">잠깐! 탈퇴 시 가계부 기록이\n모두 삭제 됩니다.</string>
-    <string name="mypage_main_inform_exit_no_how_to_use">플로니를 어떻게 사용하는지 모르겠어요</string>
-    <string name="mypage_main_inform_exit_expensive">구독료가 비싸요</string>
-    <string name="mypage_main_inform_exit_no_already_use">자주 사용하지 않게 돼요</string>
-    <string name="mypage_main_inform_exit_re_login">다시 가입할 거예요</string>
-    <string name="mypage_main_inform_exit_direct_input">직접 입력하기</string>
-    <string name="mypage_main_inform_exit_direct_input_hint">이유를 작성해 주세요 (100자 이내)</string>
-    <string name="mypage_main_inform_exit_button">탈퇴하기</string>
-    <string name="mypage_main_inform_exit_blank_toast">탈퇴 이유를 작성해주세요.</string>
-    <string name="mypage_main_inform_exit_check_toast">탈퇴 이유를 선택해주세요.</string>
+    <string name="mypage_main_inform_exit_title">Please select\na reason 😥</string>
+    <string name="mypage_main_inform_exit_info">Wait! All ledger data\nwill be deleted.</string>
+    <string name="mypage_main_inform_exit_no_how_to_use">I’m not sure how to use Floney</string>
+    <string name="mypage_main_inform_exit_expensive">The subscription is expensive</string>
+    <string name="mypage_main_inform_exit_no_already_use">I don’t use it often</string>
+    <string name="mypage_main_inform_exit_re_login">I’ll sign up again</string>
+    <string name="mypage_main_inform_exit_direct_input">Other</string>
+    <string name="mypage_main_inform_exit_direct_input_hint">Enter your reason (up to 100 characters)</string>
+    <string name="mypage_main_inform_exit_button">Delete Account</string>
+    <string name="mypage_main_inform_exit_blank_toast">Please write your reason for leaving.</string>
+    <string name="mypage_main_inform_exit_check_toast">Please select a reason for leaving.</string>
 
     <!--myPageActivity(회원정보 1-6, 회원탈퇴2단계)-->
-    <string name="mypage_main_inform_exit_input_password_title">마지막으로 비밀번호를\n입력해 주세요.</string>
-    <string name="mypage_main_inform_exit_input_password_hint">비밀번호</string>
-    <string name="mypage_main_inform_exit_input_password_button">탈퇴하기</string>
-    <string name="mypage_main_inform_exit_input_password_toast">비밀번호를 입력해 주세요.</string>
+    <string name="mypage_main_inform_exit_input_password_title">Enter your password\nto continue</string>
+    <string name="mypage_main_inform_exit_input_password_hint">Password</string>
+    <string name="mypage_main_inform_exit_input_password_button">Delete Account</string>
+    <string name="mypage_main_inform_exit_input_password_toast">Please enter your password.</string>
 
     <!--myPageActivity(회원정보 1-6, pop up 회원탈퇴)-->
-    <string name="mypage_main_inform_exit_popup_title">탈퇴 전에 꼭 확인해 주세요</string>
-    <string name="mypage_main_inform_exit_popup_info">-가계부 방장일 경우 팀원에게\n방장이 자동으로 위임되며 가계부를 나가게 됩니다.\n\n-가계부 팀원일 경우 즉시 가계부를 나가게 됩니다.\n\n-모든 사용자는 회원탈퇴 시 모든 가계부 및\n데이터, 개인정보가 즉시 파기됩니다.
-\n\n그래도 탈퇴하시겠습니까?</string>
-    <string name="mypage_main_inform_exit_popup_btn_exit">탈퇴하기</string>
-    <string name="mypage_main_inform_exit_popup_btn_cancel">취소하기</string>
+    <string name="mypage_main_inform_exit_popup_title">Please confirm before leaving</string>
+    <string name="mypage_main_inform_exit_popup_info">-If you\'re the ledger host, ownership will\nautomatically transfer to a member and you\'ll leave the ledger.\n\n-If you\'re a member, you\'ll immediately leave the ledger.\n\n-All users will have all ledgers,\ndata, and personal information deleted immediately upon withdrawal.
+\n\nDo you still want to delete your account?</string>
+    <string name="mypage_main_inform_exit_popup_btn_exit">Delete Account</string>
+    <string name="mypage_main_inform_exit_popup_btn_cancel">Cancel</string>
 
     <!--myPageActivity(회원정보 1-7, 탈퇴완료)-->
-    <string name="mypage_main_inform_exit_complete_title">회원 탈퇴가\n무사히 완료되었어요</string>
-    <string name="mypage_main_inform_exit_complete_info">이용해 주셔서 감사합니다.\n언제든 다시 돌아오세요!</string>
-    <string name="mypage_main_inform_exit_complete_btn_close">닫기</string>
+    <string name="mypage_main_inform_exit_complete_title">Your account\nhas been deleted.</string>
+    <string name="mypage_main_inform_exit_complete_info">Thank you for using Floney.\nYou\'re always welcome back!</string>
+    <string name="mypage_main_inform_exit_complete_btn_close">Close</string>
 
     <!--myPageActivity(서비스)-->
-    <string name="mypage_service_mail_title">플로니가 출시되었어요🍀</string>
-    <string name="mypage_service_mail_info">안녕하세요!\n공유가계부 플로니가 출시되었습니다.\n사용 중 궁금하거나 불편한 점이 있으시면 문의하기를 통해\n메일로 물어봐 주시면 언제든지 친절하게 답변해 드립니다.\n\n많은 이용과 관심 부탁드립니다.\n감사합니다.</string>
+    <string name="mypage_service_mail_title">Floney is now live 🍀</string>
+    <string name="mypage_service_mail_info">Hello!\nFloney, the shared ledger, has officially launched.\n\nIf you have any questions or feedback while using the app, please message us through “Contact Us”.\n\nThank you for your support.</string>
 
     <!--이미지 선택-->
-    <string name="camera">사진 촬영하기</string>
-    <string name="gallery">앨범에서 사진 선택</string>
-    <string name="random_image">랜덤 이미지</string>
-    <string name="choose_image_source">프로필 변경</string>
+    <string name="camera">Take Photo</string>
+    <string name="gallery">Choose from Gallery</string>
+    <string name="random_image">Random Image</string>
+    <string name="choose_image_source">Change Profile</string>
 
     <!--signUp-->
-    <string name="sign_up_exist_email">이미 등록된 이메일입니다.</string>
-    <string name="sign_up_request_valid_email">유효한 이메일을 입력해주세요.</string>
-    <string name="sign_up_request_email">이메일 주소를 입력해주세요.</string>
-    <string name="sign_up_request_email_hint">이메일을 입력해주세요.</string>
-    <string name="sign_up_valid_email">이메일 인증하기</string>
-    <string name="sign_up_valid_email_text">이메일 인증을 위해 사용 가능한\n이메일을 입력해주세요</string>
-    <string name="sign_up_send_mail">메일 보내기</string>
-    <string name="sign_up_agree_of_terms">약관 동의</string>
-    <string name="sign_up_all_agree_of_terms">전체 동의</string>
-    <string name="sign_up_terms_text_1">서비스 이용 약관 (필수)</string>
-    <string name="sign_up_terms_text_2">개인정보 수집 및 이용 동의 (필수)</string>
-    <string name="sign_up_terms_text_3">마케팅 정보 수신 동의 (선택)</string>
-    <string name="sign_up_terms_text_4">만 14세 이상 확인 (필수)</string>
-    <string name="sign_up_next">다음으로</string>
-    <string name="sign_up_error_terms">필수 약관에 모두 동의해주세요.</string>
-    <string name="sign_up_input_code">인증 코드 입력</string>
-    <string name="sign_up_input_code_text">이메일로 전송된 코드를\n하단에 입력해주세요.</string>
-    <string name="sign_up_input_code_info_text">- 유효 시간이 지났을 경우 인증 메일을 다시 보내주세요.\n- 하루동안 5번까지 새로운 인증 코드를 받을 수 있습니다.\n- 5번 연속 코드 입력에 실패했다면 24시간 이후 시도해 주세요.</string>
-    <string name="sign_up_expired_code">유효 시간이 초과되었습니다. 다시 시도해주세요.</string>
-    <string name="sign_up_not_valid_code">코드가 올바르지 않습니다.</string>
-    <string name="sign_up_request_input_code">코드를 입력해주세요</string>
-    <string name="sign_up_input_sign_up_info">가입 정보 입력</string>
-    <string name="sign_up_complete_text">환영합니다\n%1$s님!</string>
-    <string name="sign_up_complete_text_detail">플로니와 함께 똑똑하고 편리한 가계부를\n작성해부세요.</string>
-    <string name="sign_up_start_floney">플로니 시작하기</string>
+    <string name="sign_up_exist_email">This email is already registered.</string>
+    <string name="sign_up_request_valid_email">Please enter a valid email.</string>
+    <string name="sign_up_request_email">Please enter your email address.</string>
+    <string name="sign_up_request_email_hint">Enter your email</string>
+    <string name="sign_up_valid_email">Verify Email</string>
+    <string name="sign_up_valid_email_text">Please enter an email\nthat can receive verification.</string>
+    <string name="sign_up_send_mail">Send Email</string>
+    <string name="sign_up_agree_of_terms">Agree To Terms</string>
+    <string name="sign_up_all_agree_of_terms">Agree To All</string>
+    <string name="sign_up_terms_text_1">Terms of Service (Required)</string>
+    <string name="sign_up_terms_text_2">Privacy Policy (Required)</string>
+    <string name="sign_up_terms_text_3">Marketing notifications (optional)</string>
+    <string name="sign_up_terms_text_4">I\'m at least 14 years old (Required)</string>
+    <string name="sign_up_next">Next</string>
+    <string name="sign_up_error_terms">Please agree to all required terms.</string>
+    <string name="sign_up_input_code">Enter Code</string>
+    <string name="sign_up_input_code_text">Enter the code\nsent to your email.</string>
+    <string name="sign_up_input_code_info_text">- If the code expired, please resend the email.\n- You can request up to 5 codes per day.\n- If you fail 5 times in a row, try again after 24 hours.</string>
+    <string name="sign_up_expired_code">Code has expired. Please try again.</string>
+    <string name="sign_up_not_valid_code">Invalid code.</string>
+    <string name="sign_up_request_input_code">Please enter the code</string>
+    <string name="sign_up_input_sign_up_info">Enter Your Info</string>
+    <string name="sign_up_complete_text">Welcome,\n%1$s!</string>
+    <string name="sign_up_complete_text_detail">Start a smart and simple\nshared ledger with Floney.</string>
+    <string name="sign_up_start_floney">Start with Floney</string>
 
     <!--bookAdd(4-1, 가계부 추가(최초)-->
-    <string name="book_add_invite_check_code_title">초대받은 가계부\n코드가 있나요?</string>
-    <string name="book_add_invite_check_code_info">친구에게 받은 코드를 입력하거나\n코드가 없다면 가계부를 새로 만들 수 있어요.</string>
-    <string name="book_add_invite_check_code_input_hint">코드를 입력하세요.</string>
-    <string name="book_add_invite_check_code_complete_button_text">입력 완료하기</string>
-    <string name="book_add_invite_check_code_new_book_add_button_text">새 가계부 만들기</string>
-    <string name="book_add_invite_success_title">가계부에\n초대되었어요!</string>
-    <string name="book_add_invite_success_info">간편하고 쉬운 가계부, 플로니와 함께해요</string>
-    <string name="book_add_invite_success_button_text">작성하러 가기</string>
-    <string name="book_add_invite_check_request_empty_code">코드를 입력하세요.</string>
+    <string name="book_add_invite_check_code_title">Do you have\nan invite code?</string>
+    <string name="book_add_invite_check_code_info">Enter a code from a friend,\nor create a new ledger.</string>
+    <string name="book_add_invite_check_code_input_hint">Enter the code</string>
+    <string name="book_add_invite_check_code_complete_button_text">Submit</string>
+    <string name="book_add_invite_check_code_new_book_add_button_text">Create New Ledger</string>
+    <string name="book_add_invite_success_title">You\'ve been invited\nto a ledger!</string>
+    <string name="book_add_invite_success_info">Manage your ledger easily with Floney.</string>
+    <string name="book_add_invite_success_button_text">Start</string>
+    <string name="book_add_invite_check_request_empty_code">Please enter the code.</string>
 
-    <string name="book_add_new_book_name_title">가계부 생성하기</string>
-    <string name="book_add_new_book_name_info">언제든지 멤버를 추가할 수 있는\n플로니의 가계부를 만들어 보세요.</string>
-    <string name="book_add_new_book_name_input_hint">가계부 이름을 입력하세요.</string>
-    <string name="book_add_new_book_name_input_info">* 최대 10자까지 입력할 수 있어요.</string>
-    <string name="book_add_new_book_name_button_text">다음으로</string>
+    <string name="book_add_new_book_name_title">Create New Ledger</string>
+    <string name="book_add_new_book_name_info">Create a Floney ledger\nwhere you can add members anytime.</string>
+    <string name="book_add_new_book_name_input_hint">Enter a ledger name</string>
+    <string name="book_add_new_book_name_input_info">* Up to 10 characters.</string>
+    <string name="book_add_new_book_name_button_text">Next</string>
 
-    <string name="book_add_new_book_profile_title">가계부 프로필 설정하기</string>
-    <string name="book_add_new_book_profile_info">사진을 설정하여 나만의 가계부를\n만들어 보세요.</string>
-    <string name="book_add_new_book_profile_button_text">다음으로</string>
+    <string name="book_add_new_book_profile_title">Set Ledger Profile</string>
+    <string name="book_add_new_book_profile_info">Add a photo\nto personalize your ledger.</string>
+    <string name="book_add_new_book_profile_button_text">Next</string>
 
-    <string name="book_add_new_book_success_title">가계부가 생성되었어요!</string>
-    <string name="book_add_new_book_success_info">간편하고 쉬운 가계부, 플로니와 함께해요</string>
-    <string name="book_add_new_book_success_go_home_button_text">작성하러 가기</string>
-    <string name="book_add_new_book_success_invite_friend_button_text">친구 초대하기</string>
+    <string name="book_add_new_book_success_title">Your Ledger is ready!</string>
+    <string name="book_add_new_book_success_info">Manage your ledger easily with Floney.</string>
+    <string name="book_add_new_book_success_go_home_button_text">Start</string>
+    <string name="book_add_new_book_success_invite_friend_button_text">Invite Friends</string>
 
-    <string name="book_add_invite_friend_title">친구들을 초대해서\n함께 가계부를 적어보세요🍀</string>
-    <string name="book_add_invite_friend_code_text">초대 코드</string>
-    <string name="book_add_invite_friend_code_share_button_text">친구들을 초대해서\n함께 가계부를 적어보세요🍀</string>
-    <string name="book_add_invite_friend_exit_button_text">나중에 하기</string>
+    <string name="book_add_invite_friend_title">Invite friends to manage\nthe ledger together🍀</string>
+    <string name="book_add_invite_friend_code_text">Invite Code</string>
+    <string name="book_add_invite_friend_code_share_button_text">Invite friends to manage\n the ledger together🍀</string>
+    <string name="book_add_invite_friend_exit_button_text">Do it Later</string>
 
-    <string name="book_add_invite_dialog_title">친구들을 초대해서\n함께 가계부를 적어보세요🍀</string>
-    <string name="book_add_invite_dialog_info">초대 코드</string>
-    <string name="book_add_invite_dialog_share_button">공유하기</string>
-    <string name="book_add_invite_dialog_exit_button"><u>나중에 하기</u></string>
-    <string name="book_add_invite_dialog_copy_text">참여 코드 복사가 완료되었습니다.</string>
+    <string name="book_add_invite_dialog_title">Invite friends to\nshare your ledger together🍀</string>
+    <string name="book_add_invite_dialog_info">Invite Code</string>
+    <string name="book_add_invite_dialog_share_button">Share</string>
+    <string name="book_add_invite_dialog_exit_button"><u>Later</u></string>
+    <string name="book_add_invite_dialog_copy_text">Invite code copied.</string>
 
-    <string name="book_add_invite_select_dialog_title">가계부 추가</string>
-    <string name="book_add_invite_select_dialog_info">새로운 가계부를 추가할 방법을\n선택해 주세요.</string>
-    <string name="book_add_invite_select_dialog_create_select">가계부 생성하기</string>
-    <string name="book_add_invite_select_dialog_input_select">코드 입력하기</string>
-    <string name="book_add_invite_select_dialog_add_button">추가하기</string>
-    <string name="month_budget_format">%s 예산</string>
+    <string name="book_add_invite_select_dialog_title">Add Ledger</string>
+    <string name="book_add_invite_select_dialog_info">Choose how you want to add\na new ledger.</string>
+    <string name="book_add_invite_select_dialog_create_select">Create Ledger</string>
+    <string name="book_add_invite_select_dialog_input_select">Enter Code</string>
+    <string name="book_add_invite_select_dialog_add_button">Add</string>
+    <string name="month_budget_format">%s</string>
 
     <!--5-2 가계부 초대받기(팀원)-->
-    <string name="book_entrance_title">초대받은 가계부에\n입장하기</string>
-    <string name="book_entrance_code">초대 코드</string>
-    <string name="book_entrance_button">입장하기</string>
-    <string name="book_entrance_code_button"><u>코드 입력하기</u></string>
+    <string name="book_entrance_title">Join\nInvited Ledger</string>
+    <string name="book_entrance_code">Invite Code</string>
+    <string name="book_entrance_button">Join</string>
+    <string name="book_entrance_code_button"><u>Enter Code</u></string>
 
-    <string name="book_entrance_over_alert">사용할 수 있는 가계부 개수를 초과했습니다.</string>
+    <string name="book_entrance_over_alert">You have exceeded the maximum number of ledgers.</string>
 
     <!--5-3 가계부 초대받기(공통)-->
-    <string name="my_page_book_add_invite_check_code_title">가계부 코드 입력</string>
-    <string name="my_page_book_add_invite_check_code_info">가계부에 입장하기 위해\n초대 받은 가계부의 코드를 입력하세요.</string>
-    <string name="my_page_book_add_invite_check_code_input_hint">코드를 입력하세요.</string>
-    <string name="my_page_book_add_invite_check_code_complete_button_text">추가하기</string>
+    <string name="my_page_book_add_invite_check_code_title">Enter Code</string>
+    <string name="my_page_book_add_invite_check_code_info">Enter the invite code\nto join the ledger.</string>
+    <string name="my_page_book_add_invite_check_code_input_hint">Enter the code</string>
+    <string name="my_page_book_add_invite_check_code_complete_button_text">Add</string>
 
     <string-array name="custom_weekdays">
-        <item>월</item>
-        <item>화</item>
-        <item>수</item>
-        <item>목</item>
-        <item>금</item>
-        <item>토</item>
-        <item>일</item>
+        <item>Mon</item>
+        <item>Tue</item>
+        <item>Wed</item>
+        <item>Thu</item>
+        <item>Fri</item>
+        <item>Sat</item>
+        <item>Sun</item>
     </string-array>
 
     <!-- 6. 홈 화면-->
-    <string name="home_dialog_title">접근 권한이 없어요</string>
-    <string name="home_dialog_info">해당 가계부의 멤버가 아닙니다.\n소속된 가계부를 다시 확인해 주세요.</string>
-    <string name="home_dialog_right_button">확인</string>
+    <string name="home_dialog_title">No Access</string>
+    <string name="home_dialog_info">You are not a member of this ledger.\nPlease check your ledgers again.</string>
+    <string name="home_dialog_right_button">OK</string>
 
-    <!-- 초대 코드 -->
-    <string name="invite_code_copy_title">초대 코드 복사</string>
-    <string name="invite_code_copy_message">초대 코드가 복사되었습니다.</string>
+    <!-- Invite Code -->
+    <string name="invite_code_copy_title">Invite Code Copied</string>
+    <string name="invite_code_copy_message">The invite code has been copied.</string>
 
-    <!-- 다이얼로그 메시지 -->
-    <string name="dialog_reset_ledger_entries_title">가계부 내역 초기화</string>
-    <string name="dialog_reset_ledger_entries_info">모든 내역이 삭제됩니다.\n지금 초기화하시겠습니까?</string>
-    <string name="dialog_profile_updated">프로필이 업데이트되었습니다</string>
-    <string name="dialog_switch_default_profile">기본 프로필로 전환하시겠습니까?</string>
-    <string name="dialog_use_favorite_title">즐겨찾기 사용</string>
-    <string name="dialog_use_favorite_info">저장된 내역을 불러옵니다.</string>
-    <string name="dialog_leave_ledger_title">가계부 나가기</string>
-    <string name="dialog_leave_ledger_info">나가면 모든 내역이 삭제됩니다.\n지금 나가시겠습니까?</string>
-    <string name="dialog_delete_favorite_title">즐겨찾기 삭제</string>
-    <string name="dialog_delete_favorite_info">이 작업은 되돌릴 수 없습니다.</string>
-    <string name="dialog_change_profile_title">프로필 변경</string>
-    <string name="dialog_change_profile_info">기본 프로필로 초기화하시겠습니까?\n이 작업은 되돌릴 수 없습니다.</string>
-    <string name="dialog_delete_photo_single_title">사진 삭제</string>
-    <string name="dialog_delete_photo_single_info">삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.</string>
-    <string name="dialog_delete_photos_multiple_title">사진 삭제</string>
-    <string name="dialog_delete_photos_multiple_info">삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.</string>
-    <string name="dialog_subscription_cancellation_title">구독 취소</string>
-    <string name="dialog_subscription_cancellation_info">정말로 취소하시겠습니까?</string>
-    <string name="dialog_logout_title">로그아웃</string>
-    <string name="dialog_logout_info">로그아웃하시겠습니까?</string>
-    <string name="dialog_wait">잠깐!</string>
-    <string name="dialog_not_saved">수정한 내용이 저장되지 않았습니다.\n그대로 나가시겠습니까?</string>
-    <string name="dialog_delete_title">삭제하기</string>
-    <string name="dialog_delete_confirm_message">삭제하시겠습니까?</string>
-    <string name="dialog_account_exists_title">계정이 이미 존재합니다</string>
-    <string name="dialog_account_exists_info">%1$s\n[Apple] 해당 이메일로 로그인 하세요.\n재가입을 원한다면 \n[마이페이지] > [구독 정보 보기]로 이동하세요.</string>
-    <string name="dialog_subscription_cancelled">구독이 취소되었습니다</string>
-    <string name="dialog_check_ledgers">가계부 확인하기</string>
-    <string name="dialog_owner_subscription_title">방장의 구독이 필요해요</string>
-    <string name="dialog_owner_subscription_info">방장이 구독하면 모든 멤버가\n프리미엄 기능을 제한 없이 사용할 수 있어요.</string>
-    <string name="dialog_exceeded_ledgers_info">가입 가능한 가계부 수를 초과했습니다.\n마이페이지에서 가계부를 확인해주세요.</string>
-    <string name="dialog_view_plan">플랜 보기</string>
-    <string name="dialog_no_access_title">접근 권한이 없어요</string>
-    <string name="dialog_no_access_info">해당 가계부의 멤버가 아닙니다.\n다시 확인해주세요.</string>
-    <string name="dialog_delete_ledger_title">계속하기 전에 읽어주세요</string>
-    <string name="dialog_delete_ledger_info">가계부 팀을 삭제하시겠습니까? 모든 내역이 삭제되며 복구할 수 없습니다.\n-가계부 방장인 경우 소유권이 자동으로 이전됩니다.\n-멤버인 경우 즉시 제거됩니다.\n-모든 가계부, 데이터, 개인정보가 영구 삭제됩니다.\n\n계속하시겠습니까?</string>
-    <string name="dialog_delete_ledger_btn">나가기</string>
-    <string name="dialog_reset_ledger_title">가계부가 초기화됩니다</string>
-    <string name="dialog_reset_ledger_info">화폐를 %1$s(으)로 변경하시겠습니까?\n변경하면 가계부가 초기화됩니다.</string>
-    <string name="dialog_reset_btn">초기화</string>
-    <string name="dialog_subscription_active_title">구독 중입니다</string>
-    <string name="dialog_subscription_active_info">구독이 활성화된 상태에서는 계정을 삭제할 수 없습니다.\n마이페이지에서 구독 정보를 확인해주세요.</string>
-    <string name="dialog_delete_category_title">카테고리 삭제</string>
-    <string name="dialog_delete_category_info">"%1$s"을(를) 삭제하시겠습니까?\n이 카테고리를 사용하는 모든 내역이 삭제됩니다.</string>
-    <string name="dialog_delete_recurring_title">반복 내역 삭제</string>
-    <string name="dialog_delete_recurring_info">이 반복 내역을 삭제하시겠습니까?\n이 시리즈의 모든 내역이 삭제됩니다.</string>
-    <string name="dialog_app_shutdown_title">앱 중단 알림</string>
-    <string name="dialog_app_shutdown_info">원활한 앱 사용을 위해 \n업데이트가 필요합니다.</string>
-    <string name="dialog_update_title">업데이트 알림</string>
-    <string name="dialog_update_info">더 나은 서비스를 위해 플로니가 수정되었어요!\n업데이트 해주시겠어요?</string>
+    <!-- Dialog Messages -->
+    <string name="dialog_reset_ledger_entries_title">Reset Ledger Entries</string>
+    <string name="dialog_reset_ledger_entries_info">All entries will be deleted.\nReset now?</string>
+    <string name="dialog_profile_updated">Profile Updated</string>
+    <string name="dialog_switch_default_profile">Switch to the default profile?</string>
+    <string name="dialog_use_favorite_title">Use Favorite?</string>
+    <string name="dialog_use_favorite_info">Load this saved entry.</string>
+    <string name="dialog_leave_ledger_title">Leave Ledger</string>
+    <string name="dialog_leave_ledger_info">All your entries will be deleted\nwhen you leave. Leave now?</string>
+    <string name="dialog_delete_favorite_title">Delete Favorite?</string>
+    <string name="dialog_delete_favorite_info">This action can\'t be undone.</string>
+    <string name="dialog_change_profile_title">Change Profile</string>
+    <string name="dialog_change_profile_info">Reset to default profile?\nThis action can\'t be undone.</string>
+    <string name="dialog_delete_photo_single_title">Delete Photo?</string>
+    <string name="dialog_delete_photo_single_info">Delete this?\nThis action can\'t be undone.</string>
+    <string name="dialog_delete_photos_multiple_title">Delete Photos?</string>
+    <string name="dialog_delete_photos_multiple_info">Delete these?\nThis action can\'t be undone.</string>
+    <string name="dialog_subscription_cancellation_title">Subscription Cancellation</string>
+    <string name="dialog_subscription_cancellation_info">Are you sure you want to cancel?</string>
+    <string name="dialog_logout_title">Logout</string>
+    <string name="dialog_logout_info">Are you sure you want to log out?</string>
+    <string name="dialog_wait">Wait!</string>
+    <string name="dialog_not_saved">Your changes have not been saved.\nDo you want to leave anyway?</string>
+    <string name="dialog_delete_title">Delete</string>
+    <string name="dialog_delete_confirm_message">Do you want to delete?</string>
+    <string name="dialog_account_exists_title">This account already exists</string>
+    <string name="dialog_account_exists_info">%1$s\n[Apple] Please log in with that email.\nIf you want to restart, go to\n[My Page] > [View Subscription Details].</string>
+    <string name="dialog_subscription_cancelled">Subscription canceled</string>
+    <string name="dialog_check_ledgers">Check your active ledgers</string>
+    <string name="dialog_owner_subscription_title">Owner subscription required</string>
+    <string name="dialog_owner_subscription_info">When the owner subscribes, everyone can use\nall premium features without limits.</string>
+    <string name="dialog_exceeded_ledgers_info">You\'ve exceeded the number of ledgers you can join.\nCheck your ledgers in My Page.</string>
+    <string name="dialog_view_plan">View Plan</string>
+    <string name="dialog_no_access_title">No access</string>
+    <string name="dialog_no_access_info">You\'re not a member of this ledger.\nPlease check again.</string>
+    <string name="dialog_delete_ledger_title">Please read before continuing</string>
+    <string name="dialog_delete_ledger_info">Delete the ledger team? All entries will be deleted and cannot be restored.\n-If you\'re the ledger owner, ownership will be transferred automatically.\n-If you\'re a member, you\'ll be removed immediately.\n-All ledgers, data, and personal info will be permanently deleted.\n\nStill want to continue?</string>
+    <string name="dialog_delete_ledger_btn">Delete ledger</string>
+    <string name="dialog_reset_ledger_title">The ledger will be reset</string>
+    <string name="dialog_reset_ledger_info">Change the currency to %1$s?\nChanging this will reset the ledger.</string>
+    <string name="dialog_reset_btn">Reset</string>
+    <string name="dialog_subscription_active_title">You\'re subscribed</string>
+    <string name="dialog_subscription_active_info">You can\'t delete your account while your subscription is active.\nCheck your subscription details in My Page.</string>
+    <string name="dialog_delete_category_title">Delete category</string>
+    <string name="dialog_delete_category_info">Delete "%1$s"?\nAll entries using this category will be deleted.</string>
+    <string name="dialog_delete_recurring_title">Delete recurring entry</string>
+    <string name="dialog_delete_recurring_info">Delete this recurring entry?\nAll entries in this series will be deleted.</string>
+    <string name="dialog_app_shutdown_title">App shutdown notice</string>
+    <string name="dialog_app_shutdown_info">An update is required for smooth app usage.</string>
+    <string name="dialog_update_title">Update notice</string>
+    <string name="dialog_update_info">Floney has been improved for better service!\nWould you like to update?</string>
 
-    <!-- 토스트 메시지 -->
-    <string name="toast_google_login_failed">구글 로그인에 실패하였습니다.</string>
-    <string name="toast_google_login_cancelled">구글 로그인을 취소하였습니다.</string>
-    <string name="toast_kakao_login_failed">카카오 로그인에 실패하였습니다.</string>
-    <string name="toast_unknown_error">알 수 없는 오류가 발생했습니다.</string>
-    <string name="toast_select_period">기간을 설정해주세요.</string>
-    <string name="toast_check_email_password">이메일 또는 비밀번호를 다시 확인하세요.</string>
-    <string name="toast_no_user_info">가입된 정보가 없습니다.</string>
-    <string name="toast_history_deleted">내역 삭제가 완료되었습니다.</string>
-    <string name="toast_no_matching_member">일치하는 회원이 없습니다.</string>
-    <string name="toast_payment_connection_failed">결제 연결에 실패했습니다. 다시 시도해주세요.</string>
-    <string name="toast_profile_change_failed">프로필 변경을 실패하였습니다.</string>
-    <string name="toast_profile_change_failed2">프로필 변경이 실패하였습니다.</string>
-    <string name="toast_image_creation_failed">이미지 파일 생성에 실패하였습니다.</string>
-    <string name="toast_image_setting_failed">이미지 파일 설정에 실패하였습니다.</string>
-    <string name="toast_select_settlement_items">정산할 내역을 선택해주세요.</string>
-    <string name="toast_enter_name">이름을 입력하세요.</string>
-    <string name="toast_max_photos">사진은 최대 4장까지 추가할 수 있어요.</string>
-    <string name="toast_photo_deleted">사진 삭제가 완료되었습니다.</string>
-    <string name="toast_save_completed">저장이 완료되었습니다.</string>
-    <string name="toast_currency_changed">화폐 단위가 변경 완료되었습니다.</string>
-    <string name="toast_change_successed">변경이 완료되었습니다.</string>
-
+    <!-- Toast Messages -->
+    <string name="toast_google_login_failed">Google login failed.</string>
+    <string name="toast_google_login_cancelled">Google login cancelled.</string>
+    <string name="toast_kakao_login_failed">Kakao login failed.</string>
+    <string name="toast_unknown_error">An unknown error occurred.</string>
+    <string name="toast_select_period">Please select a period.</string>
+    <string name="toast_check_email_password">Please check your email or password again.</string>
+    <string name="toast_no_user_info">No registered information found.</string>
+    <string name="toast_history_deleted">Entry deletion completed.</string>
+    <string name="toast_no_matching_member">No matching member found.</string>
+    <string name="toast_payment_connection_failed">Payment connection failed. Please try again.</string>
+    <string name="toast_profile_change_failed">Profile change failed.</string>
+    <string name="toast_profile_change_failed2">Profile change failed.</string>
+    <string name="toast_image_creation_failed">Image file creation failed.</string>
+    <string name="toast_image_setting_failed">Image file setup failed.</string>
+    <string name="toast_select_settlement_items">Please select items to settle.</string>
+    <string name="toast_enter_name">Please enter a name.</string>
+    <string name="toast_max_photos">You can add up to 4 photos.</string>
+    <string name="toast_photo_deleted">Photo deletion completed.</string>
+    <string name="toast_save_completed">Entry Saved.</string>
+    <string name="toast_currency_changed">Currency has been updated.</string>
+    <string name="toast_change_successed">Successfully updated.</string>
+    <string name="toast_book_reset">Ledger has been reset.</string>
 
     <!--7-1 가계부설정 -->
-    <string name="book_setting_title">가계부 설정</string>
-    <string name="book_setting_user">사용자</string>
-    <string name="book_setting_calendar">캘린더</string>
-    <string name="book_setting_carryInfo">이월 설정</string>
-    <string name="book_setting_carryInfo_yes">이월 있음</string>
-    <string name="book_setting_carryInfo_no">이월 없음</string>
-    <string name="book_setting_repeat">반복 내역 설정</string>
-    <string name="book_setting_favorite">즐겨찾기 내역 설정</string>
-    <string name="book_setting_init"><u>가계부 초기화하기</u></string>
-    <string name="book_setting_exit"><u>가계부 나가기</u></string>
-    <string name="book_setting_asset_title">예산·자산</string>
-    <string name="book_setting_asset">예산 설정</string>
-    <string name="book_setting_start_money">초기 자산 설정</string>
-    <string name="book_setting_category">분류항목 관리</string>
-    <string name="book_setting_money">화폐 설정</string>
-    <string name="book_setting_excel">엑셀 내보내기</string>
-    <string name="book_setting_invite_friend">친구 초대하기</string>
-    <string name="book_member_count">%1$d/%2$d명</string>
+    <string name="book_setting_title">Ledger Settings</string>
+    <string name="book_setting_user">Members</string>
+    <string name="book_setting_calendar">Calendar</string>
+    <string name="book_setting_carryInfo">Carryover Settings</string>
+    <string name="book_setting_carryInfo_yes">Carryover</string>
+    <string name="book_setting_carryInfo_no">No Carryover</string>
+    <string name="book_setting_repeat">Recurring Entries</string>
+    <string name="book_setting_favorite">Favorites</string>
+    <string name="book_setting_init"><u>Reset Ledger</u></string>
+    <string name="book_setting_exit"><u>Leave Ledger</u></string>
+    <string name="book_setting_asset_title">Budget &amp; Assets</string>
+    <string name="book_setting_asset">Budget Settings</string>
+    <string name="book_setting_start_money">Initial Assets</string>
+    <string name="book_setting_category">Category Management</string>
+    <string name="book_setting_money">Currency Settings</string>
+    <string name="book_setting_excel">Export to Excel</string>
+    <string name="book_setting_invite_friend">Invite Friends</string>
+    <string name="book_member_count">%1$d/%2$d Members</string>
 
-    <string name="book_setting_edit_title">가계부 편집</string>
-    <string name="book_setting_edit_name">가계부 이름</string>
-    <string name="book_setting_edit_hint">이름을 입력하세요.</string>
-    <string name="book_setting_edit_edit_button">변경하기</string>
-    <string name="book_setting_edit_edit_profile_change">프로필 이미지 변경</string>
-    <string name="book_setting_edit_edit_see_profile">내역 프로필 보기</string>
-    <string name="book_setting_edit_edit_delete"><u>가계부 삭제</u></string>
-    <string name="book_setting_edit_request">가계부 이름을 입력해주세요.</string>
+    <string name="book_setting_edit_title">Edit Ledger</string>
+    <string name="book_setting_edit_name">Ledger Name</string>
+    <string name="book_setting_edit_hint">Enter a name</string>
+    <string name="book_setting_edit_edit_button">Save</string>
+    <string name="book_setting_edit_edit_profile_change">Change Profile Image</string>
+    <string name="book_setting_edit_edit_see_profile">View Entry Profile</string>
+    <string name="book_setting_edit_edit_delete"><u>Delete Ledger</u></string>
+    <string name="book_setting_edit_request">Please enter a ledger name.</string>
 
-    <string name="book_setting_currency_title">화폐 설정</string>
-    <string name="book_setting_currency_info">찾으시는 화폐 단위가 없나요?\n원하시는 화폐를 플로니에게 알려주세요.</string>
+    <string name="book_setting_currency_title">Currency Settings</string>
+    <string name="book_setting_currency_info">Can\'t find your currency?\nTell Floney about your preferred currency.</string>
 
-    <string name="book_setting_currency_dialog_title">가계부가 초기화됩니다</string>
-    <string name="book_setting_currency_dialog_info">화폐 단위를 %1$s으로 변경하시겠습니까?\n변경 시, 가계부가 초기화됩니다.</string>
-    <string name="book_setting_currency_dialog_left_button">초기화하기</string>
-    <string name="book_setting_currency_dialog_right_button">취소하기</string>
-    <string name="book_setting_currency_alert_dialog_title">가계부 내역 초기화</string>
-    <string name="book_setting_currency_alert_dialog_info">가계부 내역 초기화 시 모든 내역이 삭제됩니다.\n초기화 하시겠습니까?</string>
+    <string name="book_setting_currency_dialog_title">The ledger will be reset</string>
+    <string name="book_setting_currency_dialog_info">Change the currency to %1$s?\nChanging this will reset the ledger.</string>
+    <string name="book_setting_currency_dialog_left_button">Reset</string>
+    <string name="book_setting_currency_dialog_right_button">Cancel</string>
+    <string name="book_setting_currency_alert_dialog_title">Reset Ledger Entries</string>
+    <string name="book_setting_currency_alert_dialog_info">All entries will be deleted when resetting.\nDo you want to proceed?</string>
 
 
-    <string name="book_setting_exit_dialog_title">가계부 삭제</string>
-    <string name="book_setting_exit_dialog_info">%1$s의 가계부를 정말 삭제하시겠습니까?\n작성된 내역은 모두 삭제되며 복구할 수 없습니다.</string>
-    <string name="book_setting_exit_dialog_delete_button">삭제하기</string>
-    <string name="book_setting_exit_dialog_cancel_button">취소하기</string>
-    <string name="book_setting_exit_dialog_cancel_error">모든 사용자가 나가야 가계부 삭제가 가능합니다.</string>
+    <string name="book_setting_exit_dialog_title">Delete Ledger</string>
+    <string name="book_setting_exit_dialog_info">Delete %1$s\'s ledger?\nAll entries will be deleted and cannot be recovered.</string>
+    <string name="book_setting_exit_dialog_delete_button">Delete</string>
+    <string name="book_setting_exit_dialog_cancel_button">Cancel</string>
+    <string name="book_setting_exit_dialog_cancel_error">All members must leave before deleting the ledger.</string>
 
-    <string name="book_setting_exit_alert_dialog_title">가계부 나가기</string>
-    <string name="book_setting_exit_alert_dialog_info">가계부를 나갈 시 모든 내역이 삭제됩니다.\n삭제하시겠습니까?</string>
+    <string name="book_setting_exit_alert_dialog_title">Leave Ledger</string>
+    <string name="book_setting_exit_alert_dialog_info">All your entries will be deleted when you leave.\nDo you want to proceed?</string>
 
-    <string name="book_setting_bottom_asset_title">초기 자산 설정</string>
-    <string name="book_setting_bottom_asset_info">현재 모아놓은 자산을 입력해 주세요.\n플로니가 앞으로의 자산 흐름을 보여드릴게요.</string>
-    <string name="book_setting_bottom_asset_hint">초기 자산을 입력하세요.</string>
-    <string name="book_setting_bottom_asset_error">숫자를 입력해주세요.</string>
-    <string name="book_setting_bottom_asset_succcess">초기 자산 설정이 완료되었습니다.</string>
-    <string name="book_setting_bottom_asset_save">저장하기</string>
-    <string name="book_setting_bottom_asset_init"><u>초기화하기</u></string>
+    <string name="book_setting_bottom_asset_title">Initial Assets</string>
+    <string name="book_setting_bottom_asset_info">Enter your current assets,\nand Floney will show your future flow.</string>
+    <string name="book_setting_bottom_asset_hint">Enter your inital assets</string>
+    <string name="book_setting_bottom_asset_error">Please enter a number.</string>
+    <string name="book_setting_bottom_asset_succcess">Initial assets setting is complete.</string>
+    <string name="book_setting_bottom_asset_save">Save</string>
+    <string name="book_setting_bottom_asset_init"><u>Reset</u></string>
 
-    <string name="book_setting_bottom_carryinfo_title">이월 설정</string>
-    <string name="book_setting_bottom_carryinfo_total_income">지난달 총수입</string>
-    <string name="book_setting_bottom_carryinfo_total_outcome">지난달 총지출</string>
-    <string name="book_setting_bottom_carryinfo_next_start_money">다음달 시작금액</string>
-    <string name="book_setting_bottom_carryinfo_info">이월 설정은 지난 달에 기록된 수입에서 지출을 차감한 금액을\n다음 달로 넘기는 기능입니다.\n\n남은 금액이 마이너스인 경우 지출로 기록되며\n플러스인 경우는 수입으로 기록 됩니다.</string>
+    <string name="book_setting_bottom_carryinfo_title">Carryover Settings</string>
+    <string name="book_setting_bottom_carryinfo_total_income">Last Month\nIncome</string>
+    <string name="book_setting_bottom_carryinfo_total_outcome">Last Month\nExpense</string>
+    <string name="book_setting_bottom_carryinfo_next_start_money">Next Month\nStart Amount</string>
+    <string name="book_setting_bottom_carryinfo_info">Carryover moves last month’s balance\n(income minus expenses) to the next month.\n\nA negative amount becomes an expense.\nA positive amount becomes income.</string>
     <string name="book_setting_bottom_carryinfo_on">ON</string>
     <string name="book_setting_bottom_carryinfo_off">OFF</string>
 
-    <string name="book_setting_budget_title">예산 설정</string>
-    <string name="book_setting_budget_hint">예산을 입력하세요.</string>
-    <string name="book_setting_budget_error">숫자를 입력해주세요.</string>
+    <string name="book_setting_budget_title">Budget Settings</string>
+    <string name="book_setting_budget_hint">Enter your budget</string>
+    <string name="book_setting_budget_error">Please enter a number.</string>
 
-    <string name="book_setting_category_title">분류 항목 관리</string>
-    <string name="book_setting_category_info">가계부를 적을 때 선택하는 항목들을\n추가, 삭제 할 수 있어요</string>
-    <string name="book_setting_category_dialog_title">분류항목 삭제</string>
-    <string name="book_setting_category_dialog_info">%s 항목을 삭제하시겠습니까?\n해당 항목으로 작성된 모든 내역이 삭제됩니다.</string>
-    <string name="book_setting_category_dialog_left_button">삭제하기</string>
-    <string name="book_setting_category_dialog_right_button">취소하기</string>
+    <string name="book_setting_category_title">Category\nManagement</string>
+    <string name="book_setting_category_info">Add or remove categories used\nwhen recording entries.</string>
+    <string name="book_setting_category_dialog_title">Delete Category</string>
+    <string name="book_setting_category_dialog_info">Delete \'%1$s\' category?\nAll entries with this category will be deleted.</string>
+    <string name="book_setting_category_dialog_left_button">Delete</string>
+    <string name="book_setting_category_dialog_right_button">Cancel</string>
 
     <!-- Category Add -->
-    <string name="book_setting_category_add_title">항목 추가</string>
-    <string name="book_setting_category_add_category">카테고리</string>
-    <string name="book_setting_category_add_assets">자산</string>
-    <string name="book_setting_category_add_expense">지출</string>
-    <string name="book_setting_category_add_income">수입</string>
-    <string name="book_setting_category_add_transfer">이체</string>
-    <string name="book_setting_category_add_name">카테고리 이름</string>
-    <string name="book_setting_category_add_hint">이름을 입력하세요.</string>
-    <string name="book_setting_category_add_limit">* 최대 6자까지 쓸 수 있어요.</string>
-    <string name="book_setting_category_add_button">추가하기</string>
+    <string name="book_setting_category_add_title">Add Category</string>
+    <string name="book_setting_category_add_category">Category</string>
+    <string name="book_setting_category_add_assets">Assets</string>
+    <string name="book_setting_category_add_expense">Expense</string>
+    <string name="book_setting_category_add_income">Income</string>
+    <string name="book_setting_category_add_transfer">Transfer</string>
+    <string name="book_setting_category_add_name">Category Name</string>
+    <string name="book_setting_category_add_hint">Enter a name</string>
+    <string name="book_setting_category_add_limit">* Up to 6 characters.</string>
+    <string name="book_setting_category_add_button">Add</string>
 
-    <string name="book_setting_category_repeat_title">반복 내역 삭제</string>
-    <string name="book_setting_category_repeat_info">반복 내역을 삭제하시겠습니까?\n해당 반복의 모든 내역이 삭제됩니다.</string>
-    <string name="book_setting_category_repeat_left_button">삭제하기</string>
-    <string name="book_setting_category_repeat_right_button">취소하기</string>
+    <string name="book_setting_category_repeat_title">Delete Recurring Entry</string>
+    <string name="book_setting_category_repeat_info">Delete this recurring entry?\nAll entries with this recurrence will be deleted.</string>
+    <string name="book_setting_category_repeat_left_button">Delete</string>
+    <string name="book_setting_category_repeat_right_button">Cancel</string>
 
     <!-- History Entry -->
-    <string name="history_amount">금액</string>
-    <string name="history_amount_hint">금액을 입력하세요</string>
-    <string name="history_expense">지출</string>
-    <string name="history_income">수입</string>
-    <string name="history_transfer">이체</string>
-    <string name="history_date">날짜</string>
-    <string name="history_date_hint">날짜를 선택하세요</string>
-    <string name="history_asset">자산</string>
-    <string name="history_asset_hint">자산을 선택하세요</string>
-    <string name="history_category">분류</string>
-    <string name="history_category_hint">분류를 선택하세요</string>
-    <string name="history_description">내용</string>
-    <string name="history_description_hint">내용을 입력하세요</string>
-    <string name="history_exclude_budget">예산에서 제외</string>
-    <string name="history_exclude_asset">자산에서 제외</string>
-    <string name="history_memo">메모</string>
-    <string name="history_picture">사진</string>
-    <string name="history_save">저장하기</string>
-    <string name="history_delete">삭제하기</string>
-    <string name="history_created_by">작성자</string>
-    <string name="author_label">작성자 : </string>
-    <string name="history_favorite">즐겨찾기</string>
-    <string name="history_repeat">반복</string>
-    <string name="history_repeat_none">없음</string>
+    <string name="history_amount">Amount</string>
+    <string name="history_amount_hint">Enter amount</string>
+    <string name="history_expense">Expense</string>
+    <string name="history_income">Income</string>
+    <string name="history_transfer">Transfer</string>
+    <string name="history_date">Date</string>
+    <string name="history_date_hint">Select date</string>
+    <string name="history_asset">Asset</string>
+    <string name="history_asset_hint">Select an asset</string>
+    <string name="history_category">Category</string>
+    <string name="history_category_hint">Select a category</string>
+    <string name="history_description">Description</string>
+    <string name="history_description_hint">Enter a description</string>
+    <string name="history_exclude_budget">Exclude from budget</string>
+    <string name="history_exclude_asset">Exclude from assets</string>
+    <string name="history_memo">Memo</string>
+    <string name="history_picture">Photo</string>
+    <string name="history_save">Save</string>
+    <string name="history_delete">Delete</string>
+    <string name="history_created_by">Created By</string>
+    <string name="author_label">Created By </string>
+    <string name="history_favorite">Favorite</string>
+    <string name="history_repeat">Repeat</string>
+    <string name="history_repeat_none">None</string>
 
     <!-- History Dialogs -->
-    <string name="history_memo_complete">메모 작성을 완료하였습니다.</string>
-    <string name="history_delete_repeat_title">이 내역을 삭제하시겠습니까?\n반복되는 내역입니다.</string>
-    <string name="history_delete_this_only">이 내역만 삭제</string>
-    <string name="history_delete_all_after">이후 모든 내역 삭제</string>
-    <string name="history_unsaved_changes_title">잠깐!</string>
-    <string name="history_unsaved_changes_message">수정한 내용이 저장되지 않았습니다.\n그대로 나가시겠습니까?</string>
-    <string name="history_add_favorite_title">즐겨찾기에 추가하시겠습니까?</string>
-    <string name="history_add_favorite_button">즐겨찾기에 추가</string>
-    <string name="history_view_favorites_button">즐겨찾기 내역 보기</string>
+    <string name="history_memo_complete">Memo has been saved.</string>
+    <string name="history_delete_repeat_title">Delete this entry?\nIt’s a duplicate.</string>
+    <string name="history_delete_this_only">Delete this only</string>
+    <string name="history_delete_all_after">Delete All Future Entries</string>
+    <string name="history_unsaved_changes_title">Wait!</string>
+    <string name="history_unsaved_changes_message">You have unsaved changes.\nAre you sure you want to leave?</string>
+    <string name="history_add_favorite_title">Add to favorites?</string>
+    <string name="history_add_favorite_button">Add to favorites</string>
+    <string name="history_view_favorites_button">View favorites</string>
 
     <!-- Bottom Sheet Categories -->
-    <string name="bottom_sheet_categories">분류</string>
-    <string name="bottom_sheet_assets">자산</string>
-    <string name="bottom_sheet_edit">편집</string>
-    <string name="bottom_sheet_ok">확인</string>
-    <string name="bottom_sheet_select">선택하기</string>
+    <string name="bottom_sheet_categories">Categories</string>
+    <string name="bottom_sheet_assets">Assets</string>
+    <string name="bottom_sheet_edit">Edit</string>
+    <string name="bottom_sheet_ok">OK</string>
+    <string name="bottom_sheet_select">Select</string>
 
     <!-- Category Items - Asset -->
-    <string name="category_cash">현금</string>
-    <string name="category_debit_card">체크카드</string>
-    <string name="category_credit_card">신용카드</string>
-    <string name="category_bank">은행</string>
+    <string name="category_cash">Cash</string>
+    <string name="category_debit_card">Debit Card</string>
+    <string name="category_credit_card">Credit Card</string>
+    <string name="category_bank">Bank</string>
 
     <!-- Category Items - Transfer -->
-    <string name="category_transfer">이체</string>
-    <string name="category_savings">저축</string>
-    <string name="category_investment">투자</string>
-    <string name="category_insurance">보험</string>
-    <string name="category_card_payment">카드대금</string>
-    <string name="category_loan">대출</string>
+    <string name="category_transfer">Transfer</string>
+    <string name="category_savings">Savings</string>
+    <string name="category_investment">Investment</string>
+    <string name="category_insurance">Insurance</string>
+    <string name="category_card_payment">Card Payment</string>
+    <string name="category_loan">Loan</string>
 
     <!-- Category Items - Expense -->
-    <string name="category_food">식비</string>
-    <string name="category_cafe_snacks">카페/간식</string>
-    <string name="category_transport">교통</string>
-    <string name="category_housing_phone">주거/통신</string>
-    <string name="category_health">건강</string>
-    <string name="category_culture">문화</string>
-    <string name="category_travel_stay">여행/숙박</string>
-    <string name="category_living">생활</string>
-    <string name="category_style_beauty">스타일/뷰티</string>
-    <string name="category_family">가족</string>
-    <string name="category_education">교육</string>
-    <string name="category_events">경조사/회비</string>
-    <string name="category_other">기타</string>
-    <string name="category_uncategorized">미분류</string>
+    <string name="category_food">Food</string>
+    <string name="category_cafe_snacks">Cafe/Snacks</string>
+    <string name="category_transport">Transport</string>
+    <string name="category_housing_phone">Housing/Phone</string>
+    <string name="category_health">Health</string>
+    <string name="category_culture">Culture</string>
+    <string name="category_travel_stay">Travel/Stay</string>
+    <string name="category_living">Living</string>
+    <string name="category_style_beauty">Style/Beauty</string>
+    <string name="category_family">Family</string>
+    <string name="category_education">Education</string>
+    <string name="category_events">Events</string>
+    <string name="category_other">Other</string>
+    <string name="category_uncategorized">Uncategorized</string>
 
     <!-- Category Items - Income -->
-    <string name="category_salary">월급</string>
-    <string name="category_extra_income">부수입</string>
-    <string name="category_allowance">용돈</string>
-    <string name="category_financial_income">금융소득</string>
-    <string name="category_business_income">사업소득</string>
-    <string name="category_bonus">상여금</string>
+    <string name="category_salary">Salary</string>
+    <string name="category_extra_income">Extra Income</string>
+    <string name="category_allowance">Allowance</string>
+    <string name="category_financial_income">Financial Income</string>
+    <string name="category_business_income">Business Income</string>
+    <string name="category_bonus">Bonus</string>
 
     <!-- Excel Export Date Range Options -->
-    <string name="excel_export_this_month">이번달</string>
-    <string name="excel_export_last_month">저번달</string>
-    <string name="excel_export_this_year">올해</string>
-    <string name="excel_export_last_year">작년</string>
-    <string name="excel_export_all">전체</string>
+    <string name="excel_export_this_month">This Month</string>
+    <string name="excel_export_last_month">Last Month</string>
+    <string name="excel_export_this_year">This Year</string>
+    <string name="excel_export_last_year">Last Year</string>
+    <string name="excel_export_all">All</string>
 
     <!--10-1 정산 -->
-    <string name="settle_up_start">정산</string>
-    <string name="settle_up_start_title">마지막 정산일로부터\n%1$s일 지났어요</string>
-    <string name="settle_up_start_info">복잡하고 어려운 정산, 저희가 대신 해드릴게요</string>
-    <string name="settle_up_start_button">정산하기</string>
-    <string name="settle_up_start_see_button"><u>정산 내역 보기</u></string>
+    <string name="settle_up_start">Settlements</string>
+    <string name="settle_up_start_title">It’s been %1$s days\nsince the last settlement</string>
+    <string name="settle_up_start_info">We’ll handle the complicated parts for you.</string>
+    <string name="settle_up_start_button">Settle Up</string>
+    <string name="settle_up_start_see_button"><u>View Settlements</u></string>
 
-    <string name="settle_up_member_select_title">정산에 참여할 멤버를\n선택해주세요</string>
-    <string name="settle_up_member_select_button">다음으로</string>
-    <string name="settle_up_member_select_error_messsage">멤버를 선택해주세요.</string>
+    <string name="settle_up_member_select_title">Select members\nto include</string>
+    <string name="settle_up_member_select_button">Next</string>
+    <string name="settle_up_member_select_error_messsage">Please select members.</string>
 
-    <string name="settle_up_period_select_title">정산할 기간을\n설정해주세요</string>
-    <string name="settle_up_period_select_hint">기간을 설정해주세요.</string>
-    <string name="settle_up_period_select_back_button">이전으로</string>
-    <string name="settle_up_period_select_next_button">다음으로</string>
+    <string name="settle_up_period_select_title">Choose\na settlement period</string>
+    <string name="settle_up_period_select_hint">Set a period</string>
+    <string name="settle_up_period_select_back_button">Back</string>
+    <string name="settle_up_period_select_next_button">Next</string>
     <string name="settle_up_period_select_text">%1$s-%1$s</string>
-    <string name="settle_up_period_select_select_button">선택</string>
+    <string name="settle_up_period_select_select_button">Select</string>
     <string name="settle_up_period_select_day_placeholder">%1$s</string>
-    <string name="settle_up_period_select_error_messsage">내역이 없습니다. 기간을 다시 설정해주세요.</string>
+    <string name="settle_up_period_select_error_messsage">No entries found. Please set a different period.</string>
 
-    <string name="settle_up_outcomes_select_title">정산할 내역을\n선택해주세요</string>
-    <string name="settle_up_outcomes_all_check">전체선택</string>
-    <string name="settle_up_outcomes_select_money_text">%1$s원</string>
-    <string name="settle_up_outcomes_select_back_button">이전으로</string>
-    <string name="settle_up_outcomes_select_next_button">정산하기</string>
+    <string name="settle_up_outcomes_select_title">Select entries\nto settle</string>
+    <string name="settle_up_outcomes_all_check">Select All</string>
+    <string name="settle_up_outcomes_select_money_text">%1$s</string>
+    <string name="settle_up_outcomes_select_back_button">Back</string>
+    <string name="settle_up_outcomes_select_next_button">Settle Up</string>
 
-    <string name="settle_up_complete_title">정산이\n완료되었어요!</string>
-    <string name="settle_up_complete_info">소수점은 반올림되어 계산됩니다.</string>
-    <string name="settle_up_complete_member_count">1인</string>
-    <string name="settle_up_complete_total_expense">총 지출</string>
-    <string name="settle_up_complete_total_expense_format">%1$s원</string>
-    <string name="settle_up_complete_settlement_money">정산 금액</string>
-    <string name="settle_up_complete_share_button">공유하기</string>
+    <string name="settle_up_complete_title">Settlement\ncomplete</string>
+    <string name="settle_up_complete_info">Amounts are rounded.</string>
+    <string name="settle_up_complete_member_count">p/p</string>
+    <string name="settle_up_complete_total_expense">Total Expenses</string>
+    <string name="settle_up_complete_total_expense_format">%1$s</string>
+    <string name="settle_up_complete_settlement_money">Total Amount</string>
+    <string name="settle_up_complete_share_button">Share</string>
 
     <!--10-2 정산 내역 -->
-    <string name="settle_up_see_title">정산 내역</string>
-    <string name="settle_up_see_card_period">기간</string>
-    <string name="settle_up_see_card_total_money">총 금액</string>
-    <string name="settle_up_see_card_member">인원</string>
-    <string name="settle_up_see_card_settlement_money">정산 금액</string>
-    <string name="settle_up_see_card_settlement_one_member">1인</string>
-    <string name="settle_up_see_card_not_settlement">정산 내역이 없습니다.</string>
+    <string name="settle_up_see_title">Settlement records</string>
+    <string name="settle_up_see_card_period">Period</string>
+    <string name="settle_up_see_card_total_money">Total Amount</string>
+    <string name="settle_up_see_card_member">Members</string>
+    <string name="settle_up_see_card_settlement_money">Settlement Amount</string>
+    <string name="settle_up_see_card_settlement_one_member">p/p</string>
+    <string name="settle_up_see_card_not_settlement">No settlement records.</string>
 
 
-    <string name="settle_up_detail_see_title">정산 영수증</string>
-    <string name="settle_up_detail_see_total_expense">총 지출</string>
-    <string name="settle_up_detail_see_settlement_money">정산 금액</string>
-    <string name="settle_up_detail_see_card_settlement_one_member">1인</string>
-    <string name="settle_up_detail_see_share_button">공유하기</string>
+    <string name="settle_up_detail_see_title">Settlement Details</string>
+    <string name="settle_up_detail_see_total_expense">Total Expenses</string>
+    <string name="settle_up_detail_see_settlement_money">Total Amount</string>
+    <string name="settle_up_detail_see_card_settlement_one_member">p/p</string>
+    <string name="settle_up_detail_see_share_button">Share</string>
 
     <!-- Settlement Additional Strings -->
-    <string name="settle_up_is_owed">%1$s님이 받을 금액</string>
-    <string name="settle_up_owes">%1$s님이 줄 금액</string>
+    <string name="settle_up_is_owed">is owed %1$s</string>
+    <string name="settle_up_owes">owes %1$s</string>
     <string name="settle_up_step_format">%1$d / %2$d</string>
-    <string name="settle_up_view_settlements">정산 내역 보기</string>
-    <string name="settle_up_settlements_title">정산</string>
-    <string name="settle_up_its_been_days">마지막 정산일로부터\n%1$s일 지났어요</string>
-    <string name="settle_up_handle_complicated">복잡하고 어려운 정산, 저희가 대신 해드릴게요</string>
+    <string name="settle_up_view_settlements">View Settlements</string>
+    <string name="settle_up_settlements_title">Settlements</string>
+    <string name="settle_up_its_been_days">It\'s been %1$s days\nsince the last settlement</string>
+    <string name="settle_up_handle_complicated">We\'ll handle the complicated parts for you.</string>
     <string name="title_activity_analyze">AnalyzeActivity</string>
 
     <!-- 알림 화면 -->
-    <string name="alarm_empty_text">알림 내역이 없습니다.</string>
+    <string name="alarm_empty_text">No notifications.</string>
 
     <!-- 임시 비밀번호 -->
-    <string name="temp_password_sent_title">임시 비밀번호가\n발송되었습니다.</string>
-    <string name="temp_password_sent_info">임시 비밀번호로 로그인 후\n새로운 비밀번호로 변경해 주세요.</string>
-    <string name="temp_password_login_again">다시 로그인하기</string>
+    <string name="temp_password_sent_title">A Temporary password\nhas been sent.</string>
+    <string name="temp_password_sent_info">Log in with the temporary password\nand set a new one.</string>
+    <string name="temp_password_login_again">Log In Again</string>
 
+    <!-- 공통 다이얼로그 -->
+    <string name="dialog_no_2">No</string>
 
     <!-- 단위 -->
-    <string name="currency_won">원</string>
+    <string name="currency_won">KRW</string>
 
     <!-- 사진 상세 -->
-    <string name="picture_detail_title">사진 상세</string>
-    <string name="picture_delete">삭제</string>
+    <string name="picture_detail_title">Photo Details</string>
+    <string name="picture_delete">Delete</string>
 
     <!-- 반복 설정 -->
-    <string name="repeat_history_title">반복 설정</string>
-    <string name="repeat_history">반복 내역</string>
-    <string name="repeat_info">반복 기능을 통해\n편하게 기록해 보세요</string>
+    <string name="repeat_history_title">Repeat Settings</string>
+    <string name="repeat_history">Recurring Entries</string>
+    <string name="repeat_info">Record easily with\nthe repeat feature</string>
 
     <!-- 사용자 -->
-    <string name="user_text">사용자</string>
+    <string name="user_text">User</string>
 
     <!-- 서비스 화면 -->
-    <string name="service_terms_title">이용약관</string>
-    <string name="service_privacy_title">개인정보 처리방침</string>
+    <string name="service_terms_title">Terms of Service</string>
+    <string name="service_privacy_title">Privacy Policy</string>
 
     <!-- 공통 버튼 -->
-    <string name="button_select">선택</string>
+    <string name="button_select">Select</string>
 
     <!-- 거래 유형 -->
-    <string name="transaction_transfer">이체</string>
+    <string name="transaction_transfer">Transfer</string>
 
     <!-- 요일 -->
-    <string name="weekday_sun">일</string>
-    <string name="weekday_mon">월</string>
-    <string name="weekday_tue">화</string>
-    <string name="weekday_wed">수</string>
-    <string name="weekday_thu">목</string>
-    <string name="weekday_fri">금</string>
-    <string name="weekday_sat">토</string>
+    <string name="weekday_sun">Sun</string>
+    <string name="weekday_mon">Mon</string>
+    <string name="weekday_tue">Tue</string>
+    <string name="weekday_wed">Wed</string>
+    <string name="weekday_thu">Thu</string>
+    <string name="weekday_fri">Fri</string>
+    <string name="weekday_sat">Sat</string>
 
     <!-- 홈 화면 -->
-    <string name="home_total_expense">총 지출</string>
-    <string name="home_total_income">총 수입</string>
-    <string name="home_balance">잔액</string>
-    <string name="home_calendar">캘린더</string>
-    <string name="home_daily">일별</string>
-    <string name="home_add_entry">내역 추가</string>
-    <string name="home_no_entries">내역이 없습니다.</string>
+    <string name="home_total_expense">Total Expense</string>
+    <string name="home_total_income">Total Income</string>
+    <string name="home_balance">Balance</string>
+    <string name="home_calendar">Month</string>
+    <string name="home_daily">Day</string>
+    <string name="home_add_entry">Add Entry</string>
+    <string name="home_no_entries">No entries.</string>
 
-    <!-- 메모/사진 -->
-    <string name="memo_title">메모</string>
-    <string name="memo_save">작성 저장하기</string>
-    <string name="photo_title">사진</string>
-    <string name="photo_delete">삭제</string>
-    <string name="photo_confirm_title">사진 확인</string>
-    <string name="photo_upload">업로드</string>
-    <string name="photo_delete_dialog_title">사진 삭제</string>
-    <string name="photo_delete_dialog_message">사진을 삭제하시겠습니까?</string>
-    <string name="memo_hint">메모를 입력하세요.</string>
-    <string name="memo_limit">* 최대 1,000자까지 쓸 수 있어요.</string>
+    <!-- 정산 -->
+    <string name="settle_no_history">No history.</string>
+
+    <!-- 분석 자산 -->
+    <string name="asset_this_month">This Month</string>
+    <string name="asset_current">Current Assets</string>
+    <string name="asset_initial">Initial Assets</string>
+    <string name="budget_set_this_month">Set This Month\'s Budget</string>
 
     <!-- 공지사항 -->
-    <string name="notice_title">공지사항</string>
+    <string name="notice_title">Announcements</string>
 
     <!-- 삭제 옵션 -->
-    <string name="delete_this_only">이 내역만 삭제</string>
+    <string name="delete_this_only">Delete this entry only</string>
 
     <!--17_구독_마이페이지/구독 정보-->
-    <string name="subscribe_btn_text">Floney Plus+ 구독하기</string>
-    <string name="subscribe_btn_inform">구독 정보 보기</string>
-    <string name="subscribe_inform_see">구독 정보</string>
+    <string name="subscribe_btn_text">Subscribe Floney Plus+</string>
+    <string name="subscribe_btn_inform">View Subscription Details</string>
+    <string name="subscribe_inform_see">Subscription Details</string>
     <string name="subscribe_inform_item_name">Floney Plus+</string>
-    <string name="subscribe_inform_item_price_term">/ 월</string>
-    <string name="subscribe_inform_item_retry">다시 구독하기</string>
+    <string name="subscribe_inform_item_price_term">/ Mo</string>
+    <string name="subscribe_inform_item_retry">Resubscribe</string>
+
+
+
 
 
     <!--18_구독_신청/해지-->
-    <string name="subscribe_plan_header">구독 플랜</string>
-    <string name="subscribe_plan_title">floney Plus+ 구독으로\n편리하고 다양한 기능을 즐겨보세요 </string>
-    <string name="subscribe_plan_inform">광고를 제거하고 초대할 수 있는 인원이 늘어나요!\n플로니의 다양한 혜택을 누려보세요.</string>
-    <string name="subscribe_function_basic_wallet">기존 가계부 기능</string>
-    <string name="subscribe_advertise_delete">광고 제거</string>
-    <string name="subscribe_wallet_number">사용 가능 인원</string>
-    <string name="subscribe_favorite_number">즐겨찾기 개수</string>
-    <string name="subscribe_analyze_detail">분석 상세 내역</string>
-    <string name="subscribe_apply_btn">floney Plus+ 구독하기</string>
-    <string name="subscribe_plan_infrom_detail">- 플랜은 구독시 혜택이 즉시 적용됩니다.\n- 현재 이용 중인 플랜이 종료되기 24시간 전이라면 언제든지 해약이 가능합니다.\n- 현재 이용 중인 플랜이 종료되기 24시간 전까지 해약하지 않으면 자동으로 구독이 갱신되며 이에 따른 요금이 청구됩니다.</string>
-    <string name="subscribe_plan_infrom_notice">- 앱을 삭제하는 것만으로는 인앱결제 구독 플랜이 해약되지 않으니 주의해 주시기 바랍니다. <u>구매내역 복원하기</u></string>
-    <string name="subscribe_plan_infrom_service">- 구독 해지 및 환불 관련은 서비스 이용 약관을 확인해 주시기 바랍니다. <u>서비스 이용 약관</u></string>
+    <string name="subscribe_plan_header">Subscription Plan</string>
+    <string name="subscribe_plan_title">Enjoy more convenient features\nwith Floney Plus+</string>
+    <string name="subscribe_plan_inform">Remove ads and invite more members.\nUnlock all premium benefits of Floney.</string>
+    <string name="subscribe_function_basic_wallet">Basic ledger features</string>
+    <string name="subscribe_advertise_delete">Ad removal</string>
+    <string name="subscribe_wallet_number">Available members</string>
+    <string name="subscribe_favorite_number">Number of favorites</string>
+    <string name="subscribe_analyze_detail">Detailed analytics</string>
+    <string name="subscribe_apply_btn">Subscribe Floney Plus+</string>
+    <string name="subscribe_plan_infrom_detail">- Benefits apply immediately after subscribing.\n- You can cancel anytime up to 24 hours before the renewal.\n- If you don’t cancel at least 24 hours bbefore the renewal time, your subscription will renew automatically and you’ll be charged.</string>
+    <string name="subscribe_plan_infrom_notice">- Deleting the app does not cancel your subscription. Please use  <u>Restore Purchase</u> if needed.</string>
+    <string name="subscribe_plan_infrom_service">- For cancellation and refund details,refer to the <u>Terms of Service</u></string>
 
-    <string name="unsubscribe_title">구독을\n해지하시겠어요?</string>
-    <string name="unsubscribe_inform">다음 결제일부터 자동 결제가 취소되며\n이후 모든 Plus 혜택을 이용하실 수 없습니다.</string>
-    <string name="unsubscribe_stay_btn">구독 유지하기</string>
-    <string name="unsubscribe_btn"><u>구독 해지하기</u></string>
-    <string name="unsubscribe_btn_mypage"><u>구독 해지</u></string>
+    <string name="unsubscribe_title">Cancel your\nsubscription?</string>
+    <string name="unsubscribe_inform">Auto-renewal will stop from the next billing date, and you won’t be able to use subscription benefits afterward.</string>
+    <string name="unsubscribe_stay_btn">Keep Subscription</string>
+    <string name="unsubscribe_btn"><u>Cancel Subscription</u></string>
+    <string name="unsubscribe_btn_mypage"><u>Cancel Subscription</u></string>
 
-    <string name="unsubscribe_notice_pop_title">구독 해지</string>
-    <string name="unsubscribe_notice_pop_info">구독을 해지하시겠습니까?</string>
+    <string name="unsubscribe_notice_pop_title">Cancel Subscription</string>
+    <string name="unsubscribe_notice_pop_info">Do you want to cancel your subscription?</string>
 
-    <string name="unsubscribe_popup_title">구독이 해지되었습니다.</string>
-    <string name="unsubscribe_popup_info">구독을 다시 이용하고 싶으신 경우\n[마이페이지] > [구독 정보 보기]에서\n다시 시작하실 수 있습니다.</string>
+    <string name="unsubscribe_popup_title">Your subscription has been cancelled.</string>
+    <string name="unsubscribe_popup_info">If you want to resubscribe,\ngo to [My Page] > [View Subscription Details]\nto start again.</string>
 
-    <string name="subscribe_popup_title">구독이 시작되었어요!</string>
-    <string name="subscribe_popup_info">플로니와 함께 더 편리한 기능을 즐겨보세요.\n[마이페이지] > [구독 정보 보기]에서 상태를 확인하실 수 있어요.</string>
+    <string name="subscribe_popup_title">Your subscription has started!</string>
+    <string name="subscribe_popup_info">Enjoy more convenient features with Floney.\nYou can check your status in [My Page] > [View Subscription Details].</string>
 
-    <string name="subscribe_prompt_title">방장의 구독이 필요해요</string>
-    <string name="subscribe_prompt_inform">방장이 Floney Plus+를 구독하면\n다양한 기능을 제한없이 사용할 수 있어요.</string>
-    <string name="subscribe_plan_btn">구독 플랜 보기</string>
+    <string name="subscribe_prompt_title">Owner Subscription required</string>
+    <string name="subscribe_prompt_inform">When the owner subscribes, everyone can use all premium features without limits.</string>
+    <string name="subscribe_plan_btn">View Plan</string>
 
-    <string name="unsubscribe_exit_popup_title">구독 서비스를 이용하고 있어요!</string>
-    <string name="unsubscribe_exit_popup_info">구독을 해지하지 않은 경우 탈퇴할 수 없습니다.\n마이페이지에서 구독 정보를 확인해 주세요.</string>
+    <string name="unsubscribe_exit_popup_title">You have an active subscription!</string>
+    <string name="unsubscribe_exit_popup_info">You cannot delete your account without cancelling your subscription.\nPlease check your subscription status in My Page.</string>
 
-    <string name="billing_error_load_transaction">거래 정보를 불러오는 데에 오류가 발생하였습니다.</string>
-    <string name="billing_error_cancelled">결제가 취소되었습니다.</string>
+    <string name="billing_error_load_transaction">An error occurred while loading transaction information.</string>
+    <string name="billing_error_cancelled">The payment was cancelled.</string>
 
-    <!-- 공통 버튼 -->
-    <string name="common_save">저장하기</string>
-    <string name="common_edit">편집</string>
-    <string name="common_complete">편집</string>
-    <string name="common_upload">업로드</string>
-    <string name="common_export">내보내기</string>
-    <string name="common_sort">정렬</string>
-    <string name="common_user">사용자</string>
-    <string name="common_won">원</string>
+    <!-- Common Buttons -->
+    <string name="common_save">Save</string>
+    <string name="common_edit">Edit</string>
+    <string name="common_complete">Done</string>
+    <string name="common_upload">Upload</string>
+    <string name="common_export">Export</string>
+    <string name="common_sort">Sort</string>
+    <string name="common_user">User</string>
+    <string name="common_won">KRW</string>
 
-    <!-- 정렬 옵션 -->
-    <string name="sort_latest">최신순</string>
-    <string name="sort_oldest">오래된순</string>
-    <string name="sort_category_alphabetical">분류 가나다순</string>
-    <string name="sort_user_alphabetical">사용자 가나다순</string>
+    <!-- Sort Options -->
+    <string name="sort_latest">Latest</string>
+    <string name="sort_oldest">Oldest</string>
+    <string name="sort_category_alphabetical">Category A-Z</string>
+    <string name="sort_user_alphabetical">User A-Z</string>
 
-    <!-- 엑셀 -->
-    <string name="excel_export">엑셀 내보내기</string>
+    <!-- Excel -->
+    <string name="excel_export">Export to Excel</string>
 
-    <!-- 알림 -->
-    <string name="notification_book">가계부 알림</string>
+    <!-- Notification -->
+    <string name="notification_book">Ledger Notifications</string>
 
-    <!-- 사진 확인 -->
-    <string name="photo_confirm">사진 확인</string>
+    <!-- Photo Confirmation -->
+    <string name="photo_confirm">Confirm Photo</string>
 
-    <!-- 다이얼로그 공통 -->
-    <string name="dialog_delete_only">이 내역만 삭제</string>
-    <string name="dialog_delete_repeat">반복 내역도 모두 삭제</string>
-    <string name="dialog_cancel">취소</string>
-    <string name="dialog_confirm">확인</string>
-    <string name="dialog_delete">삭제</string>
-    <string name="dialog_close">닫기</string>
-    <string name="dialog_complete">완료</string>
-    <string name="dialog_select">선택</string>
-    <string name="dialog_yes">네</string>
-    <string name="dialog_no">아니오</string>
-    <string name="dialog_delete_history_confirm">이 내역을 삭제하시겠습니까?\n반복되는 내역입니다.</string>
-    <string name="dialog_delete_photo_title">사진 삭제</string>
-    <string name="dialog_delete_photo_message">사진을 삭제하시겠습니까?</string>
-    <string name="dialog_no_2">아니요</string>
+    <!-- Common Dialogs -->
+    <string name="dialog_delete_only">Delete This only</string>
+    <string name="dialog_delete_repeat">Delete All Future Entries</string>
+    <string name="dialog_cancel">Cancel</string>
+    <string name="dialog_confirm">OK</string>
+    <string name="dialog_delete">Delete</string>
+    <string name="dialog_close">Close</string>
+    <string name="dialog_complete">Complete</string>
+    <string name="dialog_select">Select</string>
+    <string name="dialog_yes">Yes</string>
+    <string name="dialog_no">No</string>
+    <string name="dialog_delete_history_confirm">Delete this entry?\nIt’s a duplicate.</string>
+    <string name="dialog_delete_photo_title">Delete Photo</string>
+    <string name="dialog_delete_photo_message">Delete this photo?</string>
+
+    <!-- Memo -->
+    <string name="memo_title">Memo</string>
+    <string name="memo_save">Save Memo</string>
+    <string name="memo_hint">Enter your memo.</string>
+    <string name="memo_limit">* Maximum 1,000 characters allowed.</string>
+
+    <!-- Photo Selection -->
+    <string name="photo_take_picture">Take a photo</string>
+    <string name="photo_select_from_album">Select from album</string>
+    <string name="photo_random_image">Random Image</string>
+    <string name="photo_title">Photos</string>
+    <string name="photo_delete_btn">Delete</string>
+    <string name="photo_select_all">Select All</string>
+    <string name="photo_deselect_all">Deselect All</string>
+    <string name="photo_add">Add Photo</string>
+
+    <string name="photo_delete">Delete</string>
+    <string name="photo_confirm_title">Confirm Photo</string>
+    <string name="photo_upload">Upload</string>
+    <string name="photo_delete_dialog_title">Delete Photo</string>
+    <string name="photo_delete_dialog_message">Do you want to delete this photo?</string>
+
+    <!-- Home Daily Screen -->
+    <string name="home_day_income">Incomes</string>
+    <string name="home_day_expense">Expenses</string>
+    <string name="home_day_history">Entries</string>
+    <string name="home_day_add_history">Add Entry</string>
+
+    <!-- My Page Service -->
+    <string name="mypage_service_ask_title">Feel free\nto ask anything 🤭</string>
+    <string name="mypage_service_ask_subtitle">We’ll reply to your questions\nby email.</string>
+    <string name="mypage_service_ask_button">Email Us</string>
+    <string name="mypage_service_notice">Announcements</string>
+
+    <!-- Home Monthly Screen -->
+    <string name="home_month_total_expense">Total Expense</string>
+
+    <!-- Subscription Popup -->
+    <string name="popup_subscribe_required_title">Host subscription required</string>
+    <string name="popup_subscribe_required_info">Subscription benefits are currently applied to this ledger.\nYou can only access My Page and ledger settings for now.</string>
+
+    <!-- Input Hints -->
+    <string name="input_amount_hint">Enter amount</string>
+    <string name="input_content_hint">Enter content</string>
+
+    <!-- Favorites -->
+    <string name="favorite_title">Favorites</string>
+    <string name="favorite_description_info">Save frequently used entries\nas favorites for quick access.</string>
+    <string name="favorite_add_title">Add Favorite</string>
+    <string name="favorite_edit_title">Edit Favorite</string>
+    <string name="favorite_amount">Amount</string>
+    <string name="favorite_asset">Asset</string>
+    <string name="favorite_description">Description</string>
+    <string name="favorite_line">Entry</string>
+    <string name="favorite_question">Is this a frequently entered entry?</string>
+    <string name="favorite_hint">Select a favorite to load</string>
+    <string name="favorite_save_btn">Add</string>
+    <string name="favorite_update_btn">Update</string>
+    <string name="favorite_select_btn">Select</string>
+    <string name="favorite_category">Category</string>
+    <string name="favorite_save">Save</string>
+
+    <!-- Settlement Period Selection -->
+    <string name="settle_period_select">Select settlement period</string>
+    <string name="settle_cancel">Cancel Settlement</string>
+    <string name="settle_complete">Complete Settlement</string>
+    <string name="settle_required">Required</string>
+    <string name="settle_optional">Optional</string>
+    <string name="settle_request">Request</string>
+    <string name="settle_status">Settlement Status</string>
+    <string name="settle_delete_confirm">Delete this settlement?</string>
+    <string name="settle_select_date">Select Settlement Date</string>
+
+    <!-- Category/Flow -->
+    <string name="flow_expense">Expense</string>
+    <string name="flow_income">Income</string>
+    <string name="flow_transfer">Transfer</string>
+    <string name="category_asset">Assets</string>
+    <string name="category_classification">Category</string>
+    <string name="category_content">Content</string>
+    <string name="category_add">Add</string>
+    <string name="profile_change">Change</string>
 
 
-    <!-- 사진 선택 -->
-    <string name="photo_take_picture">사진 촬영하기</string>
-    <string name="photo_select_from_album">앨범에서 사진 선택</string>
-    <string name="photo_random_image">랜덤 이미지</string>
-    <string name="photo_delete_btn">삭제</string>
-    <string name="photo_select_all">전체 선택</string>
-    <string name="photo_deselect_all">선택 취소</string>
-    <string name="photo_add">사진 추가</string>
+    <!-- Analysis Screen Budget -->
+    <string name="analyze_remaining_amount">Remaining Budget</string>
+    <string name="analyze_total_budget">Total Budget</string>
+    <string name="analyze_budget_progress">Budget Progress</string>
+    <string name="analyze_budget_warning">Budget exceeded!</string>
+    <string name="analyze_no_entries">No data.</string>
 
-    <!-- 홈 일별 화면 -->
-    <string name="home_day_income">수입</string>
-    <string name="home_day_expense">지출</string>
-    <string name="home_day_history">내역</string>
-    <string name="home_day_add_history">내역 추가</string>
+    <!-- Terms of Service -->
+    <string name="terms_all_agree">Agree to all</string>
+    <string name="terms_service">Terms of Service</string>
+    <string name="terms_privacy">Privacy Policy</string>
+    <string name="terms_required">[Required]</string>
+    <string name="terms_optional">[Optional]</string>
+    <string name="terms_title">Terms of Use</string>
 
-    <!-- 마이페이지 서비스 -->
-    <string name="mypage_service_ask_title">궁금한 점은\n언제든지 말해주세요</string>
-    <string name="mypage_service_ask_subtitle">궁금한 점을 문의해 주시면\n메일로 플로니가 답변해 드립니다.</string>
-    <string name="mypage_service_ask_button">메일로 문의하기</string>
-    <string name="mypage_service_notice">공지사항</string>
+    <!-- Onboarding -->
+    <string name="onboard_complete_title">Sign Up Complete</string>
+    <string name="onboard_complete_subtitle">Start your shared ledger with Floney!</string>
 
-    <!-- 정산 -->
-    <string name="settle_no_history">내역이 없습니다.</string>
+    <!-- Info Screen -->
+    <string name="info_email">Email</string>
+    <string name="info_nickname">Nickname</string>
+    <string name="info_book_name">Ledger Name</string>
 
-    <!-- 홈 월별 화면 -->
-    <string name="home_month_total_expense">총지출</string>
-
-    <!-- 구독 팝업 -->
-    <string name="popup_subscribe_required_title">방장의 구독이 필요해요</string>
-    <string name="popup_subscribe_required_info">현재 가계부에 구독 혜택이 적용되어 있습니다.\n지금은 마이페이지, 가계부 설정에만 접근할 수 있어요.</string>
-
-    <!-- 즐겨찾기 -->
-    <string name="favorite_title">즐겨찾기</string>
-    <string name="favorite_description_info">자주 사용하는 내역을\n즐겨찾기로 편하게 기록해 보세요</string>
-    <string name="favorite_add_title">즐겨찾기 추가</string>
-    <string name="favorite_edit_title">즐겨찾기 수정</string>
-    <string name="favorite_amount">금액</string>
-    <string name="favorite_asset">자산</string>
-    <string name="favorite_description">설명</string>
-    <string name="favorite_line">내역</string>
-    <string name="favorite_question">자주 입력하는 내역인가요?</string>
-    <string name="favorite_hint">불러올 즐겨찾기를 선택해주세요</string>
-    <string name="favorite_save_btn">추가하기</string>
-    <string name="favorite_update_btn">수정하기</string>
-    <string name="favorite_select_btn">선택하기</string>
-    <string name="favorite_category">분류</string>
-    <string name="favorite_save">저장하기</string>
-
-    <!-- 정산 기간 선택 -->
-    <string name="settle_period_select">정산 기간을 선택하세요</string>
-    <string name="settle_cancel">정산 취소</string>
-    <string name="settle_complete">정산 완료</string>
-    <string name="settle_required">요청 사항</string>
-    <string name="settle_optional">선택 사항</string>
-    <string name="settle_request">요청</string>
-    <string name="settle_status">정산 상태</string>
-    <string name="settle_delete_confirm">정산을 삭제하시겠습니까?</string>
-    <string name="settle_select_date">정산일 선택</string>
-
-    <!-- 카테고리/플로우 -->
-    <string name="flow_expense">지출</string>
-    <string name="flow_income">수입</string>
-    <string name="flow_transfer">이체</string>
-    <string name="category_asset">자산</string>
-    <string name="category_classification">분류</string>
-    <string name="category_content">내용</string>
-    <string name="category_add">추가하기</string>
-    <string name="profile_change">변경하기</string>
-
-    <!-- 분석 화면 자산 -->
-    <string name="asset_this_month">이번달</string>
-    <string name="asset_current">현재자산</string>
-    <string name="asset_initial">초기자산</string>
-    <string name="budget_set_this_month">이번달 예산 설정하기</string>
-
-    <!-- 분석 화면 예산 -->
-    <string name="analyze_remaining_amount">남은 금액</string>
-    <string name="analyze_total_budget">총 예산</string>
-    <string name="analyze_budget_progress">예산 진행률</string>
-    <string name="analyze_budget_warning">예산을 초과했어요!</string>
-    <string name="analyze_no_entries">내역이 없습니다.</string>
-
-    <!-- 서비스 약관 -->
-    <string name="terms_all_agree">모두 동의</string>
-    <string name="terms_service">서비스 이용약관</string>
-    <string name="terms_privacy">개인정보 처리방침</string>
-    <string name="terms_required">[필수]</string>
-    <string name="terms_optional">[선택]</string>
-    <string name="terms_title">이용약관</string>
-
-    <!-- 온보딩 -->
-    <string name="onboard_complete_title">회원가입 완료</string>
-    <string name="onboard_complete_subtitle">플로니와 함께 공동가계부를 시작해보세요!</string>
-
-    <!-- 설명 화면 -->
-    <string name="info_email">이메일</string>
-    <string name="info_nickname">닉네임</string>
-    <string name="info_book_name">가계부 이름</string>
-
-    <!-- 반복 주기 -->
+    <!-- Repeat Cycle -->
     <string name="repeat_none">없음</string>
-    <string name="repeat_daily">매일</string>
-    <string name="repeat_weekly">매주</string>
-    <string name="repeat_monthly">매월</string>
-    <string name="repeat_weekdays">평일</string>
-    <string name="repeat_weekends">주말</string>
+    <string name="repeat_daily">Daily</string>
+    <string name="repeat_weekly">Weekly</string>
+    <string name="repeat_monthly">Monthly</string>
+    <string name="repeat_weekdays">Weekdays</string>
+    <string name="repeat_weekends">Weekends</string>
 
-    <string name="repeat_none_history">없음</string>
-    <string name="repeat_daily_history">매일</string>
-    <string name="repeat_weekly_history">매주</string>
-    <string name="repeat_monthly_history">매월</string>
-    <string name="repeat_weekdays_history">평일</string>
-    <string name="repeat_weekends_history">주말</string>
+    <string name="repeat_none_history">None</string>
+    <string name="repeat_daily_history">D</string>
+    <string name="repeat_weekly_history">Wk</string>
+    <string name="repeat_monthly_history">Mo</string>
+    <string name="repeat_weekdays_history">Wd</string>
+    <string name="repeat_weekends_history">We</string>
 
 </resources>

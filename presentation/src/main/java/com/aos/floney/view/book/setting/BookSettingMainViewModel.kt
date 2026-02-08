@@ -184,7 +184,7 @@ class BookSettingMainViewModel @Inject constructor(
                 booksInitUseCase(prefs.getString("bookKey", "")).onSuccess {
                     delay(1000)
                     baseEvent(Event.HideLoading)
-                    baseEvent(Event.ShowSuccessToast("가계부가 초기화 되었습니다."))
+                    baseEvent(Event.ShowSuccessToast(application.getString(R.string.toast_book_reset)))
                     alarmInitSave()
                 }.onFailure {
                     baseEvent(Event.HideLoading)

@@ -3,73 +3,74 @@
     <!-- Analyze Mapper Strings -->
 
     <!-- Expense Analysis -->
-    <string name="analyze_outcome_total">%s를 사용했어요</string>
-    <string name="analyze_outcome_more_than_last">저번달보다\n%s 더 사용했어요</string>
-    <string name="analyze_outcome_less_than_last">저번달보다\n%s 덜 사용했어요</string>
+    <string name="analyze_outcome_total">You spent %s</string>
+    <string name="analyze_outcome_more_than_last">%s more\nthan last month</string>
+    <string name="analyze_outcome_less_than_last">%s less\nthan last month</string>
 
     <!-- Income Analysis -->
-    <string name="analyze_income_total">%s를 벌었어요</string>
-    <string name="analyze_income_more_than_last">저번달보다\n%s를 더 벌었어요</string>
-    <string name="analyze_income_less_than_last">저번달보다\n%s를 덜 벌었어요</string>
+    <string name="analyze_income_total">You earned %s</string>
+    <string name="analyze_income_more_than_last">Up %s\nfrom last month.</string>
+    <string name="analyze_income_less_than_last">Down %s\nfrom last month.</string>
 
     <!-- Asset Analysis -->
-    <string name="analyze_asset_increased">자산이 증가했어요</string>
-    <string name="analyze_asset_decreased">자산이 감소했어요</string>
-    <string name="analyze_asset_same">자산이 그대로에요</string>
-    <string name="analyze_asset_up">저번달보다\n%s 증가</string>
-    <string name="analyze_asset_down">저번달보다\n%s 감소</string>
+    <string name="analyze_asset_increased">Your Assets\nincreased</string>
+    <string name="analyze_asset_decreased">Your Assets\ndecreased</string>
+    <string name="analyze_asset_same">Assets unchanged</string>
+    <string name="analyze_asset_up">Up %s\nfrom last month</string>
+    <string name="analyze_asset_down">Down %s\nfrom last month</string>
 
     <!-- Budget Plan -->
-    <string name="analyze_budget_used">현재 예산의\n%s%%를 사용했어요</string>
-    <string name="analyze_budget_per_day">남은 기간 동안 하루에\n%s원을 사용할 수 있어요</string>
-    <string name="analyze_budget_no_budget">예산을 설정하고\n체계적인 소비 습관을 만들어 보세요!</string>
-    <string name="analyze_budget_plenty">쓸 수 있는 예산이\n충분해요!</string>
-    <string name="analyze_budget_reduce">조금씩 지출을\n줄여볼까요?</string>
-    <string name="analyze_budget_careful">예산을 넘기지 않게\n주의하세요!</string>
+    <string name="analyze_budget_used">You\'ve used %s%%\nof your budget</string>
+    <string name="analyze_budget_per_day">You can spend %s$\nper day for the rest of the month</string>
+    <string name="analyze_budget_no_budget">Set a budget to build\nbetter spending habits.</string>
+    <string name="analyze_budget_plenty">You have\nplenty of budget left.</string>
+    <string name="analyze_budget_reduce">Try reducing your spending\nlittle by little.</string>
+    <string name="analyze_budget_careful">Be careful\nnot to exceed your budget.</string>
 
     <!-- Sorting Options -->
-    <string name="sort_latest">최신순</string>
-    <string name="sort_oldest">오래된 순</string>
-    <string name="sort_user_nickname">사용자 닉네임 순</string>
-    <string name="sort_subcategory">분류 가나다 순</string>
+    <string name="sort_latest">Latest</string>
+    <string name="sort_oldest">Oldest</string>
+    <string name="sort_user_nickname">By User Nickname</string>
+    <string name="sort_subcategory">By Category</string>
+
 
     <!-- Month Names -->
-    <string name="month_january">1월</string>
-    <string name="month_february">2월</string>
-    <string name="month_march">3월</string>
-    <string name="month_april">4월</string>
-    <string name="month_may">5월</string>
-    <string name="month_june">6월</string>
-    <string name="month_july">7월</string>
-    <string name="month_august">8월</string>
-    <string name="month_september">9월</string>
-    <string name="month_october">10월</string>
-    <string name="month_november">11월</string>
-    <string name="month_december">12월</string>
+    <string name="month_january">January</string>
+    <string name="month_february">February</string>
+    <string name="month_march">March</string>
+    <string name="month_april">April</string>
+    <string name="month_may">May</string>
+    <string name="month_june">June</string>
+    <string name="month_july">July</string>
+    <string name="month_august">August</string>
+    <string name="month_september">September</string>
+    <string name="month_october">October</string>
+    <string name="month_november">November</string>
+    <string name="month_december">December</string>
 
     <!-- Book Roles -->
-    <string name="book_role_owner">방장</string>
-    <string name="book_role_member">팀원</string>
-    <string name="book_role_me">나</string>
-
-    <!-- Book Setting -->
-    <string name="book_date_pattern">yyyy.MM.dd</string>
-    <string name="book_info_format">%1$s 개설 · %2$d명</string>
-    <string name="book_info_format_plural">%1$s 개설 · %2$d명</string>
-    <string name="book_opened_date">%1$s 개설</string>
-    <string name="user_count_with_unit">%1$d명</string>
+    <string name="book_role_owner">Owner</string>
+    <string name="book_role_member">Member</string>
+    <string name="book_role_me">Me</string>
 
     <!-- Repeat Cycle -->
     <string name="repeat_none">없음</string>
-    <string name="repeat_daily">매일</string>
-    <string name="repeat_weekly">매주</string>
-    <string name="repeat_monthly">매월</string>
-    <string name="repeat_weekdays">평일</string>
-    <string name="repeat_weekends">주말</string>
+    <string name="repeat_daily">Daily</string>
+    <string name="repeat_weekly">Weekly</string>
+    <string name="repeat_monthly">Monthly</string>
+    <string name="repeat_weekdays">Weekdays</string>
+    <string name="repeat_weekends">Weekends</string>
 
     <!-- Settlement -->
-    <string name="settlement_send_money">%1$s을 보내야 해요.</string>
-    <string name="settlement_receive_money">%1$s을 받아야 해요.</string>
-    <string name="settlement_no_money">정산할 금액이 없어요.</string>
+    <string name="settlement_send_money">owes %1$s.</string>
+    <string name="settlement_receive_money">is owed %1$s.</string>
+    <string name="settlement_no_money">No settlement amount.</string>
+
+    <!-- Book Setting -->
+    <string name="book_date_pattern">MMM d, yyyy</string>
+    <string name="book_info_format">Created %1$s · %2$d member</string>
+    <string name="book_info_format_plural">Created %1$s · %2$d members</string>
+    <string name="book_opened_date">Created %1$s</string>
+    <string name="user_count_with_unit">%1$d Members</string>
 
 </resources>
