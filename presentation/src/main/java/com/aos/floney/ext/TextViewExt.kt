@@ -2,6 +2,11 @@ package com.aos.floney.ext
 
 import android.graphics.Typeface
 import android.os.Build
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.TextPaint
+import android.text.style.MetricAffectingSpan
+import android.text.style.StyleSpan
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
@@ -9,15 +14,14 @@ import android.view.ViewGroup.MarginLayoutParams
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.RequiresApi
-import androidx.cardview.widget.CardView
 import androidx.core.view.updateLayoutParams
 import androidx.databinding.BindingAdapter
 import com.aos.data.util.CurrencyUtil
-import com.aos.data.util.SharedPreferenceUtil
 import com.aos.data.util.checkDecimalPoint
-import com.aos.floney.R
+import com.aos.data.R
 import com.aos.model.analyze.Asset
 import com.aos.model.analyze.UiAnalyzePlanModel
+import com.aos.model.settlement.SettlementMoneyState
 import com.suke.widget.SwitchButton
 import timber.log.Timber
 import java.text.DecimalFormat
@@ -26,7 +30,7 @@ import kotlin.math.abs
 
 fun String.formatNumber(): String {
      return if(this != "") {
-         val text = this.replace("${CurrencyUtil.currency}", "")
+         val text = this.replace(CurrencyUtil.currency, "")
 
          if (text.endsWith(".")){
              text
@@ -205,9 +209,9 @@ fun SwitchButton.adjustDesign(isMarketingTerms: Boolean) {
 @BindingAdapter("bind:adjustCategoryFont")
 fun TextView.adjustCategoryFont(isBold: Boolean) {
     if (isBold) {
-        this.setTypeface(resources.getFont(R.font.pretendard_semibold), Typeface.NORMAL)
+        this.setTypeface(resources.getFont(com.aos.floney.R.font.pretendard_semibold), Typeface.NORMAL)
     } else {
-        this.setTypeface(resources.getFont(R.font.pretendard_medium), Typeface.NORMAL)
+        this.setTypeface(resources.getFont(com.aos.floney.R.font.pretendard_medium), Typeface.NORMAL)
     }
 }
 
@@ -220,7 +224,7 @@ fun TextView.setProfileMargin(status: Boolean) {
         20 // seeProfileStatus가 false인 경우 marginStart는 20
     }
 
-    val layoutParams = this.layoutParams as ViewGroup.MarginLayoutParams
+    val layoutParams = this.layoutParams as MarginLayoutParams
     layoutParams.marginStart = (marginStartValue * context.resources.displayMetrics.density).toInt()
     this.layoutParams = layoutParams
 }
@@ -234,7 +238,71 @@ fun TextView.setSubscribeMarginTop(status: Boolean) {
         10
     }
 
-    val layoutParams = this.layoutParams as ViewGroup.MarginLayoutParams
+    val layoutParams = this.layoutParams as MarginLayoutParams
     layoutParams.topMargin = (marginTopValue * context.resources.displayMetrics.density).toInt()
     this.layoutParams = layoutParams
 }
+
+@RequiresApi(Build.VERSION_CODES.O)
+@BindingAdapter("settlementMoneyText", "settlementState")
+fun TextView.setSettlementMoneyText(money: String?, state: SettlementMoneyState?) {
+    if (state == null) return
+
+    if (state == SettlementMoneyState.NONE) {
+        text = context.getString(R.string.settlement_no_money)
+        return
+    }
+
+    val resId = when (state) {
+        SettlementMoneyState.SEND -> R.string.settlement_send_money
+        SettlementMoneyState.RECEIVE -> R.string.settlement_receive_money
+        else -> return
+    }
+
+    val fullText = context.getString(resId, money)
+    val spannable = SpannableString(fullText)
+
+    if (!money.isNullOrEmpty()) {
+        val start = fullText.indexOf(money)
+        if (start >= 0) {
+            val customTypeface = resources.getFont(com.aos.floney.R.font.pretendard_bold)
+
+            spannable.setSpan(
+                CustomTypefaceSpan(customTypeface),
+                start,
+                start + money.length,
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+        }
+    }
+
+    text = spannable
+}
+
+class CustomTypefaceSpan(private val typeface: Typeface) : MetricAffectingSpan() {
+
+    override fun updateDrawState(tp: TextPaint) {
+        apply(tp)
+    }
+
+    override fun updateMeasureState(tp: TextPaint) {
+        apply(tp)
+    }
+
+    private fun apply(paint: TextPaint) {
+        val oldTypeface = paint.typeface
+        val oldStyle = oldTypeface?.style ?: 0
+
+        val fakeStyle = oldStyle and typeface.style.inv()
+
+        if (fakeStyle and Typeface.BOLD != 0) {
+            paint.isFakeBoldText = true
+        }
+        if (fakeStyle and Typeface.ITALIC != 0) {
+            paint.textSkewX = -0.25f
+        }
+
+        paint.typeface = typeface
+    }
+}
+

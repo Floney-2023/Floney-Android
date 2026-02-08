@@ -57,33 +57,24 @@
                 android:text="@{item.userNickname}"
                 android:textColor="@color/grayscale2"
                 android:textSize="12dp"
+                tools:text="홍길동"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/tv_settle_up_complete_settlement_money"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="3dp"
-                android:fontFamily="@font/pretendard_bold"
-                android:text="@{item.moneyInfo.equals(`정산할 금액이 없어요.`) ? `` : item.money}"
-                android:textColor="@color/grayscale2"
-                android:textSize="17dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tv_name" />
 
             <TextView
                 android:id="@+id/tv_settle_up_complete_settlement_money_info"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/pretendard_regular"
-                android:text="@{item.moneyInfo}"
+                app:settlementMoneyText="@{item.money}"
+                app:settlementState="@{item.moneyState}"
                 android:textColor="@color/grayscale2"
                 android:textSize="17dp"
-                app:layout_constraintBottom_toBottomOf="@+id/tv_settle_up_complete_settlement_money"
-                app:layout_constraintStart_toEndOf="@+id/tv_settle_up_complete_settlement_money"
-                app:layout_constraintTop_toTopOf="@+id/tv_settle_up_complete_settlement_money"
-                bind:setLayoutMargin="@{item.moneyInfo.equals(`정산할 금액이 없어요.`) ? 0f : 4f}" />
+                android:layout_marginTop="8dp"
+                tools:text="정산할 금액이 없어요."
+                app:layout_constraintStart_toStartOf="@+id/tv_name"
+                app:layout_constraintTop_toBottomOf="@+id/tv_name"
+                bind:setLayoutMargin="@{item.moneyState == com.aos.model.settlement.SettlementMoneyState.NONE ? 0f : 4f}" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>

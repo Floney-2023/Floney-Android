@@ -59,4 +59,9 @@
     <string name="repeat_monthly">매월</string>
     <string name="repeat_weekdays">평일</string>
     <string name="repeat_weekends">주말</string>
+
+    <!-- Settlement -->
+    <string name="settlement_send_money">%1$s을 보내야 해요.</string>
+    <string name="settlement_receive_money">%1$s을 받아야 해요.</string>
+    <string name="settlement_no_money">정산할 금액이 없어요.</string>
 </resources>

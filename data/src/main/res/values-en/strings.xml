@@ -60,4 +60,9 @@
     <string name="repeat_monthly">Monthly</string>
     <string name="repeat_weekdays">Weekdays</string>
     <string name="repeat_weekends">Weekends</string>
+
+    <!-- Settlement -->
+    <string name="settlement_send_money">owes %1$s.</string>
+    <string name="settlement_receive_money">is owed %1$s.</string>
+    <string name="settlement_no_money">No settlement amount.</string>
 </resources>

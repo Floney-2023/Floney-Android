@@ -1,5 +1,6 @@
 package com.aos.floney.view.history.picture
 
+import android.app.Application
 import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
@@ -11,6 +12,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.aos.data.util.SharedPreferenceUtil
+import com.aos.floney.R
 import com.aos.floney.base.BaseViewModel
 import com.aos.floney.util.EventFlow
 import com.aos.floney.util.MutableEventFlow
@@ -39,6 +41,7 @@ import kotlin.collections.ArrayList
 
 @HiltViewModel
 class InsertPictureViewModel @Inject constructor(
+    private val application: Application,
     @ApplicationContext private val context: Context
 ) : BaseViewModel() {
 
@@ -102,7 +105,7 @@ class InsertPictureViewModel @Inject constructor(
 
         // 삭제 완료 후 삭제 모드 OFF
         isDeleteMode.value = false
-        baseEvent(Event.ShowSuccessToast("사진 삭제가 완료되었습니다."))
+        baseEvent(Event.ShowSuccessToast(application.getString(R.string.toast_photo_deleted)))
 
         updateImageList()
     }

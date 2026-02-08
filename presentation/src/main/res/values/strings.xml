@@ -670,7 +670,7 @@
     <string name="subscribe_btn_inform">구독 정보 보기</string>
     <string name="subscribe_inform_see">구독 정보</string>
     <string name="subscribe_inform_item_name">Floney Plus+</string>
-    <string name="subscribe_inform_item_price_term">월</string>
+    <string name="subscribe_inform_item_price_term">/ 월</string>
     <string name="subscribe_inform_item_retry">다시 구독하기</string>
 
 
@@ -709,6 +709,9 @@
 
     <string name="unsubscribe_exit_popup_title">구독 서비스를 이용하고 있어요!</string>
     <string name="unsubscribe_exit_popup_info">구독을 해지하지 않은 경우 탈퇴할 수 없습니다.\n마이페이지에서 구독 정보를 확인해 주세요.</string>
+
+    <string name="billing_error_load_transaction">거래 정보를 불러오는 데에 오류가 발생하였습니다.</string>
+    <string name="billing_error_cancelled">결제가 취소되었습니다.</string>
 
     <!-- 공통 버튼 -->
     <string name="common_save">저장하기</string>

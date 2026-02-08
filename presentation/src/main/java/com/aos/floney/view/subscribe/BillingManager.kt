@@ -14,6 +14,7 @@ import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.QueryProductDetailsParams
 import com.aos.data.util.CommonUtil
 import com.aos.floney.BuildConfig
+import com.aos.floney.R
 import com.aos.floney.base.BaseViewModel
 import com.aos.floney.base.BaseViewModel.Event
 import com.aos.floney.ext.parseErrorMsg
@@ -54,7 +55,9 @@ class BillingManager(
                 } else {
                     // 결제 실패 처리
                     Timber.e("Purchase failed: ${billingResult.debugMessage}")
-                    billingCallback.onBillingError("결제가 취소되었습니다.")
+                    billingCallback.onBillingError(
+                        activity.getString(R.string.billing_error_cancelled)
+                    )
                 }
             }
             .build()
@@ -153,7 +156,10 @@ class BillingManager(
             } else {
                 // 오류 처리
                 Timber.e("checking 4 : Error code: ${billingResult.responseCode}, message: ${productDetailsList}")
-                billingCallback.onBillingError("거래 정보를 불러오는 데에 오류가 발생하였습니다.")
+                billingCallback.onBillingError(
+                    activity.getString(R.string.billing_error_load_transaction)
+                )
+
             }
         }
     }

@@ -1,7 +1,6 @@
 package com.aos.model.settlement
 
 import androidx.recyclerview.widget.DiffUtil
-import retrofit2.http.POST
 
 data class UiSettlementAddModel(
     val id: Long,
@@ -32,10 +31,14 @@ data class Details(
     val money: String,
     val userNickname: String,
     val useruserProfileImg : String,
-    val moneyInfo : String
+    val moneyState : SettlementMoneyState
 )
 
 data class Expenses(
     val money: String,
     val userNickname: String
 )
+
+enum class SettlementMoneyState {
+    SEND, RECEIVE, NONE
+}

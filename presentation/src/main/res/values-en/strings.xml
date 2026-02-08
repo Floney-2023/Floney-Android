@@ -144,24 +144,24 @@
 
     <!--myPageActivity(회원정보 1-4, 프로필 이미지 변경)-->
     <string name="mypage_main_inform_profile_change">Change Profile Image</string>
-    <string name="mypage_main_inform_profile_change_basic">Change to default profile</string>
-    <string name="mypage_main_inform_profile_change_btn">Change</string>
+    <string name="mypage_main_inform_profile_change_basic">Use Default Image</string>
+    <string name="mypage_main_inform_profile_change_btn">Save</string>
 
     <!--myPageActivity(회원정보 1-5, 회원탈퇴1단계)-->
-    <string name="mypage_main_inform_exit_title">Before leaving,\nplease tell us why 😥</string>
-    <string name="mypage_main_inform_exit_info">Wait! All ledger records\nwill be deleted upon withdrawal.</string>
-    <string name="mypage_main_inform_exit_no_how_to_use">I don\'t know how to use Floney</string>
-    <string name="mypage_main_inform_exit_expensive">The subscription fee is too expensive</string>
-    <string name="mypage_main_inform_exit_no_already_use">I don\'t use it frequently anymore</string>
-    <string name="mypage_main_inform_exit_re_login">I\'ll sign up again</string>
-    <string name="mypage_main_inform_exit_direct_input">Enter reason directly</string>
-    <string name="mypage_main_inform_exit_direct_input_hint">Please write your reason (within 100 characters)</string>
+    <string name="mypage_main_inform_exit_title">Please select\na reason 😥</string>
+    <string name="mypage_main_inform_exit_info">Wait! All ledger data\nwill be deleted.</string>
+    <string name="mypage_main_inform_exit_no_how_to_use">I’m not sure how to use Floney</string>
+    <string name="mypage_main_inform_exit_expensive">The subscription is expensive</string>
+    <string name="mypage_main_inform_exit_no_already_use">I don’t use it often</string>
+    <string name="mypage_main_inform_exit_re_login">I’ll sign up again</string>
+    <string name="mypage_main_inform_exit_direct_input">Other</string>
+    <string name="mypage_main_inform_exit_direct_input_hint">Enter your reason (up to 100 characters)</string>
     <string name="mypage_main_inform_exit_button">Delete Account</string>
     <string name="mypage_main_inform_exit_blank_toast">Please write your reason for leaving.</string>
     <string name="mypage_main_inform_exit_check_toast">Please select a reason for leaving.</string>
 
     <!--myPageActivity(회원정보 1-6, 회원탈퇴2단계)-->
-    <string name="mypage_main_inform_exit_input_password_title">Finally, please enter\nyour password.</string>
+    <string name="mypage_main_inform_exit_input_password_title">Enter your password\nto continue</string>
     <string name="mypage_main_inform_exit_input_password_hint">Password</string>
     <string name="mypage_main_inform_exit_input_password_button">Delete Account</string>
     <string name="mypage_main_inform_exit_input_password_toast">Please enter your password.</string>
@@ -174,13 +174,13 @@
     <string name="mypage_main_inform_exit_popup_btn_cancel">Cancel</string>
 
     <!--myPageActivity(회원정보 1-7, 탈퇴완료)-->
-    <string name="mypage_main_inform_exit_complete_title">Account deletion\ncompleted successfully</string>
+    <string name="mypage_main_inform_exit_complete_title">Your account\nhas been deleted.</string>
     <string name="mypage_main_inform_exit_complete_info">Thank you for using Floney.\nYou\'re always welcome back!</string>
     <string name="mypage_main_inform_exit_complete_btn_close">Close</string>
 
     <!--myPageActivity(서비스)-->
-    <string name="mypage_service_mail_title">Floney has launched!🍀</string>
-    <string name="mypage_service_mail_info">Hello!\nShared ledger Floney has launched.\nIf you have any questions or concerns while using it,\nplease feel free to contact us via email and we\'ll be happy to help.\n\nThank you for your support and interest.\nThank you.</string>
+    <string name="mypage_service_mail_title">Floney is now live 🍀</string>
+    <string name="mypage_service_mail_info">Hello!\nFloney, the shared ledger, has officially launched.\n\nIf you have any questions or feedback while using the app, please message us through “Contact Us”.\n\nThank you for your support.</string>
 
     <!--이미지 선택-->
     <string name="camera">Take Photo</string>
@@ -253,7 +253,7 @@
     <string name="book_add_invite_dialog_copy_text">Invite code copied.</string>
 
     <string name="book_add_invite_select_dialog_title">Add Ledger</string>
-    <string name="book_add_invite_select_dialog_info">Choose how to add\na new ledger.</string>
+    <string name="book_add_invite_select_dialog_info">Choose how you want to add\na new ledger.</string>
     <string name="book_add_invite_select_dialog_create_select">Create Ledger</string>
     <string name="book_add_invite_select_dialog_input_select">Enter Code</string>
     <string name="book_add_invite_select_dialog_add_button">Add</string>
@@ -546,11 +546,11 @@
     <string name="excel_export_all">All</string>
 
     <!--10-1 정산 -->
-    <string name="settle_up_start">Settlement</string>
-    <string name="settle_up_start_title">%1$s days have passed\nsince the last settlement</string>
-    <string name="settle_up_start_info">Complicated settlements? We\'ll handle it for you</string>
+    <string name="settle_up_start">Settlements</string>
+    <string name="settle_up_start_title">It’s been %1$s days\nsince the last settlement</string>
+    <string name="settle_up_start_info">We’ll handle the complicated parts for you.</string>
     <string name="settle_up_start_button">Settle Up</string>
-    <string name="settle_up_start_see_button"><u>View Settlement History</u></string>
+    <string name="settle_up_start_see_button"><u>View Settlements</u></string>
 
     <string name="settle_up_member_select_title">Select members\nto include</string>
     <string name="settle_up_member_select_button">Next</string>
@@ -675,27 +675,30 @@
     <string name="delete_this_only">Delete this entry only</string>
 
     <!--17_구독_마이페이지/구독 정보-->
-    <string name="subscribe_btn_text">Subscribe to Floney Plus+</string>
+    <string name="subscribe_btn_text">Subscribe Floney Plus+</string>
     <string name="subscribe_btn_inform">View Subscription Details</string>
     <string name="subscribe_inform_see">Subscription Details</string>
     <string name="subscribe_inform_item_name">Floney Plus+</string>
-    <string name="subscribe_inform_item_price_term">month</string>
+    <string name="subscribe_inform_item_price_term">/ Mo</string>
     <string name="subscribe_inform_item_retry">Resubscribe</string>
 
 
+
+
+
     <!--18_구독_신청/해지-->
-    <string name="subscribe_plan_header">Subscription Plans</string>
+    <string name="subscribe_plan_header">Subscription Plan</string>
     <string name="subscribe_plan_title">Enjoy more convenient features\nwith Floney Plus+</string>
-    <string name="subscribe_plan_inform">Remove ads and invite more members!\nEnjoy various benefits with Floney.</string>
+    <string name="subscribe_plan_inform">Remove ads and invite more members.\nUnlock all premium benefits of Floney.</string>
     <string name="subscribe_function_basic_wallet">Basic ledger features</string>
     <string name="subscribe_advertise_delete">Ad removal</string>
     <string name="subscribe_wallet_number">Available members</string>
     <string name="subscribe_favorite_number">Number of favorites</string>
     <string name="subscribe_analyze_detail">Detailed analytics</string>
-    <string name="subscribe_apply_btn">Subscribe to Floney Plus+</string>
-    <string name="subscribe_plan_infrom_detail">- Benefits are applied immediately upon subscription.\n- You can cancel anytime up to 24 hours before your current plan ends.\n- If not cancelled 24 hours before expiry, subscription will auto-renew and charges will apply.</string>
-    <string name="subscribe_plan_infrom_notice">- Please note that deleting the app does not cancel the in-app subscription. <u>Restore Purchase</u></string>
-    <string name="subscribe_plan_infrom_service">- For cancellation and refund details, please check the Terms of Service. <u>Terms of Service</u></string>
+    <string name="subscribe_apply_btn">Subscribe Floney Plus+</string>
+    <string name="subscribe_plan_infrom_detail">- Benefits apply immediately after subscribing.\n- You can cancel anytime up to 24 hours before the renewal.\n- If you don’t cancel at least 24 hours bbefore the renewal time, your subscription will renew automatically and you’ll be charged.</string>
+    <string name="subscribe_plan_infrom_notice">- Deleting the app does not cancel your subscription. Please use  <u>Restore Purchase</u> if needed.</string>
+    <string name="subscribe_plan_infrom_service">- For cancellation and refund details,refer to the <u>Terms of Service</u></string>
 
     <string name="unsubscribe_title">Cancel your\nsubscription?</string>
     <string name="unsubscribe_inform">Auto-renewal will stop from the next billing date, and you won’t be able to use subscription benefits afterward.</string>
@@ -718,6 +721,9 @@
 
     <string name="unsubscribe_exit_popup_title">You have an active subscription!</string>
     <string name="unsubscribe_exit_popup_info">You cannot delete your account without cancelling your subscription.\nPlease check your subscription status in My Page.</string>
+
+    <string name="billing_error_load_transaction">An error occurred while loading transaction information.</string>
+    <string name="billing_error_cancelled">The payment was cancelled.</string>
 
     <!-- Common Buttons -->
     <string name="common_save">Save</string>
@@ -788,10 +794,10 @@
     <string name="home_day_add_history">Add Entry</string>
 
     <!-- My Page Service -->
-    <string name="mypage_service_ask_title">Ask us anything\nanytime</string>
-    <string name="mypage_service_ask_subtitle">Send us your questions\nand Floney will reply via email.</string>
-    <string name="mypage_service_ask_button">Contact via Email</string>
-    <string name="mypage_service_notice">Notices</string>
+    <string name="mypage_service_ask_title">Feel free\nto ask anything 🤭</string>
+    <string name="mypage_service_ask_subtitle">We’ll reply to your questions\nby email.</string>
+    <string name="mypage_service_ask_button">Email Us</string>
+    <string name="mypage_service_notice">Announcements</string>
 
     <!-- Home Monthly Screen -->
     <string name="home_month_total_expense">Total Expense</string>

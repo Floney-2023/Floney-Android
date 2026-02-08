@@ -74,6 +74,7 @@ import com.aos.model.book.UiBookRepeatModel
 import com.aos.model.home.CarryOverInfo
 import com.aos.model.home.ImageUrls
 import com.aos.model.settlement.NaverShortenUrlModel
+import com.aos.model.settlement.SettlementMoneyState
 
 // 유저 가계부 유효 확인
 fun GetCheckUserBookEntity.toGetCheckUserBookModel(): GetCheckUserBookModel {
@@ -423,7 +424,7 @@ fun List<PostBooksOutcomesEntity>.toUiOutcomesSelectModel(): UiOutcomesSelectMod
     )
 }
 
-fun PostSettlementAddEntity.toPostSettlementAddModel(): UiSettlementAddModel {
+fun PostSettlementAddEntity.toPostSettlementAddModel(context: Context): UiSettlementAddModel {
 
     val expenses = this.details.map {
         com.aos.model.settlement.Expenses(
@@ -446,7 +447,11 @@ fun PostSettlementAddEntity.toPostSettlementAddModel(): UiSettlementAddModel {
             }${CurrencyUtil.currency}",
             userNickname = it.userNickname,
             useruserProfileImg = it.userProfileImg ?: "user_default",
-            moneyInfo = if (it.money < 0) "을 보내야해요." else if (it.money > 0) "을 받아야해요." else "정산할 금액이 없어요."
+            moneyState = when {
+                it.money < 0 -> SettlementMoneyState.SEND
+                it.money > 0 -> SettlementMoneyState.RECEIVE
+                else -> SettlementMoneyState.NONE
+            }
         )
     }
     return UiSettlementAddModel(

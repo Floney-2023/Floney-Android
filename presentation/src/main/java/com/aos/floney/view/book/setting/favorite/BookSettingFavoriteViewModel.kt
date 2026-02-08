@@ -1,10 +1,12 @@
 package com.aos.floney.view.book.setting.favorite
 
+import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.aos.data.util.SharedPreferenceUtil
 import com.aos.data.util.SubscriptionDataStoreUtil
+import com.aos.floney.R
 import com.aos.floney.base.BaseViewModel
 import com.aos.floney.ext.parseErrorMsg
 import com.aos.floney.ext.toCategoryCode
@@ -24,6 +26,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BookSettingFavoriteViewModel @Inject constructor(
+    private val application: Application,
     private val prefs: SharedPreferenceUtil,
     private val getBookFavoriteUseCase: GetBookFavoriteUseCase,
     private val booksFavoriteDeleteUseCase: BooksFavoriteDeleteUseCase,
@@ -148,7 +151,7 @@ class BookSettingFavoriteViewModel @Inject constructor(
                 _favoriteList.postValue(updatedList)
 
                 baseEvent(Event.HideLoading)
-                baseEvent(Event.ShowSuccessToast("삭제가 완료되었습니다."))
+                baseEvent(Event.ShowSuccessToast(application.getString(R.string.toast_history_deleted)))
             }.onFailure {
                 baseEvent(Event.ShowLoading)
                 baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@BookSettingFavoriteViewModel)))

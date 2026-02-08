@@ -111,38 +111,6 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/li_setting_opensource_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingStart="24dp"
-            android:paddingTop="20dp"
-            android:paddingEnd="18dp"
-            android:paddingBottom="20dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/li_setting_language_view">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/mypage_main_setting_text6"
-                android:fontFamily="@font/pretendard_medium"
-                android:textColor="@color/grayscale2"
-                android:textSize="14dp" />
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
-
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/icon_right_arrow" />
-        </LinearLayout>
-
-        <LinearLayout
             android:id="@+id/li_version_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -152,7 +120,7 @@
             android:paddingEnd="18dp"
             android:paddingBottom="20dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/li_setting_opensource_view">
+            app:layout_constraintTop_toBottomOf="@+id/li_setting_language_view">
 
             <TextView
                 android:layout_width="wrap_content"
