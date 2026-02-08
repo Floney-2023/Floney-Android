@@ -45,6 +45,7 @@ import com.aos.data.mapper.toUiBookSettingModel
 import com.aos.data.mapper.toUiMemberSelectModel
 import com.aos.data.mapper.toUiOutcomesSelectModel
 import com.aos.data.mapper.toUiSettlementSeeModel
+import com.aos.data.util.CurrencyUtil
 import com.aos.data.util.RetrofitFailureStateException
 import com.aos.model.book.GetBooksCodeModel
 import com.aos.model.book.GetBooksInfoCurrencyModel
@@ -154,7 +155,10 @@ class BookRepositoryImpl @Inject constructor(
     override suspend fun postBooksCreate(
         name: String, profileImg: String
     ): Result<PostBooksCreateModel> {
-        when (val data = bookDataSource.postBooksCreate(PostBooksCreateBody(name, profileImg))) {
+        // 현재 기기 설정된 언어로 화폐 단위 설정
+        val requestCurrency = CurrencyUtil.getCurrencyCode(context)
+
+        when (val data = bookDataSource.postBooksCreate(PostBooksCreateBody(name, profileImg, requestCurrency))) {
             is NetworkState.Success -> return Result.success(data.body.toPostBooksCreateModel())
             is NetworkState.Failure -> return Result.failure(
                 RetrofitFailureStateException(data.error, data.code)

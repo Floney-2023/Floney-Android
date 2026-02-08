@@ -5,5 +5,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class PostBooksCreateBody(
     val name: String,
-    val profileImg : String
+    val profileImg: String,
+    val requestCurrency: String
 )
