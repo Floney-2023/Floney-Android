@@ -1,5 +1,6 @@
 package com.aos.floney.view.mypage.inform.profile.change
 
+import android.app.Application
 import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
@@ -29,6 +30,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MyPageInformProfileChangeViewModel @Inject constructor(
+    private val app: Application,
     @ApplicationContext private val context: Context,
     private val changeProfileUseCase: ChangeProfileUseCase,
 ) :
@@ -73,7 +75,7 @@ class MyPageInformProfileChangeViewModel @Inject constructor(
                 _successProfileChange.emit(true)
             }.onFailure {
                 baseEvent(Event.HideLoading)
-                baseEvent(Event.ShowToast("프로필 변경이 실패하였습니다."))
+                baseEvent(Event.ShowToast(app.getString(R.string.toast_profile_change_failed)))
             }
         }
     }
@@ -95,7 +97,7 @@ class MyPageInformProfileChangeViewModel @Inject constructor(
             val uploadTask = imageRef.putBytes(data)
             uploadTask.addOnFailureListener {
                 baseEvent(Event.HideLoading)
-                baseEvent(Event.ShowToast("프로필 변경이 실패하였습니다."))
+                baseEvent(Event.ShowToast(app.getString(R.string.toast_profile_change_failed)))
             }.addOnSuccessListener {
                 // 다운로드 링크 가져오기
                 it.storage.downloadUrl.addOnSuccessListener {uri ->
@@ -104,7 +106,7 @@ class MyPageInformProfileChangeViewModel @Inject constructor(
                 }.addOnFailureListener {
                     // 실패
                     baseEvent(Event.HideLoading)
-                    baseEvent(Event.ShowToast("프로필 변경이 실패하였습니다."))
+                    baseEvent(Event.ShowToast(app.getString(R.string.toast_profile_change_failed)))
                 }
             }
         }
@@ -135,7 +137,7 @@ class MyPageInformProfileChangeViewModel @Inject constructor(
                         setImageBitmap(bitmap)
                         bitmap
                     } else {
-                        baseEvent(Event.ShowToast("이미지 파일 생성에 실패하였습니다."))
+                        baseEvent(Event.ShowToast(app.getString(R.string.toast_image_processing_error)))
                         null
                     }
                 } else {
@@ -153,7 +155,7 @@ class MyPageInformProfileChangeViewModel @Inject constructor(
                             setImageBitmap(bitmap)
                             bitmap
                         } else {
-                            baseEvent(Event.ShowToast("이미지 파일 생성에 실패하였습니다."))
+                            baseEvent(Event.ShowToast(app.getString(R.string.toast_image_processing_error)))
                             null
                         }
                     } else {
@@ -163,18 +165,18 @@ class MyPageInformProfileChangeViewModel @Inject constructor(
                             setImageBitmap(bitmap)
                             bitmap
                         } else {
-                            baseEvent(Event.ShowToast("이미지 파일 생성에 실패하였습니다."))
+                            baseEvent(Event.ShowToast(app.getString(R.string.toast_image_processing_error)))
                             null
                         }
                     }
                 }
             } catch (e: Exception) {
                 Timber.e(e, "Error in createBitmapFile")
-                baseEvent(Event.ShowToast("이미지 파일 생성에 실패하였습니다."))
+                baseEvent(Event.ShowToast(app.getString(R.string.toast_image_processing_error)))
                 null
             }
         } else {
-            baseEvent(Event.ShowToast("이미지 파일 설정에 실패하였습니다."))
+            baseEvent(Event.ShowToast(app.getString(R.string.toast_image_processing_error)))
             null
         }
     }

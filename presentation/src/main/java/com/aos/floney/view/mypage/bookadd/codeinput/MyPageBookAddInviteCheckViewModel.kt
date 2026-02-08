@@ -1,5 +1,6 @@
 package com.aos.floney.view.mypage.bookadd.codeinput
 
+import android.app.Application
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.aos.data.util.SharedPreferenceUtil
@@ -18,6 +19,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MyPageBookAddInviteCheckViewModel @Inject constructor(
+    private val application: Application,
     private val prefs: SharedPreferenceUtil,
     private val booksJoinUseCase: BooksJoinUseCase
 ): BaseViewModel() {
@@ -57,14 +59,14 @@ class MyPageBookAddInviteCheckViewModel @Inject constructor(
 
                         val errorCode = it.message.parseErrorCode()
 
-                        val message = when (errorCode) {
-                            "B008" -> "이미 참여한 가계부 입니다."
-                            "B002" -> "이미 사용자가 가득 찬 가계부 입니다."
-                            "B001" -> "존재하지 않는 가계부 입니다."
-                            else -> "알 수 없는 오류입니다. 다시 시도해 주세요."
+                        val messageRes = when (errorCode) {
+                            "B008" -> R.string.toast_error_book_already_joined
+                            "B002" -> R.string.toast_error_book_full
+                            "B001" -> R.string.toast_error_book_not_found
+                            else -> R.string.toast_error_unknown
                         }
 
-                        baseEvent(Event.ShowToast(message))
+                        baseEvent(Event.ShowToast(application.getString(messageRes)))
                     }
                 }
         } else {

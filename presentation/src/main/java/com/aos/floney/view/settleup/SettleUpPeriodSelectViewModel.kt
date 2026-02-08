@@ -1,5 +1,6 @@
 package com.aos.floney.view.settleup
 
+import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -22,6 +23,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettleUpPeriodSelectViewModel @Inject constructor(
+    private val app: Application,
     stateHandle: SavedStateHandle,
     private val prefs: SharedPreferenceUtil,
     private val booksOutComesUseCase : BooksOutComesUseCase
@@ -90,7 +92,7 @@ class SettleUpPeriodSelectViewModel @Inject constructor(
             }
         }
         else {
-            baseEvent(Event.ShowToast("기간을 설정해주세요."))
+            baseEvent(Event.ShowToast(app.getString(R.string.toast_set_period)))
         }
     }
     // 이전 페이지로

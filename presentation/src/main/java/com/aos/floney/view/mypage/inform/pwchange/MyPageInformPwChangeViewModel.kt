@@ -1,5 +1,6 @@
 package com.aos.floney.view.mypage.inform.pwchange
 
+import android.app.Application
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.aos.floney.R
@@ -16,6 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MyPageInformPwChangeViewModel @Inject constructor(
+    private val application: Application,
     private val passwordChangeUseCase : PasswordChangeUseCase
 ): BaseViewModel() {
 
@@ -57,7 +59,7 @@ class MyPageInformPwChangeViewModel @Inject constructor(
                                 baseEvent(Event.ShowLoading)
                                 passwordChangeUseCase(newPassword = newPassword.value ?: "", oldPassword = nowPassword.value ?: "").onSuccess {
                                     // 비밀번호 변경 성공
-                                    baseEvent(Event.ShowSuccessToast("비밀번호 변경이 완료되었습니다"))
+                                    baseEvent(Event.ShowSuccessToast(application.getString(R.string.toast_password_changed_success)))
                                     baseEvent(Event.HideLoading)
                                     _checkBtn.emit(true)
                                 }.onFailure {
@@ -66,12 +68,12 @@ class MyPageInformPwChangeViewModel @Inject constructor(
                                     val errorCode = it.message.parseErrorCode()
 
                                     val message = when (errorCode) {
-                                        "U008" -> "일치하는 회원이 없습니다."
-                                        "U017" -> "이전에 사용한 비밀번호 입니다."
-                                        "U002" -> "현재 비밀번호가 일치하지 않습니다."
-                                        else -> "알 수 없는 오류입니다. 다시 시도해 주세요."
+                                        "U008" -> R.string.toast_no_matching_member
+                                        "U017" -> R.string.toast_error_password_reused
+                                        "U002" -> R.string.not_match_password
+                                        else -> R.string.toast_error_unknown
                                     }
-                                    baseEvent(Event.ShowToast(message))
+                                    baseEvent(Event.ShowToast(application.getString(message)))
                                 }
                             }
                         } else {

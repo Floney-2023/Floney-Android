@@ -14,6 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MyPageBookAddInputBookNameViewModel @Inject constructor(
+    private val application: android.app.Application
 ): BaseViewModel() {
 
     // 뒤로가기
@@ -39,7 +40,7 @@ class MyPageBookAddInputBookNameViewModel @Inject constructor(
             if(bookName.value!="")
                 _nextPage.emit(true)
             else{
-                baseEvent(Event.ShowToast("이름을 입력하세요."))
+                baseEvent(Event.ShowToast(application.getString(R.string.toast_enter_name)))
             }
         }
     }

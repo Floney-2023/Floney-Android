@@ -1,5 +1,6 @@
 package com.aos.floney.view.mypage.inform.withdraw
 
+import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -21,6 +22,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MyPageInformWithdrawInputPasswordViewModel @Inject constructor(
+    private val app: Application,
     stateHandle: SavedStateHandle,
     private val prefs: SharedPreferenceUtil,
     private val subscriptionDataStoreUtil: SubscriptionDataStoreUtil,
@@ -69,7 +71,7 @@ class MyPageInformWithdrawInputPasswordViewModel @Inject constructor(
                     _dialogPage.emit(true)
                 }.onFailure {
                     baseEvent(Event.HideLoading)
-                    baseEvent(Event.ShowToast("비밀번호가 일치하지 않습니다."))
+                    baseEvent(Event.ShowToast(app.getString(R.string.toast_passwords_not_match)))
                 }
             }
         } else {
@@ -93,7 +95,7 @@ class MyPageInformWithdrawInputPasswordViewModel @Inject constructor(
                 _withdrawPage.emit(true)
             }.onFailure {
                 baseEvent(Event.HideLoading)
-                baseEvent(Event.ShowToast("알 수 없는 오류입니다. 다시 시도해 주세요."))
+                baseEvent(Event.ShowToast(app.getString(R.string.toast_unknown_error)))
             }
         }
     }

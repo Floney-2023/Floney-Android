@@ -22,6 +22,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MyPageInformWithdrawReasonCheckViewModel @Inject constructor(
+    private val application: android.app.Application,
     private val prefs: SharedPreferenceUtil,
     private val subscriptionDataStoreUtil: SubscriptionDataStoreUtil,
     private val withdrawUseCase: WithdrawUseCase,
@@ -228,7 +229,7 @@ class MyPageInformWithdrawReasonCheckViewModel @Inject constructor(
                 _withdrawPage.emit(true)
             }.onFailure {
                 baseEvent(Event.HideLoading)
-                baseEvent(Event.ShowToast("알 수 없는 오류입니다. 다시 시도해 주세요."))
+                baseEvent(Event.ShowToast(application.getString(R.string.toast_error_unknown)))
             }
         }
     }

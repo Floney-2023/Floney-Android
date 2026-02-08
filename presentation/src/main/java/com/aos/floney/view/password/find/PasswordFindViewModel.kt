@@ -1,5 +1,6 @@
 package com.aos.floney.view.password.find
 
+import android.app.Application
 import android.util.Patterns
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -16,6 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PasswordFindViewModel @Inject constructor(
+    private val app: Application,
     private val sendTempPasswordUseCase: SendTempPasswordUseCase
 ): BaseViewModel() {
 
@@ -43,7 +45,7 @@ class PasswordFindViewModel @Inject constructor(
                     }.onFailure {
                         baseEvent(Event.HideLoading)
                         if(it.message.parseErrorMsg(this@PasswordFindViewModel).equals("해당 이메일로 가입된 유저가 없습니다.")) {
-                            baseEvent(Event.ShowToast("일치하는 회원이 없습니다."))
+                            baseEvent(Event.ShowToast(app.getString(R.string.toast_no_user_with_email)))
                         } else {
                             baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@PasswordFindViewModel)))
                         }

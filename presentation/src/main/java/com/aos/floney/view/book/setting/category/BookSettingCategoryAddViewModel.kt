@@ -1,11 +1,13 @@
 package com.aos.floney.view.book.setting.category
 
+import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.aos.data.util.SharedPreferenceUtil
+import com.aos.floney.R
 import com.aos.floney.base.BaseViewModel
 import com.aos.floney.ext.formatNumber
 import com.aos.floney.ext.parseErrorMsg
@@ -23,6 +25,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BookSettingCategoryAddViewModel @Inject constructor(
+    private val app: Application,
     stateHandle: SavedStateHandle,
     private val prefs: SharedPreferenceUtil,
     private val booksCategoryAddUseCase: BooksCategoryAddUseCase
@@ -59,14 +62,14 @@ class BookSettingCategoryAddViewModel @Inject constructor(
                     flow.value!!,
                     name.value!!
                 ).onSuccess {
-                    baseEvent(Event.ShowSuccessToast("추가 완료되었습니다"))
+                    baseEvent(Event.ShowSuccessToast(app.getString(R.string.toast_added_to_category)))
                     _completePage.emit(it.name)
                 }.onFailure {
                     baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@BookSettingCategoryAddViewModel)))
                 }
             }
         } else{
-            baseEvent(Event.ShowToast("항목 이름을 입력해주세요."))
+            baseEvent(Event.ShowToast(app.getString(R.string.toast_enter_item_name)))
         }
 
     }

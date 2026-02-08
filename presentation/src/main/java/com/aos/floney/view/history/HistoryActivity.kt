@@ -96,7 +96,6 @@ class HistoryActivity :
 
 
                 viewModel.processUpdatedPictureData(cloudList, localList)
-                // viewModel.baseEvent(Event.ShowSuccessToast("사진 첨부를 완료하였습니다."))
 
                 }
             }

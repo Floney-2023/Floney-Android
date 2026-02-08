@@ -84,7 +84,7 @@ class BookSettingExcelViewModel @Inject constructor(
                 }
             }
         } else{
-            baseEvent(Event.ShowToast("항목 이름을 입력해주세요."))
+            baseEvent(Event.ShowToast(application.getString(R.string.toast_enter_item_name)))
         }
 
     }

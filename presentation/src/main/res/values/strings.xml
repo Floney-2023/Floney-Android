@@ -4,6 +4,11 @@
     <string name="bottom_navigation_home">Home</string>
     <string name="bottom_navigation_analysis">Insights</string>
 
+    <!-- App Update-->
+    <string name="maintenance_title">Service Interruption Notice</string>
+
+    <string name="maintenance_message">To ensure a better app experience, maintenance will be performed during the period below.\n\n%s - %s\n\nThe app will be unavailable during this time. Thank you for your understanding.</string>
+
     <!-- Analyze/Insights Screen -->
     <string name="analyze_title">Insights</string>
     <string name="analyze_expense">Expense</string>
@@ -350,7 +355,6 @@
     <string name="toast_kakao_login_failed">Kakao login failed.</string>
     <string name="toast_unknown_error">An unknown error occurred.</string>
     <string name="toast_select_period">Please select a period.</string>
-    <string name="toast_check_email_password">Please check your email or password again.</string>
     <string name="toast_no_user_info">No registered information found.</string>
     <string name="toast_history_deleted">Entry deletion completed.</string>
     <string name="toast_no_matching_member">No matching member found.</string>
@@ -367,6 +371,12 @@
     <string name="toast_currency_changed">Currency has been updated.</string>
     <string name="toast_change_successed">Successfully updated.</string>
     <string name="toast_book_reset">Ledger has been reset.</string>
+    <string name="toast_error_book_already_joined">You have already joined this household book.</string>
+    <string name="toast_error_book_full">This household book is already full.</string>
+    <string name="toast_error_book_not_found">This household book does not exist.</string>
+    <string name="toast_error_unknown">An unknown error occurred. Please try again.</string>
+    <string name="toast_error_password_reused">You have used this password before.</string>
+    <string name="toast_password_changed_success">Your password has been changed.</string>
 
     <!--7-1 가계부설정 -->
     <string name="book_setting_title">Ledger Settings</string>
@@ -455,6 +465,8 @@
     <string name="book_setting_category_add_hint">Enter a name</string>
     <string name="book_setting_category_add_limit">* Up to 6 characters.</string>
     <string name="book_setting_category_add_button">Add</string>
+    <string name="toast_added_to_category">Added to Categories.</string>
+    <string name="toast_enter_item_name">Enter a category</string>
 
     <string name="book_setting_category_repeat_title">Delete Recurring Entry</string>
     <string name="book_setting_category_repeat_info">Delete this recurring entry?\nAll entries with this recurrence will be deleted.</string>
@@ -765,6 +777,84 @@
     <!-- Photo Confirmation -->
     <string name="photo_confirm">Confirm Photo</string>
 
+    <!-- Toast Messages -->
+    <!-- Sign Up / Login -->
+    <string name="toast_agree_all_terms">Please agree to all required terms.</string>
+    <string name="toast_no_account">No account found.</string>
+    <string name="toast_invalid_email">Please enter a valid email.</string>
+    <string name="toast_email_already_registered">This email is already registered.</string>
+    <string name="toast_linked_with_google">It\'s linked with Google.</string>
+    <string name="toast_linked_with_apple">It\'s linked with Apple.</string>
+    <string name="toast_something_wrong">Something went wrong. Please try again.</string>
+    <string name="toast_enter_email">Enter your email address.</string>
+    <string name="toast_check_email_password">Please check your email or password.</string>
+    <string name="toast_no_matching_account">No matching account found.</string>
+    <string name="toast_no_user_with_email">No user is registered with this email address.</string>
+
+
+    <!-- Password -->
+    <string name="toast_used_password">You\'ve used this password before.</string>
+    <string name="toast_enter_current_password">Please enter your current password.</string>
+    <string name="toast_enter_password">Please enter your password.</string>
+    <string name="toast_enter_new_password">Please enter a new password.</string>
+    <string name="toast_confirm_password">Please confirm your password.</string>
+    <string name="toast_confirm_new_password">Please confirm your new password.</string>
+    <string name="toast_check_password_format">Please check the password format.</string>
+    <string name="toast_passwords_not_match">Passwords do not match.</string>
+    <string name="toast_new_passwords_not_match">The new passwords do not match.</string>
+    <string name="toast_current_password_incorrect">The current password is incorrect.</string>
+    <string name="toast_incorrect_password">Incorrect password.</string>
+    <string name="toast_enter_nickname">Please enter a nickname.</string>
+
+    <!-- Ledger -->
+    <string name="toast_enter_ledger_name">Enter a ledger name.</string>
+    <string name="toast_ledger_full">This ledger is full.</string>
+    <string name="toast_all_members_leave">All members must leave before deleting.</string>
+    <string name="toast_ledger_limit_reached">You\'ve reached your ledger limit.</string>
+    <string name="toast_already_in_ledger">You\'re already in this ledger.</string>
+    <string name="toast_invalid_code">It\'s an invalid code.</string>
+    <string name="toast_enter_code">Enter the code.</string>
+    <string name="toast_expired_code">It\'s expired. Please try again.</string>
+    <string name="toast_code_not_exist">This code doesn\'t exist.</string>
+
+    <!-- Entry -->
+    <string name="toast_entry_saved">Entry saved.</string>
+    <string name="toast_enter_amount">Please enter an amount.</string>
+    <string name="toast_select_asset">Please select an asset.</string>
+    <string name="toast_select_category">Please select a category.</string>
+    <string name="toast_enter_reason">Please enter a reason.</string>
+    <string name="toast_amount_required">Enter an amount.</string>
+    <string name="toast_asset_required">Select an asset.</string>
+    <string name="toast_category_required">Select a category.</string>
+
+    <!-- Settlement -->
+    <string name="toast_select_member">Please select at least one member.</string>
+    <string name="toast_set_period">Please set a period.</string>
+    <string name="toast_no_records">No records found. Try another period.</string>
+    <string name="toast_select_entries">Select entries to settle.</string>
+
+    <!-- Favorites -->
+    <string name="toast_favorite_limit">Favorite limit reached.</string>
+    <string name="toast_added_to_favorites">Added to Favorites.</string>
+    <string name="toast_favorite_saved">Favorite saved.</string>
+
+    <!-- Notes/Photos -->
+    <string name="toast_note_saved">Note saved.</string>
+    <string name="toast_photo_added">Photo added.</string>
+    <string name="toast_no_image_selected">Not Selected Image</string>
+
+    <!-- Common -->
+    <string name="toast_successfully_updated">Successfully updated.</string>
+    <string name="toast_deleted">Deleted.</string>
+    <string name="toast_settlement_share_error">Error occurred while sharing settlement.</string>
+    <string name="toast_select_settlement_history">Please select a settlement history.</string>
+    <string name="toast_select_category_item">Please select a category item.</string>
+    <string name="toast_select_repeat_setting">Please select repeat settings.</string>
+    <string name="toast_image_processing_error">Error occurred while processing image.</string>
+    <string name="toast_image_file_creation_failed">Failed to create image file.</string>
+    <string name="toast_image_file_setting_failed">Failed to set image file.</string>
+
+
     <!-- Common Dialogs -->
     <string name="dialog_delete_only">Delete This only</string>
     <string name="dialog_delete_repeat">Delete All Future Entries</string>
@@ -801,6 +891,9 @@
     <string name="photo_upload">Upload</string>
     <string name="photo_delete_dialog_title">Delete Photo</string>
     <string name="photo_delete_dialog_message">Do you want to delete this photo?</string>
+
+    <string name="toast_photo_delete_success">Photo deleted successfully.</string>
+    <string name="toast_photo_upload_success">Photo uploaded successfully.</string>
 
     <!-- Home Daily Screen -->
     <string name="home_day_income">Incomes</string>

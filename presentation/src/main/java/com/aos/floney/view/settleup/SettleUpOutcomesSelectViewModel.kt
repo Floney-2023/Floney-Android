@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
+import android.app.Application
 import com.aos.data.util.SharedPreferenceUtil
 import com.aos.floney.R
 import com.aos.floney.base.BaseViewModel
@@ -32,6 +33,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettleUpOutcomesSelectViewModel @Inject constructor(
+    private val app: Application,
     stateHandle: SavedStateHandle,
     private val prefs: SharedPreferenceUtil,
     private val booksOutComesUseCase : BooksOutComesUseCase,
@@ -150,7 +152,7 @@ class SettleUpOutcomesSelectViewModel @Inject constructor(
                     baseEvent(Event.HideLoading)
                     _nextPage.emit(!showNextPage)
                 } else {
-                    baseEvent(Event.ShowToast("정산할 내역을 선택해주세요."))
+                    baseEvent(Event.ShowToast(app.getString(R.string.toast_select_settlement_history)))
                     baseEvent(Event.HideLoading)
                 }
             }

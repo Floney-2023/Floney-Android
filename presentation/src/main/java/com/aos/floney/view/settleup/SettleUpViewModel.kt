@@ -1,11 +1,13 @@
 package com.aos.floney.view.settleup
 
+import android.app.Application
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.aos.data.util.SharedPreferenceUtil
 import com.aos.data.util.SubscriptionDataStoreUtil
+import com.aos.floney.R
 import com.aos.floney.base.BaseViewModel
 import com.aos.floney.ext.parseErrorMsg
 import com.aos.floney.util.EventFlow
@@ -23,6 +25,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettleUpViewModel @Inject constructor(
+    private val app: Application,
     private val prefs: SharedPreferenceUtil,
     private val subscriptionDataStoreUtil: SubscriptionDataStoreUtil,
     private val booksEntranceUseCase : BooksEntranceUseCase
@@ -127,7 +130,7 @@ class SettleUpViewModel @Inject constructor(
         if (settlementId != null && bookKey.isNotEmpty()) {
             settingBookKey(settlementId, bookKey)
         } else {
-            baseEvent(Event.ShowToast("정산 공유하기 오류가 발생하였습니다."))
+            baseEvent(Event.ShowToast(app.getString(R.string.toast_settlement_share_error)))
         }
     }
 }

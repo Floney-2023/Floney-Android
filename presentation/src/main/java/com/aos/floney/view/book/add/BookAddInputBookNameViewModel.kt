@@ -4,7 +4,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.aos.floney.R
 import com.aos.floney.base.BaseViewModel
-import com.aos.floney.ext.parseErrorMsg
 import com.aos.floney.util.EventFlow
 import com.aos.floney.util.MutableEventFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,6 +13,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BookAddInputBookNameViewModel @Inject constructor(
+    private val application: android.app.Application
 ): BaseViewModel() {
 
     // 뒤로가기
@@ -36,7 +36,7 @@ class BookAddInputBookNameViewModel @Inject constructor(
     // 다음 페이지로 이동 -> 가계부 이름 전달
     fun onClickNextPage(){
         if (bookName.value.isNullOrBlank()){
-            baseEvent(Event.ShowToast("이름을 입력하세요."))
+            baseEvent(Event.ShowToast(application.getString(R.string.toast_enter_name)))
         }
         else {
             viewModelScope.launch(Dispatchers.IO) {

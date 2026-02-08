@@ -1,5 +1,6 @@
 package com.aos.floney.view.book.add
 
+import android.app.Application
 import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
@@ -35,6 +36,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BookAddSettingProfileViewModel @Inject constructor(
+    private val application: Application,
     stateHandle: SavedStateHandle,
     @ApplicationContext private val context: Context,
     private val prefs: SharedPreferenceUtil,
@@ -127,7 +129,7 @@ class BookAddSettingProfileViewModel @Inject constructor(
         val uploadTask = imageRef.putBytes(data)
         uploadTask.addOnFailureListener {
             baseEvent(Event.HideLoading)
-            baseEvent(Event.ShowToast("프로필 변경이 실패하였습니다."))
+            baseEvent(Event.ShowToast(application.getString(R.string.toast_profile_change_failed)))
         }.addOnSuccessListener {
             // 다운로드 링크 가져오기
             it.storage.downloadUrl.addOnSuccessListener {url ->
@@ -136,7 +138,7 @@ class BookAddSettingProfileViewModel @Inject constructor(
             }.addOnFailureListener {
                 // 실패
                 baseEvent(Event.HideLoading)
-                baseEvent(Event.ShowToast("프로필 변경이 실패하였습니다."))
+                baseEvent(Event.ShowToast(application.getString(R.string.toast_profile_change_failed)))
             }
         }
     }
@@ -151,7 +153,7 @@ class BookAddSettingProfileViewModel @Inject constructor(
             }.onFailure {
                 // 실패
                 baseEvent(Event.HideLoading)
-                baseEvent(Event.ShowToast("프로필 변경이 실패하였습니다."))
+                baseEvent(Event.ShowToast(application.getString(R.string.toast_profile_change_failed)))
             }
         }
     }
@@ -180,7 +182,7 @@ class BookAddSettingProfileViewModel @Inject constructor(
                         setImageBitmap(bitmap)
                         bitmap
                     } else {
-                        baseEvent(Event.ShowToast("이미지 파일 생성에 실패하였습니다."))
+                        baseEvent(Event.ShowToast(application.getString(R.string.toast_image_processing_error)))
                         null
                     }
                 } else {
@@ -198,7 +200,7 @@ class BookAddSettingProfileViewModel @Inject constructor(
                             setImageBitmap(bitmap)
                             bitmap
                         } else {
-                            baseEvent(Event.ShowToast("이미지 파일 생성에 실패하였습니다."))
+                            baseEvent(Event.ShowToast(application.getString(R.string.toast_image_processing_error)))
                             null
                         }
                     } else {
@@ -208,18 +210,18 @@ class BookAddSettingProfileViewModel @Inject constructor(
                             setImageBitmap(bitmap)
                             bitmap
                         } else {
-                            baseEvent(Event.ShowToast("이미지 파일 생성에 실패하였습니다."))
+                            baseEvent(Event.ShowToast(application.getString(R.string.toast_image_processing_error)))
                             null
                         }
                     }
                 }
             } catch (e: Exception) {
                 Timber.e(e, "Error in createBitmapFile")
-                baseEvent(Event.ShowToast("이미지 파일 생성에 실패하였습니다."))
+                baseEvent(Event.ShowToast(application.getString(R.string.toast_image_processing_error)))
                 null
             }
         } else {
-            baseEvent(Event.ShowToast("이미지 파일 설정에 실패하였습니다."))
+            baseEvent(Event.ShowToast(application.getString(R.string.toast_image_processing_error)))
             null
         }
     }
@@ -247,21 +249,6 @@ class BookAddSettingProfileViewModel @Inject constructor(
         }
     }
 
-    // 기본 이미지로 설정
-    fun onClickBasicSettingImage() {
-        viewModelScope.launch {
-            _onClickDefaultProfile.emit(true)
-        }
-    }
-
-    // 변경하기 버튼 클릭
-    fun onClickProfileChange() {
-        Timber.e("asdassdad")
-        viewModelScope.launch {
-            _onClickChange.emit(true)
-        }
-    }
-
     // 임시 촬영 uri 저장
     fun setTakeCaptureUri(uri: Uri?) {
         takeCaptureUri = uri
@@ -279,7 +266,7 @@ class BookAddSettingProfileViewModel @Inject constructor(
     }
 
     // 정사각형 크롭 이미지
-    fun cropBitmapToSquare(bitmap: Bitmap): Bitmap {
+    private fun cropBitmapToSquare(bitmap: Bitmap): Bitmap {
         val size = Math.min(bitmap.width, bitmap.height)
         val x = (bitmap.width - size) / 2
         val y = (bitmap.height - size) / 2

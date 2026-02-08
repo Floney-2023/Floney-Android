@@ -84,7 +84,7 @@ class BookSettingProfileChangeViewModel @Inject constructor(
                 _onChange.emit(true)
             }.onFailure {
                 baseEvent(Event.HideLoading)
-                baseEvent(Event.ShowToast("프로필 변경을 실패하였습니다."))
+                baseEvent(Event.ShowToast(application.getString(R.string.toast_profile_change_failed)))
             }
         }
     }
@@ -107,7 +107,7 @@ class BookSettingProfileChangeViewModel @Inject constructor(
             val uploadTask = imageRef.putBytes(data)
             uploadTask.addOnFailureListener {
                 baseEvent(Event.HideLoading)
-                baseEvent(Event.ShowToast("프로필 변경이 실패하였습니다."))
+                baseEvent(Event.ShowToast(application.getString(R.string.toast_profile_change_failed)))
             }.addOnSuccessListener {
                 // 다운로드 링크 가져오기
                 it.storage.downloadUrl.addOnSuccessListener {uri ->
@@ -117,7 +117,7 @@ class BookSettingProfileChangeViewModel @Inject constructor(
                 }.addOnFailureListener {
                     // 실패
                     baseEvent(Event.HideLoading)
-                    baseEvent(Event.ShowToast("프로필 변경이 실패하였습니다."))
+                    baseEvent(Event.ShowToast(application.getString(R.string.toast_profile_change_failed)))
                 }
             }
         }
@@ -148,7 +148,7 @@ class BookSettingProfileChangeViewModel @Inject constructor(
                         setImageBitmap(bitmap)
                         bitmap
                     } else {
-                        baseEvent(Event.ShowToast("이미지 파일 생성에 실패하였습니다."))
+                        baseEvent(Event.ShowToast(application.getString(R.string.toast_image_processing_error)))
                         null
                     }
                 } else {
@@ -166,7 +166,7 @@ class BookSettingProfileChangeViewModel @Inject constructor(
                             setImageBitmap(bitmap)
                             bitmap
                         } else {
-                            baseEvent(Event.ShowToast("이미지 파일 생성에 실패하였습니다."))
+                            baseEvent(Event.ShowToast(application.getString(R.string.toast_image_processing_error)))
                             null
                         }
                     } else {
@@ -176,18 +176,18 @@ class BookSettingProfileChangeViewModel @Inject constructor(
                             setImageBitmap(bitmap)
                             bitmap
                         } else {
-                            baseEvent(Event.ShowToast("이미지 파일 생성에 실패하였습니다."))
+                            baseEvent(Event.ShowToast(application.getString(R.string.toast_image_processing_error)))
                             null
                         }
                     }
                 }
             } catch (e: Exception) {
                 Timber.e(e, "Error in createBitmapFile")
-                baseEvent(Event.ShowToast("이미지 파일 생성에 실패하였습니다."))
+                baseEvent(Event.ShowToast(application.getString(R.string.toast_image_processing_error)))
                 null
             }
         } else {
-            baseEvent(Event.ShowToast("이미지 파일 설정에 실패하였습니다."))
+            baseEvent(Event.ShowToast(application.getString(R.string.toast_image_processing_error)))
             null
         }
     }

@@ -138,7 +138,7 @@ class InsertPictureActivity :
                         viewModel.deletePictureFile(it)
                     }
 
-                viewModel.baseEvent(BaseViewModel.Event.ShowSuccessToast("사진 삭제가 완료되었습니다."))
+                viewModel.baseEvent(BaseViewModel.Event.ShowSuccessToast(application.getString(R.string.toast_photo_delete_success)))
             }
         }
 
@@ -152,7 +152,7 @@ class InsertPictureActivity :
                     handleImageResult(it) // Uri 기반 처리
                 }
 
-                viewModel.baseEvent(BaseViewModel.Event.ShowSuccessToast("사진 업로드가 완료되었습니다."))
+                viewModel.baseEvent(BaseViewModel.Event.ShowSuccessToast(application.getString(R.string.toast_photo_upload_success)))
             }
         }
 
@@ -220,7 +220,7 @@ class InsertPictureActivity :
                     viewModel.getTakeCaptureUri()?.let { uri ->
                         takePhoto.launch(uri)
                     } ?: run {
-                        viewModel.baseEvent(BaseViewModel.Event.ShowToast("이미지 파일을 만들 수 없습니다."))
+                        viewModel.baseEvent(BaseViewModel.Event.ShowToast(getString(R.string.toast_image_processing_error)))
                     }
                 }, {
                     // 앨범에서 사진 선택 (PhotoPicker 사용)

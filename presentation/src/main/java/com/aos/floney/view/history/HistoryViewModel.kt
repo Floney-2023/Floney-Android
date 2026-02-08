@@ -467,21 +467,11 @@ class HistoryViewModel @Inject constructor(
     // 에러 메세지 생성
     private fun createErrorMsg() {
         if (cost.value == "") {
-            baseEvent(Event.ShowToast("금액을 입력해주세요"))
+            baseEvent(Event.ShowToast(application.getString(R.string.toast_enter_amount)))
         } else if (asset.value == "") {
-            baseEvent(Event.ShowToast("자산을 선택해주세요"))
+            baseEvent(Event.ShowToast(application.getString(R.string.toast_select_asset)))
         } else if (line.value == "") {
-            baseEvent(Event.ShowToast("분류를 선택해주세요"))
-        }
-    }
-
-    private fun createFavoriteErrorMsg() {
-        if (cost.value == "") {
-            baseEvent(Event.ShowToast("금액을 입력해주세요"))
-        } else if (asset.value == "") {
-            baseEvent(Event.ShowToast("자산을 선택해주세요"))
-        } else if (line.value == "") {
-            baseEvent(Event.ShowToast("분류를 선택해주세요"))
+            baseEvent(Event.ShowToast(application.getString(R.string.toast_select_category)))
         }
     }
 
@@ -705,7 +695,7 @@ class HistoryViewModel @Inject constructor(
         return if (categoryClickItem != null) {
             true
         } else {
-            baseEvent(Event.ShowToast("카테고리 항목을 선택해주세요"))
+            baseEvent(Event.ShowToast(application.getString(R.string.toast_select_category_item)))
             false
         }
     }
@@ -715,7 +705,7 @@ class HistoryViewModel @Inject constructor(
         return if (repeatClickItem.value != null) {
             true
         } else {
-            baseEvent(Event.ShowToast("반복 설정 항목을 선택해주세요"))
+            baseEvent(Event.ShowToast(application.getString(R.string.toast_select_repeat_setting)))
             false
         }
     }
@@ -748,7 +738,7 @@ class HistoryViewModel @Inject constructor(
                 exceptStatus = deleteChecked.value!!
             ).onSuccess {
                 _postBooksFavorites.emit(true)
-                baseEvent(Event.ShowSuccessToast("즐겨찾기에 추가되었습니다."))
+                baseEvent(Event.ShowSuccessToast(application.getString(R.string.toast_added_to_favorites)))
             }.onFailure {
                 if (subscriptionDataStoreUtil.getSubscribeExpired().first()) {
                     subscribeExpired.value = true
@@ -808,7 +798,7 @@ class HistoryViewModel @Inject constructor(
                 if (allOperationsSuccessful) {
                     goModifyHistory()
                 } else {
-                    baseEvent(Event.ShowToast("이미지 처리 중 오류가 발생했습니다."))
+                    baseEvent(Event.ShowToast(application.getString(R.string.toast_image_processing_error)))
                 }
             } finally {
                 baseEvent(Event.HideLoading)
@@ -849,7 +839,7 @@ class HistoryViewModel @Inject constructor(
                 if (allOperationsSuccessful) {
                     goToAddHistory()
                 } else {
-                    baseEvent(Event.ShowToast("이미지 처리 중 오류가 발생했습니다."))
+                    baseEvent(Event.ShowToast(application.getString(R.string.toast_image_processing_error)))
                 }
             } finally {
                 baseEvent(Event.HideLoading)

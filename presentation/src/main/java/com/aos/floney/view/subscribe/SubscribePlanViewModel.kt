@@ -1,6 +1,7 @@
 package com.aos.floney.view.subscribe
 
 import android.app.Activity
+import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -31,6 +32,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SubscribePlanViewModel @Inject constructor(
+    private val app: Application,
     private val subscriptionDataStoreUtil: SubscriptionDataStoreUtil,
     private val subscribeAndroidUseCase: SubscribeAndroidUseCase
 ): BaseViewModel(), BillingManager.BillingCallback {
@@ -81,7 +83,7 @@ class SubscribePlanViewModel @Inject constructor(
                 billingManager.startConnection()
             } catch (e: Exception) {
                 Timber.e("Error starting billing connection: ${e.message}")
-                baseEvent(Event.ShowToast("결제 연결에 실패했습니다. 다시 시도해주세요."))
+                baseEvent(Event.ShowToast(app.getString(R.string.toast_payment_connection_failed)))
             }
         }
     }

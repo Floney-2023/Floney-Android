@@ -126,7 +126,7 @@ class MyPageBookAddSettingProfileFragment : BaseFragment<FragmentMyPageBookAddSe
                     if (viewModel.getImageBitmap() != null) {
                         viewModel.onClickNextPage()
                     } else {
-                        viewModel.baseEvent(BaseViewModel.Event.ShowToast("변경할 이미지가 선택되지 않았습니다."))
+                        viewModel.baseEvent(BaseViewModel.Event.ShowToast(getString(R.string.toast_no_image_selected)))
                     }
                 }
             }

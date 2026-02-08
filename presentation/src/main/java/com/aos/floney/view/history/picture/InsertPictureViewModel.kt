@@ -137,7 +137,7 @@ class InsertPictureViewModel @Inject constructor(
     fun onClickedAddPicture() {
         viewModelScope.launch {
             if ((sortPictures.value?.selectablePictures?.size ?: 0) >= 4){
-                baseEvent(Event.ShowToast("최대 4장까지 첨부할 수 있습니다."))
+                baseEvent(Event.ShowToast(application.getString(R.string.toast_max_photos)))
                 return@launch
             }
             _onClickedAddPicture.emit(true)
@@ -229,20 +229,20 @@ class InsertPictureViewModel @Inject constructor(
                         croppedBitmap
                     } catch (e: Exception) {
                         Timber.e(e, "Error saving bitmap to file")
-                        baseEvent(Event.ShowToast("이미지 파일 생성에 실패하였습니다."))
+                        baseEvent(Event.ShowToast(application.getString(R.string.toast_image_processing_error)))
                         null
                     }
                 } else {
-                    baseEvent(Event.ShowToast("이미지 파일 생성에 실패하였습니다."))
+                    baseEvent(Event.ShowToast(application.getString(R.string.toast_image_processing_error)))
                     null
                 }
             } catch (e: Exception) {
                 Timber.e(e, "Error in createBitmapFile")
-                baseEvent(Event.ShowToast("이미지 파일 생성에 실패하였습니다."))
+                baseEvent(Event.ShowToast(application.getString(R.string.toast_image_processing_error)))
                 null
             }
         } else {
-            baseEvent(Event.ShowToast("이미지 파일 설정에 실패하였습니다."))
+            baseEvent(Event.ShowToast(application.getString(R.string.toast_image_processing_error)))
             null
         }
     }

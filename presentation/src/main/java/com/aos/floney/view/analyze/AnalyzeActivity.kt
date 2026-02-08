@@ -62,7 +62,7 @@ class AnalyzeActivity :
             if (result.resultCode == Activity.RESULT_OK) {
                 val isSaved = result.data?.getBooleanExtra("isSave", false) ?: false
                 if (isSaved) {
-                    viewModel.baseEvent(BaseViewModel.Event.ShowSuccessToast("저장이 완료되었습니다."))
+                    viewModel.baseEvent(BaseViewModel.Event.ShowSuccessToast(getString(R.string.toast_save_completed)))
                     result.data?.removeExtra("isSave")
 
                     // 데이터를 다시 불러온다.

@@ -60,14 +60,24 @@ class SplashActivity :
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun checkPauseUpdate(maintenanceStart: LocalDateTime, maintenanceEnd: LocalDateTime) {
+    private fun checkPauseUpdate(
+        maintenanceStart: LocalDateTime,
+        maintenanceEnd: LocalDateTime
+    ) {
         val formattedStart = maintenanceStart.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))
         val formattedEnd = maintenanceEnd.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))
 
-        BaseAlertDialog(title = "앱 중단 알림", info = "원활한 앱 사용을 위해 \n" +
-                "${formattedStart} - ${formattedEnd}\n" +
-                "위 기간 동안 앱 점검을 진행합니다. \n" +
-                "앱 사용이 불가하니 양해 부탁드립니다.\n", false) {
+        val message = getString(
+            R.string.maintenance_message,
+            formattedStart,
+            formattedEnd
+        )
+
+        BaseAlertDialog(
+            title = getString(R.string.maintenance_title),
+            info = message,
+            false
+        ) {
             finishAffinity()
         }.show(supportFragmentManager, "PauseUpdateDialog")
     }
