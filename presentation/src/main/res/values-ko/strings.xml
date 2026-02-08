@@ -674,6 +674,9 @@
     <string name="photo_delete_dialog_message">사진을 삭제하시겠습니까?</string>
     <string name="memo_hint">메모를 입력하세요.</string>
     <string name="memo_limit">* 최대 1,000자까지 쓸 수 있어요.</string>
+    <string name="photo_upload_button">사진 추가하기</string>
+    <string name="photo_delete_button">삭제하기</string>
+    <string name="no_picture">사진이 없습니다.</string>
 
     <!-- 공지사항 -->
     <string name="notice_title">공지사항</string>
@@ -933,6 +936,9 @@
     <string name="asset_current">현재자산</string>
     <string name="asset_initial">초기자산</string>
     <string name="budget_set_this_month">이번달 예산 설정하기</string>
+
+    <string name="action_deselect_all">선택 취소</string>
+    <string name="action_select_all">전체 선택</string>
 
     <!-- 분석 화면 예산 -->
     <string name="analyze_remaining_amount">남은 금액</string>

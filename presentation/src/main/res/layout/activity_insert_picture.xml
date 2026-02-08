@@ -67,8 +67,8 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="20dp"
             android:fontFamily="@font/floney_pretendard_regular"
-            android:visibility="@{vm.isDeleteMode ? View.VISIBLE : View.GONE}"
-            android:text="@{vm.isAllSelected ? `선택 취소` : `전체 선택` }"
+            android:visibility="@{vm.isDeleteMode &amp; vm.sortPictures.selectablePictures.size >= 0 ? View.VISIBLE : View.GONE}"
+            android:text="@{vm.isAllSelected ? @string/action_deselect_all : @string/action_select_all }"
             android:onClick="@{() -> vm.toggleSelectAll(!vm.isAllSelected)}"
             android:textColor="@color/grayscale2"
             android:textSize="14sp"
@@ -77,16 +77,28 @@
             app:layout_constraintTop_toTopOf="@id/iv_back" />
 
         <ImageView
-            android:id="@+id/iv_empty_view"
-            android:layout_width="80dp"
-            android:layout_height="86dp"
-            android:src="@drawable/ic_photo_empty"
+            android:id="@+id/imageView3"
+            android:layout_width="50dp"
+            android:layout_height="84dp"
+            android:src="@drawable/icon_empty_list"
             android:visibility="@{vm.sortPictures.selectablePictures.size == 0 ? View.VISIBLE : View.GONE }"
             app:layout_constraintBottom_toTopOf="@+id/appCompatButton8"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/textView10" />
+            app:layout_constraintTop_toTopOf="parent" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/no_picture"
+            android:textColor="@color/grayscale6"
+            android:textSize="12dp"
+            android:fontFamily="@font/pretendard_medium"
+            android:visibility="@{vm.sortPictures.selectablePictures.size == 0 ? View.VISIBLE : View.GONE }"
+            app:layout_constraintEnd_toEndOf="@+id/imageView3"
+            app:layout_constraintStart_toStartOf="@+id/imageView3"
+            app:layout_constraintTop_toBottomOf="@+id/imageView3" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_imageList"
@@ -113,7 +125,7 @@
             android:background="@color/black"
             android:fontFamily="@font/pretendard_bold"
             android:onClick="@{() -> vm.onClickedBottomButton()}"
-            android:text="@{vm.isDeleteMode ? `삭제하기` : `사진 추가하기` }"
+            android:text="@{vm.isDeleteMode ? @string/photo_delete_button : @string/photo_upload_button }"
             android:textColor="@color/white"
             android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="parent"

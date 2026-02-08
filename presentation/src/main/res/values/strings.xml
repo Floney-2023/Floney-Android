@@ -489,7 +489,7 @@
     <string name="history_description_hint">Enter a description</string>
     <string name="history_exclude_budget">Exclude from budget</string>
     <string name="history_exclude_asset">Exclude from assets</string>
-    <string name="history_memo">Memo</string>
+    <string name="history_memo">Note</string>
     <string name="history_picture">Photo</string>
     <string name="history_save">Save</string>
     <string name="history_delete">Delete</string>
@@ -639,6 +639,8 @@
     <!-- 사진 상세 -->
     <string name="picture_detail_title">Photo Details</string>
     <string name="picture_delete">Delete</string>
+    <string name="no_picture">No photos.</string>
+
 
     <!-- 반복 설정 -->
     <string name="repeat_history_title">Repeat Settings</string>
@@ -684,6 +686,9 @@
     <string name="asset_current">Current Assets</string>
     <string name="asset_initial">Initial Assets</string>
     <string name="budget_set_this_month">Set This Month\'s Budget</string>
+
+    <string name="action_deselect_all">Deselect All</string>
+    <string name="action_select_all">Select All</string>
 
     <!-- 공지사항 -->
     <string name="notice_title">Announcements</string>
@@ -871,10 +876,10 @@
     <string name="dialog_delete_photo_message">Delete this photo?</string>
 
     <!-- Memo -->
-    <string name="memo_title">Memo</string>
-    <string name="memo_save">Save Memo</string>
-    <string name="memo_hint">Enter your memo.</string>
-    <string name="memo_limit">* Maximum 1,000 characters allowed.</string>
+    <string name="memo_title">Note</string>
+    <string name="memo_save">Save</string>
+    <string name="memo_hint">Enter note</string>
+    <string name="memo_limit">* Up to 1000 characters</string>
 
     <!-- Photo Selection -->
     <string name="photo_take_picture">Take a photo</string>
@@ -887,10 +892,13 @@
     <string name="photo_add">Add Photo</string>
 
     <string name="photo_delete">Delete</string>
-    <string name="photo_confirm_title">Confirm Photo</string>
+    <string name="photo_confirm_title">Photo Details</string>
     <string name="photo_upload">Upload</string>
     <string name="photo_delete_dialog_title">Delete Photo</string>
     <string name="photo_delete_dialog_message">Do you want to delete this photo?</string>
+
+    <string name="photo_upload_button">Add</string>
+    <string name="photo_delete_button">Delete</string>
 
     <string name="toast_photo_delete_success">Photo deleted successfully.</string>
     <string name="toast_photo_upload_success">Photo uploaded successfully.</string>

@@ -368,7 +368,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/history_memo"
+                        android:text="@string/history_picture"
                         android:textColor="@color/primary2"
                         android:textSize="12sp"
                         android:fontFamily="@font/floney_pretendard_medium"/>
@@ -398,7 +398,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/photo_title"
+                        android:text="@string/history_picture"
                         android:textColor="@color/primary2"
                         android:textSize="12sp"
                         android:fontFamily="@font/floney_pretendard_medium"/>
