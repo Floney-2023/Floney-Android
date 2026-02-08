@@ -740,6 +740,16 @@
 
     <!-- 알림 -->
     <string name="notification_book">가계부 알림</string>
+    <string name="notification_title">플로니</string>
+
+    <!-- Notification Messages -->
+    <string name="notification_settle_ledger">%s 가계부를 정산해보세요.</string>
+    <string name="notification_budget_usage">예산의 %s%%를 사용했어요. 남은 예산을 확인해보세요.</string>
+    <string name="notification_add_spending">오늘의 지출을 추가하고 사용 내역을 확인해보세요.</string>
+    <string name="notification_user_joined">%1$s님이 %2$s 가계부에 들어왔어요.</string>
+    <string name="notification_user_left">%1$s님이 %2$s 가계부를 나갔습니다.</string>
+    <string name="notification_currency_changed">%1$s 가계부의 화폐가 %2$s로 변경되었어요.</string>
+    <string name="notification_ledger_reset">%s 가계부가 초기화 되었어요.</string>
 
     <!-- 사진 확인 -->
     <string name="photo_confirm">사진 확인</string>

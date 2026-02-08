@@ -120,8 +120,8 @@ class BookSettingCurrencyViewModel @Inject constructor(
                 emailArray.value!!.map {
                     alarmSaveGetUseCase(
                         prefs.getString("bookKey",""),
-                        "플로니",
-                        "${bookName.value} 가계부의 화폐가 ${code}로 변경되었어요.",
+                        application.getString(R.string.notification_title),
+                        application.getString(R.string.notification_currency_changed, bookName.value, code),
                         "icon_noti_currency",
                         it,
                         getCurrentDateTimeString()).onSuccess {

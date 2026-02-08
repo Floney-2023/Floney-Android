@@ -751,6 +751,16 @@
 
     <!-- Notification -->
     <string name="notification_book">Ledger Notifications</string>
+    <string name="notification_title">Floney</string>
+
+    <!-- Notification Messages -->
+    <string name="notification_settle_ledger">Settle the %s team ledger.</string>
+    <string name="notification_budget_usage">You\'ve used %s%% of your budget. Check what you can still spend.</string>
+    <string name="notification_add_spending">Add today\'s spending and review your usage.</string>
+    <string name="notification_user_joined">%1$s joined the %2$s team ledger.</string>
+    <string name="notification_user_left">%1$s left the %2$s team ledger.</string>
+    <string name="notification_currency_changed">Currency in the %1$s team ledger was changed to %2$s.</string>
+    <string name="notification_ledger_reset">The %s team ledger was reset.</string>
 
     <!-- Photo Confirmation -->
     <string name="photo_confirm">Confirm Photo</string>

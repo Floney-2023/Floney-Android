@@ -1,5 +1,6 @@
 package com.aos.floney.view.book.add
 
+import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -21,6 +22,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BookAddInviteSuccessViewModel @Inject constructor(
+    private val app: Application,
     private val prefs: SharedPreferenceUtil,
     private val booksSettingGetUseCase : BooksSettingGetUseCase,
     private val alarmSaveGetUseCase : AlarmSaveGetUseCase
@@ -62,9 +64,10 @@ class BookAddInviteSuccessViewModel @Inject constructor(
                 bookSettingInfo.value?.ourBookUsers?.map {
                     alarmSaveGetUseCase(
                         prefs.getString("bookKey",""),
-                        "플로니",
-                        "${_bookSettingInfo.value!!.ourBookUsers[0].name}님이 " +
-                                "${_bookSettingInfo.value!!.bookName} 가계부에 들어왔어요.",
+                        app.getString(R.string.notification_title),
+                        app.getString(R.string.notification_user_joined,
+                            _bookSettingInfo.value!!.ourBookUsers[0].name,
+                            _bookSettingInfo.value!!.bookName),
                         "icon_noti_join",
                         it.email,
                         getCurrentDateTimeString()

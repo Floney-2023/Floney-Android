@@ -203,8 +203,8 @@ class BookSettingMainViewModel @Inject constructor(
                 bookSettingInfo.value?.ourBookUsers?.map {
                     alarmSaveGetUseCase(
                         prefs.getString("bookKey", ""),
-                        "플로니",
-                        "${_bookSettingInfo.value!!.bookName} 가계부가 초기화 되었어요.",
+                        application.getString(R.string.notification_title),
+                        application.getString(R.string.notification_ledger_reset, _bookSettingInfo.value!!.bookName),
                         "icon_noti_reset",
                         it.email,
                         getCurrentDateTimeString()
@@ -229,8 +229,10 @@ class BookSettingMainViewModel @Inject constructor(
                     if (index != 0) { // 인덱스가 0이 아닌 경우에만 실행(본인 제외, 알람)
                         alarmSaveGetUseCase(
                             prefs.getString("bookKey", ""),
-                            "플로니",
-                            "${_bookSettingInfo.value!!.ourBookUsers[index].name}님이 ${_bookSettingInfo.value!!.bookName} 가계부를 나갔습니다.",
+                            application.getString(R.string.notification_title),
+                            application.getString(R.string.notification_user_left,
+                                _bookSettingInfo.value!!.ourBookUsers[index].name,
+                                _bookSettingInfo.value!!.bookName),
                             "icon_noti_exit",
                             _bookSettingInfo.value!!.ourBookUsers[index].email,
                             getCurrentDateTimeString()

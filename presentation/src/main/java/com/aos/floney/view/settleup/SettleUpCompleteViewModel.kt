@@ -1,5 +1,6 @@
 package com.aos.floney.view.settleup
 
+import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -30,6 +31,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettleUpCompleteViewModel @Inject constructor(
+    private val app: Application,
     stateHandle: SavedStateHandle,
     private val prefs: SharedPreferenceUtil,
     private val settlementAddUseCase : SettlementAddUseCase,
@@ -114,8 +116,8 @@ class SettleUpCompleteViewModel @Inject constructor(
                 memberArray.value?.map {
                     alarmSaveGetUseCase(
                         prefs.getString("bookKey",""),
-                        "플로니",
-                        "${_bookSettingInfo.value!!.bookName} 가계부를 정산해보세요.",
+                        app.getString(R.string.notification_title),
+                        app.getString(R.string.notification_settle_ledger, _bookSettingInfo.value!!.bookName),
                         "icon_noti_settlement",
                         it,
                         getCurrentDateTimeString()
