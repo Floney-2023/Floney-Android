@@ -511,13 +511,21 @@ fun GetBooksInfoEntity.toUiBookSettingModel(context: Context): UiBookSettingMode
             profileImg = it.profileImg ?: "user_default",
             email = it.email,
             role = roleString,
-            me = it.me
+            me = it.me,
+            roleOrigin = it.role
         )
     }
+
+    val pattern = context.getString(R.string.book_date_pattern)
+    val outputFormat = SimpleDateFormat(pattern, Locale.ENGLISH)
+
+    val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+    val formattedDate = inputFormat.parse(this.startDay)?.let { outputFormat.format(it) } ?: ""
+
     return UiBookSettingModel(
         bookName = this.bookName,
         bookImg = this.bookImg ?: "",
-        startDay = "${this.startDay.replace('-', '.')} 개설",
+        startDay = context.getString(R.string.book_opened_date, formattedDate),
         seeProfileStatus = this.seeProfileStatus,
         carryOver = this.carryOver,
         ourBookUsers = myBookUsers
@@ -610,34 +618,37 @@ fun List<GetBookRepeatEntity>.toUiBookRepeatModel(): List<UiBookRepeatModel> {
     }
 }
 
-fun GetBooksEntity.toUiBookEntranceModel(): UiBookEntranceModel {
+fun GetBooksEntity.toUiBookEntranceModel(context: Context): UiBookEntranceModel {
     return UiBookEntranceModel(
         bookName = this.bookName,
         bookImg = this.bookImg,
-        bookInfo = formatBookInfo(this.startDay, this.memberCount),
+        bookInfo = formatBookInfo(context, this.startDay, this.memberCount),
         bookKey = this.bookKey
     )
 }
 
-fun PostNaverShortenUrlEntity.toNaverShortenUrlModel(): NaverShortenUrlModel {
-    return NaverShortenUrlModel(
-        result = this.result.url
-    )
-}
+fun formatBookInfo(context: Context, startDay: String, memberCount: Int): String {
+    val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS", Locale.US)
 
-fun formatBookInfo(startDay: String, memberCount: Int): String {
-    // 입력된 날짜 형식
-    val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS", Locale.getDefault())
-    // 출력할 날짜 형식
-    val outputFormat = SimpleDateFormat("yyyy.MM.dd", Locale.getDefault())
-
-    // startDay를 Date 객체로 파싱
     val date = inputFormat.parse(startDay)
-    // 파싱된 Date 객체를 새로운 형식으로 포매팅
+
+    val pattern = context.getString(R.string.book_date_pattern)
+    val outputFormat = SimpleDateFormat(pattern, Locale.ENGLISH)
+    // 영어 월 이름 필요하니까 ENGLISH 고정
+
     val formattedDate = date?.let { outputFormat.format(it) } ?: ""
 
-    return "$formattedDate 개설 ꞏ ${memberCount}명"
+    return if (Locale.getDefault().language == "en") {
+        val resId =
+            if (memberCount == 1) R.string.book_info_format
+            else R.string.book_info_format_plural
+
+        context.getString(resId, formattedDate, memberCount)
+    } else {
+        context.getString(R.string.book_info_format, formattedDate, memberCount)
+    }
 }
+
 
 fun List<GetBookFavoriteEntity>.toUiBookFavorite(): List<UiBookFavoriteModel> {
     return this.map {

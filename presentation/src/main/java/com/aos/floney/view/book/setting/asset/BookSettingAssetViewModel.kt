@@ -1,5 +1,6 @@
 package com.aos.floney.view.book.setting.asset
 
+import android.app.Application
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
@@ -25,22 +26,21 @@ import java.util.Calendar
 
 @HiltViewModel
 class BookSettingAssetViewModel @Inject constructor(
-    stateHandle: SavedStateHandle,
+    private val application: Application,
     private val prefs: SharedPreferenceUtil,
-    private val booksCodeCheckUseCase: BooksCodeCheckUseCase,
     private val booksInfoAssetUseCase: BooksInfoAssetUseCase,
     private val postAnalyzeAssetUseCase: PostAnalyzeAssetUseCase
 ): BaseViewModel() {
 
     // 가계부 초대 코드
-    var inviteCode = MutableLiveData<String>("")
+    var inviteCode = MutableLiveData("")
 
     // 초기 자산 설정
     private var _initAssetSheet = MutableEventFlow<Boolean>()
     val initAssetSheet: EventFlow<Boolean> get() = _initAssetSheet
 
     // 금액
-    var cost = MutableLiveData<String>("")
+    var cost = MutableLiveData("")
 
     private val mutex = Mutex()
 
@@ -78,7 +78,7 @@ class BookSettingAssetViewModel @Inject constructor(
                 booksInfoAssetUseCase(
                     prefs.getString("bookKey",""),
                     settingCost()).onSuccess {
-                    baseEvent(Event.ShowSuccessToast("변경이 완료되었습니다."))
+                    baseEvent(Event.ShowSuccessToast(application.getString(R.string.toast_change_successed)))
                     _initAssetSheet.emit(true)
                 }.onFailure {
                     baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@BookSettingAssetViewModel)))

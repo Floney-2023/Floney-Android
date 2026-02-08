@@ -1,10 +1,12 @@
 package com.aos.floney.view.book.setting.budget
 
+import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.aos.data.util.CurrencyUtil
 import com.aos.data.util.SharedPreferenceUtil
+import com.aos.floney.R
 import com.aos.floney.base.BaseViewModel
 import com.aos.floney.ext.parseErrorMsg
 import com.aos.floney.util.EventFlow
@@ -15,11 +17,14 @@ import com.aos.usecase.booksetting.BooksBudgetCheckUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
 class BookSettingBudgetViewModel @Inject constructor(
+    private val application: Application,
     private val prefs: SharedPreferenceUtil,
     private val booksBudgetCheckUseCase : BooksBudgetCheckUseCase
 ): BaseViewModel() {
@@ -84,9 +89,24 @@ class BookSettingBudgetViewModel @Inject constructor(
             _budgetSettingPage.emit(budgetitem)
         }
     }
-    fun convertToDateString(month: String): String {
-        val formattedMonth = if (month.length == 1) "0$month" else month
-        return "${year.value}-$formattedMonth-01"
+
+    fun convertMonthStringToDateString(monthName: String): String {
+        val locales = listOf(Locale.KOREAN, Locale.ENGLISH)
+
+        for (locale in locales) {
+            try {
+                val sdf = SimpleDateFormat("MMMM", locale)
+                sdf.isLenient = false
+
+                val date = sdf.parse(monthName) ?: continue
+                val cal = Calendar.getInstance().apply { time = date }
+                val monthNumber = cal.get(Calendar.MONTH) + 1
+
+                return "%04d-%02d-01".format(year, monthNumber)
+            } catch (_: Exception) { }
+        }
+
+        return "2026-01-01"
     }
 
     fun updateBudget(budgetItem: BudgetItem, budgetMoney: String){
@@ -101,7 +121,7 @@ class BookSettingBudgetViewModel @Inject constructor(
                 }
             }
             // 변경 완료 토스트 메세지
-            baseEvent(Event.ShowSuccessToast("변경이 완료되었습니다."))
+            baseEvent(Event.ShowSuccessToast(application.getString(R.string.toast_change_successed)))
             _budgetList.postValue(UiBookBudgetModel(updatedList))
         }
     }

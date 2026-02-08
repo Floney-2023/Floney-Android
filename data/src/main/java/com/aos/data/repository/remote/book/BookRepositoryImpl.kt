@@ -26,7 +26,6 @@ import com.aos.data.mapper.toGetBooksCodeModel
 import com.aos.data.mapper.toGetBooksInfoCurrencyModel
 import com.aos.data.mapper.toGetCheckUserBookModel
 import com.aos.data.mapper.toGetsettleUpLastModel
-import com.aos.data.mapper.toNaverShortenUrlModel
 import com.aos.data.mapper.toPostBookFavoriteModel
 import com.aos.data.mapper.toPostBooksCategoryAddModel
 import com.aos.data.mapper.toUiBookInfoModel
@@ -67,7 +66,6 @@ import com.aos.model.home.UiBookDayModel
 import com.aos.model.home.UiBookInfoModel
 import com.aos.model.home.UiBookMonthModel
 import com.aos.model.settlement.GetSettlementLastModel
-import com.aos.model.settlement.NaverShortenUrlModel
 import com.aos.model.settlement.UiMemberSelectModel
 import com.aos.model.settlement.UiOutcomesSelectModel
 import com.aos.model.settlement.UiSettlementAddModel
@@ -720,23 +718,7 @@ class BookRepositoryImpl @Inject constructor(
         code: String
     ): Result<UiBookEntranceModel> {
         when (val data = bookDataSource.getBooks(code)) {
-            is NetworkState.Success -> return Result.success(data.body.toUiBookEntranceModel())
-            is NetworkState.Failure -> return Result.failure(
-                RetrofitFailureStateException(data.error, data.code)
-            )
-
-            is NetworkState.NetworkError -> return Result.failure(IllegalStateException("NetworkError"))
-            is NetworkState.UnknownError -> return Result.failure(IllegalStateException("unKnownError"))
-        }
-    }
-
-    override suspend fun postShortenUrl(
-        id: String,
-        secretKey: String,
-        url: String
-    ): Result<NaverShortenUrlModel>{
-        when (val data = bookDataSource.postShortenUrl(id, secretKey, url)){
-            is NetworkState.Success -> return Result.success(data.body.toNaverShortenUrlModel())
+            is NetworkState.Success -> return Result.success(data.body.toUiBookEntranceModel(context))
             is NetworkState.Failure -> return Result.failure(
                 RetrofitFailureStateException(data.error, data.code)
             )

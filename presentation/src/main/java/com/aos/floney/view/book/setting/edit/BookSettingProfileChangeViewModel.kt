@@ -1,5 +1,6 @@
 package com.aos.floney.view.book.setting.edit
 
+import android.app.Application
 import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
@@ -32,6 +33,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BookSettingProfileChangeViewModel @Inject constructor(
+    private val application: Application,
     stateHandle: SavedStateHandle,
     @ApplicationContext private val context: Context,
     private val prefs: SharedPreferenceUtil,
@@ -78,7 +80,7 @@ class BookSettingProfileChangeViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             changeBookImgUseCase(prefs.getString("bookKey", ""), path).onSuccess {
                 baseEvent(Event.HideLoading)
-                baseEvent(Event.ShowSuccessToast("변경이 완료되었습니다."))
+                baseEvent(Event.ShowSuccessToast(application.getString(R.string.toast_change_successed)))
                 _onChange.emit(true)
             }.onFailure {
                 baseEvent(Event.HideLoading)

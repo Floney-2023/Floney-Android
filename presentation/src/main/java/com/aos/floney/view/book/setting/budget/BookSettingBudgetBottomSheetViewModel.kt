@@ -22,7 +22,6 @@ import javax.inject.Inject
 @HiltViewModel
 class BookSettingBudgetBottomSheetViewModel @Inject constructor(
     private val app: Application,
-    stateHandle: SavedStateHandle,
     private val prefs: SharedPreferenceUtil,
     private val booksInfoBudgetUseCase: BooksInfoBudgetUseCase
 ): BaseViewModel() {

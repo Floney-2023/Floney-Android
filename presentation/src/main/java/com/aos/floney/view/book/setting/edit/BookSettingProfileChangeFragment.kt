@@ -136,7 +136,7 @@ class BookSettingProfileChangeFragment :
                     if (viewModel.getImageBitmap() != null || viewModel.isDefaultProfile) {
                         viewModel.uploadImageFile(viewModel.getImageBitmap())
                     } else {
-                        viewModel.baseEvent(BaseViewModel.Event.ShowSuccessToast("변경이 완료되었습니다."))
+                        viewModel.baseEvent(BaseViewModel.Event.ShowSuccessToast(getString(R.string.toast_change_successed)))
                         findNavController().popBackStack()
                     }
                 }

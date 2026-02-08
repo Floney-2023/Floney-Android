@@ -21,9 +21,6 @@ import com.aos.model.settlement.settleOutcomes
 import com.aos.usecase.booksetting.BooksCodeCheckUseCase
 import com.aos.usecase.booksetting.BooksSettingGetUseCase
 import com.aos.usecase.mypage.AlarmSaveGetUseCase
-import com.aos.usecase.settlement.BooksOutComesUseCase
-import com.aos.usecase.settlement.BooksUsersUseCase
-import com.aos.usecase.settlement.NaverShortenUrlUseCase
 import com.aos.usecase.settlement.SettlementAddUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers

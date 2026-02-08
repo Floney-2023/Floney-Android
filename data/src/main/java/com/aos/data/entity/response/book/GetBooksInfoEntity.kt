@@ -18,5 +18,5 @@ data class BookUser(
     val profileImg: String ?= "user_default",
     val email: String,
     val me: Boolean,
-    val role: String
+    val role: String,
 )

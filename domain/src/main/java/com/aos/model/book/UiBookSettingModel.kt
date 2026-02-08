@@ -31,5 +31,6 @@ data class MyBookUsers(
     val profileImg: String,
     val email: String,
     val me: Boolean,
-    val role: String
+    val role: String,
+    val roleOrigin: String
 )

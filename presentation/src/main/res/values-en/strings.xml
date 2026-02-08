@@ -363,6 +363,10 @@
     <string name="toast_enter_name">Please enter a name.</string>
     <string name="toast_max_photos">You can add up to 4 photos.</string>
     <string name="toast_photo_deleted">Photo deletion completed.</string>
+    <string name="toast_save_completed">Entry Saved.</string>
+    <string name="toast_currency_changed">Currency has been updated.</string>
+    <string name="toast_change_successed">Successfully updated.</string>
+
 
     <!--7-1 가계부설정 -->
     <string name="book_setting_title">Ledger Settings</string>
@@ -395,8 +399,8 @@
     <string name="book_setting_currency_title">Currency Settings</string>
     <string name="book_setting_currency_info">Can\'t find your currency?\nTell Floney about your preferred currency.</string>
 
-    <string name="book_setting_currency_dialog_title">Ledger will be reset</string>
-    <string name="book_setting_currency_dialog_info">Change currency to %1$s?\nLedger will be reset when changed.</string>
+    <string name="book_setting_currency_dialog_title">The ledger will be reset</string>
+    <string name="book_setting_currency_dialog_info">Change the currency to %1$s?\nChanging this will reset the ledger.</string>
     <string name="book_setting_currency_dialog_left_button">Reset</string>
     <string name="book_setting_currency_dialog_right_button">Cancel</string>
     <string name="book_setting_currency_alert_dialog_title">Reset Ledger Entries</string>
@@ -412,28 +416,28 @@
     <string name="book_setting_exit_alert_dialog_title">Leave Ledger</string>
     <string name="book_setting_exit_alert_dialog_info">All your entries will be deleted when you leave.\nDo you want to proceed?</string>
 
-    <string name="book_setting_bottom_asset_title">Initial Assets Settings</string>
-    <string name="book_setting_bottom_asset_info">Enter your current assets.\nFloney will show you the future asset flow.</string>
-    <string name="book_setting_bottom_asset_hint">Enter initial assets</string>
+    <string name="book_setting_bottom_asset_title">Initial Assets</string>
+    <string name="book_setting_bottom_asset_info">Enter your current assets,\nand Floney will show your future flow.</string>
+    <string name="book_setting_bottom_asset_hint">Enter your inital assets</string>
     <string name="book_setting_bottom_asset_error">Please enter a number.</string>
     <string name="book_setting_bottom_asset_succcess">Initial assets setting is complete.</string>
     <string name="book_setting_bottom_asset_save">Save</string>
     <string name="book_setting_bottom_asset_init"><u>Reset</u></string>
 
     <string name="book_setting_bottom_carryinfo_title">Carryover Settings</string>
-    <string name="book_setting_bottom_carryinfo_total_income">Last month\'s total income</string>
-    <string name="book_setting_bottom_carryinfo_total_outcome">Last month\'s total expense</string>
-    <string name="book_setting_bottom_carryinfo_next_start_money">Next month\'s starting amount</string>
-    <string name="book_setting_bottom_carryinfo_info">Carryover settings carry the amount left after subtracting\nexpenses from income recorded last month.\n\nNegative amounts are recorded as expenses\nand positive amounts are recorded as income.</string>
+    <string name="book_setting_bottom_carryinfo_total_income">Last Month\nIncome</string>
+    <string name="book_setting_bottom_carryinfo_total_outcome">Last Month\nExpense</string>
+    <string name="book_setting_bottom_carryinfo_next_start_money">Next Month\nStart Amount</string>
+    <string name="book_setting_bottom_carryinfo_info">Carryover moves last month’s balance\n(income minus expenses) to the next month.\n\nA negative amount becomes an expense.\nA positive amount becomes income.</string>
     <string name="book_setting_bottom_carryinfo_on">ON</string>
     <string name="book_setting_bottom_carryinfo_off">OFF</string>
 
     <string name="book_setting_budget_title">Budget Settings</string>
-    <string name="book_setting_budget_hint">Enter budget</string>
+    <string name="book_setting_budget_hint">Enter your budget</string>
     <string name="book_setting_budget_error">Please enter a number.</string>
 
-    <string name="book_setting_category_title">Category Management</string>
-    <string name="book_setting_category_info">You can add or delete categories\nused when recording entries</string>
+    <string name="book_setting_category_title">Category\nManagement</string>
+    <string name="book_setting_category_info">Add or remove categories used\nwhen recording entries.</string>
     <string name="book_setting_category_dialog_title">Delete Category</string>
     <string name="book_setting_category_dialog_info">Delete \'%1$s\' category?\nAll entries with this category will be deleted.</string>
     <string name="book_setting_category_dialog_left_button">Delete</string>
@@ -842,7 +846,7 @@
     <string name="flow_expense">Expense</string>
     <string name="flow_income">Income</string>
     <string name="flow_transfer">Transfer</string>
-    <string name="category_asset">Asset</string>
+    <string name="category_asset">Assets</string>
     <string name="category_classification">Category</string>
     <string name="category_content">Content</string>
     <string name="category_add">Add</string>
@@ -854,6 +858,7 @@
     <string name="analyze_total_budget">Total Budget</string>
     <string name="analyze_budget_progress">Budget Progress</string>
     <string name="analyze_budget_warning">Budget exceeded!</string>
+    <string name="analyze_no_entries">No data.</string>
 
     <!-- Terms of Service -->
     <string name="terms_all_agree">Agree to all</string>

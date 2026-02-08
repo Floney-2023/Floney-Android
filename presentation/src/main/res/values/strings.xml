@@ -10,7 +10,7 @@
     <string name="analyze_income">수입</string>
     <string name="analyze_budget">예산</string>
     <string name="analyze_assets">자산</string>
-    <string name="analyze_no_data">데이터가 없습니다</string>
+    <string name="analyze_no_data">내역이 없습니다.</string>
 
     <!-- Budget Tab -->
     <string name="analyze_budget_used">예산의 %1$s%%를 사용했어요</string>
@@ -353,6 +353,10 @@
     <string name="toast_enter_name">이름을 입력하세요.</string>
     <string name="toast_max_photos">사진은 최대 4장까지 추가할 수 있어요.</string>
     <string name="toast_photo_deleted">사진 삭제가 완료되었습니다.</string>
+    <string name="toast_save_completed">저장이 완료되었습니다.</string>
+    <string name="toast_currency_changed">화폐 단위가 변경 완료되었습니다.</string>
+    <string name="toast_change_successed">변경이 완료되었습니다.</string>
+
 
     <!--7-1 가계부설정 -->
     <string name="book_setting_title">가계부 설정</string>
@@ -835,6 +839,7 @@
     <string name="analyze_total_budget">총 예산</string>
     <string name="analyze_budget_progress">예산 진행률</string>
     <string name="analyze_budget_warning">예산을 초과했어요!</string>
+    <string name="analyze_no_entries">내역이 없습니다.</string>
 
     <!-- 서비스 약관 -->
     <string name="terms_all_agree">모두 동의</string>

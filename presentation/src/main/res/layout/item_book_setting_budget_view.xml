@@ -29,7 +29,7 @@
             android:id="@+id/tv_month"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{item.month + `월`}"
+            android:text="@{item.month}"
             android:textColor="@{item.isExist ? @color/primary2 : @color/grayscale6}"
             android:textSize="13dp"
             app:fontFamily="@{item.isExist}"

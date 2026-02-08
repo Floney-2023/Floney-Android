@@ -1,5 +1,6 @@
 package com.aos.floney.view.book.setting.currency
 
+import android.app.Application
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
@@ -33,6 +34,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BookSettingCurrencyViewModel @Inject constructor(
+    private val application: Application,
     stateHandle: SavedStateHandle,
     private val prefs: SharedPreferenceUtil,
     private val booksInitUseCase : BooksInitUseCase,
@@ -44,7 +46,7 @@ class BookSettingCurrencyViewModel @Inject constructor(
 
     var bookName: LiveData<String> = stateHandle.getLiveData("bookName")
 
-    var emailArray: LiveData<Array<String>> = stateHandle.getLiveData("emailList")
+    private var emailArray: LiveData<Array<String>> = stateHandle.getLiveData("emailList")
 
     // 화폐 단위 리스트
     private var _currencyItems = MutableLiveData<UiBookCurrencyModel>()
@@ -63,7 +65,7 @@ class BookSettingCurrencyViewModel @Inject constructor(
     }
 
     // 화폐 단위 불러오기
-    fun getCurrencyInform(){
+    private fun getCurrencyInform(){
         viewModelScope.launch {
             booksCurrencySearchUseCase(prefs.getString("bookKey", "")).onSuccess {
                 if(it.myBookCurrency != "") {
@@ -95,13 +97,13 @@ class BookSettingCurrencyViewModel @Inject constructor(
         }
     }
     // 가계부 초기화
-    fun initBook(code: String) {
+    private fun initBook(code: String) {
         viewModelScope.launch {
             if(prefs.getString("bookKey","").isNotEmpty()) {
                 baseEvent(Event.ShowLoading)
                 booksInitUseCase(prefs.getString("bookKey","")).onSuccess {
                     baseEvent(Event.HideLoading)
-                    baseEvent(Event.ShowSuccessToast("화폐 단위가 변경 완료 되었습니다."))
+                    baseEvent(Event.ShowSuccessToast(application.getString(R.string.toast_currency_changed)))
                     saveAlarm(code)
                 }.onFailure {
                     baseEvent(Event.HideLoading)

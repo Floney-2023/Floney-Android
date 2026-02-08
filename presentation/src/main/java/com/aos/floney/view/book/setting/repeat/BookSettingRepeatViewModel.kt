@@ -1,10 +1,12 @@
 package com.aos.floney.view.book.setting.repeat
 
+import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.aos.data.util.SharedPreferenceUtil
+import com.aos.floney.R
 import com.aos.floney.base.BaseViewModel
 import com.aos.floney.ext.formatNumber
 import com.aos.floney.ext.parseErrorMsg
@@ -25,6 +27,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BookSettingRepeatViewModel @Inject constructor(
+    private val application: Application,
     private val prefs: SharedPreferenceUtil,
     private val booksRepeatGetUseCase: BooksRepeatGetUseCase,
     private val booksRepeatDeleteUseCase: BooksRepeatDeleteUseCase
@@ -125,7 +128,7 @@ class BookSettingRepeatViewModel @Inject constructor(
                 val updatedList = _repeatList.value!!.filter { it.id != item.id }
                 _repeatList.postValue(updatedList)
 
-                baseEvent(Event.ShowSuccessToast("변경이 완료되었습니다."))
+                baseEvent(Event.ShowSuccessToast(application.getString(R.string.toast_change_successed)))
                 baseEvent(Event.HideLoading)
             }.onFailure {
                 baseEvent(Event.HideLoading)

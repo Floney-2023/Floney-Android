@@ -26,7 +26,7 @@ class BookSettingAssetBottomSheetFragment :
             // 나중에 하기 -> Bottomsheet 닫기
             viewModel.initAssetSheet.collect {
                 Timber.e("nextPage $it")
-                val successToast = SuccessToastDialog(requireContext(), "변경이 완료되었습니다.")
+                val successToast = SuccessToastDialog(requireContext(), getString(R.string.toast_change_successed))
                 successToast.show()
 
                 Handler(Looper.myLooper()!!).postDelayed({

@@ -331,7 +331,7 @@
                     android:paddingStart="24dp"
                     android:paddingTop="16dp"
                     android:paddingBottom="16dp"
-                    android:visibility='@{vm.bookSettingInfo.ourBookUsers[0].role.equals("방장·나") ? View.VISIBLE : View.GONE}'
+                    android:visibility='@{vm.bookSettingInfo.ourBookUsers[0].roleOrigin.equals("방장") ? View.VISIBLE : View.GONE}'
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/li_book_setting_favorite">
@@ -450,7 +450,7 @@
                     android:paddingTop="16dp"
                     android:paddingEnd="24dp"
                     android:paddingBottom="16dp"
-                    android:visibility='@{vm.bookSettingInfo.ourBookUsers[0].role.equals("방장·나") ? View.VISIBLE : View.GONE}'
+                    android:visibility='@{vm.bookSettingInfo.ourBookUsers[0].roleOrigin.equals("방장") ? View.VISIBLE : View.GONE}'
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/li_book_setting_category">
@@ -518,7 +518,7 @@
                     android:paddingStart="24dp"
                     android:paddingTop="16dp"
                     android:paddingEnd="24dp"
-                    bind:setDynamicPaddingBottom="@{vm.bookSettingInfo.ourBookUsers[0].role.equals(`팀원·나`)}"
+                    bind:setDynamicPaddingBottom="@{vm.bookSettingInfo.ourBookUsers[0].roleOrigin.equals(`팀원`)}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/li_book_setting_excel">
@@ -552,7 +552,7 @@
                     android:paddingStart="24dp"
                     android:paddingTop="16dp"
                     android:paddingBottom="16dp"
-                    android:visibility='@{vm.bookSettingInfo.ourBookUsers[0].role.equals("팀원·나") ? View.VISIBLE : View.GONE}'
+                    android:visibility='@{vm.bookSettingInfo.ourBookUsers[0].roleOrigin.equals("팀원") ? View.VISIBLE : View.GONE}'
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"

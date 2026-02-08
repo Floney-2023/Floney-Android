@@ -52,6 +52,12 @@
     <string name="book_role_member">팀원</string>
     <string name="book_role_me">나</string>
 
+    <!-- Book Setting -->
+    <string name="book_date_pattern">yyyy.MM.dd</string>
+    <string name="book_info_format">%1$s 개설 · %2$d명</string>
+    <string name="book_info_format_plural">%1$s 개설 · %2$d명</string>
+    <string name="book_opened_date">%1$s 개설</string>
+
     <!-- Repeat Cycle -->
     <string name="repeat_none">없음</string>
     <string name="repeat_daily">매일</string>
@@ -64,4 +70,5 @@
     <string name="settlement_send_money">%1$s을 보내야 해요.</string>
     <string name="settlement_receive_money">%1$s을 받아야 해요.</string>
     <string name="settlement_no_money">정산할 금액이 없어요.</string>
+
 </resources>

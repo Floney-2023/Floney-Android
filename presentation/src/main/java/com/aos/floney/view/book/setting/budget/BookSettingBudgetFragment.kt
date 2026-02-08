@@ -90,7 +90,7 @@ class BookSettingBudgetFragment : BaseFragment<FragmentBookSettingBudgetBinding,
             viewModel.budgetSettingPage.collect {
                 if(it.month!="") {
                     val bottomSheetFragment = BookSettingBudgetBottomSheetFragment(
-                        it, viewModel.convertToDateString(it.month)) { updateBudgetMoney ->
+                        it, viewModel.convertMonthStringToDateString(it.month)) { updateBudgetMoney ->
                         viewModel.updateBudget(it, updateBudgetMoney)
                     }
                     bottomSheetFragment.show(parentFragmentManager, bottomSheetFragment.tag)
@@ -102,7 +102,7 @@ class BookSettingBudgetFragment : BaseFragment<FragmentBookSettingBudgetBinding,
             viewModel.yearSetting.collect {
                 ChoiceYearPickerBottomSheet(requireContext(), viewModel.year.value!!) {
 
-                    val successToast = SuccessToastDialog(requireContext(), "변경이 완료되었습니다.")
+                    val successToast = SuccessToastDialog(requireContext(), getString(R.string.toast_change_successed))
                     successToast.show()
 
                     Handler(Looper.myLooper()!!).postDelayed({

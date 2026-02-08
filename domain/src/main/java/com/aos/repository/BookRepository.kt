@@ -164,9 +164,6 @@ interface BookRepository {
     // 참여코드로 가계부 정보 불러오기
     suspend fun getBooks(code: String): Result<UiBookEntranceModel>
 
-    // 가계부 단축 URl
-    suspend fun postShortenUrl(id: String, secretKey: String, url: String): Result<NaverShortenUrlModel>
-
     // 즐겨찾기 분류 항목 별 조회
     suspend fun getBookFavorite(bookKey: String, categoryType: String): Result<List<UiBookFavoriteModel>>
 

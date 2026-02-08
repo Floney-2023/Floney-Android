@@ -68,7 +68,7 @@ class MyPageInformProfileChangeViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             changeProfileUseCase(path).onSuccess {
                 CommonUtil.userProfileImg = path
-                baseEvent(Event.ShowSuccessToast("변경이 완료되었습니다."))
+                baseEvent(Event.ShowSuccessToast(context.getString(R.string.toast_change_successed)))
                 baseEvent(Event.HideLoading)
                 _successProfileChange.emit(true)
             }.onFailure {
