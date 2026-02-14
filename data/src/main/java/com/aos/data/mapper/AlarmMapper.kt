@@ -1,7 +1,9 @@
 package com.aos.data.mapper
 
+import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
+import com.aos.data.R
 import com.aos.data.entity.response.alarm.GetAlarmEntity
 import com.aos.data.entity.response.book.GetBookRepeatEntity
 import com.aos.data.entity.response.home.GetCheckUserBookEntity
@@ -23,7 +25,7 @@ import java.util.TimeZone
 import kotlin.math.abs
 
 @RequiresApi(Build.VERSION_CODES.O)
-fun List<GetAlarmEntity>.toUiAlarmGetEntity(): List<UiAlarmGetModel> {
+fun List<GetAlarmEntity>.toUiAlarmGetEntity(context: Context): List<UiAlarmGetModel> {
     val now = ZonedDateTime.now(ZoneId.of("Asia/Seoul")) // 현재 시간을 한국 시간대로 설정
     val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
 
@@ -31,14 +33,34 @@ fun List<GetAlarmEntity>.toUiAlarmGetEntity(): List<UiAlarmGetModel> {
         val alarmTime = LocalDateTime.parse(alarm.date, formatter)
             .atZone(ZoneId.of("UTC")) // alarm.date가 UTC라고 가정
             .withZoneSameInstant(ZoneId.of("Asia/Seoul")) // 한국 시간대로 변환
-        val minutesDiff = ChronoUnit.MINUTES.between(alarmTime, now)
+        val secondsDiff = ChronoUnit.SECONDS.between(alarmTime, now).coerceAtLeast(0)
         val timeAgo = when {
-            minutesDiff <= 0 -> "방금"
-            minutesDiff < 60 -> "${minutesDiff}분 전"
-            minutesDiff < 1440 -> "${minutesDiff / 60}시간 전"
-            minutesDiff < 10080 -> "${minutesDiff / 1440}일 전"
-            minutesDiff < 43200 -> "${minutesDiff / 10080}주 전"
-            else -> "${minutesDiff / 43200}개월 전"
+            secondsDiff <= 0 -> context.getString(R.string.alarm_time_just_now)
+            secondsDiff < 60 -> context.resources.getQuantityString(
+                R.plurals.alarm_time_seconds_ago,
+                secondsDiff.toInt(),
+                secondsDiff.toInt(),
+            )
+            secondsDiff < 3600 -> {
+                val minutes = (secondsDiff / 60).toInt()
+                context.resources.getQuantityString(R.plurals.alarm_time_minutes_ago, minutes, minutes)
+            }
+            secondsDiff < 86_400 -> {
+                val hours = (secondsDiff / 3_600).toInt()
+                context.resources.getQuantityString(R.plurals.alarm_time_hours_ago, hours, hours)
+            }
+            secondsDiff < 604_800 -> {
+                val days = (secondsDiff / 86_400).toInt()
+                context.resources.getQuantityString(R.plurals.alarm_time_days_ago, days, days)
+            }
+            secondsDiff < 1_209_600 -> {
+                val weeks = (secondsDiff / 604_800).toInt()
+                context.resources.getQuantityString(R.plurals.alarm_time_weeks_ago, weeks, weeks)
+            }
+            else -> {
+                val pattern = context.getString(R.string.alarm_old_date_pattern)
+                SimpleDateFormat(pattern, Locale.getDefault()).format(Date.from(alarmTime.toInstant()))
+            }
         }
 
         UiAlarmGetModel(

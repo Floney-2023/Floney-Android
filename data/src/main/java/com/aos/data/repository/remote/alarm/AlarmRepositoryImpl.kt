@@ -1,5 +1,6 @@
 package com.aos.data.repository.remote.alarm
 
+import android.content.Context
 import com.aos.data.entity.request.alarm.PostAlarmSaveBody
 import com.aos.data.entity.request.alarm.PostAlarmUpdateBody
 import com.aos.data.entity.request.analyze.PostAnalyzeAssetBody
@@ -20,17 +21,21 @@ import com.aos.model.analyze.UiAnalyzePlanModel
 import com.aos.repository.AlarmRepository
 import com.aos.repository.AnalyzeRepository
 import com.aos.util.NetworkState
+import dagger.hilt.android.qualifiers.ApplicationContext
 import timber.log.Timber
 import javax.inject.Inject
 
-class AlarmRepositoryImpl @Inject constructor(private val alarmRemoteDataSourceImpl: AlarmRemoteDataSourceImpl) :
+class AlarmRepositoryImpl @Inject constructor(
+    private val alarmRemoteDataSourceImpl: AlarmRemoteDataSourceImpl,
+    @ApplicationContext private val context: Context,
+) :
     AlarmRepository {
 
     override suspend fun getAlarm(
         bookKey: String
     ): Result<List<UiAlarmGetModel>> {
         when (val data = alarmRemoteDataSourceImpl.getAlarm(bookKey)) {
-            is NetworkState.Success -> return Result.success(data.body.toUiAlarmGetEntity())
+            is NetworkState.Success -> return Result.success(data.body.toUiAlarmGetEntity(context))
             is NetworkState.Failure -> return Result.failure(
                 RetrofitFailureStateException(data.error, data.code)
             )

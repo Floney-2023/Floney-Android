@@ -1,5 +1,6 @@
 package com.aos.data.repository.remote.subscribe
 
+import android.content.Context
 import com.aos.data.entity.response.subscribe.GetSubscribeUserBenefitEntity
 import com.aos.data.mapper.toGetPresignedUrlModel
 import com.aos.data.mapper.toGetSubscribeAndroidInfoModel
@@ -14,10 +15,14 @@ import com.aos.model.subscribe.GetSubscribeBenefitModel
 import com.aos.model.subscribe.GetSubscribeUserBenefitModel
 import com.aos.repository.SubscribeRepository
 import com.aos.util.NetworkState
+import dagger.hilt.android.qualifiers.ApplicationContext
 import timber.log.Timber
 import javax.inject.Inject
 
-class SubscribeRepositoryImpl @Inject constructor(private val subscribeRemoteDataSourceImpl: SubscribeRemoteDataSourceImpl) :
+class SubscribeRepositoryImpl @Inject constructor(
+    private val subscribeRemoteDataSourceImpl: SubscribeRemoteDataSourceImpl,
+    @ApplicationContext private val context: Context,
+) :
     SubscribeRepository {
 
     override suspend fun getSubscribeAndroid(purchaseToken: String): Result<GetSubscribeAndroidModel> {
@@ -54,7 +59,7 @@ class SubscribeRepositoryImpl @Inject constructor(private val subscribeRemoteDat
 
     override suspend fun getSubscribeAndroidInfo(): Result<UiSubscribeAndroidInfoModel> {
         when (val data = subscribeRemoteDataSourceImpl.getSubscribeAndroidInfo()) {
-            is NetworkState.Success -> return Result.success(data.body.toGetSubscribeAndroidInfoModel())
+            is NetworkState.Success -> return Result.success(data.body.toGetSubscribeAndroidInfoModel(context))
             is NetworkState.Failure -> return Result.failure(
                 RetrofitFailureStateException(data.error, data.code)
             )

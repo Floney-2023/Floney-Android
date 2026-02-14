@@ -1,7 +1,9 @@
 package com.aos.data.mapper
 
+import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
+import com.aos.data.R
 import com.aos.data.entity.response.subscribe.GetPresignedUrlEntity
 import com.aos.data.entity.response.subscribe.GetSubscribeAndroidEntity
 import com.aos.data.entity.response.subscribe.GetSubscribeAndroidInfoEntity
@@ -24,10 +26,18 @@ fun GetSubscribeAndroidEntity.toGetSubscribeAndroidModel(): GetSubscribeAndroidM
     return GetSubscribeAndroidModel(this.isValid ?: false)
 }
 
-fun GetSubscribeAndroidInfoEntity.toGetSubscribeAndroidInfoModel(): UiSubscribeAndroidInfoModel {
+fun GetSubscribeAndroidInfoEntity.toGetSubscribeAndroidInfoModel(context: Context): UiSubscribeAndroidInfoModel {
     return UiSubscribeAndroidInfoModel(
-        expiryTimeMillis = this.expiryTimeMillis.let { formatDate(it)?.plus(" 만료 예정") },
-        autoResumeTimeMillis = this.autoResumeTimeMillis.let { formatDate(this.expiryTimeMillis)?.plus(" 갱신 예정") },
+        expiryTimeMillis = this.expiryTimeMillis.let {
+            formatDate(context, it)?.let { date ->
+                context.getString(R.string.subscribe_expires_on, date)
+            }
+        },
+        autoResumeTimeMillis = this.autoResumeTimeMillis.let {
+            formatDate(context, it)?.let { date ->
+                context.getString(R.string.subscribe_renews_on, date)
+            }
+        },
         autoRenewing = this.autoRenewing ?: false,
         priceCurrencyCode = this.priceCurrencyCode.let {
             if (it == "KRW") {
@@ -70,9 +80,10 @@ fun convertMicrosToCurrency(micros: String?): String? {
     return NumberFormat.getNumberInstance().format(amount.roundToLong().absoluteValue)
 }
 
-fun formatDate(timestamp: String?): String? {
+fun formatDate(context: Context, timestamp: String?): String? {
     return timestamp?.toLongOrNull()?.let {
-        val sdf = java.text.SimpleDateFormat("yyyy.MM.dd", java.util.Locale.getDefault())
+        val pattern = context.getString(R.string.subscribe_date_pattern)
+        val sdf = java.text.SimpleDateFormat(pattern, java.util.Locale.getDefault())
         sdf.format(java.util.Date(it))
     }
 }
