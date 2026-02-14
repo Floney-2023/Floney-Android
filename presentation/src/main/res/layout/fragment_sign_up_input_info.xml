@@ -132,7 +132,7 @@
                     android:textColor="@color/grayscale6"
                     android:textSize="14dp"
                     android:visibility="@{vm.socialSignUp ? View.GONE : View.VISIBLE}"
-                    app:layout_constraintStart_toStartOf="@id/tv_sign_up_info"
+                    app:layout_constraintStart_toStartOf="@+id/et_email"
                     app:layout_constraintTop_toBottomOf="@id/et_email" />
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -175,7 +175,7 @@
                     android:textColor="@color/grayscale6"
                     android:textSize="14dp"
                     android:visibility="@{vm.socialSignUp ? View.GONE : View.VISIBLE}"
-                    app:layout_constraintStart_toStartOf="@id/tv_sign_up_info"
+                    app:layout_constraintStart_toStartOf="@+id/et_password"
                     app:layout_constraintTop_toBottomOf="@id/et_password" />
 
                 <com.google.android.material.textfield.TextInputLayout

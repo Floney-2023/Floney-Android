@@ -42,6 +42,8 @@
     <string name="date_pick_button">Done</string>
     <string name="already_pick_button">OK</string>
     <string name="default_error_text">An error occurred. Please contact the Floney team.</string>
+    <string name="error_network_unavailable">You are offline or your network connection is unstable.</string>
+    <string name="error_unexpected">An unexpected error occurred. Please report it to the Floney team.</string>
     <string name="detail_empty_record_message">Please add calendar entries</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -87,7 +89,7 @@
 
     <!--myPageActivity(메인)-->
     <string name="mypage_main_mypage_text">My Page</string>
-    <string name="mypage_main_appstore_text">Please rate us\nin the App Store</string>
+    <string name="mypage_main_appstore_text">Please rate us\nin the PlayStore</string>
     <string name="mypage_main_appstore_write_text">Write a Review</string>
     <string name="mypage_main_suppose_text">Floney welcomes\nyour feedback</string>
     <string name="mypage_main_suppose_write_text">Send Feedback</string>
@@ -97,7 +99,7 @@
     <string name="mypage_main_time_remaining">Time remaining</string>
     <string name="mypage_main_watch_ad">Watch Ad</string>
     <string name="mypage_main_write_review">Write a Review</string>
-    <string name="mypage_main_playstore_review">Please rate us\nin the App Store</string>
+    <string name="mypage_main_playstore_review">Please rate us\nin the PlayStore</string>
     <string name="mypage_main_user_soppose_text1">Services</string>
     <string name="mypage_main_user_soppose_text2">Contact Us</string>
     <string name="mypage_main_user_soppose_text3">Announcements</string>
@@ -134,12 +136,12 @@
     <!--myPageActivity(회원정보 1-2, 비밀번호 변경)-->
     <string name="mypage_main_inform_pwchange_title">Change Password</string>
     <string name="mypage_main_inform_pwchange_nowpw">Current Password</string>
-    <string name="mypage_main_inform_pwchange_nowpw_tint">Enter your current password.</string>
+    <string name="mypage_main_inform_pwchange_nowpw_tint">Enter current password.</string>
     <string name="mypage_main_inform_pwchange_newpw">New Password</string>
-    <string name="mypage_main_inform_pwchange_newpw_tint">At least 8 characters with uppercase, lowercase, numbers, and special characters</string>
+    <string name="mypage_main_inform_pwchange_newpw_tint">8+ characters, letters &amp; numbers</string>
     <string name="mypage_main_inform_pwchange_newpw_check">Confirm New Password</string>
-    <string name="mypage_main_inform_pwchange_newpw_check_tint">At least 8 characters with uppercase, lowercase, numbers, and special characters</string>
-    <string name="mypage_main_inform_pwchange_check_button">Confirm</string>
+    <string name="mypage_main_inform_pwchange_newpw_check_tint">8+ characters, letters &amp; numbers</string>
+    <string name="mypage_main_inform_pwchange_check_button">Save</string>
     <string name="mypage_main_inform_pwchange_nowpw_request">Please enter your current password.</string>
     <string name="mypage_main_inform_pwchange_request_input_password">Please enter your new password.</string>
     <string name="mypage_main_inform_pwchange_request_input_re_password">Please confirm your new password.</string>
@@ -702,7 +704,7 @@
     <string name="subscribe_inform_see">Subscription Details</string>
     <string name="subscribe_inform_item_name">Floney Plus+</string>
     <string name="subscribe_inform_item_price_term">/ Mo</string>
-    <string name="subscribe_inform_item_retry">Resubscribe</string>
+    <string name="subscribe_inform_item_retry">Subscribe Again</string>
 
 
 

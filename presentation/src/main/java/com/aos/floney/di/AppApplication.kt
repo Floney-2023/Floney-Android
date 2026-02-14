@@ -21,6 +21,10 @@ import javax.inject.Inject
 
 @HiltAndroidApp
 class AppApplication : Application(), Application.ActivityLifecycleCallbacks {
+    companion object {
+        lateinit var instance: AppApplication
+            private set
+    }
 
     @Inject
     lateinit var authInterceptor: AuthInterceptor
@@ -30,6 +34,7 @@ class AppApplication : Application(), Application.ActivityLifecycleCallbacks {
 
     override fun onCreate() {
         super.onCreate()
+        instance = this
 
         Timber.plant(Timber.DebugTree())
         KakaoSdk.init(this, BuildConfig.kakao_native_app_key)

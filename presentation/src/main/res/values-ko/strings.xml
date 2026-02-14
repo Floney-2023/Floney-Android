@@ -29,6 +29,8 @@
     <string name="date_pick_button">완료</string>
     <string name="already_pick_button">확인</string>
     <string name="default_error_text">에러가 발생하였습니다. 플로니 팀에 문의 해주세요.</string>
+    <string name="error_network_unavailable">네트워크에 연결되어 있지 않거나 원활하지 않습니다.</string>
+    <string name="error_unexpected">예상 못한 에러 발생! 플로니팀에 제보 해주세요.</string>
     <string name="detail_empty_record_message">캘린더 내역 작성해주세요</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

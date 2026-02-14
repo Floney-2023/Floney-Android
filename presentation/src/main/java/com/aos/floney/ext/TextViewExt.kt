@@ -31,18 +31,21 @@ import kotlin.math.abs
 fun String.formatNumber(): String {
      return if(this != "") {
          val text = this.replace(CurrencyUtil.currency, "")
+         val numericText = text
+             .replace(",", "")
+             .replace(Regex("[^\\d.-]"), "")
 
-         if (text.endsWith(".")){
-             text
+         if (numericText.endsWith(".")){
+             numericText
          }
-         else if (checkDecimalPoint() && text.length>=15){
+         else if (checkDecimalPoint() && numericText.length>=15){
              "999,999,999.99"
          }
-         else if (!checkDecimalPoint() && text.length>=15) {
+         else if (!checkDecimalPoint() && numericText.length>=15) {
              "99,999,999,999"
          }
-         else if(text != "") {
-             DecimalFormat("#,###.##").format(text.replace(",", "").toDouble())
+         else if(numericText != "") {
+             numericText.toDoubleOrNull()?.let { DecimalFormat("#,###.##").format(it) } ?: ""
          } else {
              ""
          }
@@ -305,4 +308,3 @@ class CustomTypefaceSpan(private val typeface: Typeface) : MetricAffectingSpan()
         paint.typeface = typeface
     }
 }
-

@@ -1,53 +1,58 @@
 package com.aos.floney.ext
 
-import android.provider.Settings.Global.getString
+import androidx.annotation.StringRes
 import com.aos.data.util.CurrencyUtil
 import com.aos.floney.BuildConfig.appsflyer_settlement_url
 import com.aos.floney.R
 import com.aos.floney.base.BaseViewModel
+import com.aos.floney.di.AppApplication
 import org.json.JSONObject
-import timber.log.Timber
+
+private const val NETWORK_ERROR = "NetworkError"
+private const val UNKNOWN_ERROR = "unKnownError"
+private const val EXPIRED_TOKEN_KO = "만료된 토큰입니다"
+
+private fun localizedString(@StringRes resId: Int): String {
+    return runCatching { AppApplication.instance.getString(resId) }.getOrDefault("")
+}
 
 fun String?.parseErrorMsg(event: BaseViewModel? = null): String {
-    return if(this == "") {
+    return if (this == "") {
         ""
-    } else if(this == "NetworkError") {
-        "네트워크에 연결되어 있지 않거나 원활하지 않습니다."
-    } else if(this == "unKnownError") {
-        "예상 못한 에러 발생! 플로니팀에 제보 해주세요."
+    } else if (this == NETWORK_ERROR) {
+        localizedString(R.string.error_network_unavailable)
+    } else if (this == UNKNOWN_ERROR) {
+        localizedString(R.string.error_unexpected)
     } else {
         val jsonObject = JSONObject(this)
+        val message = jsonObject.getString("message")
 
-        if(jsonObject.getString("message").equals("만료된 토큰입니다")) {
+        if (message == EXPIRED_TOKEN_KO) {
             event?.baseEvent(BaseViewModel.Event.ExpiredToken)
             ""
+        } else if (message.endsWith(".")) {
+            message
         } else {
-            val msg = jsonObject.getString("message")
-            if(msg.substring(msg.length - 1, msg.length) == ".") {
-                msg
-            } else {
-                "$msg."
-            }
+            "$message."
         }
     }
 }
 
 fun String?.parseErrorCode(event: BaseViewModel? = null): String {
-    return if(this == "") {
+    return if (this == "") {
         ""
-    } else if(this == "NetworkError") {
-        "네트워크에 연결되어 있지 않거나 원활하지 않습니다."
-    } else if(this == "unKnownError") {
-        "예상 못한 에러 발생! 플로니팀에 제보 해주세요."
+    } else if (this == NETWORK_ERROR) {
+        localizedString(R.string.error_network_unavailable)
+    } else if (this == UNKNOWN_ERROR) {
+        localizedString(R.string.error_unexpected)
     } else {
         val jsonObject = JSONObject(this)
 
-        if(jsonObject.getString("message").equals("만료된 토큰입니다")) {
+        if (jsonObject.getString("message") == EXPIRED_TOKEN_KO) {
             event?.baseEvent(BaseViewModel.Event.ExpiredToken)
             ""
         } else {
-            val msg = jsonObject.getString("code")
-            msg
+            jsonObject.getString("code")
         }
     }
 }
