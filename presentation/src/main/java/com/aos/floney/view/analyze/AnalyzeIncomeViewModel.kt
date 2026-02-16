@@ -38,7 +38,7 @@ class AnalyzeIncomeViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             baseEvent(Event.ShowCircleLoading)
             postAnalyzeInComeCategoryUseCase(
-                prefs.getString("bookKey", ""), "수입", date
+                prefs.getString("bookKey", ""), "INCOME", date
             ).onSuccess {
                 baseEvent(Event.HideCircleLoading)
                 _selectMonth.postValue(date)

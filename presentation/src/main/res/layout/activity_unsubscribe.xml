@@ -46,9 +46,9 @@
 
         <TextView
             android:id="@+id/tv_unsubscribe_info"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
+            android:layout_marginHorizontal="24dp"
             android:layout_marginTop="16dp"
             android:lineSpacingExtra="3sp"
             android:translationY="-1.34sp"
@@ -56,7 +56,6 @@
             android:text="@string/unsubscribe_inform"
             android:textColor="@color/grayscale6"
             android:textSize="13dp"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_unsubscribe_title" />
 
         <ImageView

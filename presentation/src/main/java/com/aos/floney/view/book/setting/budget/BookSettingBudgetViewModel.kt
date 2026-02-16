@@ -91,22 +91,23 @@ class BookSettingBudgetViewModel @Inject constructor(
     }
 
     fun convertMonthStringToDateString(monthName: String): String {
+        val selectedYear = year.value?.toIntOrNull() ?: Calendar.getInstance().get(Calendar.YEAR)
+
         val locales = listOf(Locale.KOREAN, Locale.ENGLISH)
-
         for (locale in locales) {
-            try {
-                val sdf = SimpleDateFormat("MMMM", locale)
-                sdf.isLenient = false
-
-                val date = sdf.parse(monthName) ?: continue
-                val cal = Calendar.getInstance().apply { time = date }
-                val monthNumber = cal.get(Calendar.MONTH) + 1
-
-                return "%04d-%02d-01".format(year, monthNumber)
-            } catch (_: Exception) { }
+            val patterns = listOf("MMMM", "MMM", "M월")
+            for (pattern in patterns) {
+                try {
+                    val sdf = SimpleDateFormat(pattern, locale).apply { isLenient = false }
+                    val date = sdf.parse(monthName) ?: continue
+                    val cal = Calendar.getInstance().apply { time = date }
+                    val monthNumber = cal.get(Calendar.MONTH) + 1
+                    return "%04d-%02d-01".format(selectedYear, monthNumber)
+                } catch (_: Exception) { }
+            }
         }
 
-        return "2026-01-01"
+        return "%04d-01-01".format(selectedYear)
     }
 
     fun updateBudget(budgetItem: BudgetItem, budgetMoney: String){

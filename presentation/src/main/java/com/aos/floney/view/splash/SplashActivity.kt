@@ -76,7 +76,8 @@ class SplashActivity :
         BaseAlertDialog(
             title = getString(R.string.maintenance_title),
             info = message,
-            false
+            check = false,
+            buttonMode = BaseAlertDialog.ButtonMode.SINGLE,
         ) {
             finishAffinity()
         }.show(supportFragmentManager, "PauseUpdateDialog")
@@ -207,7 +208,12 @@ class SplashActivity :
     }
 
     private fun showUpdateDialog() {
-        BaseAlertDialog(title = getString(R.string.dialog_update_title), info = getString(R.string.dialog_update_info), false) {
+        BaseAlertDialog(
+            title = getString(R.string.dialog_update_title),
+            info = getString(R.string.dialog_update_info),
+            check = false,
+            buttonMode = BaseAlertDialog.ButtonMode.SINGLE,
+        ) {
             if(it) {
                 redirectToPlayStore()
             }

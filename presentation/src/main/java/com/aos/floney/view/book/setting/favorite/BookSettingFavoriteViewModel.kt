@@ -149,11 +149,14 @@ class BookSettingFavoriteViewModel @Inject constructor(
             ).onSuccess {
                 val updatedList = _favoriteList.value!!.filter { it.idx != item.idx }
                 _favoriteList.postValue(updatedList)
+                if (updatedList.isEmpty()) {
+                    edit.postValue(false)
+                }
 
                 baseEvent(Event.HideLoading)
                 baseEvent(Event.ShowSuccessToast(application.getString(R.string.toast_history_deleted)))
             }.onFailure {
-                baseEvent(Event.ShowLoading)
+                baseEvent(Event.HideLoading)
                 baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@BookSettingFavoriteViewModel)))
             }
         }

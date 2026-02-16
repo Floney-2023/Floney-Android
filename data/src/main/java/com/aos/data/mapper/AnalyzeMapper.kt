@@ -136,7 +136,7 @@ fun PostAnalyzeCategoryInComeEntity.toUiAnalyzeModel(context: Context): UiAnalyz
             context.getString(R.string.analyze_income_more_than_last, formattedDiff)
         } else if (differance < 0 && total > differance) {
             val formattedDiff = "${NumberFormat.getNumberInstance().format(differance * -1.0)}${CurrencyUtil.currency}"
-            context.getString(R.string.analyze_income_more_than_last, formattedDiff)
+            context.getString(R.string.analyze_income_less_than_last, formattedDiff)
         } else {
             val formattedDiff = "${NumberFormat.getNumberInstance().format(differance)}${CurrencyUtil.currency}"
             context.getString(R.string.analyze_income_more_than_last, formattedDiff)
@@ -280,6 +280,7 @@ fun PostAnalyzeAssetEntity.toUiAnalyzeAssetModel(context: Context): UiAnalyzeAss
             val formattedDiff = "${NumberFormat.getNumberInstance().format(this.difference)}${CurrencyUtil.currency}".replace("-", "")
             context.getString(R.string.analyze_asset_down, formattedDiff)
         },
+        differenceValue = this.difference,
         initAsset = "${
             NumberFormat.getNumberInstance().format(this.initAsset)
         }${CurrencyUtil.currency}",

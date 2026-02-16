@@ -34,7 +34,7 @@ class AnalyzeOutComeViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             baseEvent(Event.ShowCircleLoading)
             postAnalyzeOutComeCategoryUseCase(
-                prefs.getString("bookKey", ""), "지출", date
+                prefs.getString("bookKey", ""), "OUTCOME", date
             ).onSuccess {
                 _selectMonth.postValue(date)
                 baseEvent(Event.HideCircleLoading)

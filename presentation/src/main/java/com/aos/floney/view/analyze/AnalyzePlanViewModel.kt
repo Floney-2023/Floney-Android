@@ -43,6 +43,10 @@ class AnalyzePlanViewModel @Inject constructor(
         plan.budgetPerDayText
     }
 
+    val isBudgetZero: LiveData<Boolean> = _postAnalyzePlan.map { plan ->
+        parseMoneyValue(plan.initBudget) == 0.0
+    }
+
     private var _onClickSetBudget = MutableEventFlow<Boolean>()
     val onClickSetBudget: EventFlow<Boolean> get() = _onClickSetBudget
 
@@ -73,5 +77,12 @@ class AnalyzePlanViewModel @Inject constructor(
         val today = calendar.get(Calendar.DAY_OF_MONTH)
         val lastDayOfMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
         return (lastDayOfMonth - today).toLong() + 1
+    }
+
+    private fun parseMoneyValue(raw: String?): Double {
+        val numeric = raw.orEmpty()
+            .replace(",", "")
+            .replace(Regex("[^\\d.-]"), "")
+        return numeric.toDoubleOrNull() ?: 0.0
     }
 }

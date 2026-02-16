@@ -22,19 +22,25 @@ object CategoryLocalizationMapper {
         val stringResId = when (category.categoryKey) {
             // Asset categories (자산)
             "Cash" -> R.string.category_cash
+            "Card" -> R.string.category_debit_card
+            "DebitCard" -> R.string.category_debit_card
             "Debit Card" -> R.string.category_debit_card
+            "CreditCard" -> R.string.category_credit_card
             "Credit Card" -> R.string.category_credit_card
             "Bank" -> R.string.category_bank
 
             // Expense categories (지출)
             "Food" -> R.string.category_food
             "Cafe/Snacks" -> R.string.category_cafe_snacks
+            "Transportation" -> R.string.category_transport
             "Transport" -> R.string.category_transport
             "Housing/Phone" -> R.string.category_housing_phone
+            "Medical" -> R.string.category_health
             "Health" -> R.string.category_health
             "Culture" -> R.string.category_culture
             "Travel/Stay" -> R.string.category_travel_stay
             "Living" -> R.string.category_living
+            "Beauty" -> R.string.category_style_beauty
             "Style/Beauty" -> R.string.category_style_beauty
             "Family" -> R.string.category_family
             "Education" -> R.string.category_education
@@ -44,6 +50,7 @@ object CategoryLocalizationMapper {
 
             // Income categories (수입)
             "Salary" -> R.string.category_salary
+            "Business" -> R.string.category_business_income
             "Extra Income" -> R.string.category_extra_income
             "Allowance" -> R.string.category_allowance
             "Financial Income" -> R.string.category_financial_income

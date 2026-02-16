@@ -63,9 +63,9 @@
     <!--loginActivity-->
     <string name="login">Log In</string>
     <string name="nickname">Nickname</string>
-    <string name="request_nickname">Enter your nickname.</string>
+    <string name="request_nickname">Nickname</string>
     <string name="request_input_nickname">Please enter your nickname.</string>
-    <string name="nickname_rule">* Maximum 8 characters allowed.</string>
+    <string name="nickname_rule">* Up to 8 characters.</string>
     <string name="email">Email</string>
     <string name="request_input_email">Enter your email address.</string>
     <string name="request_input_email_toast">Please enter your email address.</string>
@@ -81,7 +81,7 @@
     <string name="sign_up">Sign Up</string>
     <string name="simple_login">Sign in with</string>
     <string name="currency_error">Failed to load currency unit.</string>
-    <string name="signup_rule">* At least 8 characters including letters, numbers, and special characters</string>
+    <string name="signup_rule">* At least 8 characters with letters, numbers, and symbols.</string>
 
     <!--PasswordFindActivity-->
     <string name="find_password_text">Enter the email you used to sign up.\nWe\'ll send you a temporary password.</string>
@@ -723,6 +723,8 @@
     <string name="subscribe_plan_infrom_detail">- Benefits apply immediately after subscribing.\n- You can cancel anytime up to 24 hours before the renewal.\n- If you don’t cancel at least 24 hours bbefore the renewal time, your subscription will renew automatically and you’ll be charged.</string>
     <string name="subscribe_plan_infrom_notice">- Deleting the app does not cancel your subscription. Please use  <u>Restore Purchase</u> if needed.</string>
     <string name="subscribe_plan_infrom_service">- For cancellation and refund details,refer to the <u>Terms of Service</u></string>
+    <string name="subscribe_plan_clickable_restore_purchase">Restore Purchase</string>
+    <string name="subscribe_plan_clickable_terms">Terms of Service</string>
 
     <string name="unsubscribe_title">Cancel your\nsubscription?</string>
     <string name="unsubscribe_inform">Auto-renewal will stop from the next billing date, and you won’t be able to use subscription benefits afterward.</string>
@@ -992,7 +994,7 @@
     <string name="info_book_name">Ledger Name</string>
 
     <!-- Repeat Cycle -->
-    <string name="repeat_none">없음</string>
+    <string name="repeat_none">None</string>
     <string name="repeat_daily">Daily</string>
     <string name="repeat_weekly">Weekly</string>
     <string name="repeat_monthly">Monthly</string>

@@ -336,46 +336,49 @@ fun PostBooksChangeEntity.toPostBooksLinesChangeModel(): PostBooksChangeModel {
     )
 }
 
-// 정렬 기준 정의
-val assetOrder = listOf("현금", "체크카드", "신용카드", "은행")
+// 정렬 기준 정의 (서버 categoryKey 기준)
+val assetOrder = listOf("Cash", "Card", "DebitCard", "Debit Card", "CreditCard", "Credit Card", "Bank")
 val expenseOrder = listOf(
-    "식비",
-    "카페/간식",
-    "교통",
-    "주거/통신",
-    "의료/건강",
-    "문화",
-    "여행/숙박",
-    "생활",
-    "패션/미용",
-    "육아",
-    "교육",
-    "경조사",
-    "기타",
-    "미분류"
+    "Food",
+    "Cafe/Snacks",
+    "Transportation",
+    "Transport",
+    "Shopping",
+    "Medical",
+    "Health",
+    "Culture",
+    "Travel/Stay",
+    "Living",
+    "Beauty",
+    "Style/Beauty",
+    "Family",
+    "Education",
+    "Events",
+    "Other",
+    "Uncategorized",
 )
-val incomeOrder = listOf("급여", "부수입", "용돈", "금융소득", "사업소득", "상여금", "기타", "미분류")
-val transferOrder = listOf("이체", "저축", "현금", "투자", "보험", "카드대금", "대출", "기타", "미분류")
+val incomeOrder = listOf("Salary", "Business", "Business Income", "Extra Income", "Allowance", "Financial Income", "Bonus", "Etc")
+val transferOrder = listOf("Transfer", "Savings", "Investment", "Insurance", "CardPayment", "Card Payment", "Loan", "Other", "Uncategorized")
 
 fun List<GetBookCategoryEntity>.toUiBookCategory(parent: String): List<UiBookCategory> {
     val order = when (parent) {
-        "자산" -> assetOrder
-        "지출" -> expenseOrder
-        "수입" -> incomeOrder
-        "이체" -> transferOrder
+        "ASSET", "자산" -> assetOrder
+        "OUTCOME", "지출" -> expenseOrder
+        "INCOME", "수입" -> incomeOrder
+        "TRANSFER", "이체" -> transferOrder
         else -> return this.mapIndexed { idx, it ->
             UiBookCategory(
                 idx = idx,
                 checked = false,
                 name = it.name,
                 categoryKey = it.categoryKey,
-                default = it.default
+                default = it.isDefault ?: it.default
             )
         }
     }
 
     return this.sortedWith(compareBy({
-        order.indexOf(it.name).takeIf { idx -> idx >= 0 } ?: Int.MAX_VALUE
+        order.indexOf(it.categoryKey ?: "").takeIf { idx -> idx >= 0 } ?: Int.MAX_VALUE
     }, { it.name }))
         .mapIndexed { idx, it ->
             UiBookCategory(
@@ -383,7 +386,7 @@ fun List<GetBookCategoryEntity>.toUiBookCategory(parent: String): List<UiBookCat
                 checked = false,
                 name = it.name,
                 categoryKey = it.categoryKey,
-                default = it.default
+                default = it.isDefault ?: it.default
             )
         }
 }
@@ -596,21 +599,13 @@ fun GetBooksCodeEntity.toGetBooksCodeModel(): GetBooksCodeModel {
     return GetBooksCodeModel(this.code ?: "")
 }
 
-fun List<GetBookRepeatEntity>.toUiBookRepeatModel(): List<UiBookRepeatModel> {
+fun List<GetBookRepeatEntity>.toUiBookRepeatModel(context: Context): List<UiBookRepeatModel> {
     return this.map {
-        val repeatDurationInKorean = when (it.repeatDuration) {
-            "NONE" -> ""
-            "EVERYDAY" -> "매일"
-            "WEEK" -> "매주"
-            "MONTH" -> "매달"
-            "WEEKDAY" -> "주중"
-            "WEEKEND" -> "주말"
-            else -> it.repeatDuration // 만약 매칭되는 값이 없을 경우 기본값 사용
-        }
+        val repeatDurationText = getConvertReceiveRepeatValue(context, it.repeatDuration)
         UiBookRepeatModel(
             it.id,
             it.description,
-            repeatDurationInKorean,
+            repeatDurationText,
             it.lineSubCategory,
             it.assetSubCategory,
             "${

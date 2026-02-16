@@ -732,7 +732,7 @@ class HistoryViewModel @Inject constructor(
                 money = cost.value!!.replace(",", "").replace(CurrencyUtil.currency, "")
                     .toDouble(),
                 description = if (content.value == "") line.value!! else content.value!!,
-                lineCategoryName = lineType.value!!.toCategoryName(),
+                lineCategoryName = lineType.value!!,
                 lineSubcategoryName = line.value!!,
                 assetSubcategoryName = asset.value!!,
                 exceptStatus = deleteChecked.value!!

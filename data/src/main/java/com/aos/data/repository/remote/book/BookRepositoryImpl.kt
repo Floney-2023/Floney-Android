@@ -47,6 +47,8 @@ import com.aos.data.mapper.toUiOutcomesSelectModel
 import com.aos.data.mapper.toUiSettlementSeeModel
 import com.aos.data.util.CurrencyUtil
 import com.aos.data.util.RetrofitFailureStateException
+import com.aos.data.util.toCategoryRequestValue
+import com.aos.data.util.toCategoryTypeCode
 import com.aos.model.book.GetBooksCodeModel
 import com.aos.model.book.GetBooksInfoCurrencyModel
 import com.aos.model.book.PostBookFavoriteModel
@@ -77,6 +79,7 @@ import com.aos.util.NetworkState
 import okhttp3.ResponseBody
 import timber.log.Timber
 import javax.inject.Inject
+import java.util.Locale
 
 class BookRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context,
@@ -173,8 +176,9 @@ class BookRepositoryImpl @Inject constructor(
         bookKey: String,
         parent: String,
     ): Result<List<UiBookCategory>> {
-        when (val data = bookDataSource.getBookCategory(bookKey, parent)) {
-            is NetworkState.Success -> return Result.success(data.body.toUiBookCategory(parent))
+        val parentCode = parent.toCategoryTypeCode()
+        when (val data = bookDataSource.getBookCategory(bookKey, parentCode)) {
+            is NetworkState.Success -> return Result.success(data.body.toUiBookCategory(parentCode))
             is NetworkState.Failure -> return Result.failure(
                 RetrofitFailureStateException(data.error, data.code)
             )
@@ -198,13 +202,14 @@ class BookRepositoryImpl @Inject constructor(
         memo: String,
         imageUrl: List<String>,
     ): Result<PostBooksLinesModel> {
+        val lineTypeCode = lineType.toCategoryTypeCode()
         when (val data = bookDataSource.postBooksLines(
             PostBooksLinesBody(
                 bookKey,
                 money,
-                lineType,
-                asset,
-                line,
+                lineTypeCode,
+                asset.toCategoryRequestValue(),
+                line.toCategoryRequestValue(),
                 lineDate,
                 description,
                 except,
@@ -238,9 +243,21 @@ class BookRepositoryImpl @Inject constructor(
         memo : String,
         imageUrls: List<String>
     ): Result<PostBooksChangeModel> {
+        val lineTypeCode = lineType.toCategoryTypeCode()
         when (val data = bookDataSource.postBooksLinesChange(
             PostBooksChangeBody(
-                lineId, bookKey, money, lineType, asset, line, lineDate, description, except, nickname, memo, imageUrls
+                lineId,
+                bookKey,
+                money,
+                lineTypeCode,
+                asset.toCategoryRequestValue(),
+                line.toCategoryRequestValue(),
+                lineDate,
+                description,
+                except,
+                nickname,
+                memo,
+                imageUrls
             )
         )) {
             is NetworkState.Success -> return Result.success(data.body.toPostBooksLinesChangeModel())
@@ -574,8 +591,9 @@ class BookRepositoryImpl @Inject constructor(
         }
     }
     override suspend fun deleteBookCategory(bookKey: String, parent:String, name:String): Result<Void?> {
+        val parentCode = parent.toCategoryTypeCode()
         when (val data =
-            bookDataSource.deleteBookCategory(bookKey, DeleteBookCategoryBody(parent, name))) {
+            bookDataSource.deleteBookCategory(bookKey, DeleteBookCategoryBody(parentCode, name))) {
             is NetworkState.Success -> {
                 return Result.success(data.body)
             }
@@ -595,8 +613,9 @@ class BookRepositoryImpl @Inject constructor(
         }
     }
     override suspend fun postBooksCategoryAdd(bookKey: String, parent: String, name: String): Result<PostBooksCategoryAddModel> {
+        val parentCode = parent.toCategoryTypeCode()
         when (val data =
-            bookDataSource.postBooksCategoryAdd(bookKey, PostBooksCategoryAddBody(parent, name))) {
+            bookDataSource.postBooksCategoryAdd(bookKey, PostBooksCategoryAddBody(parentCode, name))) {
             is NetworkState.Success -> return Result.success(data.body.toPostBooksCategoryAddModel())
             is NetworkState.Failure -> return Result.failure(
                 RetrofitFailureStateException(data.error, data.code)
@@ -629,7 +648,7 @@ class BookRepositoryImpl @Inject constructor(
         categoryType: String,
     ): Result<List<UiBookRepeatModel>> {
         when (val data = bookDataSource.getBooksRepeat(bookKey, categoryType)) {
-            is NetworkState.Success -> return Result.success(data.body.toUiBookRepeatModel())
+            is NetworkState.Success -> return Result.success(data.body.toUiBookRepeatModel(context))
             is NetworkState.Failure -> return Result.failure(
                 RetrofitFailureStateException(data.error, data.code)
             )
@@ -687,7 +706,8 @@ class BookRepositoryImpl @Inject constructor(
         excelDuration: String,
         currentDate : String
     ): Result<ResponseBody> {
-        when (val data = bookDataSource.postBooksExcel(PostBooksExcelBody(bookKey, excelDuration, currentDate))) {
+        val language = if (Locale.getDefault().language == "en") "en" else "ko"
+        when (val data = bookDataSource.postBooksExcel(PostBooksExcelBody(bookKey, excelDuration, currentDate, language))) {
             is NetworkState.Success -> return Result.success(data.body)
             is NetworkState.Failure -> return Result.failure(
                 RetrofitFailureStateException(data.error, data.code)
@@ -800,8 +820,16 @@ class BookRepositoryImpl @Inject constructor(
         assetSubcategoryName : String,
         exceptStatus : Boolean
     ): Result<PostBookFavoriteModel> {
+        val lineCategoryCode = lineCategoryName.toCategoryTypeCode()
         when (val data = bookDataSource.postBooksFavorites(bookKey,
-            PostBooksFavoritesBody(money, description, lineCategoryName, lineSubcategoryName, assetSubcategoryName, exceptStatus))
+            PostBooksFavoritesBody(
+                money,
+                description,
+                lineCategoryCode,
+                lineSubcategoryName.toCategoryRequestValue(),
+                assetSubcategoryName.toCategoryRequestValue(),
+                exceptStatus
+            ))
         ) {
             is NetworkState.Success -> return Result.success(data.body.toPostBookFavoriteModel())
             is NetworkState.Failure -> return Result.failure(

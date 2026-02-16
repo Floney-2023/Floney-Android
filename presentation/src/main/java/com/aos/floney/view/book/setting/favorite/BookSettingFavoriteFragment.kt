@@ -30,8 +30,8 @@ class BookSettingFavoriteFragment : BaseFragment<FragmentBookSettingFavoriteBind
         {
 
             val exitDialogFragment = BaseAlertDialog(
-                "삭제하기",
-                "삭제하시겠습니까?",
+                getString(R.string.dialog_delete_favorite_title),
+                getString(R.string.dialog_delete_favorite_info),
                 false
             ) { checked ->
                 if (checked)
@@ -41,8 +41,8 @@ class BookSettingFavoriteFragment : BaseFragment<FragmentBookSettingFavoriteBind
         }
         else if (activityViewModel.entryCheck){
             val exitDialogFragment = BaseAlertDialog(
-                "즐겨찾기",
-                "해당 내역을 불러오겠습니까?",
+                getString(R.string.dialog_use_favorite_title),
+                getString(R.string.dialog_use_favorite_info),
                 false
             ) { checked ->
                 if (checked){

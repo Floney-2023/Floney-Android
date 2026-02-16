@@ -13,6 +13,8 @@ import com.aos.data.mapper.toUiAnalyzeModel
 import com.aos.data.mapper.toUiAnalyzePlanModel
 import com.aos.data.mapper.toUiLineSubCategoryModel
 import com.aos.data.util.RetrofitFailureStateException
+import com.aos.data.util.toCategoryRequestValue
+import com.aos.data.util.toCategoryTypeCode
 import com.aos.model.analyze.UiAnalyzeAssetModel
 import com.aos.model.analyze.UiAnalyzeCategoryInComeModel
 import com.aos.model.analyze.UiAnalyzeCategoryOutComeModel
@@ -31,9 +33,10 @@ class AnalyzeRepositoryImpl @Inject constructor(
     override suspend fun postAnalyzeOutComeCategory(
         bookKey: String, root: String, date: String
     ): Result<UiAnalyzeCategoryOutComeModel> {
+        val rootCode = root.toCategoryTypeCode()
         when (val data = analyzeDataSourceImpl.postAnalyzeOutComeCategory(
             PostAnalyzeCategoryBody(
-                bookKey, root, date
+                bookKey, rootCode, date
             )
         )) {
             is NetworkState.Success -> return Result.success(data.body.toUiAnalyzeModel(context))
@@ -54,9 +57,10 @@ class AnalyzeRepositoryImpl @Inject constructor(
         root: String,
         date: String
     ): Result<UiAnalyzeCategoryInComeModel> {
+        val rootCode = root.toCategoryTypeCode()
         when (val data = analyzeDataSourceImpl.postAnalyzeInComeCategory(
             PostAnalyzeCategoryBody(
-                bookKey, root, date
+                bookKey, rootCode, date
             )
         )) {
             is NetworkState.Success -> return Result.success(data.body.toUiAnalyzeModel(context))
@@ -124,17 +128,18 @@ class AnalyzeRepositoryImpl @Inject constructor(
         sortingType : String,
         yearMonth : String
     ): Result<UiAnalyzeLineSubCategoryModel> {
+        val categoryCode = category.toCategoryTypeCode()
         when (val data = analyzeDataSourceImpl.postAnalyzeLineSubCategory(
             PostAnalyzeLineSubCategoryBody(
                 bookKey = bookKey,
-                category = category,
-                subcategory = subcategory,
+                category = categoryCode,
+                subcategory = subcategory.toCategoryRequestValue(),
                 emails = emails,
                 sortingType = sortingType,
                 yearMonth = yearMonth
             )
         )) {
-            is NetworkState.Success -> return Result.success(data.body.toUiLineSubCategoryModel(context, category))
+            is NetworkState.Success -> return Result.success(data.body.toUiLineSubCategoryModel(context, categoryCode))
             is NetworkState.Failure -> return Result.failure(
                 RetrofitFailureStateException(data.error, data.code)
             )

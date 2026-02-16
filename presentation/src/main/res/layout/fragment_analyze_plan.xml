@@ -148,7 +148,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#d9FFFFFF"
-            android:visibility="@{vm.postAnalyzePlan.initBudget.equals(`0원`) ? View.VISIBLE : View.GONE}"
+            android:visibility="@{vm.isBudgetZero ? View.VISIBLE : View.GONE}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -167,7 +167,7 @@
             android:id="@+id/tv_score"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            bind:setDynamicMarginTop="@{vm.postAnalyzePlan.initBudget.equals(`0원`)}"
+            bind:setDynamicMarginTop="@{vm.isBudgetZero}"
             android:fontFamily="@font/pretendard_medium"
             android:gravity="center"
             android:textColor="@color/grayscale7"
@@ -188,7 +188,7 @@
             android:background="@drawable/custom_radius_12_solid_primary1"
             android:fontFamily="@font/pretendard_bold"
             android:text="@string/budget_set_this_month"
-            android:visibility="@{vm.postAnalyzePlan.initBudget.equals(`0원`) ? View.VISIBLE : View.GONE}"
+            android:visibility="@{vm.isBudgetZero ? View.VISIBLE : View.GONE}"
             android:onClick="@{() -> vm.onClickSetBudget()}"
             android:textColor="@color/white"
             android:textSize="14dp"

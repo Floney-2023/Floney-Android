@@ -188,7 +188,7 @@
             android:background="@color/primary1"
             android:fontFamily="@font/pretendard_bold"
             android:onClick="@{() -> vm.onClickAddBtn()}"
-            android:visibility="@{vm.edit ? View.GONE : View.VISIBLE}"
+            android:visibility="@{vm.edit &amp;&amp; vm.favoriteList.size() > 0 ? View.GONE : View.VISIBLE}"
             android:paddingTop="20dp"
             android:paddingBottom="32dp"
             android:text="@string/category_add"

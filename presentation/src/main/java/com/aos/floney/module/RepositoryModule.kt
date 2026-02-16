@@ -64,20 +64,24 @@ object RepositoryModule {
     @Singleton
     @Provides
     fun provideAlarmRepository(
+        @ApplicationContext context: Context,
         alarmRemoteDataSourceImpl: AlarmRemoteDataSourceImpl
     ) : AlarmRepository {
         return AlarmRepositoryImpl(
-            alarmRemoteDataSourceImpl
+            alarmRemoteDataSourceImpl,
+            context
         )
     }
 
     @Singleton
     @Provides
     fun provideSubscribeRepository(
+        @ApplicationContext context: Context,
         subscribeRemoteDataSourceImpl: SubscribeRemoteDataSourceImpl
     ) : SubscribeRepository {
         return SubscribeRepositoryImpl(
-            subscribeRemoteDataSourceImpl
+            subscribeRemoteDataSourceImpl,
+            context
         )
     }
 }

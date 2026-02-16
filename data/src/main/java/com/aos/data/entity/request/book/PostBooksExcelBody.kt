@@ -7,5 +7,6 @@ import retrofit2.http.Query
 data class PostBooksExcelBody (
     val bookKey: String,
     val excelDuration: String,
-    val currentDate: String
+    val currentDate: String,
+    val language: String? = null
 )

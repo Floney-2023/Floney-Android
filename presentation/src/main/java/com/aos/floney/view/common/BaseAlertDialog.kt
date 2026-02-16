@@ -13,14 +13,21 @@ import androidx.fragment.app.DialogFragment
 import com.aos.floney.R
 import com.aos.floney.databinding.BaseAlertDialogBinding
 import dagger.hilt.android.AndroidEntryPoint
+import androidx.core.graphics.drawable.toDrawable
 
 @AndroidEntryPoint
 class BaseAlertDialog(
     val title : String,
     val info : String,
     val check : Boolean,
+    val buttonMode: ButtonMode = ButtonMode.DOUBLE,
     private val onSelect: (Boolean) -> Unit) :
     DialogFragment(){
+
+    enum class ButtonMode {
+        SINGLE,
+        DOUBLE,
+    }
 
     private var _binding: BaseAlertDialogBinding? = null
     private val binding get() = _binding!!
@@ -46,7 +53,7 @@ class BaseAlertDialog(
     }
     private fun setUpUi() {
         dialog?.window?.apply {
-            setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
             requestFeature(Window.FEATURE_NO_TITLE)
             attributes = attributes?.apply {
                 dimAmount = 0.2f // 20% 딤 효과
@@ -57,22 +64,18 @@ class BaseAlertDialog(
             tvPopupTitle.text = title
             tvPopupInfo.text = info
 
-            // 단일 버튼 모드 체크 (check 파라미터가 false이거나 특정 타이틀인 경우)
-            val inviteCodeTitle = context?.getString(R.string.invite_code_copy_title) ?: ""
-            val isSingleButtonMode = !check || title == inviteCodeTitle || title.contains("알림")
+            val isSingleButtonMode = buttonMode == ButtonMode.SINGLE
 
             if (isSingleButtonMode) {
                 // 단일 버튼 모드: 왼쪽 버튼만 사용, 전체 너비
-                btnLeft.text = "OK"
+                btnLeft.text = getString(R.string.already_pick_button)
                 btnRight.visibility = View.GONE
                 middleView.visibility = View.GONE
 
-                // ConstraintLayout으로 왼쪽 버튼을 전체 너비로 설정
                 val params = btnLeft.layoutParams as LinearLayout.LayoutParams
                 params.width = LinearLayout.LayoutParams.MATCH_PARENT
                 btnLeft.layoutParams = params
             } else {
-                // 두 버튼 모드: 기본 설정 유지
                 btnRight.visibility = View.VISIBLE
                 middleView.visibility = View.VISIBLE
             }

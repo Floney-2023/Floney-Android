@@ -163,7 +163,7 @@ fun ImageView.setAnalyzeImage(item: UiAnalyzePlanModel?) {
 @BindingAdapter("setAnalyzeAssetImage")
 fun ImageView.setAnalyzeAssetImage(item: UiAnalyzeAssetModel?) {
     if (item != null) {
-        val isNegative = item.difference.takeLast(5) == "감소했어요"
+        val isNegative = item.differenceValue < 0
 
         when {
             isNegative -> {

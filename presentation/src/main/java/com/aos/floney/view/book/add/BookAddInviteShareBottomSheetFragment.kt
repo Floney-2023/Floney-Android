@@ -70,7 +70,8 @@ class BookAddInviteShareBottomSheetFragment :
         BaseAlertDialog(
             title = getString(R.string.invite_code_copy_title),
             info = getString(R.string.invite_code_copy_message),
-            false
+            check = false,
+            buttonMode = BaseAlertDialog.ButtonMode.SINGLE,
         ) {
             if(it) {
 

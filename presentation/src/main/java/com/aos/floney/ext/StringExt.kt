@@ -62,9 +62,9 @@ fun String.bookCodeToSettlementUrl(settlementId : Long): String {
 }
 
 fun String.toCategoryCode(): String = when (this) {
-    "수입" -> "INCOME"
-    "지출" -> "OUTCOME"
-    "이체" -> "TRANSFER"
+    "수입", "Income", "INCOME" -> "INCOME"
+    "지출", "Expense", "OUTCOME" -> "OUTCOME"
+    "이체", "Transfer", "TRANSFER" -> "TRANSFER"
     else -> ""
 }
 

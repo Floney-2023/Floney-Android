@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.DiffUtil
 data class UiAnalyzeAssetModel(
     val totalDifference: String,
     val difference: String,
+    val differenceValue: Double,
     val initAsset: String,
     val currentAsset: String,
     val analyzeResult: List<Asset>

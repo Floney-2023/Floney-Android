@@ -83,9 +83,9 @@
             android:layout_height="0dp"
             android:fillViewport="true"
             android:scrollbars="none"
-            app:layout_constraintTop_toBottomOf="@id/tv_sign_up_info"
+            app:layout_constraintBottom_toTopOf="@id/appCompatButton7"
             app:layout_constraintStart_toStartOf="@id/tv_sign_up_info"
-            app:layout_constraintBottom_toTopOf="@id/appCompatButton7">
+            app:layout_constraintTop_toBottomOf="@id/tv_sign_up_info">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/cl_signup_info"
@@ -198,7 +198,7 @@
                         android:layout_height="match_parent"
                         android:background="@drawable/custom_radius_12_solid_greyscale_12_stroke_greyscale_10"
                         android:fontFamily="@font/pretendard_regular"
-                        android:hint="@string/password"
+                        android:hint="@string/re_password"
                         android:inputType="textPassword"
                         android:paddingStart="20dp"
                         android:text="@={vm.rePassword}"
@@ -214,11 +214,11 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
                     android:layout_marginTop="14dp"
+                    android:visibility="@{vm.socialSignUp ? View.GONE : View.VISIBLE}"
                     android:fontFamily="@font/pretendard_regular"
                     android:text="@string/signup_rule"
                     android:textColor="@color/grayscale6"
                     android:textSize="12dp"
-                    android:visibility="@{vm.socialSignUp ? View.GONE : View.VISIBLE}"
                     app:layout_constraintStart_toStartOf="@id/et_re_password"
                     app:layout_constraintTop_toBottomOf="@id/et_re_password" />
 
@@ -226,12 +226,12 @@
                     android:id="@+id/tv_nickname"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="32dp"
+                    android:layout_marginTop="40dp"
                     android:fontFamily="@font/pretendard_semibold"
                     android:text="@string/nickname"
                     android:textColor="@color/grayscale6"
                     android:textSize="14dp"
-                    app:layout_constraintStart_toStartOf="@id/tv_password_rule"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_password_rule" />
 
                 <EditText
@@ -259,8 +259,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
                     android:layout_marginTop="14dp"
-                    android:paddingBottom="20dp"
                     android:fontFamily="@font/pretendard_regular"
+                    android:paddingBottom="20dp"
                     android:text="@string/nickname_rule"
                     android:textColor="@color/grayscale6"
                     android:textSize="12dp"

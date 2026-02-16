@@ -3,19 +3,19 @@
     <!-- Analyze Mapper Strings -->
 
     <!-- Expense Analysis -->
-    <string name="analyze_outcome_total">You spent %s</string>
+    <string name="analyze_outcome_total">You spent\n%s</string>
     <string name="analyze_outcome_more_than_last">%s more\nthan last month</string>
     <string name="analyze_outcome_less_than_last">%s less\nthan last month</string>
 
     <!-- Income Analysis -->
-    <string name="analyze_income_total">You earned %s</string>
+    <string name="analyze_income_total">You earned\n%s</string>
     <string name="analyze_income_more_than_last">Up %s\nfrom last month.</string>
     <string name="analyze_income_less_than_last">Down %s\nfrom last month.</string>
 
     <!-- Asset Analysis -->
     <string name="analyze_asset_increased">Your Assets\nincreased</string>
     <string name="analyze_asset_decreased">Your Assets\ndecreased</string>
-    <string name="analyze_asset_same">Assets unchanged</string>
+    <string name="analyze_asset_same">Your Assets\nunchanged</string>
     <string name="analyze_asset_up">Up %s\nfrom last month</string>
     <string name="analyze_asset_down">Down %s\nfrom last month</string>
 
