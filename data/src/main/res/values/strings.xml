@@ -105,4 +105,20 @@
         <item quantity="one">%d week ago</item>
         <item quantity="other">%d weeks ago</item>
     </plurals>
+
+    <!-- Alarm Messages -->
+    <string name="notification_title">Floney</string>
+    <string name="notification_settle_ledger">Settle the %s team ledger.</string>
+    <string name="notification_settle_ledger_generic">Settle the team ledger.</string>
+    <string name="notification_budget_usage">You\'ve used %s%% of your budget. Check what you can still spend.</string>
+    <string name="notification_add_spending">Add today\'s spending and review your usage.</string>
+    <string name="notification_user_added_record">%1$s added a record.</string>
+    <string name="notification_user_joined">%1$s joined the %2$s team ledger.</string>
+    <string name="notification_user_joined_generic">%1$s joined the team ledger.</string>
+    <string name="notification_user_left">%1$s left the %2$s team ledger.</string>
+    <string name="notification_user_left_generic">%1$s left the team ledger.</string>
+    <string name="notification_currency_changed">Currency in the %1$s team ledger was changed to %2$s.</string>
+    <string name="notification_currency_changed_generic">Currency was changed to %1$s.</string>
+    <string name="notification_ledger_reset">The %s team ledger was reset.</string>
+    <string name="notification_ledger_reset_generic">The team ledger was reset.</string>
 </resources>

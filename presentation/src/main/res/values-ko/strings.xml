@@ -885,6 +885,8 @@
     <string name="mypage_service_ask_title">궁금한 점은\n언제든지 말해주세요</string>
     <string name="mypage_service_ask_subtitle">궁금한 점을 문의해 주시면\n메일로 플로니가 답변해 드립니다.</string>
     <string name="mypage_service_ask_button">메일로 문의하기</string>
+    <string name="mypage_service_ask_email_subject">Floney 문의 제보</string>
+    <string name="mypage_service_ask_email_body_template">작성자 : \n문의 기능 : \n문의 내용 : \n</string>
     <string name="mypage_service_notice">공지사항</string>
 
     <!-- 정산 -->

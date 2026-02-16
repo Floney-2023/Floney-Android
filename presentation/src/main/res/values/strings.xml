@@ -917,6 +917,8 @@
     <string name="mypage_service_ask_title">Feel free\nto ask anything 🤭</string>
     <string name="mypage_service_ask_subtitle">We’ll reply to your questions\nby email.</string>
     <string name="mypage_service_ask_button">Email Us</string>
+    <string name="mypage_service_ask_email_subject">Floney Inquiry Report</string>
+    <string name="mypage_service_ask_email_body_template">Author: \nFeature: \nDetails: \n</string>
     <string name="mypage_service_notice">Announcements</string>
 
     <!-- Home Monthly Screen -->

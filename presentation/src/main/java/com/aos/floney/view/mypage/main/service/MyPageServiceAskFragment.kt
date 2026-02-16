@@ -30,8 +30,8 @@ class MyPageServiceAskFragment : BaseFragment<FragmentMyPageServiceAskBinding, M
                     email.setType("plain/text")
                     val address = arrayOf("floney.team@gmail.com")
                     email.putExtra(Intent.EXTRA_EMAIL, address)
-                    email.putExtra(Intent.EXTRA_SUBJECT, "Floney 문의 제보")
-                    email.putExtra(Intent.EXTRA_TEXT, "작성자 : \n 문의 기능 : \n문의 내용 : \n")
+                    email.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.mypage_service_ask_email_subject))
+                    email.putExtra(Intent.EXTRA_TEXT, getString(R.string.mypage_service_ask_email_body_template))
                     startActivity(email)
                 }
             }
