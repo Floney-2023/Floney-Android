@@ -26,7 +26,7 @@
             android:layout_marginStart="20dp"
             android:layout_marginTop="3dp"
             android:layout_marginBottom="3dp"
-            android:background="@color/white"
+            app:cardBackgroundColor="@color/white"
             app:cardCornerRadius="12dp"
             app:cardElevation="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -37,7 +37,8 @@
                 android:id="@+id/iv_check"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:src="@{item.isClick ? @drawable/icon_check_circle_activated : @drawable/icon_check_circle_inactivated}" />
+                android:src="@{item.isClick ? @drawable/icon_check_circle_activated : @drawable/icon_check_circle_inactivated}"
+                bind:tint="@null" />
         </androidx.cardview.widget.CardView>
 
         <LinearLayout

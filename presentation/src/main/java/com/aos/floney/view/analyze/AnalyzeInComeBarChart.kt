@@ -39,8 +39,6 @@ class AnalyzeInComeBarChart(context: Context, attrs: AttributeSet? = null) : Vie
             // 바의 색상 설정
             paint.color = if (index == 0) {
                 Color.parseColor("#4C97FF")
-            } else if (index == 1 && value.toInt() == 0) {
-                Color.parseColor("#FFFFFF")
             } else if (index == 1) {
                 Color.parseColor("#35347F")
             } else if (index == 2) {

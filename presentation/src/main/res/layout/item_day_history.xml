@@ -73,7 +73,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:background="@drawable/custom_radius_6_solid_primary10"
-                android:visibility="@{item.repeatDuration.equals(`없음`) ? View.GONE : View.VISIBLE}"
+                android:visibility="@{item.repeatDuration.equals(@string/repeat_none) || item.repeatDuration.equals(@string/repeat_none_history) || item.repeatDuration.equals(@string/history_repeat_none) || item.repeatDuration.equals(``) ? View.GONE : View.VISIBLE}"
                 android:paddingStart="6dp"
                 android:paddingTop="4dp"
                 android:paddingEnd="6dp"

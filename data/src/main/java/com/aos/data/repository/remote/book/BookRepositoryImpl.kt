@@ -208,8 +208,8 @@ class BookRepositoryImpl @Inject constructor(
                 bookKey,
                 money,
                 lineTypeCode,
-                asset.toCategoryRequestValue(),
-                line.toCategoryRequestValue(),
+                asset,
+                line,
                 lineDate,
                 description,
                 except,
@@ -250,8 +250,8 @@ class BookRepositoryImpl @Inject constructor(
                 bookKey,
                 money,
                 lineTypeCode,
-                asset.toCategoryRequestValue(),
-                line.toCategoryRequestValue(),
+                asset,
+                line,
                 lineDate,
                 description,
                 except,
@@ -826,8 +826,8 @@ class BookRepositoryImpl @Inject constructor(
                 money,
                 description,
                 lineCategoryCode,
-                lineSubcategoryName.toCategoryRequestValue(),
-                assetSubcategoryName.toCategoryRequestValue(),
+                lineSubcategoryName,
+                assetSubcategoryName,
                 exceptStatus
             ))
         ) {

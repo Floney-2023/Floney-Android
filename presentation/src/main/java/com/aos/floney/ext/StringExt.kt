@@ -57,6 +57,12 @@ fun String?.parseErrorCode(event: BaseViewModel? = null): String {
     }
 }
 
+fun String?.parseErrorKey(event: BaseViewModel? = null, key: String): String {
+    val jsonObject = this?.let { JSONObject(it) }
+
+    return jsonObject?.getString(key) ?: ""
+}
+
 fun String.bookCodeToSettlementUrl(settlementId : Long): String {
     return "https://floney.onelink.me$appsflyer_settlement_url?settlementId=${settlementId}&bookCode=${this}"
 }

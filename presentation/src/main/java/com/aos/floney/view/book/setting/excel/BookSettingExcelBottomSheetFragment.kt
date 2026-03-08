@@ -58,7 +58,11 @@ class BookSettingExcelBottomSheetFragment :
             // 나중에 하기 -> Bottomsheet 닫기
             viewModel.completePage.collect {
                 Timber.e("nextPage $it")
-                val fileUri = saveFileFromResponseBody(requireContext(), it, "[Floney]+가계부+엑셀+파일.xlsx")
+                val fileUri = saveFileFromResponseBody(
+                    requireContext(),
+                    it,
+                    getString(R.string.excel_export_file_name)
+                )
 
                 fileUri?.let {
                     shareFile(requireContext(), it, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")

@@ -29,6 +29,7 @@ import com.aos.data.entity.response.settlement.PostBooksOutcomesEntity
 import com.aos.data.entity.response.settlement.PostNaverShortenUrlEntity
 import com.aos.data.entity.response.settlement.PostSettlementAddEntity
 import com.aos.data.util.CurrencyUtil
+import com.aos.data.util.localizeCategoryKeyDisplayName
 import com.aos.model.book.BudgetItem
 import com.aos.model.book.GetBooksCodeModel
 import com.aos.model.book.GetBooksInfoCurrencyModel
@@ -225,8 +226,8 @@ fun GetBookDaysEntity.toUiBookMonthModel(context: Context, date: String): UiBook
             },
             description = it.description,
             lineCategory = it.lineCategory,
-            lineSubCategory = it.lineSubCategory,
-            assetSubCategory = it.assetSubCategory,
+            lineSubCategory = localizeCategoryKeyDisplayName(it.lineSubCategory),
+            assetSubCategory = localizeCategoryKeyDisplayName(it.assetSubCategory),
             exceptStatus = it.exceptStatus,
             writerEmail = it.writerEmail,
             writerNickName = it.writerNickname,
@@ -367,12 +368,18 @@ fun List<GetBookCategoryEntity>.toUiBookCategory(parent: String): List<UiBookCat
         "INCOME", "수입" -> incomeOrder
         "TRANSFER", "이체" -> transferOrder
         else -> return this.mapIndexed { idx, it ->
+            val isDefault = it.isDefault ?: it.default
+            val displayName = if (isDefault && !it.categoryKey.isNullOrBlank()) {
+                localizeCategoryKeyDisplayName(it.categoryKey)
+            } else {
+                it.name
+            }
             UiBookCategory(
                 idx = idx,
                 checked = false,
-                name = it.name,
+                name = displayName,
                 categoryKey = it.categoryKey,
-                default = it.isDefault ?: it.default
+                default = isDefault
             )
         }
     }
@@ -381,12 +388,18 @@ fun List<GetBookCategoryEntity>.toUiBookCategory(parent: String): List<UiBookCat
         order.indexOf(it.categoryKey ?: "").takeIf { idx -> idx >= 0 } ?: Int.MAX_VALUE
     }, { it.name }))
         .mapIndexed { idx, it ->
+            val isDefault = it.isDefault ?: it.default
+            val displayName = if (isDefault && !it.categoryKey.isNullOrBlank()) {
+                localizeCategoryKeyDisplayName(it.categoryKey)
+            } else {
+                it.name
+            }
             UiBookCategory(
                 idx = idx,
                 checked = false,
-                name = it.name,
+                name = displayName,
                 categoryKey = it.categoryKey,
-                default = it.isDefault ?: it.default
+                default = isDefault
             )
         }
 }
@@ -396,7 +409,11 @@ fun GetSettleUpLastEntity.toGetsettleUpLastModel(): GetSettlementLastModel {
 }
 
 fun List<GetBooksUsersEntity>.toUiMemberSelectModel(): UiMemberSelectModel {
-    val myBookUsers = this.map {
+    val myBookUsers = this
+        .filterNot {
+            it.email == "알수없음" || it.nickname == "알수없음"
+        }
+        .map {
         BookUsers(
             email = it.email, nickname = it.nickname, profileImg = it.profileImg ?: "user_default", isCheck = false
         )
@@ -414,7 +431,7 @@ fun List<PostBooksOutcomesEntity>.toUiOutcomesSelectModel(): UiOutcomesSelectMod
             moneyFormat = "${
                 NumberFormat.getNumberInstance().format(formatAmount(item.money))
             }${CurrencyUtil.currency}",
-            category = "${item.category[0]} ‧ ${item.category[1]}",
+            category = "${localizeCategoryKeyDisplayName(item.category[0])} ‧ ${localizeCategoryKeyDisplayName(item.category[1])}",
             assetType = item.assetType,
             content = item.content,
             img = item.img,
@@ -606,8 +623,8 @@ fun List<GetBookRepeatEntity>.toUiBookRepeatModel(context: Context): List<UiBook
             it.id,
             it.description,
             repeatDurationText,
-            it.lineSubCategory,
-            it.assetSubCategory,
+            localizeCategoryKeyDisplayName(it.lineSubCategory),
+            localizeCategoryKeyDisplayName(it.assetSubCategory),
             "${
                 NumberFormat.getNumberInstance().format(formatAmount(it.money))
             }${CurrencyUtil.currency}",
@@ -655,8 +672,8 @@ fun List<GetBookFavoriteEntity>.toUiBookFavorite(): List<UiBookFavoriteModel> {
             checked = false,
             description = it.description,
             lineCategoryName = it.lineCategoryName,
-            lineSubcategoryName = it.lineSubcategoryName,
-            assetSubcategoryName = it.assetSubcategoryName,
+            lineSubcategoryName = localizeCategoryKeyDisplayName(it.lineSubcategoryName),
+            assetSubcategoryName = localizeCategoryKeyDisplayName(it.assetSubcategoryName),
             money = "${
                 NumberFormat.getNumberInstance().format(formatAmount(it.money))
             }${CurrencyUtil.currency}",
@@ -671,8 +688,8 @@ fun PostBookFavoriteEntity.toPostBookFavoriteModel(): PostBookFavoriteModel {
         money = this.money,
         description = this.description,
         lineCategoryName = this.lineCategoryName,
-        lineSubcategoryName = this.lineSubcategoryName,
-        assetSubcategoryName = this.assetSubcategoryName,
+        lineSubcategoryName = localizeCategoryKeyDisplayName(this.lineSubcategoryName),
+        assetSubcategoryName = localizeCategoryKeyDisplayName(this.assetSubcategoryName),
         exceptStatus = this.exceptStatus
     )
 

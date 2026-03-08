@@ -66,7 +66,7 @@ fun List<GetAlarmEntity>.toUiAlarmGetEntity(context: Context): List<UiAlarmGetMo
         UiAlarmGetModel(
             id = alarm.id,
             title = localizeAlarmTitle(context, alarm.title),
-            body = localizeAlarmBody(context, alarm.body),
+            body = localizeAlarmBody(context, alarm.body, alarm.imgUrl),
             imgUrl = alarm.imgUrl,
             date = timeAgo, // 이제 'date'는 경과한 시간으로 표시됩니다.
             received = alarm.received
@@ -81,10 +81,22 @@ private fun localizeAlarmTitle(context: Context, rawTitle: String): String {
     }
 }
 
-private fun localizeAlarmBody(context: Context, rawBody: String): String {
-    val body = rawBody.trim()
+private fun localizeAlarmBody(context: Context, rawBody: String, iconKey: String?): String {
+    val localizedByIcon = when (iconKey?.trim()) {
+        "icon_noti_settlement" -> localizeSettlementBody(context, rawBody)
+        "icon_noti_currency" -> localizeCurrencyBody(context, rawBody)
+        "icon_noti_join" -> localizeJoinBody(context, rawBody)
+        "icon_noti_exit" -> localizeExitBody(context, rawBody)
+        "icon_noti_reset" -> localizeResetBody(context, rawBody)
+        else -> null
+    }
 
-    // Settle ledger
+    if (localizedByIcon != null) return localizedByIcon
+    return localizeAlarmBodyByPattern(context, rawBody)
+}
+
+private fun localizeSettlementBody(context: Context, rawBody: String): String? {
+    val body = rawBody.trim()
     Regex("^(.+?) 가계부를 정산해보세요\\.$").matchEntire(body)?.let {
         return context.getString(R.string.notification_settle_ledger, it.groupValues[1])
     }
@@ -97,6 +109,82 @@ private fun localizeAlarmBody(context: Context, rawBody: String): String {
     if (body == "Settle the team ledger.") {
         return context.getString(R.string.notification_settle_ledger_generic)
     }
+    return null
+}
+
+private fun localizeCurrencyBody(context: Context, rawBody: String): String? {
+    val body = rawBody.trim()
+    Regex("^(.+?) 가계부의 화폐가 (.+?)로 변경되었어요\\.$").matchEntire(body)?.let {
+        return context.getString(R.string.notification_currency_changed, it.groupValues[1], it.groupValues[2])
+    }
+    Regex("^화폐가 (.+?)\\(으\\)로 변경되었어요\\.$").matchEntire(body)?.let {
+        return context.getString(R.string.notification_currency_changed_generic, it.groupValues[1])
+    }
+    Regex("^Currency in the (.+?) team ledger was changed to (.+?)\\.$").matchEntire(body)?.let {
+        return context.getString(R.string.notification_currency_changed, it.groupValues[1], it.groupValues[2])
+    }
+    Regex("^Currency was changed to (.+?)\\.$").matchEntire(body)?.let {
+        return context.getString(R.string.notification_currency_changed_generic, it.groupValues[1])
+    }
+    return null
+}
+
+private fun localizeJoinBody(context: Context, rawBody: String): String? {
+    val body = rawBody.trim()
+    Regex("^(.+?)님이 (.+?) 가계부에 들어왔어요\\.$").matchEntire(body)?.let {
+        return context.getString(R.string.notification_user_joined, it.groupValues[1], it.groupValues[2])
+    }
+    Regex("^(.+?)님이 가계부에 들어왔어요\\.$").matchEntire(body)?.let {
+        return context.getString(R.string.notification_user_joined_generic, it.groupValues[1])
+    }
+    Regex("^(.+?) joined the (.+?) team ledger\\.$").matchEntire(body)?.let {
+        return context.getString(R.string.notification_user_joined, it.groupValues[1], it.groupValues[2])
+    }
+    Regex("^(.+?) joined the team ledger\\.$").matchEntire(body)?.let {
+        return context.getString(R.string.notification_user_joined_generic, it.groupValues[1])
+    }
+    return null
+}
+
+private fun localizeExitBody(context: Context, rawBody: String): String? {
+    val body = rawBody.trim()
+    Regex("^(.+?)님이 (.+?) 가계부를 나갔습니다\\.$").matchEntire(body)?.let {
+        return context.getString(R.string.notification_user_left, it.groupValues[1], it.groupValues[2])
+    }
+    Regex("^(.+?)님이 가계부를 나갔습니다\\.$").matchEntire(body)?.let {
+        return context.getString(R.string.notification_user_left_generic, it.groupValues[1])
+    }
+    Regex("^(.+?) left the (.+?) team ledger\\.$").matchEntire(body)?.let {
+        return context.getString(R.string.notification_user_left, it.groupValues[1], it.groupValues[2])
+    }
+    Regex("^(.+?) left the team ledger\\.$").matchEntire(body)?.let {
+        return context.getString(R.string.notification_user_left_generic, it.groupValues[1])
+    }
+    return null
+}
+
+private fun localizeResetBody(context: Context, rawBody: String): String? {
+    val body = rawBody.trim()
+    Regex("^(.+?) 가계부가 초기화 되었어요\\.$").matchEntire(body)?.let {
+        return context.getString(R.string.notification_ledger_reset, it.groupValues[1])
+    }
+    if (body == "가계부가 초기화 되었어요.") {
+        return context.getString(R.string.notification_ledger_reset_generic)
+    }
+    Regex("^The (.+?) team ledger was reset\\.$").matchEntire(body)?.let {
+        return context.getString(R.string.notification_ledger_reset, it.groupValues[1])
+    }
+    if (body == "The team ledger was reset.") {
+        return context.getString(R.string.notification_ledger_reset_generic)
+    }
+    return null
+}
+
+private fun localizeAlarmBodyByPattern(context: Context, rawBody: String): String {
+    val body = rawBody.trim()
+
+    // Settle ledger
+    localizeSettlementBody(context, body)?.let { return it }
 
     // Budget / spending
     Regex("^예산의\\s*([0-9]+(?:\\.[0-9]+)?)%를 사용했어요\\. 남은 예산을 확인해보세요\\.$").matchEntire(body)?.let {
@@ -117,61 +205,11 @@ private fun localizeAlarmBody(context: Context, rawBody: String): String {
         return context.getString(R.string.notification_user_added_record, it.groupValues[1])
     }
 
-    // Joined ledger
-    Regex("^(.+?)님이 (.+?) 가계부에 들어왔어요\\.$").matchEntire(body)?.let {
-        return context.getString(R.string.notification_user_joined, it.groupValues[1], it.groupValues[2])
-    }
-    Regex("^(.+?)님이 가계부에 들어왔어요\\.$").matchEntire(body)?.let {
-        return context.getString(R.string.notification_user_joined_generic, it.groupValues[1])
-    }
-    Regex("^(.+?) joined the (.+?) team ledger\\.$").matchEntire(body)?.let {
-        return context.getString(R.string.notification_user_joined, it.groupValues[1], it.groupValues[2])
-    }
-    Regex("^(.+?) joined the team ledger\\.$").matchEntire(body)?.let {
-        return context.getString(R.string.notification_user_joined_generic, it.groupValues[1])
-    }
-
-    // Left ledger
-    Regex("^(.+?)님이 (.+?) 가계부를 나갔습니다\\.$").matchEntire(body)?.let {
-        return context.getString(R.string.notification_user_left, it.groupValues[1], it.groupValues[2])
-    }
-    Regex("^(.+?)님이 가계부를 나갔습니다\\.$").matchEntire(body)?.let {
-        return context.getString(R.string.notification_user_left_generic, it.groupValues[1])
-    }
-    Regex("^(.+?) left the (.+?) team ledger\\.$").matchEntire(body)?.let {
-        return context.getString(R.string.notification_user_left, it.groupValues[1], it.groupValues[2])
-    }
-    Regex("^(.+?) left the team ledger\\.$").matchEntire(body)?.let {
-        return context.getString(R.string.notification_user_left_generic, it.groupValues[1])
-    }
-
-    // Currency changed
-    Regex("^(.+?) 가계부의 화폐가 (.+?)로 변경되었어요\\.$").matchEntire(body)?.let {
-        return context.getString(R.string.notification_currency_changed, it.groupValues[1], it.groupValues[2])
-    }
-    Regex("^화폐가 (.+?)\\(으\\)로 변경되었어요\\.$").matchEntire(body)?.let {
-        return context.getString(R.string.notification_currency_changed_generic, it.groupValues[1])
-    }
-    Regex("^Currency in the (.+?) team ledger was changed to (.+?)\\.$").matchEntire(body)?.let {
-        return context.getString(R.string.notification_currency_changed, it.groupValues[1], it.groupValues[2])
-    }
-    Regex("^Currency was changed to (.+?)\\.$").matchEntire(body)?.let {
-        return context.getString(R.string.notification_currency_changed_generic, it.groupValues[1])
-    }
-
-    // Ledger reset
-    Regex("^(.+?) 가계부가 초기화 되었어요\\.$").matchEntire(body)?.let {
-        return context.getString(R.string.notification_ledger_reset, it.groupValues[1])
-    }
-    if (body == "가계부가 초기화 되었어요.") {
-        return context.getString(R.string.notification_ledger_reset_generic)
-    }
-    Regex("^The (.+?) team ledger was reset\\.$").matchEntire(body)?.let {
-        return context.getString(R.string.notification_ledger_reset, it.groupValues[1])
-    }
-    if (body == "The team ledger was reset.") {
-        return context.getString(R.string.notification_ledger_reset_generic)
-    }
+    // Joined / Left / Currency / Reset
+    localizeJoinBody(context, body)?.let { return it }
+    localizeExitBody(context, body)?.let { return it }
+    localizeCurrencyBody(context, body)?.let { return it }
+    localizeResetBody(context, body)?.let { return it }
 
     return rawBody
 }

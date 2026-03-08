@@ -6,6 +6,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.aos.floney.R
 import com.aos.floney.base.BaseViewModel
+import com.aos.floney.ext.parseErrorCode
+import com.aos.floney.ext.parseErrorKey
 import com.aos.floney.ext.parseErrorMsg
 import com.aos.floney.util.EventFlow
 import com.aos.floney.util.MutableEventFlow
@@ -44,11 +46,19 @@ class PasswordFindViewModel @Inject constructor(
                         _showSendDialog.emit(true)
                     }.onFailure {
                         baseEvent(Event.HideLoading)
-                        if(it.message.parseErrorMsg(this@PasswordFindViewModel).equals("해당 이메일로 가입된 유저가 없습니다.")) {
-                            baseEvent(Event.ShowToast(app.getString(R.string.toast_no_user_with_email)))
-                        } else {
-                            baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@PasswordFindViewModel)))
+
+                        val errorCode = it.message.parseErrorCode()
+
+                        val message = when (errorCode) {
+                            "U008" -> app.getString(R.string.toast_no_user_with_email)
+                            "U021" -> {
+                                val provider = it.message.parseErrorKey(key = "provider")
+                                app.getString(R.string.mypage_main_inform_pwchange_u021_toast, provider)
+                            }
+                            else -> app.getString(R.string.toast_error_unknown)
                         }
+
+                        baseEvent(Event.ShowToast(message))
                     }
                 }
             } else {

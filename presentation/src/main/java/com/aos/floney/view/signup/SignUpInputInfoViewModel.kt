@@ -1,5 +1,6 @@
 package com.aos.floney.view.signup
 
+import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -7,6 +8,8 @@ import androidx.lifecycle.viewModelScope
 import com.aos.data.util.SharedPreferenceUtil
 import com.aos.floney.R
 import com.aos.floney.base.BaseViewModel
+import com.aos.floney.ext.parseErrorCode
+import com.aos.floney.ext.parseErrorKey
 import com.aos.floney.ext.parseErrorMsg
 import com.aos.floney.util.EventFlow
 import com.aos.floney.util.MutableEventFlow
@@ -19,6 +22,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SignUpInputInfoViewModel @Inject constructor(
+    private val app: Application,
     stateHandle: SavedStateHandle,
     private val prefs: SharedPreferenceUtil,
     private val signUpUseCase: SignUpUseCase,
@@ -100,7 +104,19 @@ class SignUpInputInfoViewModel @Inject constructor(
                         _nextPage.emit(true)
                     }.onFailure {
                         baseEvent(Event.HideLoading)
-                        baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@SignUpInputInfoViewModel)))
+
+                        val errorCode = it.message.parseErrorCode()
+
+                        val message = when (errorCode) {
+                            "U008" -> app.getString(R.string.toast_no_user_with_email)
+                            "U021" -> {
+                                val provider = it.message.parseErrorKey(key = "provider")
+                                app.getString(R.string.mypage_main_inform_pwchange_u021_toast, provider)
+                            }
+                            else -> app.getString(R.string.toast_error_unknown)
+                        }
+
+                        baseEvent(Event.ShowToast(message))
                     }
                 }
             }

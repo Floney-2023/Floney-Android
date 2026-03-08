@@ -165,6 +165,7 @@ class HistoryViewModel @Inject constructor(
 
     // 자산, 지출, 수입, 이체 카테고리 조회에 사용
     private var parent = ""
+    private val categoryCacheByParent = mutableMapOf<String, List<UiBookCategory>>()
 
     // 예산/자산 제외 설정 여부
     val deleteChecked: MutableLiveData<Boolean> = MutableLiveData(false)
@@ -342,6 +343,7 @@ class HistoryViewModel @Inject constructor(
 
                 // Apply localization to categories
                 val localizedList = CategoryLocalizationMapper.localizeCategories(application, list)
+                categoryCacheByParent[normalizeParent(parent)] = localizedList
 
                 val item = localizedList.mapIndexed { index, innerItem ->
                     val shouldSelect = if (isUnselected) {
@@ -371,6 +373,36 @@ class HistoryViewModel @Inject constructor(
         }
     }
 
+    private fun normalizeParent(rawParent: String): String {
+        return when (rawParent) {
+            "자산", "ASSET", "asset" -> "ASSET"
+            else -> {
+                val code = rawParent.toCategoryCode()
+                if (code.isNotEmpty()) code else rawParent
+            }
+        }
+    }
+
+    private suspend fun getLocalizedCategoriesByParent(parent: String): List<UiBookCategory>? {
+        val normalizedParent = normalizeParent(parent)
+        categoryCacheByParent[normalizedParent]?.let { return it }
+
+        return getBookCategoryUseCase(prefs.getString("bookKey", ""), normalizedParent)
+            .getOrNull()
+            ?.let { CategoryLocalizationMapper.localizeCategories(application, it) }
+            ?.also { categoryCacheByParent[normalizedParent] = it }
+    }
+
+    private suspend fun resolveRequestCategoryValue(parent: String, selectedDisplayName: String): String {
+        val categories = getLocalizedCategoriesByParent(parent) ?: return selectedDisplayName
+        val selected = categories.firstOrNull { it.name == selectedDisplayName } ?: return selectedDisplayName
+        return if (selected.default && !selected.categoryKey.isNullOrBlank()) {
+            selected.categoryKey!!
+        } else {
+            selectedDisplayName
+        }
+    }
+
     // 저장버튼 클릭
     fun onClickSaveBtn() {
         if (isAllInputData()) {
@@ -393,13 +425,15 @@ class HistoryViewModel @Inject constructor(
 
     private fun goToAddHistory(){
         viewModelScope.launch(Dispatchers.IO) {
+            val requestAsset = resolveRequestCategoryValue("ASSET", asset.value!!)
+            val requestLine = resolveRequestCategoryValue(lineType.value!!, line.value!!)
             postBooksLinesUseCase(
                 bookKey = prefs.getString("bookKey", ""),
                 money = cost.value!!.replace(",", "").replace(CurrencyUtil.currency, "")
                     .toDouble(),
                 lineType = lineType.value!!,
-                asset = asset.value!!,
-                line = line.value!!,
+                asset = requestAsset,
+                line = requestLine,
                 lineDate = date.value!!.replace(".", "-"),
                 description = if (content.value!! == "") {
                     line.value!!.toString()
@@ -727,14 +761,16 @@ class HistoryViewModel @Inject constructor(
 
     fun applyAddFavorite() {
         viewModelScope.launch(Dispatchers.IO) {
+            val requestLine = resolveRequestCategoryValue(lineType.value!!, line.value!!)
+            val requestAsset = resolveRequestCategoryValue("ASSET", asset.value!!)
             postBooksFavoritesUseCase(
                 bookKey = prefs.getString("bookKey", ""),
                 money = cost.value!!.replace(",", "").replace(CurrencyUtil.currency, "")
                     .toDouble(),
                 description = if (content.value == "") line.value!! else content.value!!,
                 lineCategoryName = lineType.value!!,
-                lineSubcategoryName = line.value!!,
-                assetSubcategoryName = asset.value!!,
+                lineSubcategoryName = requestLine,
+                assetSubcategoryName = requestAsset,
                 exceptStatus = deleteChecked.value!!
             ).onSuccess {
                 _postBooksFavorites.emit(true)
@@ -895,14 +931,16 @@ class HistoryViewModel @Inject constructor(
     fun goModifyHistory() {
         viewModelScope.launch(Dispatchers.IO) {
             val tempMoney = cost.value!!.replace(",", "")
+            val requestLine = resolveRequestCategoryValue(lineType.value!!, line.value!!)
+            val requestAsset = resolveRequestCategoryValue("ASSET", asset.value!!)
             postBooksLinesChangeUseCase(
                 lineId = modifyId,
                 bookKey = prefs.getString("bookKey", ""),
                 money = tempMoney.replace(CurrencyUtil.currency, "")
                     .toDouble(),
                 lineType = lineType.value!!,
-                asset = asset.value!!,
-                line = line.value!!,
+                asset = requestAsset,
+                line = requestLine,
                 lineDate = date.value!!.replace(".", "-"),
                 description = content.value!!,
                 except = deleteChecked.value!!,

@@ -8,6 +8,7 @@ import com.aos.data.entity.response.analyze.PostAnalyzeCategoryInComeEntity
 import com.aos.data.entity.response.analyze.PostAnalyzeCategoryOutComeEntity
 import com.aos.data.entity.response.analyze.PostAnalyzeLineSubCategoryEntity
 import com.aos.data.util.CurrencyUtil
+import com.aos.data.util.localizeCategoryKeyDisplayName
 import com.aos.model.analyze.AnalyzeResult
 import com.aos.model.analyze.Asset
 import com.aos.model.analyze.UiAnalyzeAssetModel
@@ -25,7 +26,6 @@ import androidx.core.graphics.toColorInt
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-private val colorUsedArr = arrayListOf<Int>()
 private val colorArr = listOf<Int>(
     "#AD1F25".toColorInt(), // red1
     "#EFA9AB".toColorInt(), // red3
@@ -41,16 +41,10 @@ private val colorArr = listOf<Int>(
     "#D3CCFF".toColorInt() // purple3
 )
 
-private val randomColorArr = arrayListOf<Int>()
-private var stepIdx = 0
-private var colorIdx = 0
-
 fun PostAnalyzeCategoryOutComeEntity.toUiAnalyzeModel(context: Context): UiAnalyzeCategoryOutComeModel {
-    colorIdx = 0
-    stepIdx = 0
-    colorUsedArr.clear()
-    randomColorArr.clear()
-    randomColorArr.addAll(getRandomColor(this.analyzeResult.size))
+    var stepIdx = 0
+    var colorIdx = 0
+    val randomColorArr = getRandomColor(this.analyzeResult.size)
 
     val formattedTotal = "${NumberFormat.getNumberInstance().format(this.total)}${CurrencyUtil.currency}"
 
@@ -75,7 +69,7 @@ fun PostAnalyzeCategoryOutComeEntity.toUiAnalyzeModel(context: Context): UiAnaly
         size = this.analyzeResult.size,
         analyzeResult = this.analyzeResult.map {
             AnalyzeResult(
-                category = it.category,
+                category = localizeCategoryKeyDisplayName(it.category),
                 money = it.money,
                 uiMoney = "${
                     NumberFormat.getNumberInstance().format(it.money)
@@ -101,7 +95,7 @@ fun PostAnalyzeCategoryOutComeEntity.toUiAnalyzeModel(context: Context): UiAnaly
                     else -> {
                         try {
                             randomColorArr[colorIdx++]
-                        }catch (i: IndexOutOfBoundsException) {
+                        } catch (i: IndexOutOfBoundsException) {
                             i.printStackTrace()
                             randomColorArr[0]
                         }
@@ -112,11 +106,9 @@ fun PostAnalyzeCategoryOutComeEntity.toUiAnalyzeModel(context: Context): UiAnaly
 }
 
 fun PostAnalyzeCategoryInComeEntity.toUiAnalyzeModel(context: Context): UiAnalyzeCategoryInComeModel {
-    colorIdx = 0
-    stepIdx = 0
-    colorUsedArr.clear()
-    randomColorArr.clear()
-    randomColorArr.addAll(getRandomColor(this.analyzeResult.size))
+    var stepIdx = 0
+    var colorIdx = 0
+    val randomColorArr = getRandomColor(this.analyzeResult.size)
 
     Timber.e("different $differance")
     Timber.e("total $total")
@@ -144,7 +136,7 @@ fun PostAnalyzeCategoryInComeEntity.toUiAnalyzeModel(context: Context): UiAnalyz
         size = this.analyzeResult.size,
         analyzeResult = this.analyzeResult.map {
             AnalyzeResult(
-                category = it.category,
+                category = localizeCategoryKeyDisplayName(it.category),
                 money = it.money,
                 uiMoney = "${
                     NumberFormat.getNumberInstance().format(it.money)
@@ -170,7 +162,7 @@ fun PostAnalyzeCategoryInComeEntity.toUiAnalyzeModel(context: Context): UiAnalyz
                     else -> {
                         try {
                             randomColorArr[colorIdx++]
-                        }catch (i: IndexOutOfBoundsException) {
+                        } catch (i: IndexOutOfBoundsException) {
                             i.printStackTrace()
                             randomColorArr[0]
                         }
@@ -299,7 +291,7 @@ fun PostAnalyzeLineSubCategoryEntity.toUiLineSubCategoryModel(
 ): UiAnalyzeLineSubCategoryModel {
 
     return UiAnalyzeLineSubCategoryModel(
-        subcategoryName = this.subcategoryName,
+        subcategoryName = localizeCategoryKeyDisplayName(this.subcategoryName),
         bookLines = this.bookLines.map {
 
             val formattedDate = formatLocalizedDate(context, it.lineDate)
@@ -311,7 +303,7 @@ fun PostAnalyzeLineSubCategoryEntity.toUiLineSubCategoryModel(
 
                 descriptionDetail = context.getString(
                     R.string.line_detail_format,
-                    it.asset,
+                    localizeCategoryKeyDisplayName(it.asset),
                     formattedDate
                 ),
 

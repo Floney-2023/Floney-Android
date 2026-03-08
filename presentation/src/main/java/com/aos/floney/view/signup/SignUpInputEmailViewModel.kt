@@ -7,6 +7,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.aos.floney.R
 import com.aos.floney.base.BaseViewModel
+import com.aos.floney.ext.parseErrorCode
 import com.aos.floney.ext.parseErrorMsg
 import com.aos.floney.util.EventFlow
 import com.aos.floney.util.MutableEventFlow
@@ -47,7 +48,7 @@ class SignUpInputEmailViewModel @Inject constructor(
                         _nextPage.emit(true)
                     }.onFailure {
                         baseEvent(Event.HideLoading)
-                        if(it.message.parseErrorMsg(this@SignUpInputEmailViewModel) == "이미 존재하는 유저입니다") {
+                        if(it.message.parseErrorCode(this@SignUpInputEmailViewModel) == "U001") {
                             baseEvent(Event.ShowToastRes(R.string.sign_up_exist_email))
                         } else {
                             baseEvent(Event.ShowToast(it.message.parseErrorMsg(this@SignUpInputEmailViewModel)))

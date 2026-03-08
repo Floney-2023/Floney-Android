@@ -102,10 +102,15 @@ class BookSettingCategoryViewModel @Inject constructor(
     // 내역 삭제
     fun deleteCategory(item : UiBookCategory) {
         viewModelScope.launch(Dispatchers.IO) {
+            val requestName = if (item.default && !item.categoryKey.isNullOrBlank()) {
+                item.categoryKey!!
+            } else {
+                item.name
+            }
             booksCategoryDeleteUseCase(
                 bookKey = prefs.getString("bookKey", ""),
                 flow.value!!,
-                item.name
+                requestName
             ).onSuccess {
                 val updatedList = _categoryList.value!!.filter { it.name != item.name }
                 _categoryList.postValue(updatedList)

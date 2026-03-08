@@ -147,6 +147,8 @@
     <string name="mypage_main_inform_pwchange_request_input_re_password">Please confirm your new password.</string>
     <string name="mypage_main_inform_pwchange_check_password_rule">Please check password format.</string>
     <string name="mypage_main_inform_pwchange_not_match_password">New passwords do not match.</string>
+    <string name="mypage_main_inform_pwchange_u021_toast">You signed up using %s social login.</string>
+
 
 
     <!--myPageActivity(회원정보 1-4, 프로필 이미지 변경)-->
@@ -171,7 +173,7 @@
     <string name="mypage_main_inform_exit_input_password_title">Enter your password\nto continue</string>
     <string name="mypage_main_inform_exit_input_password_hint">Password</string>
     <string name="mypage_main_inform_exit_input_password_button">Delete Account</string>
-    <string name="mypage_main_inform_exit_input_password_toast">Please enter your password.</string>
+    <string name="mypage_main_inform_exit_input_password_toast">Enter your password.</string>
 
     <!--myPageActivity(회원정보 1-6, pop up 회원탈퇴)-->
     <string name="mypage_main_inform_exit_popup_title">Please confirm before leaving</string>
@@ -563,6 +565,7 @@
     <string name="excel_export_this_year">This Year</string>
     <string name="excel_export_last_year">Last Year</string>
     <string name="excel_export_all">All</string>
+    <string name="excel_export_file_name">[Floney]+Ledger+Excel+File.xlsx</string>
 
     <!--10-1 정산 -->
     <string name="settle_up_start">Settlements</string>

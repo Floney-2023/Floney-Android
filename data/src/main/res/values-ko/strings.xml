@@ -3,25 +3,25 @@
     <!-- Analyze Mapper Strings -->
 
     <!-- Expense Analysis -->
-    <string name="analyze_outcome_total">%s를 사용했어요</string>
-    <string name="analyze_outcome_more_than_last">저번달보다\n%s 더 사용했어요</string>
-    <string name="analyze_outcome_less_than_last">저번달보다\n%s 덜 사용했어요</string>
+    <string name="analyze_outcome_total">총 %s을\n 사용했어요</string>
+    <string name="analyze_outcome_more_than_last">저번달 대비 %s을\n더 사용했어요</string>
+    <string name="analyze_outcome_less_than_last">저번달 대비 %s을\n덜 사용했어요</string>
 
     <!-- Income Analysis -->
-    <string name="analyze_income_total">%s를 벌었어요</string>
-    <string name="analyze_income_more_than_last">저번달보다\n%s를 더 벌었어요</string>
-    <string name="analyze_income_less_than_last">저번달보다\n%s를 덜 벌었어요</string>
+    <string name="analyze_income_total">총 %s을\n 벌었어요</string>
+    <string name="analyze_income_more_than_last">저번달 대비 %s을\n더 벌었어요</string>
+    <string name="analyze_income_less_than_last">저번달 대비 %s을\n덜 벌었어요</string>
 
     <!-- Asset Analysis -->
-    <string name="analyze_asset_increased">자산이 증가했어요</string>
-    <string name="analyze_asset_decreased">자산이 감소했어요</string>
-    <string name="analyze_asset_same">자산이 그대로에요</string>
-    <string name="analyze_asset_up">저번달보다\n%s 증가</string>
-    <string name="analyze_asset_down">저번달보다\n%s 감소</string>
+    <string name="analyze_asset_increased">나의 자산이\n지난달보다 증가했어요</string>
+    <string name="analyze_asset_decreased">나의 자산이\n지난달보다 감소했어요</string>
+    <string name="analyze_asset_same">나의 자산이\n지난달과 같아요</string>
+    <string name="analyze_asset_up">지난달 대비 %s\증가했어요</string>
+    <string name="analyze_asset_down">지난달 대비 %s\n감소했어요</string>
 
     <!-- Budget Plan -->
     <string name="analyze_budget_used">현재 예산의\n%s%%를 사용했어요</string>
-    <string name="analyze_budget_per_day">남은 기간 동안 하루에\n%s원을 사용할 수 있어요</string>
+    <string name="analyze_budget_per_day">남은 기간 동안 하루에\n%s원 사용할 수 있어요</string>
     <string name="analyze_budget_no_budget">예산을 설정하고\n체계적인 소비 습관을 만들어 보세요!</string>
     <string name="analyze_budget_plenty">쓸 수 있는 예산이\n충분해요!</string>
     <string name="analyze_budget_reduce">조금씩 지출을\n줄여볼까요?</string>
