@@ -2,11 +2,11 @@ package com.aos.data.util
 
 import com.aos.data.BuildConfig
 import com.aos.data.entity.response.token.PostUserReissueEntity
-import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import okhttp3.*
@@ -25,66 +25,83 @@ class AuthInterceptor @Inject constructor(
     private val _sessionExpiredEvent = MutableSharedFlow<Boolean>()
     val sessionExpiredEvent: SharedFlow<Boolean> = _sessionExpiredEvent
 
-    private val refreshTokenMutex = Mutex()
+    private val refreshLock = Any()
     @Volatile private var sessionExpired = false
-    private var lastRefreshFailed = false
 
     override fun authenticate(route: Route?, response: Response): Request? {
+        Timber.e(
+            "[AuthInterceptor] authenticate() called: code=%d, url=%s",
+            response.code,
+            response.request.url
+        )
         if (responseCount(response) >= 2) {
-            Timber.e("Too many token refresh attempts")
+            Timber.e("[AuthInterceptor] Too many token refresh attempts")
             return null
         }
 
-        if (sessionExpired) return null
+        if (sessionExpired) {
+            Timber.e("[AuthInterceptor] Session already expired, skip reissue")
+            return null
+        }
 
         val originRequest = response.request
-        if (originRequest.header("Authorization").isNullOrEmpty()) return null
+        if (originRequest.header("Authorization").isNullOrEmpty()) {
+            Timber.d("[AuthInterceptor] Authorization header missing, skip reissue")
+            return null
+        }
 
         val refreshToken = prefs.getString("refreshToken", "")
         if (refreshToken.isBlank()) {
-            Timber.e("Refresh token is empty")
+            Timber.e("[AuthInterceptor] Refresh token is empty")
             triggerSessionExpiredOnce()
             return null
         }
 
-        return runBlocking(Dispatchers.IO) {
-            refreshTokenMutex.withLock {
-                if (sessionExpired) return@runBlocking null
+        synchronized(refreshLock) {
+            if (sessionExpired) {
+                Timber.e("[AuthInterceptor] Session expired while waiting lock, skip reissue")
+                return null
+            }
 
-                // 중복 호출 방지: 이전 refresh가 실패한 경우 바로 종료
-                if (lastRefreshFailed) {
-                    Timber.e("Previous refresh failed, skipping")
-                    return@withLock null
-                }
+            val currentAuthHeader = "Bearer ${prefs.getString("accessToken", "")}"
+            val requestAuthHeader = originRequest.header("Authorization")
+            if (!requestAuthHeader.isNullOrBlank() &&
+                requestAuthHeader != currentAuthHeader &&
+                currentAuthHeader != "Bearer "
+            ) {
+                Timber.e("[AuthInterceptor] Token already refreshed by another request, retrying with latest token")
+                return originRequest.newBuilder()
+                    .header("Authorization", currentAuthHeader)
+                    .build()
+            }
 
-                try {
-                    val refreshRequest = Request.Builder()
-                        .url("${BuildConfig.BASE_URL}users/reissue")
-                        .post(createTokenReissueRequestBody())
+            try {
+                Timber.e("[AuthInterceptor] Start reissue request for url=%s", originRequest.url)
+                val refreshRequest = Request.Builder()
+                    .url("${BuildConfig.BASE_URL}users/reissue")
+                    .post(createTokenReissueRequestBody())
+                    .build()
+
+                Timber.e("[AuthInterceptor] Sending refresh token request")
+                val refreshedToken = executeRefreshTokenRequest(refreshRequest)
+
+                if (refreshedToken != null) {
+                    Timber.e("[AuthInterceptor] Reissue success, updating tokens")
+                    updateTokenInPrefs(refreshedToken.accessToken, refreshedToken.refreshToken)
+
+                    Timber.e("[AuthInterceptor] Retrying original request with new access token")
+                    return originRequest.newBuilder()
+                        .header("Authorization", "Bearer ${refreshedToken.accessToken}")
                         .build()
-
-                    Timber.d("Sending refresh token request")
-                    val refreshedToken = executeRefreshTokenRequest(refreshRequest)
-
-                    if (refreshedToken != null) {
-                        updateTokenInPrefs(refreshedToken.accessToken, refreshedToken.refreshToken)
-                        lastRefreshFailed = false
-
-                        return@withLock originRequest.newBuilder()
-                            .header("Authorization", "Bearer ${refreshedToken.accessToken}")
-                            .build()
-                    } else {
-                        Timber.e("Token refresh failed - null response")
-                        lastRefreshFailed = true
-                        triggerSessionExpiredOnce()
-                        return@withLock null
-                    }
-                } catch (e: Exception) {
-                    Timber.e(e, "Error during token refresh")
-                    lastRefreshFailed = true
+                } else {
+                    Timber.e("[AuthInterceptor] Reissue failed: null body")
                     triggerSessionExpiredOnce()
-                    return@withLock null
+                    return null
                 }
+            } catch (e: Exception) {
+                Timber.e(e, "[AuthInterceptor] Error during token refresh")
+                triggerSessionExpiredOnce()
+                return null
             }
         }
     }
@@ -92,6 +109,7 @@ class AuthInterceptor @Inject constructor(
     private fun triggerSessionExpiredOnce() {
         if (!sessionExpired) {
             sessionExpired = true
+            Timber.e("[AuthInterceptor] Trigger session expired event")
             CoroutineScope(Dispatchers.IO).launch {
                 _sessionExpiredEvent.emit(true)
             }
@@ -128,17 +146,19 @@ class AuthInterceptor @Inject constructor(
             .build()
 
         return client.newCall(request).execute().use { response ->
+            Timber.e("[AuthInterceptor] Reissue response code=%d", response.code)
             if (response.isSuccessful) {
                 response.body?.string()?.let {
                     try {
+                        Timber.e("[AuthInterceptor] Reissue response parsing success")
                         Json { ignoreUnknownKeys = true }.decodeFromString(it)
                     } catch (e: Exception) {
-                        Timber.e(e, "Token parsing failed")
+                        Timber.e(e, "[AuthInterceptor] Token parsing failed")
                         null
                     }
                 }
             } else {
-                Timber.e("Refresh failed: ${response.code}")
+                Timber.e("[AuthInterceptor] Reissue failed with code=%d", response.code)
                 null
             }
         }
@@ -158,12 +178,10 @@ class AuthInterceptor @Inject constructor(
         prefs.setString("accessToken", "")
         prefs.setString("refreshToken", "")
         sessionExpired = false
-        lastRefreshFailed = false
     }
 
     fun resetSessionExpiredFlag() {
         sessionExpired = false
-        lastRefreshFailed = false
     }
 
     fun getSessionExpiredFlag(): Boolean = sessionExpired

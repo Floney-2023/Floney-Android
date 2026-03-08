@@ -17,15 +17,27 @@ class HeaderInterceptor @Inject constructor(
         if (originalRequest.headers["Auth"] == "false") {
             builder.removeHeader("Auth")
         } else {
-            var token = ""
-            runBlocking {
-                token = "Bearer " + prefs.getString("accessToken", "")
-            }
+            val token = "Bearer " + prefs.getString("accessToken", "")
             Timber.d("token $token")
             builder.addHeader("Authorization", token)
         }
 
         val newRequest = builder.build()
-        return chain.proceed(newRequest)
+        Timber.e(
+            "[HeaderInterceptor] request url=%s, hasAuth=%s, authorization=%s",
+            newRequest.url,
+            newRequest.header("Auth") != null,
+            newRequest.header("Authorization")?.take(24)
+        )
+
+        val response = chain.proceed(newRequest)
+        if (response.code == 401) {
+            Timber.e(
+                "[HeaderInterceptor] 401 received url=%s, authorization=%s",
+                newRequest.url,
+                newRequest.header("Authorization")?.take(24)
+            )
+        }
+        return response
     }
 }
