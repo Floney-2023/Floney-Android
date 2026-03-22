@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
+import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.View
 import timber.log.Timber
@@ -23,79 +24,77 @@ class AnalyzeOutComeBarChart(context: Context, attrs: AttributeSet? = null) : Vi
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-        var individualWidth = 0f
-        colorIdx = 0 // onDraw 시작 시 colorIdx 초기화
+        if (total <= 0f || data.isEmpty()) return
 
-        for ((index, value) in data.withIndex()) {
+        val visibleData = data.mapIndexed { index, value -> index to value }.filter { it.second > 0f }
+        if (visibleData.isEmpty()) return
+
+        val top = 0f
+        val bottom = height.toFloat()
+        val radius = (height / 2f).coerceAtLeast(1f)
+        var currentLeft = 0f
+        colorIdx = 0
+
+        for ((drawIndex, item) in visibleData.withIndex()) {
+            val index = item.first
+            val value = item.second
             Timber.e("value $value")
-            val width = width * (value.toFloat() / total)
-            val left = individualWidth
-            val right = left + width
-            val bottom = 0f
-            val top = height.toFloat() // 뷰의 높이
 
-            individualWidth += width
+            val segmentWidth = width * (value / total)
+            if (segmentWidth <= 0f) continue
 
-            // 바의 색상 설정
-            paint.color = if (index == 0) {
-                Color.parseColor("#FFDE31")
-            } else if (index == 1 && value.toInt() == 0) {
-                Color.parseColor("#FFFFFF")
-            } else if (index == 1) {
-                Color.parseColor("#FF965B")
-            } else if (index == 2) {
-                Color.parseColor("#E56E73")
-            } else {
-                if(colorArr.isEmpty()) {
-                    Color.TRANSPARENT
-                } else {
-                    // colorIdx가 colorArr 크기를 넘지 않도록 안전하게 처리
-                    val safeColorIdx = colorIdx.coerceIn(0, colorArr.size - 1)
-                    colorIdx++
-                    colorArr[safeColorIdx]
+            val left = currentLeft
+            val right = (left + segmentWidth).coerceAtMost(width.toFloat())
+            currentLeft = right
+
+            paint.color = resolveColor(index, value)
+
+            val rect = RectF(left, top, right, bottom)
+            when {
+                visibleData.size == 1 -> {
+                    canvas.drawRoundRect(rect, radius, radius, paint)
                 }
+                drawIndex == 0 -> {
+                    val path = Path().apply {
+                        addRoundRect(
+                            rect,
+                            floatArrayOf(radius, radius, 0f, 0f, 0f, 0f, radius, radius),
+                            Path.Direction.CW
+                        )
+                    }
+                    canvas.drawPath(path, paint)
+                }
+                drawIndex == visibleData.lastIndex -> {
+                    val path = Path().apply {
+                        addRoundRect(
+                            rect,
+                            floatArrayOf(0f, 0f, radius, radius, radius, radius, 0f, 0f),
+                            Path.Direction.CW
+                        )
+                    }
+                    canvas.drawPath(path, paint)
+                }
+                else -> canvas.drawRect(rect, paint)
             }
+        }
+    }
 
-
-            if(index == 0) {
-                val path = Path()
-                // 특정 모서리에만 라운드 적용
-                // 왼쪽 하단 시작점
-                // 왼쪽 하단부터 시작
-                path.moveTo(right, bottom)
-
-                path.lineTo(left + 20, bottom)
-
-                path.moveTo(right, bottom)
-
-                path.lineTo(right, top)
-
-                path.lineTo(left + 20, top)
-
-                path.cubicTo(left, top, left, bottom, left + 20, bottom)
-
-                path.close()
-
-                canvas.drawPath(path, paint)
-            } else if(index == data.size - 1){
-                val path = Path()
-                path.moveTo(left, bottom)
-
-                path.lineTo(right - 20, bottom)
-
-                path.moveTo(left, bottom)
-
-                path.lineTo(left, top)
-
-                path.lineTo(right - 20, top)
-
-                path.cubicTo(right, top, right, bottom, right - 20, bottom)
-
-                path.close()
-
-                canvas.drawPath(path, paint)
+    private fun resolveColor(index: Int, value: Float): Int {
+        return if (index == 0) {
+            Color.parseColor("#FFDE31")
+        } else if (index == 1 && value.toInt() == 0) {
+            Color.parseColor("#FFFFFF")
+        } else if (index == 1) {
+            Color.parseColor("#FF965B")
+        } else if (index == 2) {
+            Color.parseColor("#E56E73")
+        } else {
+            if (colorArr.isEmpty()) {
+                Color.TRANSPARENT
             } else {
-                canvas.drawRect(left, top, right, bottom, paint)
+                val safeColorIdx = colorIdx.coerceIn(0, colorArr.size - 1)
+                colorIdx++
+                colorArr[safeColorIdx]
             }
         }
     }
@@ -111,12 +110,9 @@ class AnalyzeOutComeBarChart(context: Context, attrs: AttributeSet? = null) : Vi
             }
         }
 
-        if(newData.size == 1) {
-            data.add(0f)
-        }
-
         total = data.sum()
         colorArr = colorTempArr
+        invalidate()
     }
 
     fun clearColorIdx() {

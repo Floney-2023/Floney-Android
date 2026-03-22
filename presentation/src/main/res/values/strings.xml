@@ -658,6 +658,7 @@
     <!-- 서비스 화면 -->
     <string name="service_terms_title">Terms of Service</string>
     <string name="service_privacy_title">Privacy Policy</string>
+    <string name="sign_up_marketing_terms_title">Marketing Notifications Agreement</string>
 
     <!-- 공통 버튼 -->
     <string name="button_select">Select</string>

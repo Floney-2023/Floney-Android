@@ -642,6 +642,7 @@
     <!-- 서비스 화면 -->
     <string name="service_terms_title">이용약관</string>
     <string name="service_privacy_title">개인정보 처리방침</string>
+    <string name="sign_up_marketing_terms_title">마케팅 정보 수신 동의</string>
 
     <!-- 공통 버튼 -->
     <string name="button_select">선택</string>

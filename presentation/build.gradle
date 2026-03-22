@@ -21,8 +21,8 @@ android {
         applicationId "com.aos.floney"
         minSdk 24
         targetSdk 35
-        versionCode 68
-        versionName "2.0.16"
+        versionCode 69
+        versionName "2.0.17"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField "String", "KAKAO_NATIVE_APP_KEY", properties['kakao_native_app_key']
@@ -167,7 +167,7 @@ dependencies {
 
     // Glide
     implementation 'com.github.bumptech.glide:glide:4.14.2'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0'
+    kapt 'com.github.bumptech.glide:compiler:4.16.0'
 
     // viewmodelscope
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7")
@@ -187,6 +187,9 @@ dependencies {
 
     // defaultSplash
     implementation "androidx.core:core-splashscreen:1.2.0-beta01"
+
+    // ump sdk
+    implementation("com.google.android.ump:user-messaging-platform:4.0.0")
 
     // test
     implementation 'androidx.core:core-ktx:1.9.0'

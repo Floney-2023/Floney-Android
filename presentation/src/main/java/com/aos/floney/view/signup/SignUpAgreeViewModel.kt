@@ -1,5 +1,6 @@
 package com.aos.floney.view.signup
 
+import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -18,7 +19,9 @@ import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
-class SignUpAgreeViewModel @Inject constructor(): BaseViewModel() {
+class SignUpAgreeViewModel @Inject constructor(
+    private val app: Application
+): BaseViewModel() {
 
 
     // 뒤로가기
@@ -69,8 +72,13 @@ class SignUpAgreeViewModel @Inject constructor(): BaseViewModel() {
         _ageTerms.postValue(flag)
     }
 
-    fun onClickMoveTermsUrl(url: String, title:String) {
-        subtitle.value = title
+    fun onClickMoveTermsUrl(url: String) {
+        subtitle.value = when (url) {
+            "https://m.cafe.naver.com/floney/2" -> app.getString(R.string.service_terms_title)
+            "https://m.cafe.naver.com/floney/4" -> app.getString(R.string.service_privacy_title)
+            "https://m.cafe.naver.com/floney/6" -> app.getString(R.string.sign_up_marketing_terms_title)
+            else -> app.getString(R.string.terms_title)
+        }
         link.value = url
         _clickedTerms.postValue(true)
     }

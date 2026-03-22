@@ -34,6 +34,9 @@ import com.aos.floney.view.common.WarningPopupDialog
 import com.aos.floney.view.home.HomeActivity
 import com.aos.floney.view.settleup.SettleUpActivity
 import com.aos.floney.view.signup.SignUpCompleteActivity
+import com.google.android.ump.ConsentInformation
+import com.google.android.ump.ConsentRequestParameters
+import com.google.android.ump.UserMessagingPlatform
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import java.security.MessageDigest
@@ -49,16 +52,76 @@ class SplashActivity :
     lateinit var sharedPreferenceUtil: SharedPreferenceUtil
     @Inject
     lateinit var remoteConfigWrapper: RemoteConfigWrapper
+    private lateinit var consentInformation: ConsentInformation
+    private var isConsentFlowFinished = false
+    private var pendingNavigationAfterConsent = false
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setupSplashAnimation()
+        setUpUDK()
         setStatusBarTransparent()
         setPreferenceUtil()
     }
 
+    private fun setUpUDK() {
+        consentInformation = UserMessagingPlatform.getConsentInformation(this)
+        val params = buildConsentRequestParameters()
+        logUmpState("before_request")
+
+        consentInformation.requestConsentInfoUpdate(
+            this,
+            params,
+            {
+                logUmpState("after_request_success")
+                UserMessagingPlatform.loadAndShowConsentFormIfRequired(this) { formError ->
+                    if (formError != null) {
+                        Timber.w("UMP form error: ${formError.message}")
+                    }
+                    logUmpState("after_form_dismiss")
+                    onConsentFlowFinished()
+                }
+            },
+            { requestConsentError ->
+                Timber.w("UMP consent info update failed: ${requestConsentError.message}")
+                logUmpState("after_request_failed")
+                onConsentFlowFinished()
+            }
+        )
+    }
+
+    private fun buildConsentRequestParameters(): ConsentRequestParameters {
+        return ConsentRequestParameters.Builder()
+            .setTagForUnderAgeOfConsent(false)
+            .build()
+    }
+
+    private fun onConsentFlowFinished() {
+        logUmpState("consent_flow_finished")
+        isConsentFlowFinished = true
+        if (pendingNavigationAfterConsent) {
+            pendingNavigationAfterConsent = false
+            navigateToScreen()
+        }
+    }
+
+    private fun navigateToScreenWhenConsentReady() {
+        if (isConsentFlowFinished) {
+            navigateToScreen()
+        } else {
+            pendingNavigationAfterConsent = true
+        }
+    }
+
+    private fun logUmpState(stage: String) {
+        val canRequestAds = runCatching { consentInformation.canRequestAds() }.getOrElse { false }
+        val privacyStatus = runCatching { consentInformation.privacyOptionsRequirementStatus.name }
+            .getOrElse { "UNKNOWN" }
+        Timber.i("UMP[$stage] canRequestAds=$canRequestAds privacyOptions=$privacyStatus")
+    }
+    
     @RequiresApi(Build.VERSION_CODES.O)
     private fun checkPauseUpdate(
         maintenanceStart: LocalDateTime,
@@ -203,7 +266,7 @@ class SplashActivity :
         if (isUpdateRequired(minSupportedVersion, currentVersion)) {
             showUpdateDialog() // 강제 업데이트 팝업
         } else {
-            navigateToScreen() // 업데이트가 필요하지 않으면 다음 화면으로 이동
+            navigateToScreenWhenConsentReady() // 업데이트가 필요하지 않으면 동의 완료 후 다음 화면으로 이동
         }
     }
 

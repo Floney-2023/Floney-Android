@@ -3,7 +3,7 @@
     <!-- Analyze Mapper Strings -->
 
     <!-- Expense Analysis -->
-    <string name="analyze_outcome_total">총 %s을\n 사용했어요</string>
+    <string name="analyze_outcome_total">총 %s을\n사용했어요</string>
     <string name="analyze_outcome_more_than_last">저번달 대비 %s을\n더 사용했어요</string>
     <string name="analyze_outcome_less_than_last">저번달 대비 %s을\n덜 사용했어요</string>
 

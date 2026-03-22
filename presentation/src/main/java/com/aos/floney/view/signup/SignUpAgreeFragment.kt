@@ -19,13 +19,6 @@ class SignUpAgreeFragment : BaseFragment<FragmentSignUpAgreeBinding, SignUpAgree
         super.onViewCreated(view, savedInstanceState)
 
         setUpViewModelObserver()
-
-//        Handler(Looper.getMainLooper()).postDelayed({
-//            if(activityViewModel.getSocialUserModel()?.email != null) {
-//                val action = SignUpAgreeFragmentDirections.actionSignUpAgreeFragmentToSignUpInputInfoFragment(activityViewModel.getSocialUserModel()?.email ?: "", true)
-//                findNavController().navigate(action)
-//            }
-//        }, 1000)
     }
 
     private fun setUpViewModelObserver() {

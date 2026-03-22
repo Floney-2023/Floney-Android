@@ -25,8 +25,42 @@ import kotlin.math.roundToInt
 import androidx.core.graphics.toColorInt
 import java.text.SimpleDateFormat
 import java.util.Locale
+import kotlin.random.Random
 
-private val colorArr = listOf<Int>(
+private val expensePrimaryColors = listOf(
+    "#FFDE31".toColorInt(), // yellow2
+    "#FF965B".toColorInt(), // orange3
+    "#E56E73".toColorInt() // red2
+)
+
+private val incomePrimaryColors = listOf(
+    "#4C97FF".toColorInt(), // blue3
+    "#35347F".toColorInt(), // indigo1
+    "#9B8BFF".toColorInt() // purple2
+)
+
+private val expenseRandomColors = listOf(
+    "#AD1F25".toColorInt(), // red1
+    "#EFA9AB".toColorInt(), // red3
+    "#FF5C00".toColorInt(), // orange2
+    "#FFBE99".toColorInt(), // orange4
+    "#E4BF00".toColorInt(), // yellow1
+    "#FFEE97".toColorInt(), // yellow3
+    "#0060E5".toColorInt(), // blue1
+    "#4C97FF".toColorInt(), // blue3
+    "#99C4FF".toColorInt(), // blue4
+    "#35347F".toColorInt(), // indigo1
+    "#4A48B0".toColorInt(), // indigo2
+    "#706EC4".toColorInt(), // indigo3
+    "#654CFF".toColorInt(), // purple1
+    "#9B8BFF".toColorInt(), // purple2
+    "#D3CCFF".toColorInt() // purple3
+)
+
+private val incomeRandomColors = listOf(
+    "#FFDE31".toColorInt(), // yellow2
+    "#FF965B".toColorInt(), // orange3
+    "#E56E73".toColorInt(), // red2
     "#AD1F25".toColorInt(), // red1
     "#EFA9AB".toColorInt(), // red3
     "#FF5C00".toColorInt(), // orange2
@@ -37,14 +71,22 @@ private val colorArr = listOf<Int>(
     "#99C4FF".toColorInt(), // blue4
     "#4A48B0".toColorInt(), // indigo2
     "#706EC4".toColorInt(), // indigo3
-    "#654CFF".toColorInt(), // purple1
+    "#9B8BFF".toColorInt(), // purple2
     "#D3CCFF".toColorInt() // purple3
 )
+
+// Session-stable shuffled palettes (initialized once when AnalyzeMapper is first used)
+private const val ANALYZE_COLOR_PREFS = "analyze_color_prefs"
+private const val KEY_EXPENSE_RANDOM_PALETTE = "expense_random_palette"
+private const val KEY_INCOME_RANDOM_PALETTE = "income_random_palette"
+
+private var cachedExpenseRandomPalette: List<Int>? = null
+private var cachedIncomeRandomPalette: List<Int>? = null
 
 fun PostAnalyzeCategoryOutComeEntity.toUiAnalyzeModel(context: Context): UiAnalyzeCategoryOutComeModel {
     var stepIdx = 0
     var colorIdx = 0
-    val randomColorArr = getRandomColor(this.analyzeResult.size)
+    val randomColorArr = getSessionRandomColors(context, this.analyzeResult.size, isIncome = false)
 
     val formattedTotal = "${NumberFormat.getNumberInstance().format(this.total)}${CurrencyUtil.currency}"
 
@@ -79,17 +121,17 @@ fun PostAnalyzeCategoryOutComeEntity.toUiAnalyzeModel(context: Context): UiAnaly
                 color = when (stepIdx) {
                     0 -> {
                         stepIdx++
-                        "#FFDE31".toColorInt() // yellow#2
+                        expensePrimaryColors[0]
                     }
 
                     1 -> {
                         stepIdx++
-                        "#FF965B".toColorInt() // orange#3
+                        expensePrimaryColors[1]
                     }
 
                     2 -> {
                         stepIdx++
-                        "#E56E73".toColorInt() // red#2
+                        expensePrimaryColors[2]
                     }
 
                     else -> {
@@ -108,7 +150,7 @@ fun PostAnalyzeCategoryOutComeEntity.toUiAnalyzeModel(context: Context): UiAnaly
 fun PostAnalyzeCategoryInComeEntity.toUiAnalyzeModel(context: Context): UiAnalyzeCategoryInComeModel {
     var stepIdx = 0
     var colorIdx = 0
-    val randomColorArr = getRandomColor(this.analyzeResult.size)
+    val randomColorArr = getSessionRandomColors(context, this.analyzeResult.size, isIncome = true)
 
     Timber.e("different $differance")
     Timber.e("total $total")
@@ -146,17 +188,17 @@ fun PostAnalyzeCategoryInComeEntity.toUiAnalyzeModel(context: Context): UiAnalyz
                 color = when (stepIdx) {
                     0 -> {
                         stepIdx++
-                        "#4C97FF".toColorInt() // blue#3
+                        incomePrimaryColors[0]
                     }
 
                     1 -> {
                         stepIdx++
-                        "#35347F".toColorInt() // indigo#1
+                        incomePrimaryColors[1]
                     }
 
                     2 -> {
                         stepIdx++
-                        "#9B8BFF".toColorInt() // purple#2
+                        incomePrimaryColors[2]
                     }
 
                     else -> {
@@ -330,11 +372,42 @@ fun formatLocalizedDate(context: Context, dateString: String): String {
 }
 
 
-// 랜덤 색상 가져오기 그래프는 3개까지는 색상 고정 그 이후는 랜덤 색상임
-fun getRandomColor(repeat: Int): List<Int> {
-    val colorCount = colorArr.size
-    val indices = (0 until colorCount).shuffled().take(repeat)
-    return indices.map { colorArr[it] }
+private fun getSessionRandomColors(context: Context, repeat: Int, isIncome: Boolean): List<Int> {
+    val source = getPersistentRandomPalette(context, isIncome)
+    if (source.isEmpty()) return emptyList()
+    return List(repeat) { idx -> source[idx % source.size] }
+}
+
+private fun getPersistentRandomPalette(context: Context, isIncome: Boolean): List<Int> {
+    val cached = if (isIncome) cachedIncomeRandomPalette else cachedExpenseRandomPalette
+    if (!cached.isNullOrEmpty()) return cached
+
+    val prefs = context.getSharedPreferences(ANALYZE_COLOR_PREFS, Context.MODE_PRIVATE)
+    val key = if (isIncome) KEY_INCOME_RANDOM_PALETTE else KEY_EXPENSE_RANDOM_PALETTE
+    val base = if (isIncome) incomeRandomColors else expenseRandomColors
+
+    val restored = prefs.getString(key, null)
+        ?.split(",")
+        ?.mapNotNull { it.trim().takeIf(String::isNotEmpty) }
+        ?.mapNotNull { token ->
+            runCatching { token.toLong(16).toInt() }.getOrNull()
+        }
+        ?.takeIf { it.size == base.size }
+
+    val palette = restored ?: run {
+        val seeded = base.shuffled(Random(System.currentTimeMillis()))
+        prefs.edit()
+            .putString(key, seeded.joinToString(",") { color -> "%08X".format(color) })
+            .apply()
+        seeded
+    }
+
+    if (isIncome) {
+        cachedIncomeRandomPalette = palette
+    } else {
+        cachedExpenseRandomPalette = palette
+    }
+    return palette
 }
 
 fun Double.round(decimals: Int): Double {

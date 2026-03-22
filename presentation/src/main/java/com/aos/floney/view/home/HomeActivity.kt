@@ -278,6 +278,7 @@ class HomeActivity : BaseActivity<ActivityHomeBinding, HomeViewModel>(R.layout.a
                 R.id.mypageFragment -> {
                     startActivity(Intent(this, MyPageActivity::class.java))
                     applyOpenTransition()
+                    finish()
                     false
                 }
 

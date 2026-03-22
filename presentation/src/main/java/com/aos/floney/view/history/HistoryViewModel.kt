@@ -18,7 +18,6 @@ import com.aos.floney.ext.parseErrorCode
 import com.aos.floney.ext.parseErrorMsg
 import com.aos.floney.ext.toCategoryCode
 import com.aos.floney.ext.toCategoryName
-import com.aos.floney.util.CategoryLocalizationMapper
 import com.aos.floney.util.EventFlow
 import com.aos.floney.util.MutableEventFlow
 import com.aos.floney.util.getAdvertiseTenMinutesCheck
@@ -341,11 +340,9 @@ class HistoryViewModel @Inject constructor(
                 val tempValue = if (parent == "자산") asset.value else line.value
                 val isUnselected = tempValue.isNullOrEmpty()
 
-                // Apply localization to categories
-                val localizedList = CategoryLocalizationMapper.localizeCategories(application, list)
-                categoryCacheByParent[normalizeParent(parent)] = localizedList
+                categoryCacheByParent[normalizeParent(parent)] = list
 
-                val item = localizedList.mapIndexed { index, innerItem ->
+                val item = list.mapIndexed { index, innerItem ->
                     val shouldSelect = if (isUnselected) {
                         index == 0
                     } else {
@@ -389,7 +386,6 @@ class HistoryViewModel @Inject constructor(
 
         return getBookCategoryUseCase(prefs.getString("bookKey", ""), normalizedParent)
             .getOrNull()
-            ?.let { CategoryLocalizationMapper.localizeCategories(application, it) }
             ?.also { categoryCacheByParent[normalizedParent] = it }
     }
 

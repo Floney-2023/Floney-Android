@@ -337,60 +337,11 @@ fun PostBooksChangeEntity.toPostBooksLinesChangeModel(): PostBooksChangeModel {
     )
 }
 
-// 정렬 기준 정의 (서버 categoryKey 기준)
-val assetOrder = listOf("Cash", "Card", "DebitCard", "Debit Card", "CreditCard", "Credit Card", "Bank")
-val expenseOrder = listOf(
-    "Food",
-    "Cafe/Snacks",
-    "Transportation",
-    "Transport",
-    "Shopping",
-    "Medical",
-    "Health",
-    "Culture",
-    "Travel/Stay",
-    "Living",
-    "Beauty",
-    "Style/Beauty",
-    "Family",
-    "Education",
-    "Events",
-    "Other",
-    "Uncategorized",
-)
-val incomeOrder = listOf("Salary", "Business", "Business Income", "Extra Income", "Allowance", "Financial Income", "Bonus", "Etc")
-val transferOrder = listOf("Transfer", "Savings", "Investment", "Insurance", "CardPayment", "Card Payment", "Loan", "Other", "Uncategorized")
-
 fun List<GetBookCategoryEntity>.toUiBookCategory(parent: String): List<UiBookCategory> {
-    val order = when (parent) {
-        "ASSET", "자산" -> assetOrder
-        "OUTCOME", "지출" -> expenseOrder
-        "INCOME", "수입" -> incomeOrder
-        "TRANSFER", "이체" -> transferOrder
-        else -> return this.mapIndexed { idx, it ->
+    return this.mapIndexed { idx, it ->
             val isDefault = it.isDefault ?: it.default
             val displayName = if (isDefault && !it.categoryKey.isNullOrBlank()) {
-                localizeCategoryKeyDisplayName(it.categoryKey)
-            } else {
-                it.name
-            }
-            UiBookCategory(
-                idx = idx,
-                checked = false,
-                name = displayName,
-                categoryKey = it.categoryKey,
-                default = isDefault
-            )
-        }
-    }
-
-    return this.sortedWith(compareBy({
-        order.indexOf(it.categoryKey ?: "").takeIf { idx -> idx >= 0 } ?: Int.MAX_VALUE
-    }, { it.name }))
-        .mapIndexed { idx, it ->
-            val isDefault = it.isDefault ?: it.default
-            val displayName = if (isDefault && !it.categoryKey.isNullOrBlank()) {
-                localizeCategoryKeyDisplayName(it.categoryKey)
+                if (Locale.getDefault().language == "ko") it.name else it.categoryKey
             } else {
                 it.name
             }
