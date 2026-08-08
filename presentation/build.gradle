@@ -7,6 +7,7 @@ plugins {
     id 'com.google.dagger.hilt.android'
     id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
     id("com.google.gms.google-services")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 Properties properties = new Properties()
@@ -15,12 +16,12 @@ properties.load(project.rootProject.file('local.properties').newDataInputStream(
 android {
     packagingOptions { resources.excludes.add("META-INF/*")}
         namespace 'com.aos.floney'
-    compileSdk 35
+    compileSdk 36
 
     defaultConfig {
         applicationId "com.aos.floney"
         minSdk 24
-        targetSdk 35
+        targetSdk 36
         versionCode 70
         versionName "2.1.0"
 
@@ -70,6 +71,7 @@ android {
     buildFeatures {
         viewBinding true
         buildConfig true
+        compose true
     }
 }
 
