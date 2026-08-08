@@ -1,22 +1,17 @@
 package com.aos.floney.view.history.picture
 
 import androidx.lifecycle.viewModelScope
-import com.aos.data.util.CurrencyUtil
 import com.aos.floney.base.BaseViewModel
-import com.aos.floney.ext.parseErrorMsg
 import com.aos.floney.util.EventFlow
 import com.aos.floney.util.MutableEventFlow
 import com.aos.model.home.ImageUrls
-import com.aos.usecase.subscribe.SubscribeDeleteCloudImageUseCase
-import com.bumptech.glide.load.ImageHeaderParser.ImageType
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class InsertPictureDetailViewModel @Inject constructor(
-): BaseViewModel() {
+) : BaseViewModel() {
 
     private var _onClickedBack = MutableEventFlow<Boolean>()
     val onClickedBack: EventFlow<Boolean> get() = _onClickedBack
@@ -24,7 +19,8 @@ class InsertPictureDetailViewModel @Inject constructor(
     private var _onClickedDelete = MutableEventFlow<Boolean>()
     val onClickedDelete: EventFlow<Boolean> get() = _onClickedDelete
 
-    private lateinit var imageUrl : ImageUrls
+    private var imageList: List<ImageUrls> = emptyList()
+    private var currentIndex: Int = 0
 
     fun onClickedBack() {
         viewModelScope.launch {
@@ -38,11 +34,16 @@ class InsertPictureDetailViewModel @Inject constructor(
         }
     }
 
-    fun setImageUrl(url: ImageUrls) {
-        imageUrl = url
+    fun setImageList(list: List<ImageUrls>, startIndex: Int) {
+        imageList = list
+        currentIndex = startIndex
     }
 
-    fun getImageUrl(): ImageUrls {
-        return imageUrl
+    fun setCurrentIndex(index: Int) {
+        currentIndex = index
     }
+
+    fun getImage(index: Int): ImageUrls = imageList[index]
+
+    fun getCurrentImage(): ImageUrls = imageList[currentIndex]
 }

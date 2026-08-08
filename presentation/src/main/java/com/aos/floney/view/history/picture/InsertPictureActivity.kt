@@ -317,8 +317,15 @@ class InsertPictureActivity :
             }
 
             detailUrl?.let {
+                val allImages = ArrayList<ImageUrls>().apply {
+                    addAll(viewModel.getCloudPictureList())
+                    addAll(viewModel.getLocalPictureList().map { file -> ImageUrls(-1, file.absolutePath) })
+                }
+                val startIndex = allImages.indexOfFirst { img -> img.id == it.id && img.url == it.url }.coerceAtLeast(0)
+
                 val intent = Intent(this, InsertPictureDetailActivity::class.java)
-                intent.putExtra("url", it)
+                intent.putExtra("imageList", allImages)
+                intent.putExtra("startIndex", startIndex)
                 getResult.launch(intent)
             }
         }
