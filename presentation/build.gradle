@@ -120,7 +120,7 @@ dependencies {
     implementation 'com.jakewharton.threetenabp:threetenabp:1.1.1'
 
     // google billing
-    implementation 'com.android.billingclient:billing:7.1.1'
+    implementation 'com.android.billingclient:billing:9.1.0'
 
     // flexboxLayout
     implementation 'com.google.android.flexbox:flexbox:3.0.0'

@@ -12,6 +12,7 @@ import com.android.billingclient.api.PendingPurchasesParams
 import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.QueryProductDetailsParams
+import com.android.billingclient.api.QueryProductDetailsResult
 import com.aos.data.util.CommonUtil
 import com.aos.floney.BuildConfig
 import com.aos.floney.R
@@ -44,7 +45,6 @@ class BillingManager(
         billingClient = BillingClient.newBuilder(activity)
             .enablePendingPurchases(
                 PendingPurchasesParams.newBuilder().enableOneTimeProducts()
-                    .enablePrepaidPlans()
                     .build()
             )
             .setListener { billingResult, purchases ->
@@ -145,21 +145,17 @@ class BillingManager(
                 )
             ).build()
 
-        billingClient.queryProductDetailsAsync(queryProductDetailsParams) { billingResult, productDetailsList ->
-            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && !productDetailsList.isNullOrEmpty()) {
-                // SKU 세부 사항 로드 완료
-                val productDetails = productDetailsList[0] // 첫 번째 상품 정보 사용
-                // 구매 플로우 실행
-                Timber.e("checking 3 : productDetails ${billingResult.responseCode}, message: ${productDetailsList}")
+        billingClient.queryProductDetailsAsync(queryProductDetailsParams) { billingResult, result: QueryProductDetailsResult ->
+            val productDetailsList = result.productDetailsList
+            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && productDetailsList.isNotEmpty()) {
+                val productDetails = productDetailsList[0]
+                Timber.e("checking 3 : productDetails ${billingResult.responseCode}, message: $productDetailsList")
                 launchPurchaseFlow(productDetails)
-
             } else {
-                // 오류 처리
-                Timber.e("checking 4 : Error code: ${billingResult.responseCode}, message: ${productDetailsList}")
+                Timber.e("checking 4 : Error code: ${billingResult.responseCode}, message: $productDetailsList")
                 billingCallback.onBillingError(
                     activity.getString(R.string.billing_error_load_transaction)
                 )
-
             }
         }
     }
