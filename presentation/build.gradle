@@ -28,11 +28,11 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField "String", "KAKAO_NATIVE_APP_KEY", properties['kakao_native_app_key']
         buildConfigField "String", "GOOGLE_PRODUCT_SUBSCRIBE_ID", properties['google_product_subscribe_id']
-        buildConfigField "String", "MINIMUM_VERSION_KEY", properties['mininum.version.key']
     }
 
     buildTypes {
         release {
+            buildConfigField "String", "MINIMUM_VERSION_KEY", '"aos_minimum_version_prod"'
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -42,6 +42,7 @@ android {
             buildConfigField "String", "GOOGLE_APP_REWARD_KEY", "${properties['google_app_reward_release_key']}"
         }
         debug {
+            buildConfigField "String", "MINIMUM_VERSION_KEY", '"aos_minimum_version_dev"'
 
             buildConfigField "String", "BASE_URL", properties['base.dev.url']
             buildConfigField "String", "GOOGLE_APP_BANNER_KEY", "${properties['google_app_banner_debug_key']}"

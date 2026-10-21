@@ -25,17 +25,17 @@ class RemoteConfigWrapper @Inject constructor() {
         }
     }
 
-    fun fetchAndActivateConfig(): String {
-        remoteConfig.fetchAndActivate().addOnCompleteListener{ task ->
-            val updated = task.result
-            if (task.isSuccessful){
-                val updated = task.result
-                Timber.d("Config params updated success: $updated")
+    fun fetchAndActivateConfig(onComplete: (String) -> Unit) {
+        remoteConfig.fetchAndActivate().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                Timber.d("Config params updated success: ${task.result}")
             } else {
-                Timber.d("Config params updated failed: $updated")
+                Timber.w(task.exception, "Config fetch failed; using activated or default value")
             }
+            val minimumVersion = remoteConfig.getString(BuildConfig.MINIMUM_VERSION_KEY)
+            Timber.d("Minimum version key: ${BuildConfig.MINIMUM_VERSION_KEY}, value: $minimumVersion")
+            onComplete(minimumVersion)
         }
-        return remoteConfig.getString(BuildConfig.MINIMUM_VERSION_KEY)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)

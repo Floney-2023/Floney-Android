@@ -259,14 +259,16 @@ class SplashActivity :
 
 
     private fun checkForMandatoryUpdate() { // 강제 업데이트 팝업
-        val minSupportedVersion = remoteConfigWrapper.fetchAndActivateConfig()
-        val currentVersion = getCurrentAppVersion()
+        remoteConfigWrapper.fetchAndActivateConfig { minSupportedVersion ->
+            if (isFinishing || isDestroyed) return@fetchAndActivateConfig
+            val currentVersion = getCurrentAppVersion()
 
-        Timber.e("minSupportVersion : ${minSupportedVersion} currentVersion : ${currentVersion}")
-        if (isUpdateRequired(minSupportedVersion, currentVersion)) {
-            showUpdateDialog() // 강제 업데이트 팝업
-        } else {
-            navigateToScreenWhenConsentReady() // 업데이트가 필요하지 않으면 동의 완료 후 다음 화면으로 이동
+            Timber.d("minSupportVersion : $minSupportedVersion currentVersion : $currentVersion")
+            if (isUpdateRequired(minSupportedVersion, currentVersion)) {
+                showUpdateDialog() // 강제 업데이트 팝업
+            } else {
+                navigateToScreenWhenConsentReady() // 업데이트가 필요하지 않으면 동의 완료 후 다음 화면으로 이동
+            }
         }
     }
 
